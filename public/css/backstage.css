@@ -1,9 +1,3 @@
-<div class="page-container">
-    <h1>訂位系統</h1>
-    <p class="custom-text"><%= bookingpagetext %></p>
-</div>
-
-<style>
 .page-container {
     max-width: 1200px;
     margin: 100px auto;
@@ -17,5 +11,4 @@
     font-size: 1.2rem;
     color: #666;
     margin-top: 1rem;
-}
-</style> 
+} 

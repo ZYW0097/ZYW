@@ -1,0 +1,203 @@
+/* 頁面容器 */
+.page-container {
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.custom-text {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 1rem;
+}
+
+.booking-form-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* 訂位摘要樣式 */
+.reservation-summary {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.summary-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.summary-value {
+    color: #333;
+    font-weight: 600;
+}
+
+/* 表單樣式 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group input[type="email"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* 性別選擇樣式 */
+.gender-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gender-option input[type="radio"] {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* 特殊需求樣式 */
+.special-needs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.special-need-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.special-need-option input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* 用餐規則樣式 */
+.dining-rules {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.rules-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.rules-list {
+    list-style: none;
+    padding: 0;
+}
+
+.rules-list li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.rules-list li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+}
+
+/* 同意條款樣式 */
+.agreement {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.agreement input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* 按鈕樣式 */
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.back-button,
+.submit-button {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.back-button {
+    background: #f8f9fa;
+    color: #333;
+    border: 2px solid #eee;
+}
+
+.back-button:hover {
+    background: #eee;
+}
+
+.submit-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.submit-button:hover:not(:disabled) {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.submit-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+} 
