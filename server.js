@@ -3,6 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
+const indexRouter = require('./routes/index');
 require('dotenv').config();
 
 const app = express();
@@ -29,8 +30,11 @@ app.use(session({
 }));
 
 // 路由
-app.get('/', (req, res) => {
-    res.render('index');
+app.use('/', indexRouter);
+
+// 錯誤處理
+app.use((req, res, next) => {
+    res.status(404).render('error', { message: '頁面不存在' });
 });
 
 // 啟動服務器
