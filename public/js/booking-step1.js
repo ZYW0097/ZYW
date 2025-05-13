@@ -1,8 +1,8 @@
 // 獲取DOM元素
 const calendarHeader = document.querySelector('.calendar-header');
 const daysContainer = document.querySelector('.days-container');
-const prevMonthBtn = document.querySelector('.prev-month');
-const nextMonthBtn = document.querySelector('.next-month');
+const prevMonthBtn = document.getElementById('prevMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
 const monthDisplay = document.querySelector('.month-display');
 const timeButtons = document.querySelector('.time-buttons');
 const adultsSelect = document.querySelector('#adults');
