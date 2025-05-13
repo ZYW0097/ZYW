@@ -9,21 +9,12 @@
                 <h2 id="calendar-title"></h2>
                 <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
             </div>
-            <div id="days-container" class="days-container"></div>
+            <div class="days-container"></div>
         </div>
 
-        <div id="time-picker-container" class="time-picker-container" style="display: none;">
-            <div class="time-section">
-                <h3>上午</h3>
-                <div class="time-buttons" id="morning-times"></div>
-            </div>
-            <div class="time-section">
-                <h3>下午</h3>
-                <div class="time-buttons" id="afternoon-times"></div>
-            </div>
-        </div>
+        <div class="time-buttons" style="margin: 2rem 0;"></div>
 
-        <div class="people-selector" style="display: none;">
+        <div class="people-selector" style="margin: 2rem 0;">
             <div class="form-group">
                 <label for="adults">大人人數</label>
                 <select id="adults" name="adults" required>
@@ -35,21 +26,17 @@
                     <option value="6">6位</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="children">小孩人數</label>
                 <select id="children" name="children" required>
                     <option value="0">0位</option>
                 </select>
             </div>
-
-            <button type="button" id="nextStepBtn" class="next-button" disabled>下一步</button>
         </div>
+
+        <button type="button" class="next-button" disabled>下一步</button>
     </div>
 </div>
 
 <link rel="stylesheet" href="/css/booking-step1.css">
-<script>
-    const storeSlug = '<%= storeSlug %>';
-</script>
-<script src="/js/booking-step1.js"></script> 
+<script src="/js/booking-step1.js"></script>
