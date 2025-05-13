@@ -6,6 +6,7 @@ const Reservation = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
 const ReservationSchema = require('../models/Reservation');
 
+
 // 主頁路由
 router.get('/', (req, res) => {
     res.render('index');
@@ -27,12 +28,24 @@ router.get('/:storeSlug/booking', (req, res) => {
     res.redirect(`/${req.params.storeSlug}/booking/step1`);
 });
 
-router.get('/:storeSlug/booking/step1', (req, res) => {
-    res.render('booking/step1', { storeSlug: req.params.storeSlug });
+router.get('/:storeSlug/booking/step1', async (req, res) => {
+    const { storeSlug } = req.params;
+    const client = await Client.findOne({ slugname: storeSlug });
+    res.render('booking/step1', {
+        storeSlug,
+        bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
+    });
 });
-router.get('/:storeSlug/booking/step2', (req, res) => {
-    res.render('booking/step2', { storeSlug: req.params.storeSlug });
+
+router.get('/:storeSlug/booking/step2', async (req, res) => {
+    const { storeSlug } = req.params;
+    const client = await Client.findOne({ slugname: storeSlug });
+    res.render('booking/step2', {
+        storeSlug,
+        bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
+    });
 });
+
 router.get('/:storeSlug/booking/success', (req, res) => {
     const { bookingId } = req.query;
     res.render('booking/success', { bookingId });

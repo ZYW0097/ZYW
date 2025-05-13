@@ -4,6 +4,7 @@ const session = require('express-session');
 const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const app = express();
@@ -26,7 +27,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        dbName: 'session',
+        collectionName: 'sessions'
+    }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 天
 }));
 
 // 路由
