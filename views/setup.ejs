@@ -1,0 +1,134 @@
+<div class="setup-container">
+    <h1 class="setup-title">系統設置</h1>
+    <form id="setupForm" class="setup-form">
+        <div class="form-group">
+            <label for="clientname">客戶名稱</label>
+            <input type="text" id="clientname" name="clientname" required placeholder="請輸入客戶名稱">
+        </div>
+        
+        <div class="form-group">
+            <label for="slugname">網站名稱 (英文或數字)</label>
+            <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入網站名稱">
+        </div>
+        
+        <div class="form-group">
+            <label for="cardpagetext">集點卡頁面文字</label>
+            <input type="text" id="cardpagetext" name="cardpagetext" required placeholder="請輸入集點卡頁面文字">
+        </div>
+        
+        <div class="form-group">
+            <label for="accountpagetext">帳號頁面文字</label>
+            <input type="text" id="accountpagetext" name="accountpagetext" required placeholder="請輸入帳號頁面文字">
+        </div>
+        
+        <div class="form-group">
+            <label for="bookingpagetext">訂位頁面文字</label>
+            <input type="text" id="bookingpagetext" name="bookingpagetext" required placeholder="請輸入訂位頁面文字">
+        </div>
+        
+        <div class="form-group">
+            <label for="backstagepagetext">後台頁面文字</label>
+            <input type="text" id="backstagepagetext" name="backstagepagetext" required placeholder="請輸入後台頁面文字">
+        </div>
+        
+        <button type="submit" class="setup-button">創建系統</button>
+    </form>
+</div>
+
+<style>
+.setup-container {
+    max-width: 800px;
+    margin: 100px auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.setup-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.setup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group input {
+    padding: 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.setup-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.setup-button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.getElementById('setupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        clientname: document.getElementById('clientname').value,
+        slugname: document.getElementById('slugname').value,
+        cardpagetext: document.getElementById('cardpagetext').value,
+        accountpagetext: document.getElementById('accountpagetext').value,
+        bookingpagetext: document.getElementById('bookingpagetext').value,
+        backstagepagetext: document.getElementById('backstagepagetext').value
+    };
+
+    try {
+        const response = await fetch('/api/setup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            window.location.href = '/loading';
+        } else {
+            alert('設置失敗，請重試');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('發生錯誤，請重試');
+    }
+});
+</script> 
