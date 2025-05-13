@@ -45,8 +45,12 @@
 </style>
 
 <script>
-// 5秒後自動跳轉到客戶的集點卡頁面
-setTimeout(() => {
-    window.location.href = '/<%= slugname %>/card';
-}, 5000);
+const slug = "<%= slugname %>";
+if (!slug) {
+    window.location.href = "/";
+} else {
+    setTimeout(() => {
+        window.location.href = '/' + slug + '/card';
+    }, 5000);
+}
 </script> 

@@ -122,7 +122,8 @@ document.getElementById('setupForm').addEventListener('submit', async (e) => {
         });
 
         if (response.ok) {
-            window.location.href = '/loading';
+            const data = await response.json();
+            window.location.href = '/loading?slugname=' + encodeURIComponent(data.client.slugname);    
         } else {
             alert('設置失敗，請重試');
         }
