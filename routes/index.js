@@ -22,17 +22,18 @@ router.get('/loading', (req, res) => {
 });
 
 // 訂位系統第一階段
-router.get('/booking/step1', (req, res) => {
-    res.render('booking/step1');
+
+router.get('/:storeSlug/booking', (req, res) => {
+    res.redirect(`/${req.params.storeSlug}/booking/step1`);
 });
 
-// 訂位系統第二階段
-router.get('/booking/step2', (req, res) => {
-    res.render('booking/step2');
+router.get('/:storeSlug/booking/step1', (req, res) => {
+    res.render('booking/step1', { storeSlug: req.params.storeSlug });
 });
-
-// 訂位成功頁面
-router.get('/booking/success', (req, res) => {
+router.get('/:storeSlug/booking/step2', (req, res) => {
+    res.render('booking/step2', { storeSlug: req.params.storeSlug });
+});
+router.get('/:storeSlug/booking/success', (req, res) => {
     const { bookingId } = req.query;
     res.render('booking/success', { bookingId });
 });
@@ -78,7 +79,7 @@ router.post('/api/setup', async (req, res) => {
 router.get('/:storeSlug/:page', async (req, res) => {
     try {
         const { storeSlug, page } = req.params;
-        const validPages = ['card', 'booking', 'account', 'backstage'];
+        const validPages = ['card', 'account', 'backstage'];
         
         if (!validPages.includes(page)) {
             return res.status(404).render('error', { message: '頁面不存在' });
