@@ -15,7 +15,7 @@ router.get('/setup', (req, res) => {
 
 // 載入頁面
 router.get('/loading', (req, res) => {
-    res.render('loading');
+    res.render('loading', { slugname: req.query.slugname });
 });
 
 // API路由 - 創建客戶
@@ -43,6 +43,10 @@ router.post('/api/setup', async (req, res) => {
         // 創建客戶特定的數據庫
         const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
         const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
+
+        // 建立一個空的 collection 以確保資料庫會被建立
+        await bookingDB.collection('init').insertOne({ created: new Date() });
+        await accountDB.collection('init').insertOne({ created: new Date() });
 
         res.json({ success: true, client });
     } catch (error) {
