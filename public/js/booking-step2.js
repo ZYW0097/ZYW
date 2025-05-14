@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 合併第一步 bookingData
         const data = {
             ...bookingData,
-            ...Object.fromEntries(formData.entries())
+            ...Object.fromEntries(formData.entries()),
+            storeSlug
         };
 
         try {

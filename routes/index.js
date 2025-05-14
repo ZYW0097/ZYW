@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Reservation = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
 const ReservationSchema = require('../models/Reservation');
+const { sendBookingConfirmation } = require('../services/emailService');
 
 
 // 主頁路由
@@ -131,8 +132,18 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         // 創建訂位記錄
         const reservation = await Reservation.create(req.body);
 
-        // 發送確認郵件（可選）
-        // TODO: 實現郵件發送功能
+        // 查詢 clientname
+        const client = await Client.findOne({ slugname: storeSlug });
+        const clientname = client ? client.clientname : '';
+
+        // 發送確認郵件
+        if (req.body.email) {
+            await sendBookingConfirmation(req.body.email, {
+                ...req.body,
+                bookingId: reservation._id,
+                clientname
+            });
+        }
 
         res.json({ success: true, reservation, bookingId: reservation._id });
     } catch (error) {
