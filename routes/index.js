@@ -5,11 +5,25 @@ const mongoose = require('mongoose');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
 const { sendBookingConfirmation } = require('../services/emailService');
+const fs = require('fs');
+const path = require('path');
 
 
 // 主頁路由
 router.get('/', (req, res) => {
-    res.render('index');
+    const customNavbar = `
+<nav class="index-nav">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">DINE✦</a>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">功能特點</a>
+            <a href="#pricing" class="nav-link">方案價格</a>
+            <a href="#contact" class="nav-link">聯絡我們</a>
+        </div>
+    </div>
+</nav>
+`;
+    res.render('index', { customNavbar });
 });
 
 // 設置頁面
