@@ -3,7 +3,6 @@ const router = express.Router();
 const Client = require('../models/Client');
 const mongoose = require('mongoose');
 const reservationSchema = require('../models/Reservation');
-const Reservation = db.model('Reservation', reservationSchema);
 const getClientDb = require('../utils/dbManager');
 const { sendBookingConfirmation } = require('../services/emailService');
 
