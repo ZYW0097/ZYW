@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
 const mongoose = require('mongoose');
-const Reservation = require('../models/Reservation');
+const reservationSchema = require('../models/Reservation');
+const Reservation = db.model('Reservation', reservationSchema);
 const getClientDb = require('../utils/dbManager');
-const ReservationSchema = require('../models/Reservation');
 const { sendBookingConfirmation } = require('../services/emailService');
 
 
@@ -127,7 +127,7 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
 
         // 使用客戶特定的數據庫
         const db = getClientDb(storeSlug);
-        const Reservation = db.model('Reservation', ReservationSchema);
+        const Reservation = db.model('Reservation', reservationSchema);
 
         // 創建訂位記錄
         const reservation = await Reservation.create(req.body);
