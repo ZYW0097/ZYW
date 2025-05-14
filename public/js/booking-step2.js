@@ -1,8 +1,8 @@
 // 獲取DOM元素
-const bookingForm = document.querySelector('#booking-form');
-const backButton = document.querySelector('.back-button');
-const submitButton = document.querySelector('.submit-button');
-const agreementCheckbox = document.querySelector('#agreement');
+const bookingForm = document.querySelector('#bookingForm');
+const backButton = document.querySelector('.back-btn');
+const submitButton = document.querySelector('.submit-btn');
+const agreementCheckbox = document.querySelector('#agreeTerms');
 
 // 從 sessionStorage 獲取第一步的數據
 const bookingData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
