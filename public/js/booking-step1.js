@@ -154,7 +154,7 @@ nextButton.addEventListener('click', () => {
     }));
     
     // 跳轉到第二步
-    window.location.href = `/booking/step2`;
+    window.location.href = `/${storeSlug}/booking/step2`;
 });
 
 // 初始化

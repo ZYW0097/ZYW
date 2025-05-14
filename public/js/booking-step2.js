@@ -53,7 +53,7 @@ document.querySelectorAll('input[name="gender"]').forEach(radio => {
 agreementCheckbox.addEventListener('change', checkForm);
 
 backButton.addEventListener('click', () => {
-    window.location.href = '/booking/step1';
+    window.location.href = `/${storeSlug}/booking/step1`;
 });
 
 bookingForm.addEventListener('submit', async (e) => {
@@ -97,7 +97,7 @@ bookingForm.addEventListener('submit', async (e) => {
         sessionStorage.removeItem('bookingData');
         
         // 跳轉到成功頁面
-        window.location.href = `/booking/success?bookingId=${result.bookingId}`;
+        window.location.href = `/${storeSlug}/booking/success?bookingId=${result.bookingId}`;
         
     } catch (error) {
         alert('訂位失敗，請稍後再試');
