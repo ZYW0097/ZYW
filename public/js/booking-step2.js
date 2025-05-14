@@ -9,10 +9,10 @@ const bookingData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
 
 // 更新訂位摘要
 function updateSummary() {
-    document.querySelector('#summary-date').textContent = bookingData.date;
-    document.querySelector('#summary-time').textContent = bookingData.time;
-    document.querySelector('#summary-adults').textContent = bookingData.adults;
-    document.querySelector('#summary-children').textContent = bookingData.children;
+    document.querySelector('#displayDate').textContent = bookingData.date || '';
+    document.querySelector('#displayTime').textContent = bookingData.time || '';
+    document.querySelector('#displayPeople').textContent =
+        (bookingData.adults || 0) + '大 ' + (bookingData.children || 0) + '小';
 }
 
 // 檢查表單是否完整
@@ -71,9 +71,8 @@ bookingForm.addEventListener('submit', async (e) => {
         gender: document.querySelector('input[name="gender"]:checked').value,
         phone: document.querySelector('#phone').value,
         email: document.querySelector('#email').value,
-        isVegetarian: document.querySelector('#vegetarian').checked,
-        specialNeeds: Array.from(document.querySelectorAll('input[name="special-needs"]:checked'))
-            .map(checkbox => checkbox.value),
+        isVegetarian: document.querySelector('#vegetarian').value,
+        specialNeeds: document.querySelector('#specialNeeds').value,
         notes: document.querySelector('#notes').value
     };
     
