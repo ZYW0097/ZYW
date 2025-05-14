@@ -40,6 +40,11 @@ app.use(session({
 // 路由
 app.use('/', indexRouter);
 
+app.use((req, res, next) => {
+    res.locals.storeSlug = req.params.storeSlug || '';
+    next();
+});
+
 // 錯誤處理
 app.use((req, res, next) => {
     res.status(404).render('error', { message: '頁面不存在' });
