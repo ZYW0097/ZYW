@@ -5,11 +5,11 @@ const connections = {};
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) throw new Error('MONGODB_URI not set in .env');
 
-function getClientDb(storeSlug) {
+function getClientDb(storeSlug, type = 'BDB') {
     if (!storeSlug) throw new Error('storeSlug is required');
     // 取 base uri，移除 ? 及後面參數
     const [baseUri, params] = MONGODB_URI.split('?');
-    const dbName = `bdb_${storeSlug}`;
+    const dbName = `${storeSlug}${type}`;
     const fullUri = `${baseUri.replace(/\/$/, '')}/${dbName}?${params || ''}`;
     if (!connections[dbName]) {
         connections[dbName] = mongoose.createConnection(

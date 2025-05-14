@@ -124,8 +124,8 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         if (!storeSlug) storeSlug = req.params.storeSlug || req.body.storeSlug || req.query.storeSlug;
         if (!storeSlug) return res.status(400).json({ error: 'storeSlug required' });
 
-        // 使用客戶特定的數據庫
-        const db = getClientDb(storeSlug);
+        // 使用客戶特定的訂位資料庫
+        const db = getClientDb(storeSlug, 'BDB');
         const Reservation = db.model('Reservation', reservationSchema);
 
         // 創建訂位記錄
