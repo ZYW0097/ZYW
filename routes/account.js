@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('../config/passport');
+const passport = require('passport');
 const getClientDb = require('../utils/dbManager');
 const userSchema = require('../models/user');
+const LineStrategy = require('passport-line-auth').Strategy;
 
 // /account → /account/profile
 router.get('/account', (req, res) => {
@@ -63,5 +64,14 @@ router.get('/logout', (req, res) => {
         res.redirect('/');
     });
 });
+
+passport.use(new LineStrategy({
+    channelID: process.env.LINE_CHANNEL_ID,
+    channelSecret: process.env.LINE_CHANNEL_SECRET,
+    callbackURL: process.env.LINE_CALLBACK_URL,
+    scope: ['profile', 'openid', 'email']
+}, async (accessToken, refreshToken, params, profile, done) => {
+    // ...你的登入邏輯...
+}));
 
 module.exports = router;
