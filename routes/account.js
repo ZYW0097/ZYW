@@ -2,7 +2,6 @@ const express = require('express');
 const passport = require('passport');
 const getClientDb = require('../utils/dbManager');
 const userSchema = require('../models/user');
-const LineStrategy = require('passport-line-auth').Strategy;
 const axios = require('axios');
 const cloudinary = require('../config/cloudinary');
 
