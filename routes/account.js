@@ -11,19 +11,19 @@ const LINE_CLIENT_SECRET = process.env.LINE_CHANNEL_SECRET;
 const LINE_CALLBACK_URL = process.env.LINE_CALLBACK_URL;
 
 // /account → /account/profile
-router.get('/account', (req, res) => {
+router.get('/', (req, res) => {
     res.redirect('/account/profile');
 });
 
 // 1. 點擊 user icon → /account/login → 302 跳轉到 LINE 授權頁
-router.get('/account/login', (req, res) => {
+router.get('/login', (req, res) => {
     const state = Math.random().toString(36).substring(2); // 可用 session 記錄
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINE_CALLBACK_URL)}&state=${state}&scope=profile%20openid%20email`;
     res.redirect(redirectUrl);
 });
 
 // 2. LINE callback
-router.get('/account/line/callback', async (req, res) => {
+router.get('/line/callback', async (req, res) => {
     const { code } = req.query;
     if (!code) return res.redirect('/');
 
@@ -106,7 +106,7 @@ function renderWithSidebar(res, view, params) {
 }
 
 // 6. 基本資料頁
-router.get('/account/profile', requireLogin, async (req, res) => {
+router.get('/profile', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
@@ -114,7 +114,7 @@ router.get('/account/profile', requireLogin, async (req, res) => {
 });
 
 // 7. 集點卡頁
-router.get('/account/points', requireLogin, async (req, res) => {
+router.get('/points', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
@@ -122,7 +122,7 @@ router.get('/account/points', requireLogin, async (req, res) => {
 });
 
 // 8. 帳號設定頁
-router.get('/account/settings', requireLogin, async (req, res) => {
+router.get('/settings', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
@@ -130,7 +130,7 @@ router.get('/account/settings', requireLogin, async (req, res) => {
 });
 
 // 9. 儲存/更新基本資料
-router.post('/account/profile', requireLogin, async (req, res) => {
+router.post('/profile', requireLogin, async (req, res) => {
     const { birthday, gender } = req.body;
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
