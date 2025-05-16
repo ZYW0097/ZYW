@@ -34,8 +34,8 @@ app.use(session({
 }));
 
 // 路由
-app.use('/', indexRouter);
 app.use('/account', accountRouter);
+app.use('/', indexRouter);
 
 app.use((req, res, next) => {
     res.locals.storeSlug = req.params.storeSlug || '';
