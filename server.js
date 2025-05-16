@@ -31,8 +31,6 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
 // 路由
 app.use('/', indexRouter);
