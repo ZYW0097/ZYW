@@ -1,5 +1,4 @@
 const express = require('express');
-const passport = require('passport');
 const getClientDb = require('../utils/dbManager');
 const userSchema = require('../models/user');
 const axios = require('axios');
