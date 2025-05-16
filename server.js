@@ -5,6 +5,7 @@ const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
+const accountRouter = require('./routes/account');
 require('dotenv').config();
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(session({
 
 // 路由
 app.use('/', indexRouter);
+app.use('/account', accountRouter);
 
 app.use((req, res, next) => {
     res.locals.storeSlug = req.params.storeSlug || '';
