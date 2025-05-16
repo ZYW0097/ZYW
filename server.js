@@ -5,6 +5,7 @@ const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
+const passport = require('./config/passport');
 require('dotenv').config();
 
 const app = express();
@@ -26,16 +27,13 @@ app.use('/favicon.ico', express.static(path.join(__dirname, 'favicon.ico')));
 
 // Session 設置
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'yourSecret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-        dbName: 'session',
-        collectionName: 'sessions'
-    }),
-    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 天
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // 路由
 app.use('/', indexRouter);

@@ -1,0 +1,12 @@
+<aside class="account-sidebar">
+    <div class="sidebar-profile">
+        <img src="<%= user.avatar %>" class="sidebar-avatar" alt="user">
+        <div class="sidebar-name"><%= user.name %></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/account/profile" class="sidebar-link">基本資料</a>
+        <a href="/account/points" class="sidebar-link">集點卡</a>
+        <a href="/account/settings" class="sidebar-link">帳號設定</a>
+    </nav>
+    <a href="/logout" class="sidebar-logout">登出</a>
+</aside>

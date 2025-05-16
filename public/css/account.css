@@ -1,0 +1,80 @@
+.account-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+.account-sidebar {
+    width: 260px;
+    background: #f5f5f7;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+.sidebar-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.sidebar-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+.sidebar-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+.sidebar-link {
+    color: #222;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: #e0e0e0;
+}
+.sidebar-logout {
+    margin-top: auto;
+    background: #e57373;
+    color: #fff;
+    padding: 0.7rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    text-decoration: none;
+}
+.account-main {
+    flex: 1;
+    padding: 2rem;
+    background: #fff;
+}
+@media (max-width: 800px) {
+    .account-wrapper {
+        flex-direction: column;
+    }
+    .account-sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+    .account-main {
+        padding: 1rem;
+    }
+}
