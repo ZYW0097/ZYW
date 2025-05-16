@@ -3,6 +3,7 @@ const getClientDb = require('../utils/dbManager');
 const userSchema = require('../models/user');
 const axios = require('axios');
 const cloudinary = require('../config/cloudinary');
+const qs = require('querystring');
 
 const router = express.Router();
 
@@ -32,16 +33,18 @@ router.get('/line/callback', async (req, res) => {
 
     try {
         // 取得 access_token
-        const tokenRes = await axios.post('https://api.line.me/oauth2/v2.1/token', null, {
-            params: {
+        const tokenRes = await axios.post('https://api.line.me/oauth2/v2.1/token',
+            qs.stringify({
                 grant_type: 'authorization_code',
                 code,
                 redirect_uri: LINE_CALLBACK_URL,
                 client_id: LINE_CLIENT_ID,
                 client_secret: LINE_CLIENT_SECRET
-            },
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
+            }),
+            {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }
+        );
         const access_token = tokenRes.data.access_token;
 
         // 取得用戶 profile
