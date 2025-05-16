@@ -108,7 +108,7 @@ function requireLogin(req, res, next) {
 
 // 5. 側邊欄共用 layout
 function renderWithSidebar(res, view, params) {
-    res.render(view, { ...params, layout: 'account_layout' });
+    res.render(view, { ...params, layout: 'layouts/account_layout' });
 }
 
 // 6. 基本資料頁
