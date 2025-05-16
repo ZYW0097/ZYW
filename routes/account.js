@@ -140,13 +140,4 @@ router.post('/account/profile', requireLogin, async (req, res) => {
     res.redirect('/account/points');
 });
 
-passport.use(new LineStrategy({
-    channelID: process.env.LINE_CHANNEL_ID,
-    channelSecret: process.env.LINE_CHANNEL_SECRET,
-    callbackURL: process.env.LINE_CALLBACK_URL,
-    scope: ['profile', 'openid', 'email']
-}, async (accessToken, refreshToken, params, profile, done) => {
-    // ...你的登入邏輯...
-}));
-
 module.exports = router;

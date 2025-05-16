@@ -5,7 +5,6 @@ const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
-const passport = require('./config/passport');
 require('dotenv').config();
 
 const app = express();
