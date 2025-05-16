@@ -20,6 +20,9 @@ router.get('/login', (req, res) => {
     const state = Math.random().toString(36).substring(2); // 可用 session 記錄
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINE_CALLBACK_URL)}&state=${state}&scope=profile%20openid%20email`;
     res.redirect(redirectUrl);
+    console.log('LINE_CLIENT_ID:', LINE_CLIENT_ID);
+    console.log('LINE_CLIENT_SECRET:', LINE_CLIENT_SECRET);
+    console.log('LINE_CALLBACK_URL:', LINE_CALLBACK_URL);
 });
 
 // 2. LINE callback
