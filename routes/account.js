@@ -137,7 +137,7 @@ router.get('/settings', requireLogin, async (req, res) => {
 
 // 9. 儲存/更新基本資料
 router.post('/profile', requireLogin, async (req, res) => {
-    const { birthday, gender } = req.body;
+    const { phone, birthday, gender } = req.body;
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     await User.findByIdAndUpdate(req.session.userId, { birthday, gender });

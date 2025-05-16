@@ -1,0 +1,21 @@
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="<%= user.avatar %>" class="profile-avatar" alt="user">
+        <div class="profile-name"><%= user.name %></div>
+    </div>
+    <form class="profile-form" method="POST" action="/account/profile">
+        <label>電話號碼</label>
+        <input type="tel" name="phone" value="<%= user.phone || '' %>" placeholder="請輸入電話號碼" required>
+        <label>生日</label>
+        <input type="date" name="birthday" value="<%= user.birthday || '' %>" required>
+        <label>性別</label>
+        <select name="gender" required>
+            <option value="">請選擇</option>
+            <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>男</option>
+            <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>女</option>
+            <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>其他</option>
+        </select>
+        <button type="submit" class="profile-save-btn">儲存</button>
+    </form>
+    <a href="/account/logout" class="logout-btn">登出</a>
+</div>
