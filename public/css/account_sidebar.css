@@ -8,10 +8,18 @@
     padding: 2rem 1rem 1rem 1rem;
     min-height: 100vh;
 }
+.profile-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    gap: 1.2rem;
+}
 .sidebar-profile {
     display: flex;
     align-items: center;
-    flex-direction: row;
     margin-bottom: 2rem;
 }
 .sidebar-avatar {
@@ -96,13 +104,4 @@
         width: auto;
         padding: 0.7rem 1.2rem;
     }
-}
-.profile-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-    gap: 1.2rem;
 }
