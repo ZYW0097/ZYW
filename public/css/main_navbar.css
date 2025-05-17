@@ -1,8 +1,8 @@
-.account-navbar, .account-navbar .nav-link, .account-navbar .nav-logo {
+.custom-navbar, .custom-navbar .nav-link, .custom-navbar .nav-logo {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.account-navbar {
+.custom-navbar {
     width: 100%;
     background: #fff;
     border-bottom: 2px solid #222;
@@ -10,7 +10,7 @@
     margin: 0;
     z-index: 100;
 }
-.account-navbar .nav-container {
+.custom-navbar .nav-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0.5rem 2rem;
@@ -18,19 +18,19 @@
     align-items: center;
     justify-content: space-between;
 }
-.account-navbar .nav-logo {
+.custom-navbar .nav-logo {
     font-size: 2.2rem;
     font-weight: 900;
     color: #111;
     text-decoration: none;
     letter-spacing: 2px;
 }
-.account-navbar .nav-links {
+.custom-navbar .nav-links {
     display: flex;
     gap: 2.5rem;
     align-items: center;
 }
-.account-navbar .nav-link {
+.custom-navbar .nav-link {
     color: #444;
     text-decoration: none;
     font-weight: 700;
@@ -38,15 +38,15 @@
     letter-spacing: 1px;
     transition: color 0.2s;
 }
-.account-navbar .nav-link:hover {
+.custom-navbar .nav-link:hover {
     color: #007AFF;
 }
-.account-navbar .nav-user {
+.custom-navbar .nav-user {
     margin-left: 2.5rem;
     display: flex;
     align-items: center;
 }
-.account-navbar .user-icon {
+.custom-navbar .user-icon {
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -55,16 +55,16 @@
     box-sizing: border-box;
     transition: box-shadow 0.2s;
 }
-.account-navbar .user-icon:hover {
+.custom-navbar .user-icon:hover {
     box-shadow: 0 0 0 2px #007AFF;
 }
 @media (max-width: 800px) {
-    .account-navbar .nav-container {
+    .custom-navbar .nav-container {
         flex-direction: column;
         gap: 1rem;
         padding: 0.5rem 1rem;
     }
-    .account-navbar .nav-links {
+    .custom-navbar .nav-links {
         gap: 1.2rem;
     }
 }
