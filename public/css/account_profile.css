@@ -10,7 +10,7 @@
     width: 260px;
     height: calc(100vh - 64px);
     position: sticky;
-    top: 64px;
+    top: 75px;
     left: 0;
     background: #ededed;
     border-right: 2px solid #bbb;
@@ -25,7 +25,7 @@
 
 .account-main {
     flex: 1 1 0;
-    height: calc(100vh - 64px);
+    height: calc(100vh - 75px);
     margin-left: 260px;
     background: var(--background-color);
     min-width: 0;
