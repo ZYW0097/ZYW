@@ -1,7 +1,9 @@
 ::-webkit-scrollbar {
     display: none;
 }
-
+body {
+    line-height: 1.6;
+}
 .profile-header {
     display: flex;
     flex-direction: column;

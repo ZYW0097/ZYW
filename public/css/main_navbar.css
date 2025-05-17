@@ -3,14 +3,14 @@
 }
 
 .custom-navbar {
-    width: 100%;
     background: #fff;
     border-bottom: 2px solid #222;
+    width: 100%;
     padding: 0;
     margin: 0;
-    z-index: 100;
 }
-.custom-navbar .nav-container {
+
+.nav-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0.5rem 2rem;
@@ -18,19 +18,29 @@
     align-items: center;
     justify-content: space-between;
 }
-.custom-navbar .nav-logo {
+
+.nav-logo {
     font-size: 2.2rem;
     font-weight: 900;
     color: #111;
     text-decoration: none;
     letter-spacing: 2px;
 }
-.custom-navbar .nav-links {
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 2.5rem;
+}
+
+.nav-links {
     display: flex;
     gap: 2.5rem;
     align-items: center;
 }
-.custom-navbar .nav-link {
+
+.nav-link {
     color: #444;
     text-decoration: none;
     font-weight: 700;
@@ -38,15 +48,18 @@
     letter-spacing: 1px;
     transition: color 0.2s;
 }
-.custom-navbar .nav-link:hover {
-    color: #007AFF;
+
+.nav-link:hover {
+    color: var(--primary-color);
 }
-.custom-navbar .nav-user {
+
+.nav-user {
     margin-left: 2.5rem;
     display: flex;
     align-items: center;
 }
-.custom-navbar .user-icon {
+
+.user-icon {
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -55,16 +68,7 @@
     box-sizing: border-box;
     transition: box-shadow 0.2s;
 }
-.custom-navbar .user-icon:hover {
-    box-shadow: 0 0 0 2px #007AFF;
-}
-@media (max-width: 800px) {
-    .custom-navbar .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 0.5rem 1rem;
-    }
-    .custom-navbar .nav-links {
-        gap: 1.2rem;
-    }
-}
+
+.user-icon:hover {
+    box-shadow: 0 0 0 2px var(--primary-color);
+} 
