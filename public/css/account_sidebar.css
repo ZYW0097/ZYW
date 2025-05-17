@@ -3,14 +3,15 @@
     background: #ededed;
     border-right: 2px solid #bbb;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    padding: 2rem 1rem 1rem 1rem;
-    min-height: 100vh;
+    justify-content: center;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    gap: 1.2rem;
 }
 .sidebar-profile {
     display: flex;
-    flex-direction: column;
     align-items: center;
     margin-bottom: 2rem;
 }
@@ -96,4 +97,13 @@
         width: auto;
         padding: 0.7rem 1.2rem;
     }
+}
+.profile-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    gap: 1.2rem;
 }
