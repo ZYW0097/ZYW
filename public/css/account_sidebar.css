@@ -1,0 +1,99 @@
+.account-sidebar {
+    width: 260px;
+    background: #ededed;
+    border-right: 2px solid #bbb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 1rem 1rem;
+    min-height: 100vh;
+}
+.sidebar-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.sidebar-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #111;
+    margin-bottom: 0.7rem;
+}
+.sidebar-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #222;
+}
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+.sidebar-link {
+    color: #111;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: background 0.2s;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: #e0e0e0;
+}
+.sidebar-logout {
+    margin-top: auto;
+    background: #e57373;
+    color: #fff;
+    padding: 0.9rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: block;
+    width: 90%;
+}
+.sidebar-logout:hover {
+    background: #d32f2f;
+}
+@media (max-width: 900px) {
+    .account-sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        min-height: unset;
+        border-right: none;
+        border-bottom: 2px solid #bbb;
+        padding: 1rem 0.5rem;
+    }
+    .sidebar-profile {
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 0;
+        gap: 0.7rem;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        gap: 1rem;
+        margin-bottom: 0;
+    }
+    .sidebar-logout {
+        margin-top: 0;
+        width: auto;
+        padding: 0.7rem 1.2rem;
+    }
+}

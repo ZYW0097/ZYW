@@ -108,7 +108,12 @@ function requireLogin(req, res, next) {
 
 // 5. 側邊欄共用 layout
 function renderWithSidebar(res, view, params) {
-    res.render(view, { ...params, layout: 'layouts/account_layout' });
+    // 根據 view 名稱自動帶入對應 CSS
+    let customCss = '';
+    if (view === 'account_profile') customCss = '/css/account_profile.css';
+    if (view === 'account_points') customCss = '/css/account_points.css';
+    if (view === 'account_settings') customCss = '/css/account_settings.css';
+    res.render(view, { ...params, layout: 'layouts/account_layout', customCss });
 }
 
 // 6. 基本資料頁
