@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="/css/account.css">
 </head>
 <body>
+    <% if (typeof customNavbar !== 'undefined') { %>
+        <%- customNavbar %>
+    <% } else { %>
+        <%- include('../partials/header') %>
+    <% } %>
     <div class="account-wrapper">
         <%- include('../partials/account_sidebar', { user: user }) %>
         <main class="account-main">
