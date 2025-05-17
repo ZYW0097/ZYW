@@ -6,16 +6,21 @@
 }
 
 .account-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 260px;
+    height: 100vh;
     background: #ededed;
     border-right: 2px solid #bbb;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 2rem 1rem 1rem 1rem;
-    min-height: 0;
-    height: 100vh;
     box-sizing: border-box;
+    z-index: 100;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .account-main {
