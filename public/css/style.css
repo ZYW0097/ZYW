@@ -22,37 +22,14 @@ body {
     flex-direction: column;
 }
 
-main {
-    flex: 1;
-}
-
 .footer {
     margin-top: auto;
-}
-
-.card {
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
 }
 
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-/* 主頁導航欄樣式 */
 .index-nav {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
@@ -125,73 +102,6 @@ main {
 
 .user-icon:hover {
     box-shadow: 0 0 0 2px var(--primary-color);
-}
-
-/* 主頁內容樣式 */
-.hero-section {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.hero-subtitle {
-    font-size: 1.5rem;
-    color: #666;
-    margin-bottom: 2rem;
-}
-
-.cta-button {
-    display: inline-block;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    background: var(--primary-color);
-    border-radius: 30px;
-    text-decoration: none;
-    transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
-}
-
-.cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
-    background: var(--secondary-color);
-}
-
-/* 動畫效果 */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.hero-content {
-    animation: fadeIn 1s ease-out;
 }
 
 .custom-navbar {
