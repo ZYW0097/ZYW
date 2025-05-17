@@ -1,12 +1,12 @@
 <aside class="account-sidebar">
     <div class="sidebar-profile">
-        <img src="<%= user.avatar || '/images/user_icon.png' %>" class="sidebar-avatar" alt="user">
+        <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="sidebar-avatar" alt="user">
         <div class="sidebar-name"><%= user.name || '用戶名稱' %></div>
     </div>
     <nav class="sidebar-nav">
-        <a href="/account/points" class="sidebar-link"><span class="icon">💳</span> 集點卡</a>
-        <a href="/account/profile" class="sidebar-link"><span class="icon">👤</span> 基本資料</a>
-        <a href="/account/settings" class="sidebar-link"><span class="icon">⚙️</span> 帳號設定</a>
+        <a href="/account/points" class="sidebar-link"><img src="/images/point_icon.svg" class="icon"> 集點卡</a>
+        <a href="/account/profile" class="sidebar-link"><img src="/images/profile_icon.svg" class="icon">  基本資料</a>
+        <a href="/account/settings" class="sidebar-link"><img src="/images/setting_icon.svg" class="icon"> 帳號設定</a>
     </nav>
     <a href="/account/logout" class="sidebar-logout">登出</a>
 </aside>
