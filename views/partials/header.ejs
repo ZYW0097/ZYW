@@ -1,13 +1,15 @@
 <nav class="custom-navbar">
     <div class="nav-container">
         <a class="nav-logo" href="/">DINE✦</a>
-        <div class="nav-links">
-            <a class="nav-link" href="/">餐廳首頁</a>
-            <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
-            <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+        <div class="nav-right-group">
+            <div class="nav-links">
+                <a class="nav-link" href="/">餐廳首頁</a>
+                <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
+                <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+            </div>
+            <a class="nav-user" href="/account/profile">
+                <img src="<%= (typeof user !== 'undefined' && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
+            </a>
         </div>
-        <a class="nav-user" href="/account/profile">
-            <img src="<%= (typeof user !== 'undefined' && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
-        </a>
     </div>
 </nav> 
