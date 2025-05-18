@@ -1,13 +1,3 @@
-.account-sidebar {
-    width: 260px;
-    background: #ededed;
-    border-right: 2px solid #bbb;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    min-height: 100vh;
-}
-
 .sidebar-profile {
     display: flex;
     align-items: center;
