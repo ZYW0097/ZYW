@@ -63,6 +63,12 @@
     background: #e0e0e0;
 }
 
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+}
+
 .sidebar-logout {
     margin-top: auto;
     background: #e57373;
