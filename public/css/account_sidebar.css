@@ -1,8 +1,6 @@
 .sidebar-profile {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 2rem;
 }
 
 .sidebar-avatar {
@@ -20,7 +18,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 240px;
+    max-width: 200px;
     font-size: 1.1rem;
     font-weight: bold;
     color: #222;
