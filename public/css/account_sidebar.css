@@ -39,9 +39,11 @@
 .sidebar-nav {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
     width: 100%;
     margin-bottom: 2rem;
+    margin-top: 10px;
 }
 
 .sidebar-link {
