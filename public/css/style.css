@@ -95,7 +95,7 @@ body {
     height: 38px;
     border-radius: 50%;
     background: #111;
-    padding: 6px;
+    padding: 2px;
     box-sizing: border-box;
     transition: box-shadow 0.2s;
 }
