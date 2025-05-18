@@ -1,5 +1,6 @@
 .points-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     margin: auto;
 }
@@ -11,6 +12,6 @@
 }
 
 .points-image {
-    width: 100px;
-    height: 100px;
+    width: 420px;
+    height: 420px;
 }
