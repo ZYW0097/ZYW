@@ -60,7 +60,7 @@ exports.createCard = async (req, res) => {
       });
     }
 
-    res.redirect('/backstage?success=1');
+    res.redirect(`/${slug}/backstage?success=1`);
   } catch (err) {
     console.error(err);
     res.status(500).send('建立失敗');
