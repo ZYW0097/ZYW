@@ -24,7 +24,11 @@ const pointsRewardsSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },
+    slug: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('PointsRewards', pointsRewardsSchema);
+module.exports = pointsRewardsSchema;

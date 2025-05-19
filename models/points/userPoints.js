@@ -24,6 +24,10 @@ const userPointsSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },
+    slug: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 
