@@ -4,6 +4,8 @@ const PointsRules = require('../../models/points/rules');
 
 exports.createCard = async (req, res) => {
   try {
+    const { slug } = req.params; // 取得 slug
+
     // 1. 規則
     const rules = req.body['rules[]'] || req.body.rules || [];
     // 2. 獎勵
@@ -14,7 +16,7 @@ exports.createCard = async (req, res) => {
     Object.keys(req.body)
       .filter(key => key.startsWith('rewards[') && key.endsWith('][name]'))
       .forEach((nameKey) => {
-        const idx = nameKey.match(/rewards\\[(\\d+)\\]\\[name\\]/)[1];
+        const idx = nameKey.match(/rewards\[(\d+)\]\[name\]/)[1];
         const name = req.body[`rewards[${idx}][name]`];
         const points = req.body[`rewards[${idx}][points]`];
         // 找對應的圖片
@@ -29,6 +31,7 @@ exports.createCard = async (req, res) => {
     // 3. 寫入資料庫
     // 3-1. 建立設定
     await PointsSettings.create({
+      slug,
       type: 'points_settings',
       class: 'main_settings',
       state: 'enable',
@@ -38,6 +41,7 @@ exports.createCard = async (req, res) => {
     // 3-2. 建立規則
     for (const ruleText of Array.isArray(rules) ? rules : [rules]) {
       await PointsRules.create({
+        slug,
         type: 'points_rule',
         name: ruleText,
         points: 0,
@@ -48,6 +52,7 @@ exports.createCard = async (req, res) => {
     // 3-3. 建立獎勵
     for (const reward of rewards) {
       await PointsRewards.create({
+        slug,
         type: 'points_reward',
         name: reward.name,
         points: reward.points,
