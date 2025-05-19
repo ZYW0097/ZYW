@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { validateStoreSlug } = require('../../middleware/clientAuth');
 const { isAuthenticated, isAdmin } = require('../../middleware/auth');
+const getClientDb = require('../../utils/dbManager');
+const pointsSettingsSchema = require('../../models/points/settings');
+const pointsRewardsSchema = require('../../models/points/rewards');
+const pointsRulesSchema = require('../../models/points/rules');
+const userPointsSchema = require('../../models/points/userPoints');
 
 const settingsRoutes = require('./settingsRoutes');
 const rulesRoutes = require('./rulesRoutes');

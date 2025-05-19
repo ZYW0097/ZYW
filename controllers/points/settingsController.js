@@ -1,5 +1,5 @@
-const { PointsSettings } = require('../../models');
 const getClientDb = require('../../utils/dbManager');
+const pointsSettingsSchema = require('../../models/points/settings');
 
 const settingsController = {
     // 獲取集點卡設定

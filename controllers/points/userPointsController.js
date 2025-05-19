@@ -1,26 +1,26 @@
-const { UserPoints, PointsRewards } = require('../../models');
+const getClientDb = require('../../utils/dbManager');
+const userPointsSchema = require('../../models/points/userPoints');
+const pointsRewardsSchema = require('../../models/points/rewards');
 
 const userPointsController = {
     // 獲取用戶集點卡資訊
     async getUserPoints(req, res) {
         try {
-            const { lineId } = req.params;
+            const { storeSlug, lineId } = req.params;
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const UserPoints = userDb.model('UserPoints', userPointsSchema);
 
-            const userPoints = await UserPoints.findOne({ lineId })
-                .populate('ah_coupon_id');
-
+            const userPoints = await UserPoints.findOne({ lineId });
             if (!userPoints) {
                 return res.status(404).json({ 
                     success: false, 
-                    message: '用戶集點卡不存在' 
+                    message: '找不到用戶集點卡' 
                 });
             }
 
-            res.json({ 
-                success: true, 
-                data: userPoints 
-            });
+            res.json({ success: true, data: userPoints });
         } catch (error) {
+            console.error('Error:', error);
             res.status(500).json({ 
                 success: false, 
                 message: '獲取用戶集點卡失敗', 
@@ -32,22 +32,19 @@ const userPointsController = {
     // 創建用戶集點卡
     async createUserPoints(req, res) {
         try {
-            const { lineId, u_name } = req.body;
+            const { storeSlug } = req.params;
+            const { lineId } = req.body;
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const UserPoints = userDb.model('UserPoints', userPointsSchema);
 
             const userPoints = await UserPoints.create({
                 lineId,
-                u_name,
-                ah_points: 0,
-                ah_coupon: 0,
-                ah_coupon_id: [],
-                updatedAt: new Date()
+                points: 0
             });
 
-            res.status(201).json({ 
-                success: true, 
-                data: userPoints 
-            });
+            res.json({ success: true, data: userPoints });
         } catch (error) {
+            console.error('Error:', error);
             res.status(500).json({ 
                 success: false, 
                 message: '創建用戶集點卡失敗', 
@@ -59,13 +56,15 @@ const userPointsController = {
     // 更新用戶點數
     async updatePoints(req, res) {
         try {
-            const { lineId } = req.params;
+            const { storeSlug, lineId } = req.params;
             const { points } = req.body;
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const UserPoints = userDb.model('UserPoints', userPointsSchema);
 
             const userPoints = await UserPoints.findOneAndUpdate(
                 { lineId },
                 { 
-                    $inc: { ah_points: points },
+                    $inc: { points },
                     updatedAt: new Date()
                 },
                 { new: true }
@@ -74,15 +73,13 @@ const userPointsController = {
             if (!userPoints) {
                 return res.status(404).json({ 
                     success: false, 
-                    message: '用戶集點卡不存在' 
+                    message: '找不到用戶集點卡' 
                 });
             }
 
-            res.json({ 
-                success: true, 
-                data: userPoints 
-            });
+            res.json({ success: true, data: userPoints });
         } catch (error) {
+            console.error('Error:', error);
             res.status(500).json({ 
                 success: false, 
                 message: '更新用戶點數失敗', 
@@ -94,43 +91,51 @@ const userPointsController = {
     // 兌換獎勵
     async redeemReward(req, res) {
         try {
-            const { lineId } = req.params;
+            const { storeSlug, lineId } = req.params;
             const { rewardId } = req.body;
 
+            // 獲取獎勵資訊
+            const db = getClientDb(storeSlug, 'CDB');
+            const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
             const reward = await PointsRewards.findById(rewardId);
+
             if (!reward) {
                 return res.status(404).json({ 
                     success: false, 
-                    message: '獎勵不存在' 
+                    message: '找不到該獎勵' 
                 });
             }
 
+            // 更新用戶點數
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const UserPoints = userDb.model('UserPoints', userPointsSchema);
             const userPoints = await UserPoints.findOne({ lineId });
+
             if (!userPoints) {
                 return res.status(404).json({ 
                     success: false, 
-                    message: '用戶集點卡不存在' 
+                    message: '找不到用戶集點卡' 
                 });
             }
 
-            if (userPoints.ah_points < reward.points) {
+            if (userPoints.points < reward.points) {
                 return res.status(400).json({ 
                     success: false, 
                     message: '點數不足' 
                 });
             }
 
-            userPoints.ah_points -= reward.points;
-            userPoints.ah_coupon += 1;
-            userPoints.ah_coupon_id.push(rewardId);
-            userPoints.updatedAt = new Date();
+            // 更新用戶點數並記錄兌換
+            userPoints.points -= reward.points;
+            userPoints.rewards.push({
+                rewardId: reward._id,
+                redeemedAt: new Date()
+            });
             await userPoints.save();
 
-            res.json({ 
-                success: true, 
-                data: userPoints 
-            });
+            res.json({ success: true, data: userPoints });
         } catch (error) {
+            console.error('Error:', error);
             res.status(500).json({ 
                 success: false, 
                 message: '兌換獎勵失敗', 
