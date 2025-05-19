@@ -38,14 +38,16 @@ exports.createCard = async (req, res) => {
       s_reward: 0,
     });
 
-    // 3-2. 建立規則
-    for (const ruleText of Array.isArray(rules) ? rules : [rules]) {
+    // 3-2. 建立規則（修正：符合 schema 欄位）
+    const rulesArr = Array.isArray(rules) ? rules : [rules];
+    for (let i = 0; i < rulesArr.length; i++) {
       await PointsRules.create({
         slug,
-        type: 'points_rule',
-        name: ruleText,
-        points: 0,
-        img: '', // 規則不需圖片
+        type: 'points_settings',
+        class: 'rule_settings',
+        article: i + 1,
+        text: rulesArr[i],
+        updatedAt: new Date()
       });
     }
 
