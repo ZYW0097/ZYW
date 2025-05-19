@@ -19,6 +19,9 @@ exports.createCard = async (req, res) => {
     const rewards = [];
     const files = req.files || [];
 
+    console.log('req.files:', files);
+    console.log('req.body:', req.body);
+
     // 依據前端欄位組合獎勵資料
     Object.keys(req.body)
       .filter(key => key.startsWith('rewards[') && key.endsWith('][name]'))
@@ -34,6 +37,8 @@ exports.createCard = async (req, res) => {
           img: file ? file.path : '',
         });
       });
+
+    console.log('rewards to insert:', rewards);
 
     // 3-1. 建立設定（先檢查是否已存在）
     const exist = await PointsSettings.findOne({
@@ -66,13 +71,15 @@ exports.createCard = async (req, res) => {
 
     // 3-3. 建立獎勵
     for (const reward of rewards) {
-      await PointsRewards.create({
-        slug: storeSlug,
-        type: 'points_reward',
-        name: reward.name,
-        points: reward.points,
-        img: reward.img,
-      });
+      if (reward.name && reward.img) {
+        await PointsRewards.create({
+          slug: storeSlug,
+          type: 'points_reward',
+          name: reward.name,
+          points: reward.points,
+          img: reward.img,
+        });
+      }
     }
 
     res.redirect(`/${storeSlug}/backstage?success=1`);
