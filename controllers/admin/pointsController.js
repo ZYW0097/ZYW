@@ -1,10 +1,17 @@
-const PointsSettings = require('../../models/points/settings');
-const PointsRewards = require('../../models/points/rewards');
-const PointsRules = require('../../models/points/rules');
+const getClientDb = require('../../utils/dbManager');
+const pointsSettingsSchema = require('../../models/points/settings');
+const pointsRewardsSchema = require('../../models/points/rewards');
+const pointsRulesSchema = require('../../models/points/rules');
 
 exports.createCard = async (req, res) => {
   try {
     const { slug } = req.params; // 取得 slug
+
+    // 取得正確的 client DB
+    const db = getClientDb(slug, 'CDB');
+    const PointsSettings = db.model('PointsSettings', pointsSettingsSchema);
+    const PointsRules = db.model('PointsRules', pointsRulesSchema);
+    const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
 
     // 1. 規則
     const rules = req.body['rules[]'] || req.body.rules || [];
@@ -28,17 +35,23 @@ exports.createCard = async (req, res) => {
         });
       });
 
-    // 3. 寫入資料庫
-    // 3-1. 建立設定
-    await PointsSettings.create({
+    // 3-1. 建立設定（先檢查是否已存在）
+    const exist = await PointsSettings.findOne({
       slug,
       type: 'points_settings',
-      class: 'main_settings',
-      state: 'enable',
-      s_reward: 0,
+      class: 'main_settings'
     });
+    if (!exist) {
+      await PointsSettings.create({
+        slug,
+        type: 'points_settings',
+        class: 'main_settings',
+        state: 'enable',
+        s_reward: 0,
+      });
+    }
 
-    // 3-2. 建立規則（修正：符合 schema 欄位）
+    // 3-2. 建立規則
     const rulesArr = Array.isArray(rules) ? rules : [rules];
     for (let i = 0; i < rulesArr.length; i++) {
       await PointsRules.create({
