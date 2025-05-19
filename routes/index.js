@@ -123,11 +123,20 @@ router.get('/:storeSlug/:page', async (req, res) => {
             return res.status(404).render('error', { message: '客戶不存在' });
         }
 
+        // 如果是後台頁面，獲取點數相關數據
+        let points = 0;
+        if (page === 'backstage' && req.user) {
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const userPoints = await userDb.model('UserPoints', require('../models/points/userPoints'))
+                .findOne({ lineId: req.user.lineId });
+            points = userPoints ? userPoints.points : 0;
+        }
+
         // 渲染對應頁面
         res.render(page, {
             storeSlug,
-            points,
-            [`${page}pagetext`]: client[`${page}pagetext`]
+            [`${page}pagetext`]: client[`${page}pagetext`],
+            points
         });
     } catch (error) {
         console.error('Error:', error);
