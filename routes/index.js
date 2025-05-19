@@ -126,6 +126,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
         // 渲染對應頁面
         res.render(page, {
             storeSlug,
+            points,
             [`${page}pagetext`]: client[`${page}pagetext`]
         });
     } catch (error) {
