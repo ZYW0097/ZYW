@@ -11,4 +11,24 @@
     font-size: 1.2rem;
     color: #666;
     margin-top: 1rem;
-} 
+}
+
+.form-section { 
+    margin-bottom: 2rem; 
+}
+.reward-img-preview {
+    max-width: 100px; 
+    max-height: 100px; 
+    display: block; 
+    margin-top: 0.5rem; 
+}
+.remove-btn { 
+    margin-left: 0.5rem; 
+    color: red; 
+    cursor: pointer; 
+}
+.add-btn { 
+    margin-left: 0.5rem; 
+    color: green; 
+    cursor: pointer; 
+}

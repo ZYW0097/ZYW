@@ -1,6 +1,38 @@
 <div class="page-container">
     <h1>後台管理</h1>
     <p class="custom-text"><%= backstagepagetext %></p>
+
+    <!-- 集點卡建立表單開始 -->
+    <form id="cardForm" action="/admin/points/create" method="POST" enctype="multipart/form-data">
+        <!-- 規則區塊 -->
+        <div class="form-section">
+            <h2>集點卡規則</h2>
+            <div id="rules-list">
+                <div class="rule-item">
+                    <input type="text" name="rules[]" placeholder="請輸入規則" required>
+                    <span class="add-btn" onclick="addRule()">➕</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 獎勵區塊 -->
+        <div class="form-section">
+            <h2>集點卡獎勵</h2>
+            <div id="rewards-list">
+                <div class="reward-item">
+                    <input type="text" name="rewards[0][name]" placeholder="獎勵名稱" required>
+                    <input type="number" name="rewards[0][points]" placeholder="所需點數" min="1" required>
+                    <input type="file" name="rewards[0][img]" accept=".png,.jpg,.jpeg,.svg" onchange="previewImg(this, 0)" required>
+                    <img id="img-preview-0" class="reward-img-preview" style="display:none;">
+                    <span class="add-btn" onclick="addReward()">➕</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">建立集點卡</button>
+    </form>
+    <!-- 集點卡建立表單結束 -->
 </div>
 
-<link rel="stylesheet" href="/css/backstage.css"> 
+<link rel="stylesheet" href="/css/backstage.css">
+<script src="/js/backstage.js"></script>
