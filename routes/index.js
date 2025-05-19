@@ -8,6 +8,7 @@ const { sendBookingConfirmation } = require('../services/emailService');
 const fs = require('fs');
 const path = require('path');
 
+const pointsRoutes = require('./points');
 
 // 主頁路由
 router.get('/', (req, res) => {
@@ -211,6 +212,9 @@ router.post('/api/booking', async (req, res) => {
         res.status(500).json({ error: '訂位失敗，請稍後再試' });
     }
 });
+
+// 點數系統路由
+router.use('/', pointsRoutes);
 
 // 404 錯誤處理
 router.use((req, res) => {

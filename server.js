@@ -6,6 +6,7 @@ const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
 const accountRouter = require('./routes/account');
+const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config();
 
 const app = express();
@@ -33,19 +34,23 @@ app.use(session({
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
 }));
 
-// 路由
-app.use('/account', accountRouter);
-app.use('/', indexRouter);
-
+// 設置全局變數
 app.use((req, res, next) => {
     res.locals.storeSlug = req.params.storeSlug || '';
     next();
 });
 
-// 錯誤處理
-app.use((req, res, next) => {
+// 路由
+app.use('/account', accountRouter);
+app.use('/', indexRouter);  // 這會包含所有點數系統的路由
+
+// 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)
+app.use((req, res) => {
     res.status(404).render('error', { message: '頁面不存在' });
 });
+
+// 錯誤處理中間件
+app.use(errorHandler);
 
 // 啟動服務器
 const PORT = process.env.PORT || 3000;

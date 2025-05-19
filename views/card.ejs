@@ -1,6 +1,47 @@
-<div class="page-container">
-    <h1>集點卡系統</h1>
-    <p class="custom-text"><%= cardpagetext %></p>
+<%- include('partials/header') %>
+
+<div class="card-container">
+    <div class="card-header">
+        <h1><%= cardpagetext || '集點卡' %></h1>
+    </div>
+
+    <div class="card-content">
+        <% if (settings && settings.state === 'enable') { %>
+            <!-- 集點卡內容 -->
+            <div class="points-info">
+                <h2>我的點數</h2>
+                <p class="points-count"><%= userPoints ? userPoints.ah_points : 0 %></p>
+            </div>
+
+            <div class="rewards-list">
+                <h2>可兌換獎勵</h2>
+                <% if (rewards && rewards.length > 0) { %>
+                    <div class="rewards-grid">
+                        <% rewards.forEach(reward => { %>
+                            <div class="reward-item">
+                                <img src="<%= reward.img %>" alt="<%= reward.name %>">
+                                <h3><%= reward.name %></h3>
+                                <p>需要點數: <%= reward.points %></p>
+                                <button class="redeem-btn" data-reward-id="<%= reward._id %>">兌換</button>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p>目前沒有可兌換的獎勵</p>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="card-disabled">
+                <p>此商店目前沒有啟用集點卡功能</p>
+            </div>
+        <% } %>
+    </div>
 </div>
 
-<link rel="stylesheet" href="/css/card.css"> 
+<% if (typeof error !== 'undefined') { %>
+    <div class="error-message">
+        <%= error %>
+    </div>
+<% } %>
+
+<%- include('partials/footer') %>
