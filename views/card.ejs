@@ -12,7 +12,7 @@
             <!-- 集點卡內容 -->
             <div class="points-info">
                 <h2>我的點數</h2>
-                <p class="points-count"><%= userPoints ? userPoints.ah_points : 0 %></p>
+                <p class="points-count"><%= points || 0 %></p>
             </div>
 
             <div class="rewards-list">
@@ -21,9 +21,9 @@
                     <div class="rewards-grid">
                         <% rewards.forEach(reward => { %>
                             <div class="reward-item">
-                                <img src="<%= reward.img %>" alt="<%= reward.name %>">
-                                <h3><%= reward.name %></h3>
-                                <p>需要點數: <%= reward.points %></p>
+                                <img src="<%= reward.img || '' %>" alt="<%= reward.name || '' %>">
+                                <h3><%= reward.name || '' %></h3>
+                                <p>需要點數: <%= reward.points || 0 %></p>
                                 <button class="redeem-btn" data-reward-id="<%= reward._id %>">兌換</button>
                             </div>
                         <% }); %>

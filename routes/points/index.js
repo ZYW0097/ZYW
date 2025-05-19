@@ -58,7 +58,9 @@ router.get('/:storeSlug/card', async (req, res) => {
             settings,
             rewards,
             userPoints,
-            storeSlug
+            storeSlug,
+            cardpagetext: settings?.cardpagetext || '集點卡',
+            points: userPoints?.points || 0
         });
     } catch (error) {
         console.error('Error:', error);
