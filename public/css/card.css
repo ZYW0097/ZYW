@@ -1,7 +1,7 @@
 .card-container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    margin: 100px auto;
+    padding: 2rem
 }
 
 .card-header {
