@@ -5,7 +5,6 @@ const { isAuthenticated, isAdmin } = require('../../middleware/auth');
 const getClientDb = require('../../utils/dbManager');
 const pointsSettingsSchema = require('../../models/points/settings');
 const pointsRewardsSchema = require('../../models/points/rewards');
-const pointsRulesSchema = require('../../models/points/rules');
 const userPointsSchema = require('../../models/points/userPoints');
 
 const settingsRoutes = require('./settingsRoutes');

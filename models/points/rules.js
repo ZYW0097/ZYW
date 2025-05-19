@@ -3,23 +3,23 @@ const mongoose = require('mongoose');
 const pointsRulesSchema = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['points_rule'],
-        default: 'points_rule',
+        enum: ['points_settings'],
+        default: 'points_settings',
         required: true
     },
-    points: {
+    class: {
+        type: String,
+        enum: ['rule_settings'],
+        required: true
+    },
+    article: {
         type: Number,
-        required: true,
-        min: 0
-    },
-    img: {
-        type: String,
         required: true
     },
-    name: {
+    text: {
         type: String,
         required: true,
-        maxlength: 15
+        maxlength: 30
     },
     updatedAt: {
         type: Date,

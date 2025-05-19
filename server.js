@@ -7,7 +7,6 @@ const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
 const accountRouter = require('./routes/account');
 const errorHandler = require('./middleware/errorHandler');
-const adminPointsRoutes = require('./routes/admin/points');
 const pointsRoutes = require('./routes/admin/points');
 require('dotenv').config();
 
@@ -44,9 +43,8 @@ app.use((req, res, next) => {
 
 // 路由
 app.use('/account', accountRouter);
-app.use('/', indexRouter);  // 這會包含所有點數系統的路由
-app.use('/admin/points', adminPointsRoutes);
-app.use('/', pointsRoutes); // 注意這裡是 '/'，不是 '/admin'
+app.use('/', pointsRoutes); 
+app.use('/', indexRouter);  
 
 // 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)
 app.use((req, res) => {
