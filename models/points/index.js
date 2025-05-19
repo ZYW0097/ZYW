@@ -1,11 +1,11 @@
-const PointsSettings = require('./settings');
-const PointsRules = require('./rules');
-const PointsRewards = require('./rewards');
-const UserPoints = require('./userPoints');
+const settingsSchema = require('./settings');
+const rewardsSchema = require('./rewards');
+const rulesSchema = require('./rules');
+const userPointsSchema = require('./userPoints');
 
 module.exports = {
-    PointsSettings,
-    PointsRules,
-    PointsRewards,
-    UserPoints
+    settingsSchema,
+    rewardsSchema,
+    rulesSchema,
+    userPointsSchema
 };

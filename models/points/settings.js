@@ -30,6 +30,6 @@ const pointsSettingsSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // 確保只能有一個主要設定
-pointsSettingsSchema.index({ type: 1, class: 1 }, { unique: true });
+pointsSettingsSchema.index({ slug: 1, type: 1, class: 1 }, { unique: true });
 
-module.exports = mongoose.model('PointsSettings', pointsSettingsSchema);
+module.exports = pointsSettingsSchema;

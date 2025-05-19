@@ -27,4 +27,4 @@ const userPointsSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('UserPoints', userPointsSchema); 
+module.exports = userPointsSchema;
