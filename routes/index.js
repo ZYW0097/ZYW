@@ -93,11 +93,13 @@ router.post('/api/setup', async (req, res) => {
         // 創建客戶特定的數據庫
         const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
         const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
+        const cardDB = mongoose.connection.useDb(`${slugname}CDB`);
 
         // 建立一個空的 collection 以確保資料庫會被建立
         await bookingDB.collection('init').insertOne({ created: new Date() });
         await accountDB.collection('init').insertOne({ created: new Date() });
-
+        await cardDB.collection('init').insertOne({ created: new Date() });
+        
         res.json({ success: true, client });
     } catch (error) {
         console.error('Error:', error);

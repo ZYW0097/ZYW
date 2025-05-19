@@ -5,10 +5,10 @@ const pointsRulesSchema = require('../../models/points/rules');
 
 exports.createCard = async (req, res) => {
   try {
-    const { slug } = req.params; // 取得 slug
+    const { storeSlug } = req.params;
+    if (!storeSlug) throw new Error('storeSlug is required');
 
-    // 取得正確的 client DB
-    const db = getClientDb(slug, 'CDB');
+    const db = getClientDb(storeSlug, 'CDB');
     const PointsSettings = db.model('PointsSettings', pointsSettingsSchema);
     const PointsRules = db.model('PointsRules', pointsRulesSchema);
     const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
@@ -37,13 +37,13 @@ exports.createCard = async (req, res) => {
 
     // 3-1. 建立設定（先檢查是否已存在）
     const exist = await PointsSettings.findOne({
-      slug,
+      slug: storeSlug,
       type: 'points_settings',
       class: 'main_settings'
     });
     if (!exist) {
       await PointsSettings.create({
-        slug,
+        slug: storeSlug,
         type: 'points_settings',
         class: 'main_settings',
         state: 'enable',
@@ -55,7 +55,7 @@ exports.createCard = async (req, res) => {
     const rulesArr = Array.isArray(rules) ? rules : [rules];
     for (let i = 0; i < rulesArr.length; i++) {
       await PointsRules.create({
-        slug,
+        slug: storeSlug,
         type: 'points_settings',
         class: 'rule_settings',
         article: i + 1,
@@ -67,7 +67,7 @@ exports.createCard = async (req, res) => {
     // 3-3. 建立獎勵
     for (const reward of rewards) {
       await PointsRewards.create({
-        slug,
+        slug: storeSlug,
         type: 'points_reward',
         name: reward.name,
         points: reward.points,
@@ -75,7 +75,7 @@ exports.createCard = async (req, res) => {
       });
     }
 
-    res.redirect(`/${slug}/backstage?success=1`);
+    res.redirect(`/${storeSlug}/backstage?success=1`);
   } catch (err) {
     console.error(err);
     res.status(500).send('建立失敗');
