@@ -6,6 +6,10 @@ const getClientDb = require('../../utils/dbManager');
 const pointsSettingsSchema = require('../../models/points/settings');
 const pointsRewardsSchema = require('../../models/points/rewards');
 const userPointsSchema = require('../../models/points/userPoints');
+const multer = require('multer');
+const { storage } = require('../../config/cloudinary');
+const upload = multer({ storage });
+const pointsController = require('../../controllers/admin/pointsController');
 
 const settingsRoutes = require('./settingsRoutes');
 const rulesRoutes = require('./rulesRoutes');
@@ -26,6 +30,8 @@ router.use('/:storeSlug/card/rewards', isAuthenticated, isAdmin, rewardsRoutes);
 
 // 用戶集點卡路由 (需要登入)
 router.use('/:storeSlug/card/users', isAuthenticated, userPointsRoutes);
+
+router.post('/:storeSlug/points/create', upload.any(), pointsController.createCard);
 
 router.get('/:storeSlug/card', async (req, res) => {
     try {

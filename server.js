@@ -7,7 +7,7 @@ const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
 const accountRouter = require('./routes/account');
 const errorHandler = require('./middleware/errorHandler');
-const pointsRoutes = require('./routes/admin/points');
+const pointsRoutes = require('./routes/points/index');
 require('dotenv').config();
 
 const app = express();
