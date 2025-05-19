@@ -14,11 +14,13 @@ router.get('/', (req, res) => {
     const customNavbar = `
 <nav class="index-nav">
     <div class="nav-container">
-        <a href="/" class="nav-logo">DINE✦</a>
-        <div class="nav-links">
-            <a href="#features" class="nav-link">功能特點</a>
-            <a href="#pricing" class="nav-link">方案價格</a>
-            <a href="#contact" class="nav-link">聯絡我們</a>
+        <a class="nav-logo" href="/">DINE✦</a>
+        <div class="nav-right-group">
+            <div class="nav-links">
+                <a class="nav-link" href="#features">功能特點</a>
+                <a class="nav-link" href="#pricing">方案價格</a>
+                <a class="nav-link" href="#contact">聯絡我們</a>
+            </div>
         </div>
     </div>
 </nav>
