@@ -22,21 +22,16 @@ exports.createCard = async (req, res) => {
     console.log('req.files:', files);
     console.log('req.body:', req.body);
 
-    // 依據前端欄位組合獎勵資料
-    Object.keys(req.body)
-      .filter(key => key.startsWith('rewards[') && key.endsWith('][name]'))
-      .forEach((nameKey) => {
-        const idx = nameKey.match(/rewards\[(\d+)\]\[name\]/)[1];
-        const name = req.body[`rewards[${idx}][name]`];
-        const points = req.body[`rewards[${idx}][points]`];
-        // 找對應的圖片
+    if (Array.isArray(req.body.rewards)) {
+      req.body.rewards.forEach((rewardObj, idx) => {
         const file = files.find(f => f.fieldname === `rewards[${idx}][img]`);
         rewards.push({
-          name,
-          points: Number(points),
+          name: rewardObj.name,
+          points: Number(rewardObj.points),
           img: file ? file.path : '',
         });
       });
+    }
 
     console.log('rewards to insert:', rewards);
 
