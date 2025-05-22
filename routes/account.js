@@ -2,7 +2,7 @@ const express = require('express');
 const getClientDb = require('../utils/dbManager');
 const userSchema = require('../models/user');
 const axios = require('axios');
-const cloudinary = require('../config/cloudinary');
+const { cloudinary } = require('../config/cloudinary');
 const qs = require('querystring');
 
 const router = express.Router();
