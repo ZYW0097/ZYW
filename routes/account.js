@@ -19,6 +19,10 @@ router.get('/', (req, res) => {
 // 1. 點擊 user icon → /account/login → 302 跳轉到 LINE 授權頁
 router.get('/login', (req, res) => {
     const state = Math.random().toString(36).substring(2); // 可用 session 記錄
+    // 儲存 redirect 參數到 session
+    if (req.query.redirect) {
+        req.session.loginRedirect = req.query.redirect;
+    }
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINE_CALLBACK_URL)}&state=${state}&scope=profile%20openid%20email`;
     res.redirect(redirectUrl);
     console.log('LINE_CLIENT_ID:', LINE_CLIENT_ID);
@@ -80,6 +84,13 @@ router.get('/line/callback', async (req, res) => {
 
         // 設定 session
         req.session.userId = user._id;
+
+        // 取出 loginRedirect
+        const loginRedirect = req.session.loginRedirect;
+        delete req.session.loginRedirect;
+        if (loginRedirect) {
+            return res.redirect(loginRedirect);
+        }
 
         // 跳轉
         if (!user.birthday || !user.gender) {

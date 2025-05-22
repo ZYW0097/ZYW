@@ -15,7 +15,7 @@
                     <div class="login-prompt-content">
                         <h2>登入帳號，即可開始集點！</h2>
                         <p>立即登入您的帳號，開始累積點數兌換獎勵！</p>
-                        <a href="/auth/line" class="login-btn">使用 LINE 登入</a>
+                        <a href="/account/login?redirect=/<%= storeSlug %>/card" class="login-btn">使用 LINE 登入</a>
                     </div>
                 </div>
             <% } else if (!userPoints) { %>
