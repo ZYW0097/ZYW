@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const userPointsSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        default: 'user_points'
+    },
     lineId: {
         type: String,
         required: true
@@ -25,10 +29,6 @@ const userPointsSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    type: {
-        type: String,
-        default: 'user_points'
-    }
 }, { timestamps: true });
 
 module.exports = userPointsSchema;
