@@ -9,34 +9,70 @@
 
     <div class="card-content">
         <% if (settings && settings.state === 'enable') { %>
-            <!-- 集點卡內容 -->
-            <div class="points-info">
-                <h2>我的點數</h2>
-                <p class="points-count"><%= points || 0 %></p>
-            </div>
-
-            <div class="rewards-list">
-                <h2>可兌換獎勵</h2>
-                <% if (rewards && rewards.length > 0) { %>
-                    <div class="rewards-grid">
-                        <% rewards.forEach(reward => { %>
-                            <div class="reward-item">
-                                <img src="<%= reward.img || '' %>" alt="<%= reward.name || '' %>">
-                                <h3><%= reward.name || '' %></h3>
-                                <p>需要點數: <%= reward.points || 0 %></p>
-                                <button class="redeem-btn" data-reward-id="<%= reward._id %>">兌換</button>
-                            </div>
-                        <% }); %>
+            <% if (!req.user) { %>
+                <!-- 未登入時的顯示 -->
+                <div class="login-prompt-section">
+                    <div class="login-prompt-content">
+                        <h2>登入帳號，即可開始集點！</h2>
+                        <p>立即登入您的帳號，開始累積點數兌換獎勵！</p>
+                        <a href="/auth/line" class="login-btn">使用 LINE 登入</a>
                     </div>
-                <% } else { %>
-                    <p>目前沒有可兌換的獎勵</p>
-                <% } %>
-            </div>
+                </div>
+            <% } else if (!userPoints) { %>
+                <!-- 已登入但未領取集點卡時的顯示 -->
+                <div class="claim-card-section">
+                    <div class="claim-card-content">
+                        <h2>領取您的集點卡</h2>
+                        <p>立即領取集點卡，開始累積點數兌換獎勵！</p>
+                        <button id="claimCardBtn" class="claim-btn">領取集點卡</button>
+                    </div>
+                </div>
+            <% } else { %>
+                <!-- 已領取集點卡時的顯示 -->
+                <div class="points-info">
+                    <h2>我的點數</h2>
+                    <p class="points-count"><%= userPoints['ah-points'] || 0 %></p>
+                </div>
+
+                <div class="rewards-list">
+                    <h2>可兌換獎勵</h2>
+                    <% if (rewards && rewards.length > 0) { %>
+                        <div class="rewards-grid">
+                            <% rewards.forEach(reward => { %>
+                                <div class="reward-item">
+                                    <img src="<%= reward.img || '' %>" alt="<%= reward.name || '' %>">
+                                    <h3><%= reward.name || '' %></h3>
+                                    <p>需要點數: <%= reward.points || 0 %></p>
+                                    <button class="redeem-btn" data-reward-id="<%= reward._id %>">兌換</button>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p>目前沒有可兌換的獎勵</p>
+                    <% } %>
+                </div>
+            <% } %>
         <% } else { %>
             <div class="card-disabled">
                 <p>此商店目前沒有啟用集點卡功能</p>
             </div>
         <% } %>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">正在創建屬於您的資料...</p>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div id="successMessage" class="success-message" style="display: none;">
+    <div class="success-content">
+        <div class="success-icon">✓</div>
+        <p>創建完成！</p>
     </div>
 </div>
 
@@ -47,3 +83,4 @@
 <% } %>
 
 <link rel="stylesheet" href="/css/card.css">
+<script src="/js/card.js"></script>

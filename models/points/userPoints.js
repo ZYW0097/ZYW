@@ -3,31 +3,31 @@ const mongoose = require('mongoose');
 const userPointsSchema = new mongoose.Schema({
     lineId: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
-    points: {
+    'u-name': {
+        type: String,
+        required: true
+    },
+    'ah-points': {
         type: Number,
-        default: 0,
-        min: 0
+        default: 0
     },
-    rewards: [{
-        rewardId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'PointsRewards'
-        },
-        redeemedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    updatedAt: {
+    'ah-coupon': {
+        type: Number,
+        default: 0
+    },
+    'ah-coupon-id': {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PointsRewards'
+    },
+    updateat: {
         type: Date,
         default: Date.now
     },
-    slug: {
+    type: {
         type: String,
-        required: true
+        default: 'user_points'
     }
 }, { timestamps: true });
 

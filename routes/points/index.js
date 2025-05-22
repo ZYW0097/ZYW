@@ -60,12 +60,58 @@ router.get('/:storeSlug/card', async (req, res) => {
             userPoints,
             storeSlug,
             cardpagetext: settings?.cardpagetext || '集點卡',
-            points: userPoints?.points || 0
+            req: req  // 傳遞 req 物件以檢查登入狀態
         });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).render('error', {
             message: '載入集點卡失敗'
+        });
+    }
+});
+
+// 領取集點卡 API
+router.post('/:storeSlug/api/points/claim', isAuthenticated, async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        if (!storeSlug) {
+            return res.status(400).json({ error: '商店資訊不完整' });
+        }
+
+        const userDb = getClientDb(storeSlug, 'ADB');
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+
+        // 檢查是否已經有集點卡
+        const existingCard = await UserPoints.findOne({ 
+            lineId: req.user.lineId,
+            type: 'user_points'
+        });
+
+        if (existingCard) {
+            return res.status(400).json({ error: '您已經領取過集點卡了' });
+        }
+
+        // 創建新的集點卡
+        const newCard = await UserPoints.create({
+            lineId: req.user.lineId,
+            'u-name': req.user.name || '未命名用戶',
+            'ah-points': 0,
+            'ah-coupon': 0,
+            'ah-coupon-id': null,
+            updateat: new Date(),
+            type: 'user_points'
+        });
+
+        res.json({ 
+            success: true, 
+            card: newCard,
+            message: '集點卡領取成功'
+        });
+    } catch (error) {
+        console.error('Error in claim card:', error);
+        res.status(500).json({ 
+            error: '領取集點卡失敗，請稍後再試',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
