@@ -32,8 +32,36 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'yourSecret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    proxy: true
 }));
+
+// 掛載 user 到 req.user/res.locals.user
+const getClientDb = require('./utils/dbManager');
+const userSchema = require('./models/user');
+app.use(async (req, res, next) => {
+    if (req.session && req.session.userId) {
+        try {
+            const adb = getClientDb('main', 'ADB');
+            const User = adb.model('User', userSchema);
+            const user = await User.findById(req.session.userId);
+            if (user) {
+                req.user = user;
+                res.locals.user = user;
+            } else {
+                req.user = null;
+                res.locals.user = null;
+            }
+        } catch (e) {
+            req.user = null;
+            res.locals.user = null;
+        }
+    } else {
+        req.user = null;
+        res.locals.user = null;
+    }
+    next();
+});
 
 // 設置全局變數
 app.use((req, res, next) => {
