@@ -46,7 +46,7 @@
         <div class="rules-title">使用規則</div>
         <ul>
           <% (rules || []).forEach(rule => { %>
-            <li><%= rule %></li>
+            <li><%= rule.text %></li>
           <% }) %>
         </ul>
       </div>

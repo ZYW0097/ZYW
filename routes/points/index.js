@@ -60,13 +60,17 @@ router.get('/:storeSlug/card', async (req, res) => {
             storeName = settings.name;
         }
 
+        const rules = await db.model('PointsRules', require('../../models/points/rules'))
+            .find({ slug: storeSlug, type: 'points_settings', class: 'rule_settings' })
+            .sort({ article: 1 });
+
         res.render('card', {
             storeName,
             settings,
             rewards,
             userPoints,
             storeSlug,
-            rules: settings?.rules || [],
+            rules,
             req: req  
         });
     } catch (error) {

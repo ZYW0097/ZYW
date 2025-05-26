@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const claimSuccessMessage = document.getElementById('claimSuccessMessage');
     const redeemSuccessMessage = document.getElementById('redeemSuccessMessage');
     const pointsValue = document.querySelector('.points-value');
+    const couponsValue = document.querySelector('.coupons-value');
     const rewardsGrid = document.querySelector('.rewards-grid');
 
     if (claimCardBtn) {
@@ -92,6 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 更新點數顯示
                     if (pointsValue) {
                         pointsValue.textContent = data.remainingPoints;
+                    }
+
+                    if (couponsValue) {
+                        couponsValue.textContent = data.couponCount;
                     }
 
                     // 顯示成功訊息
