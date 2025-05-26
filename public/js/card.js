@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     const claimSuccessMessage = document.getElementById('claimSuccessMessage');
     const redeemSuccessMessage = document.getElementById('redeemSuccessMessage');
+    const pointsCount = document.querySelector('.points-count');
+    const rewardsGrid = document.querySelector('.rewards-grid');
 
     if (claimCardBtn) {
         claimCardBtn.addEventListener('click', async function() {
@@ -87,13 +89,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // 顯示兌換成功訊息
+                    // 更新點數顯示
+                    if (pointsCount) {
+                        pointsCount.textContent = data.remainingPoints;
+                    }
+
+                    // 更新按鈕狀態
+                    const rewardItem = this.closest('.reward-item');
+                    if (rewardItem) {
+                        const redeemBtn = rewardItem.querySelector('.redeem-btn');
+                        if (redeemBtn) {
+                            redeemBtn.disabled = true;
+                            redeemBtn.textContent = '已兌換';
+                            redeemBtn.style.backgroundColor = '#ccc';
+                        }
+                    }
+
+                    // 顯示成功訊息
                     loadingOverlay.style.display = 'none';
                     redeemSuccessMessage.style.display = 'block';
                     
-                    // 等待 2 秒後重新載入頁面
+                    // 2秒後隱藏成功訊息
                     setTimeout(() => {
-                        window.location.reload();
+                        redeemSuccessMessage.style.display = 'none';
                     }, 2000);
                 } else {
                     throw new Error(data.error || '兌換失敗');
