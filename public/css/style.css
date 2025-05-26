@@ -112,4 +112,80 @@ body {
 
 .user-icon:hover {
     box-shadow: 0 0 0 2px var(--primary-color);
-} 
+}
+
+/* 桌機/行動裝置切換 */
+.desktop-only { 
+    display: flex; 
+}
+.mobile-only { 
+    display: none; 
+}
+@media (max-width: 900px) {
+  .desktop-only { 
+    display: none !important; 
+    }
+  .mobile-only { 
+    display: block !important; 
+    }
+}
+
+/* 漢堡按鈕 */
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 40px; height: 40px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  z-index: 1201;
+}
+.hamburger span {
+  display: block;
+  width: 28px; height: 3px;
+  background: #222;
+  margin: 4px 0;
+  border-radius: 2px;
+  transition: 0.3s;
+}
+.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* 側邊欄 */
+.mobile-menu {
+  position: fixed;
+  top: 0; right: -320px;
+  width: 320px; height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.08);
+  z-index: 1200;
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  transition: right 0.3s;
+}
+.mobile-menu.open { right: 0; }
+.mobile-menu-header {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+.close-btn {
+  background: none; border: none; width: 32px; height: 32px; position: relative; cursor: pointer;
+}
+.close-btn:before, .close-btn:after {
+  content: ''; position: absolute; left: 15px; top: 8px; width: 2px; height: 16px; background: #222;
+}
+.close-btn:before { transform: rotate(45deg); }
+.close-btn:after { transform: rotate(-45deg); }
+.mobile-user {
+  display: flex; align-items: center; margin: 2rem 0 1.5rem 0;
+}
+.mobile-user .user-icon { width: 48px; height: 48px; }
+.mobile-username { margin-left: 1rem; font-weight: bold; font-size: 1.1rem; }
+.mobile-link {
+  display: block; width: 100%; padding: 1rem 0; color: #222; font-size: 1.2rem; text-decoration: none; border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+.mobile-link:hover { background: #f5f5f5; }
+.mobile-menu-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.15); z-index: 1199;
+}
+.mobile-menu.open ~ .mobile-menu-overlay { display: block; } 

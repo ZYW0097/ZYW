@@ -1,7 +1,7 @@
 <nav class="custom-navbar">
     <div class="nav-container">
         <a class="nav-logo" href="/">DINE✦</a>
-        <div class="nav-right-group">
+        <div class="nav-right-group desktop-only">
             <div class="nav-links">
                 <a class="nav-link" href="/">餐廳首頁</a>
                 <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡&nbsp;</a>
@@ -11,5 +11,24 @@
                 <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
             </a>
         </div>
+        <!-- 漢堡按鈕 -->
+        <button class="hamburger mobile-only" id="hamburger-btn" aria-label="menu">
+            <span></span><span></span><span></span>
+        </button>
     </div>
+    <!-- 側邊欄 -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <a class="nav-logo" href="/">DINE✦</a>
+            <button class="close-btn" id="close-menu-btn" aria-label="close"></button>
+        </div>
+        <div class="mobile-user">
+            <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
+            <div class="mobile-username"><%= user ? user.name : '未登入' %></div>
+        </div>
+        <a class="mobile-link" href="/">餐廳首頁</a>
+        <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
+        <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+    </div>
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
 </nav> 
