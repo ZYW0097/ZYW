@@ -56,7 +56,7 @@
           <div class="reward-row">
             <img class="reward-img" src="<%= reward.img %>" alt="<%= reward.name %>">
             <div class="reward-name"><%= reward.name %></div>
-            <div class="reward-points"><%= reward.points %>點</div>
+            <button class="reward-points redeem-btn" data-reward-id="<%= reward._id %>"><%= reward.points %>點</button>
           </div>
         <% }) %>
       </div>
