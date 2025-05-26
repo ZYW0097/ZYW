@@ -162,6 +162,12 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         if (!userPoints['ah-coupon-id']) {
             userPoints['ah-coupon-id'] = [];
         }
+        const coupon = userPoints['ah-coupon-id'].find(c => c.rewardId.equals(reward._id));
+        if (coupon) {
+            coupon.count += 1;
+        } else {
+            userPoints['ah-coupon-id'].push({ rewardId: reward._id, count: 1 });
+        }
         userPoints['ah-coupon-id'].push(reward._id);
         userPoints.updateat = new Date();
         await userPoints.save();
