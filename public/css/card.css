@@ -1,23 +1,173 @@
-.page-container {
-    max-width: 1200px;
-    margin: 100px auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+body {
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif;
 }
 
-.card-header {
+/* === 新版卡片主要區塊 === */
+.card-bg {
+    width: 420px;
+    margin: 32px auto;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.card-header-img {
+    width: 100%;
+    height: 160px;
+    background: url('/images/dine.jpg') center/cover no-repeat;
+}
+
+.card-content {
+    padding: 0 32px 32px 32px;
+    position: relative;
+}
+
+.restaurant-name {
     text-align: center;
-    margin-bottom: 2rem;
+    font-size: 2.4rem;
+    font-weight: bold;
+    margin-top: -48px;
+    margin-bottom: 16px;
+    color: #222;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.card-header h1 {
+.user-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.user-points, .user-coupons {
+    flex: 1;
+    text-align: center;
+}
+
+.points-value, .coupons-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.points-label, .coupons-label {
+    font-size: 1.1rem;
+    color: #444;
+    font-weight: 600;
+}
+
+.user-avatar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: -12px;
+}
+
+.user-avatar img, .avatar-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 2.5rem;
-    color: #333;
+    color: #bbb;
+    margin-bottom: 6px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* 領取集點卡區塊 */
+.user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    margin-top: 2px;
+    text-align: center;
+    word-break: break-all;
+}
+
+.rules-section {
+    margin: 24px 0 16px 0;
+}
+
+.rules-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.rules-section ul {
+    padding-left: 1.2em;
+    margin: 0;
+}
+
+.rules-section li {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 2px;
+    list-style: disc inside;
+}
+
+.rewards-section {
+    margin-top: 18px;
+}
+
+.rewards-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.reward-row {
+    display: flex;
+    align-items: center;
+    background: #f6f6f6;
+    border-radius: 24px;
+    margin-bottom: 16px;
+    padding: 8px 18px 8px 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.reward-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 16px;
+    border: 2px solid #fff;
+    background: #fff;
+}
+
+.reward-name {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    margin-left: 4px;
+}
+
+.reward-points {
+    background: #888;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 4px 18px;
+    min-width: 48px;
+    text-align: center;
+    margin-left: 8px;
+}
+
+/* === 登入/領取/overlay區塊 === */
 .claim-card-section {
     text-align: center;
     padding: 3rem 1rem;
@@ -55,165 +205,6 @@
     transform: translateY(-2px);
 }
 
-/* Loading Overlay */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.loading-content {
-    text-align: center;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-}
-
-.loading-text {
-    color: #333;
-    font-size: 1.2rem;
-}
-
-/* Success Message */
-.success-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    text-align: center;
-    z-index: 1001;
-    animation: fadeIn 0.3s ease;
-}
-
-.success-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.success-icon {
-    width: 60px;
-    height: 60px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-/* 原有的樣式 */
-.points-info {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.points-count {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-.rewards-list {
-    margin-top: 2rem;
-}
-
-.rewards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 1rem;
-}
-
-.reward-item {
-    background: #fff;
-    border-radius: 10px;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.reward-item img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.reward-item h3 {
-    margin: 0.5rem 0;
-    color: #333;
-}
-
-.redeem-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.redeem-btn:hover {
-    background: var(--secondary-color);
-}
-
-.card-disabled {
-    text-align: center;
-    padding: 3rem;
-    background: #f5f5f5;
-    border-radius: 10px;
-    color: #666;
-}
-
-.error-message {
-    background: #ffebee;
-    color: #c62828;
-    padding: 1rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-    text-align: center;
-}
-
-/* Animations */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-/* 登入提示區塊 */
 .login-prompt-section {
     text-align: center;
     padding: 3rem 1rem;
@@ -250,4 +241,111 @@
 .login-btn:hover {
     background: #05a548;  /* 深一點的 LINE 綠色 */
     transform: translateY(-2px);
+}
+
+/* === Loading/Success Overlay === */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+.loading-text {
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 1001;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* === 響應式設計 === */
+@media (max-width: 600px) {
+    .card-bg {
+        width: 98vw;
+        min-width: unset;
+        margin: 8px auto;
+        border-radius: 18px;
+    }
+    .card-content {
+        padding: 0 8vw 24px 8vw;
+    }
+    .restaurant-name {
+        font-size: 1.5rem;
+        margin-top: -32px;
+    }
+    .user-avatar img, .avatar-placeholder {
+        width: 56px;
+        height: 56px;
+    }
+    .reward-img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
 }
