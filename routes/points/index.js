@@ -116,4 +116,64 @@ router.post('/:storeSlug/api/points/claim', isAuthenticated, async (req, res) =>
     }
 });
 
+// 兌換獎勵 API
+router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { rewardId } = req.body;
+
+        if (!storeSlug || !rewardId) {
+            return res.status(400).json({ error: '參數不完整' });
+        }
+
+        // 獲取用戶點數資料
+        const userDb = getClientDb(storeSlug, 'ADB');
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+        const userPoints = await UserPoints.findOne({ 
+            lineId: req.user.lineId,
+            type: 'user_points'
+        });
+
+        if (!userPoints) {
+            return res.status(404).json({ error: '找不到用戶點數資料' });
+        }
+
+        // 獲取獎勵資料
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const Rewards = cdb.model('PointsRewards', pointsRewardsSchema);
+        const reward = await Rewards.findOne({ 
+            _id: rewardId,
+            type: 'points_reward'
+        });
+
+        if (!reward) {
+            return res.status(404).json({ error: '找不到獎勵資料' });
+        }
+
+        // 檢查點數是否足夠
+        if (userPoints['ah-points'] < reward.points) {
+            return res.status(400).json({ error: '點數不足' });
+        }
+
+        // 更新用戶點數和優惠券資訊
+        userPoints['ah-points'] -= reward.points;
+        userPoints['ah-coupon'] = reward.name;
+        userPoints['ah-coupon-id'] = reward._id;
+        userPoints.updateat = new Date();
+        await userPoints.save();
+
+        res.json({ 
+            success: true, 
+            message: '兌換成功',
+            remainingPoints: userPoints['ah-points']
+        });
+    } catch (error) {
+        console.error('Error in redeem reward:', error);
+        res.status(500).json({ 
+            error: '兌換失敗，請稍後再試',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
 module.exports = router; 
