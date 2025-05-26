@@ -97,7 +97,7 @@ router.post('/:storeSlug/api/points/claim', isAuthenticated, async (req, res) =>
             'u-name': req.user.name || '未命名用戶',
             'ah-points': 0,
             'ah-coupon': 0,
-            'ah-coupon-id': null,
+            'ah-coupon-id': [],
             updateat: new Date(),
             type: 'user_points'
         });
@@ -158,17 +158,28 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         // 更新用戶點數和優惠券資訊
         userPoints['ah-points'] -= reward.points;
         userPoints['ah-coupon'] += 1;  // 增加優惠券數量
-        // 將新的獎勵 ID 添加到數組中
+        
+        // 處理優惠券 ID 陣列
         if (!userPoints['ah-coupon-id']) {
             userPoints['ah-coupon-id'] = [];
         }
-        const coupon = userPoints['ah-coupon-id'].find(c => c.rewardId.equals(reward._id));
-        if (coupon) {
-            coupon.count += 1;
+        
+        // 查找是否已經有這個獎勵
+        const existingCoupon = userPoints['ah-coupon-id'].find(c => 
+            c && c.rewardId && c.rewardId.equals(reward._id)
+        );
+        
+        if (existingCoupon) {
+            // 如果已經有這個獎勵，增加數量
+            existingCoupon.count += 1;
         } else {
-            userPoints['ah-coupon-id'].push({ rewardId: reward._id, count: 1 });
+            // 如果沒有，新增一個
+            userPoints['ah-coupon-id'].push({ 
+                rewardId: reward._id, 
+                count: 1 
+            });
         }
-        userPoints['ah-coupon-id'].push(reward._id);
+        
         userPoints.updateat = new Date();
         await userPoints.save();
 
@@ -177,7 +188,7 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
             message: '兌換成功',
             remainingPoints: userPoints['ah-points'],
             couponCount: userPoints['ah-coupon'],
-            redeemedRewards: userPoints['ah-coupon-id']
+            coupons: userPoints['ah-coupon-id']
         });
     } catch (error) {
         console.error('Error in redeem reward:', error);

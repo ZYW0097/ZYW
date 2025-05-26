@@ -94,17 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         pointsCount.textContent = data.remainingPoints;
                     }
 
-                    // 更新按鈕狀態
-                    const rewardItem = this.closest('.reward-item');
-                    if (rewardItem) {
-                        const redeemBtn = rewardItem.querySelector('.redeem-btn');
-                        if (redeemBtn) {
-                            redeemBtn.disabled = true;
-                            redeemBtn.textContent = '已兌換';
-                            redeemBtn.style.backgroundColor = '#ccc';
-                        }
-                    }
-
                     // 顯示成功訊息
                     loadingOverlay.style.display = 'none';
                     redeemSuccessMessage.style.display = 'block';
