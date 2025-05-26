@@ -21,10 +21,10 @@ const userPointsSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    'ah-coupon-id': {
+    'ah-coupon-id': [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PointsRewards'
-    },
+    }],
     updateat: {
         type: Date,
         default: Date.now

@@ -157,15 +157,21 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
 
         // 更新用戶點數和優惠券資訊
         userPoints['ah-points'] -= reward.points;
-        userPoints['ah-coupon'] = reward.name;
-        userPoints['ah-coupon-id'] = reward._id;
+        userPoints['ah-coupon'] += 1;  // 增加優惠券數量
+        // 將新的獎勵 ID 添加到數組中
+        if (!userPoints['ah-coupon-id']) {
+            userPoints['ah-coupon-id'] = [];
+        }
+        userPoints['ah-coupon-id'].push(reward._id);
         userPoints.updateat = new Date();
         await userPoints.save();
 
         res.json({ 
             success: true, 
             message: '兌換成功',
-            remainingPoints: userPoints['ah-points']
+            remainingPoints: userPoints['ah-points'],
+            couponCount: userPoints['ah-coupon'],
+            redeemedRewards: userPoints['ah-coupon-id']
         });
     } catch (error) {
         console.error('Error in redeem reward:', error);
