@@ -54,13 +54,20 @@ router.get('/:storeSlug/card', async (req, res) => {
                 .findOne({ lineId: req.user.lineId });
         }
 
+        // 確保 storeName 一定有值
+        let storeName = storeSlug;
+        if (settings && settings.name) {
+            storeName = settings.name;
+        }
+
         res.render('card', {
+            storeName,
             settings,
             rewards,
             userPoints,
             storeSlug,
-            cardpagetext: settings?.cardpagetext || '集點卡',
-            req: req  // 傳遞 req 物件以檢查登入狀態
+            rules: settings?.rules || [],
+            req: req  
         });
     } catch (error) {
         console.error('Error:', error);
