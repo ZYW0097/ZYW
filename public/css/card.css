@@ -1,5 +1,6 @@
 body {
     margin: 100px auto;
+    margin-bottom: -100px;
 }
 
 /* === 新版卡片主要區塊 === */
