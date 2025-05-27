@@ -118,17 +118,17 @@ body {
 .desktop-only { 
     display: flex; 
 }
-.mobile-only { 
-    display: none; 
+.mobile-only {
+  display: none !important;
 }
 
 @media (max-width: 900px) {
   .desktop-only { 
     display: none !important; 
     }
-  .mobile-only { 
-    display: block !important; 
-    }
+  .mobile-only {
+    display: block !important;
+  }
 }
 
 /* 漢堡按鈕 */
