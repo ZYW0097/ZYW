@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.getElementById('hamburger-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const overlay = document.getElementById('mobile-menu-overlay');
-    const closeBtn = document.getElementById('close-menu-btn');
   
     function openMenu() {
       document.body.style.overflow = 'hidden';
@@ -16,7 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
       mobileMenu.classList.remove('open');
       overlay.style.display = 'none';
     }
-    hamburger.addEventListener('click', openMenu);
-    closeBtn.addEventListener('click', closeMenu);
+    hamburger.addEventListener('click', function() {
+      if (mobileMenu.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
     overlay.addEventListener('click', closeMenu);
-  });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+});
