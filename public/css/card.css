@@ -309,6 +309,27 @@ body {
     margin-bottom: 1rem;
 }
 
+.no-card-section {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.no-card-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.no-card-content h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.no-card-content p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
 /* === 響應式設計 === */
 @media (max-width: 600px) {
     .card-bg {

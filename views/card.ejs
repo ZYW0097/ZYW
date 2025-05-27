@@ -1,3 +1,13 @@
+<% if (!settings || settings.state !== 'enable') { %>
+  <div class="no-card-section">
+    <div class="no-card-content">
+      <h2>此商家尚未開啟集點卡</h2>
+      <p>請稍後再試或聯絡商家。</p>
+    </div>
+  </div>
+  <% return; %>
+<% } %>
+
 <% if (!req.user) { %>
   <!-- 未登入時的顯示 -->
   <div class="login-prompt-section">
