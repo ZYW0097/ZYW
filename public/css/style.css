@@ -135,15 +135,24 @@ body {
 }
 .hamburger span {
   display: block;
-  width: 28px; height: 3px;
+  width: 28px; 
+  height: 3px;
   background: #222;
   margin: 4px 0;
   border-radius: 2px;
   transition: 0.3s;
 }
-.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.active span:nth-child(2) { opacity: 0; }
-.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.active span:nth-child(1) { 
+  transform: translateY(7px) rotate(45deg); 
+  width: 28px;
+}
+.hamburger.active span:nth-child(2) { 
+  opacity: 0; 
+}
+.hamburger.active span:nth-child(3) { 
+  transform: translateY(-7px) rotate(-45deg); 
+  width: 28px;
+}
 
 /* 側邊欄 */
 .mobile-menu {
@@ -265,6 +274,10 @@ body {
     height: 100%;
     display: flex;
     align-items: center;
+  }
+  .hamburger.active span:nth-child(1),
+  .hamburger.active span:nth-child(3) {
+    width: 28px;
   }
 }
 
