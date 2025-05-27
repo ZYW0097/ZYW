@@ -27,6 +27,12 @@
   <% } else { %>
     <!-- 已領取集點卡時的全新設計畫面 -->
     <div class="card-bg">
+      <div class="card-header">
+        <div class="card-header-img">
+          <img src="/images/dine.jpg" alt="背景圖">
+          <div class="card-header-title"><%= storeName %></div>
+        </div>
+      </div>
       <div class="user-summary">
         <div class="user-points">
           <div class="points-value"><%= userPoints['ah-points'] %></div>
@@ -45,12 +51,6 @@
             <%= userPoints['ah-coupon-id'] ? userPoints['ah-coupon-id'].reduce((sum, c) => sum + (c.count || 0), 0) : 0 %>
           </div>
           <div class="coupons-label">優惠券</div>
-        </div>
-      </div>
-      <div class="card-header">
-        <div class="card-header-img">
-          <img src="/images/dine.jpg" alt="背景圖">
-          <div class="card-header-title"><%= storeName %></div>
         </div>
       </div>
       <div class="card-content">
