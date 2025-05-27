@@ -1,744 +1,373 @@
-:root {
-  --primary-color: #007AFF;
-  --secondary-color: #5856D6;
-  --accent-color: #FF9500;
-  --success-color: #34C759;
-  --background-color: #F5F7FA;
-  --card-color: #FFFFFF;
-  --text-color: #1D1D1F;
-  --text-secondary: #6E6E73;
-  --border-radius-lg: 20px;
-  --border-radius-md: 16px;
-  --border-radius-sm: 10px;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-  --transition-fast: all 0.2s ease;
-  --transition-normal: all 0.3s ease;
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  min-height: 100vh;
-  padding-top: 90px;
-  padding-bottom: 40px;
+    margin: 100px auto;
+    margin-bottom: -100px;
 }
 
-/* === 卡片容器 === */
-.card-container {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
+/* === 新版卡片主要區塊 === */
 .card-bg {
-  background: var(--card-color);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  margin-bottom: 32px;
+    width: 420px;
+    margin: 32px auto;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #ddd;
 }
 
-.card-header {
-  position: relative;
-  padding: 28px 24px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-}
-
-.store-info {
-  text-align: center;
-}
-
-.restaurant-name {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.card-header-img {
+    width: 100%;
+    height: 160px;
+    background: url('/images/dine.jpg') center/cover no-repeat;
 }
 
 .card-content {
-  padding: 24px;
+    padding: 0 32px 32px 32px;
+    position: relative;
 }
 
-/* === 用戶資訊 === */
-.user-profile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+.restaurant-name {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: bold;
+    margin-top: -48px;
+    margin-bottom: 16px;
+    color: #222;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.user-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.user-points, .user-coupons {
+    flex: 1;
+    text-align: center;
+}
+
+.points-value, .coupons-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.points-label, .coupons-label {
+    font-size: 1.1rem;
+    color: #444;
+    font-weight: 600;
 }
 
 .user-avatar {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin-bottom: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: -12px;
 }
 
 .user-avatar img, .avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #F2F2F7;
-  border: 3px solid white;
-  box-shadow: var(--shadow-sm);
-}
-
-.avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: #C7C7CC;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #eee;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #bbb;
+    margin-bottom: 6px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .user-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    margin-top: 2px;
+    text-align: center;
+    word-break: break-all;
 }
 
-/* === 標籤切換 === */
-.tabs-container {
-  margin-bottom: 32px;
+.rules-section {
+    margin: 24px 0 16px 0;
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 24px;
+.rules-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 8px;
 }
 
-.tab-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  padding: 12px 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  position: relative;
-  transition: var(--transition-fast);
+.rules-section ul {
+    padding-left: 1.2em;
+    margin: 0;
 }
 
-.tab-btn.active {
-  color: var(--primary-color);
-}
-
-.tab-btn.active:after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: var(--primary-color);
-  border-radius: 3px 3px 0 0;
-}
-
-.tab-content {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-/* === 點數區域 === */
-.points-card {
-  background: var(--card-color);
-  border-radius: var(--border-radius-md);
-}
-
-.points-summary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 0 32px;
-  position: relative;
-}
-
-.points-circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, var(--primary-color) 10%, var(--secondary-color) 90%);
-  color: white;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.16);
-  position: relative;
-  z-index: 1;
-}
-
-.points-circle:before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-  border-radius: 50%;
-  border: 2px dashed rgba(255,255,255,0.4);
-}
-
-.points-value {
-  font-size: 3.2rem;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.points-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-.points-info {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-  cursor: help;
-}
-
-.info-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #E9E9EB;
-  color: #6E6E73;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.tooltip:hover:after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 130%;
-  right: 0;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  width: max-content;
-  max-width: 200px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.tooltip:hover:before {
-  content: '';
-  position: absolute;
-  bottom: 120%;
-  right: 10px;
-  border: 6px solid transparent;
-  border-top-color: rgba(0,0,0,0.8);
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* === 獎勵區域 === */
-.section-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 16px;
-  letter-spacing: -0.02em;
+.rules-section li {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 2px;
+    list-style: disc inside;
 }
 
 .rewards-section {
-  padding: 16px 0;
+    margin-top: 18px;
 }
 
-.rewards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+.rewards-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 10px;
 }
 
-.reward-card {
-  background: white;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: var(--transition-normal);
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-.reward-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.reward-img-container {
-  height: 140px;
-  overflow: hidden;
-  position: relative;
+.reward-row {
+    display: flex;
+    align-items: center;
+    background: #f6f6f6;
+    border-radius: 24px;
+    margin-bottom: 16px;
+    padding: 8px 18px 8px 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 
 .reward-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.reward-card:hover .reward-img {
-  transform: scale(1.05);
-}
-
-.reward-details {
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 16px;
+    border: 2px solid #fff;
+    background: #fff;
 }
 
 .reward-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color);
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    margin-left: 4px;
 }
 
 .reward-points {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 16px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  display: flex;
-  align-items: center;
+    background: #888;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 4px 18px;
+    min-width: 48px;
+    text-align: center;
+    margin-left: 8px;
 }
 
-.points-icon {
-  margin-right: 4px;
-  font-size: 0.9rem;
+/* === 登入/領取/overlay區塊 === */
+.claim-card-section {
+    text-align: center;
+    padding: 3rem 1rem;
 }
 
-.reward-points:hover {
-  background: var(--secondary-color);
-  transform: translateY(-1px);
+.claim-card-content {
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-/* === 優惠券區域 === */
-.coupons-summary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 0 32px;
-  position: relative;
+.claim-card-content h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
 }
 
-.coupons-circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, var(--accent-color) 10%, #FF5E3A 90%);
-  color: white;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.16);
-  position: relative;
-  z-index: 1;
+.claim-card-content p {
+    color: #666;
+    margin-bottom: 2rem;
 }
 
-.coupons-circle:before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-  border-radius: 50%;
-  border: 2px dashed rgba(255,255,255,0.4);
-}
-
-.coupons-value {
-  font-size: 3.2rem;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.coupons-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-.coupons-info {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-}
-
-.coupons-list {
-  padding: 16px 0;
-}
-
-.empty-coupons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-  text-align: center;
-  background: rgba(0,0,0,0.02);
-  border-radius: var(--border-radius-md);
-}
-
-.empty-icon {
-  font-size: 3rem;
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-}
-
-.empty-coupons p {
-  margin: 8px 0;
-  color: var(--text-color);
-  font-size: 1.1rem;
-}
-
-.empty-subtitle {
-  color: var(--text-secondary) !important;
-  font-size: 0.9rem !important;
-}
-
-.coupon-cards {
-  display: grid;
-  gap: 16px;
-}
-
-.coupon-card {
-  background: white;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.05);
-  overflow: hidden;
-}
-
-.coupon-content {
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.coupon-details {
-  flex: 1;
-}
-
-.coupon-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 4px;
-}
-
-.coupon-count {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.use-coupon-btn {
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 16px;
-  padding: 6px 16px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.use-coupon-btn:hover {
-  background: #E08300;
-  transform: translateY(-1px);
-}
-
-/* === 規則區域 === */
-.rules-section {
-  padding: 16px 0;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  margin-top: 16px;
-}
-
-.rules-content {
-  background: rgba(0,0,0,0.02);
-  border-radius: var(--border-radius-md);
-  padding: 16px 20px;
-}
-
-.rules-content ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.rules-content li {
-  margin-bottom: 8px;
-  color: var(--text-color);
-  line-height: 1.5;
-}
-
-.no-rules {
-  text-align: center;
-  color: var(--text-secondary);
-  padding: 16px 0;
-  margin: 0;
-}
-
-/* === 登入/領取/未開啟區塊 === */
-.login-prompt-section,
-.claim-card-section,
-.no-card-section {
-  max-width: 640px;
-  margin: 40px auto;
-  padding: 40px 20px;
-  text-align: center;
-  background: white;
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.login-prompt-content,
-.claim-card-content,
-.no-card-content {
-  max-width: 460px;
-  margin: 0 auto;
-}
-
-.login-prompt-section h2,
-.claim-card-section h2,
-.no-card-section h2 {
-  font-size: 2rem;
-  color: var(--text-color);
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-}
-
-.login-prompt-section p,
-.claim-card-section p,
-.no-card-section p {
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  font-size: 1.1rem;
-  line-height: 1.5;
-}
-
-.login-btn,
 .claim-btn {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  padding: 12px 28px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: var(--border-radius-sm);
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-normal);
-}
-
-.login-btn {
-  background: #06C755;  /* LINE 綠色 */
-}
-
-.login-btn:hover {
-  background: #05a548;  /* 深一點的 LINE 綠色 */
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .claim-btn:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.login-prompt-section {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.login-prompt-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.login-prompt-content h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.login-prompt-content p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.login-btn {
+    display: inline-block;
+    background: #06C755;  /* LINE 綠色 */
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #05a548;  /* 深一點的 LINE 綠色 */
+    transform: translateY(-2px);
 }
 
 /* === Loading/Success Overlay === */
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .loading-content {
-  text-align: center;
+    text-align: center;
 }
 
 .loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0,0,0,0.05);
-  border-top: 5px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
 }
 
 .loading-text {
-  color: var(--text-color);
-  font-size: 1.2rem;
-  font-weight: 500;
+    color: #333;
+    font-size: 1.2rem;
 }
 
 .success-message {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 32px;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-lg);
-  text-align: center;
-  z-index: 1001;
-  animation: fadeIn 0.3s ease;
-  max-width: 90%;
-  width: 360px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 1001;
+    animation: fadeIn 0.3s ease;
 }
 
 .success-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .success-icon {
-  width: 70px;
-  height: 70px;
-  background: var(--success-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.2rem;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(52,199,89,0.3);
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
 }
 
-.success-content h3 {
-  font-size: 1.6rem;
-  margin: 0 0 8px;
-  color: var(--text-color);
+.no-card-section {
+    text-align: center;
+    padding: 3rem 1rem;
 }
 
-.success-content p {
-  color: var(--text-secondary);
-  margin: 0;
-  font-size: 1.1rem;
+.no-card-content {
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-.error-message {
-  max-width: 640px;
-  margin: 20px auto;
-  padding: 16px 24px;
-  background: #FFE3E3;
-  color: #D30000;
-  border-radius: var(--border-radius-md);
-  text-align: center;
-  font-weight: 500;
+.no-card-content h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.no-card-content p {
+    color: #666;
+    margin-bottom: 2rem;
 }
 
 /* === 響應式設計 === */
-@media (max-width: 768px) {
-  body {
-    padding-top: 80px;
-  }
-  
-  .card-container {
-    padding: 0 16px;
-  }
-  
-  .card-header {
-    padding: 24px 16px;
-  }
-  
-  .restaurant-name {
-    font-size: 1.8rem;
-  }
-  
-  .rewards-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .points-circle, .coupons-circle {
-    width: 120px;
-    height: 120px;
-  }
-  
-  .points-value, .coupons-value {
-    font-size: 2.8rem;
-  }
-  
-  .section-title {
-    font-size: 1.3rem;
-  }
-  
-  .card-content {
-    padding: 20px 16px;
-  }
-  
-  .user-avatar {
-    width: 70px;
-    height: 70px;
-  }
+@media (max-width: 600px) {
+    .card-bg {
+        width: 98vw;
+        min-width: unset;
+        margin: 8px auto;
+        border-radius: 18px;
+    }
+    .card-content {
+        padding: 0 8vw 24px 8vw;
+    }
+    .restaurant-name {
+        font-size: 1.5rem;
+        margin-top: -32px;
+    }
+    .user-avatar img, .avatar-placeholder {
+        width: 56px;
+        height: 56px;
+    }
+    .reward-img {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+    from { opacity: 1; }
+    to { opacity: 0; }
 }
