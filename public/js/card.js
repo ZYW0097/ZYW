@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 元素選擇
     const claimCardBtn = document.getElementById('claimCardBtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
     const claimSuccessMessage = document.getElementById('claimSuccessMessage');
     const redeemSuccessMessage = document.getElementById('redeemSuccessMessage');
     const pointsValue = document.querySelector('.points-value');
     const couponsValue = document.querySelector('.coupons-value');
-    const rewardsGrid = document.querySelector('.rewards-grid');
+    
+    // 獲取商店識別碼的通用函數
+    function getStoreSlug() {
+        const pathParts = window.location.pathname.split('/');
+        return pathParts[1]; // 假設 URL 格式為 /storeSlug/card
+    }
 
+    // 領取集點卡功能
     if (claimCardBtn) {
         claimCardBtn.addEventListener('click', async function() {
             try {
@@ -14,8 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingOverlay.style.display = 'flex';
                 
                 // 從 URL 獲取 storeSlug
-                const pathParts = window.location.pathname.split('/');
-                const storeSlug = pathParts[1]; // 假設 URL 格式為 /storeSlug/card
+                const storeSlug = getStoreSlug();
                 
                 if (!storeSlug) {
                     throw new Error('無法獲取商店資訊');
@@ -73,8 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.redeem-btn').forEach(button => {
         button.addEventListener('click', async function() {
             const rewardId = this.dataset.rewardId;
-            const pathParts = window.location.pathname.split('/');
-            const storeSlug = pathParts[1];
+            const storeSlug = getStoreSlug();
             
             try {
                 loadingOverlay.style.display = 'flex';
@@ -103,9 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadingOverlay.style.display = 'none';
                     redeemSuccessMessage.style.display = 'block';
                     
-                    // 2秒後隱藏成功訊息
+                    // 2秒後隱藏成功訊息並重新載入頁面以顯示新獲得的優惠券
                     setTimeout(() => {
                         redeemSuccessMessage.style.display = 'none';
+                        window.location.reload();
                     }, 2000);
                 } else {
                     throw new Error(data.error || '兌換失敗');
