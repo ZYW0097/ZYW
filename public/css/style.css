@@ -125,33 +125,53 @@ body {
   display: none !important;
 }
 
+/* 漢堡按鈕 */
 .hamburger {
   background: none;
   border: none;
   cursor: pointer;
-  width: 40px; height: 40px;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  width: 40px; 
+  height: 40px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1201;
 }
+
 .hamburger span {
   display: block;
-  width: 28px; 
+  position: absolute;
+  width: 28px;
   height: 3px;
   background: #222;
-  margin: 4px 0;
   border-radius: 2px;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
-.hamburger.active span:nth-child(1) { 
-  transform: translateY(7px) rotate(45deg); 
-  width: 28px;
+
+.hamburger span:nth-child(1) {
+  transform: translateY(-8px);
 }
-.hamburger.active span:nth-child(2) { 
-  opacity: 0; 
+
+.hamburger span:nth-child(2) {
+  transform: translateY(0);
 }
-.hamburger.active span:nth-child(3) { 
-  transform: translateY(-7px) rotate(-45deg); 
-  width: 28px;
+
+.hamburger span:nth-child(3) {
+  transform: translateY(8px);
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg);
 }
 
 /* 側邊欄 */
