@@ -71,13 +71,18 @@ router.get('/line/callback', async (req, res) => {
         const adb = getClientDb('main', 'ADB');
         const User = adb.model('User', userSchema);
         let user = await User.findOne({ lineId });
+        let isNewUser = false;
+        
         if (!user) {
+            // 首次登入，創建新用戶
             user = await User.create({
                 lineId,
                 name,
                 avatar: avatarCloudUrl
             });
+            isNewUser = true;
         } else if (!user.avatar && avatarCloudUrl) {
+            // 更新頭像
             user.avatar = avatarCloudUrl;
             await user.save();
         }
@@ -88,14 +93,16 @@ router.get('/line/callback', async (req, res) => {
         // 取出 loginRedirect
         const loginRedirect = req.session.loginRedirect;
         delete req.session.loginRedirect;
-        if (loginRedirect) {
-            return res.redirect(loginRedirect);
-        }
-
-        // 跳轉
-        if (!user.birthday || !user.gender) {
+        
+        // 根據條件決定跳轉
+        if (isNewUser || !user.birthday || !user.gender) {
+            // 首次登入或資料不完整，前往個人資料頁
             return res.redirect('/account/profile');
+        } else if (loginRedirect) {
+            // 已有完整資料且有 redirect 參數，返回原頁面
+            return res.redirect(loginRedirect);
         } else {
+            // 默認跳轉到點數頁面
             return res.redirect('/account/points');
         }
     } catch (err) {
@@ -158,6 +165,36 @@ router.post('/profile', requireLogin, async (req, res) => {
     const User = adb.model('User', userSchema);
     await User.findByIdAndUpdate(req.session.userId, { birthday, gender });
     res.redirect('/account/points');
+});
+
+// 動態跳轉處理（整合各種登入和跳轉情境）
+router.get('/redirect', async (req, res) => {
+    try {
+        // 獲取當前頁面 URL
+        const referer = req.headers.referer || '/';
+        
+        // 未登入狀態：跳轉到登入頁面
+        if (!req.session.userId) {
+            return res.redirect(`/account/login?redirect=${encodeURIComponent(referer)}`);
+        }
+        
+        // 已登入狀態：檢查用戶資料
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user) {
+            // 異常情況：session 有 userId 但找不到用戶
+            req.session.destroy();
+            return res.redirect('/account/login');
+        }
+        
+        // 已登入用戶：直接前往個人資料頁
+        return res.redirect('/account/profile');
+    } catch (error) {
+        console.error('Redirect error:', error);
+        return res.redirect('/');
+    }
 });
 
 module.exports = router;
