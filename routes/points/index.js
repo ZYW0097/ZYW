@@ -210,4 +210,101 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
     }
 });
 
+// 獲取單個獎勵詳情
+router.get('/:storeSlug/api/points/reward/:rewardId', async (req, res) => {
+    try {
+        const { storeSlug, rewardId } = req.params;
+        
+        if (!storeSlug || !rewardId) {
+            return res.status(400).json({ success: false, error: '參數不完整' });
+        }
+        
+        const db = getClientDb(storeSlug, 'CDB');
+        const Rewards = db.model('PointsRewards', pointsRewardsSchema);
+        
+        const reward = await Rewards.findById(rewardId);
+        
+        if (!reward) {
+            return res.status(404).json({ success: false, error: '找不到獎勵資料' });
+        }
+        
+        res.json({ 
+            success: true, 
+            reward: {
+                id: reward._id,
+                name: reward.name,
+                points: reward.points,
+                img: reward.img
+            }
+        });
+    } catch (error) {
+        console.error('Error getting reward details:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: '獲取獎勵詳情失敗，請稍後再試',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// 獲取用戶優惠券列表
+router.get('/:storeSlug/api/points/coupons', isAuthenticated, async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        if (!storeSlug) {
+            return res.status(400).json({ success: false, error: '參數不完整' });
+        }
+        
+        // 獲取用戶點數資料
+        const userDb = getClientDb(storeSlug, 'ADB');
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+        const userPoints = await UserPoints.findOne({ 
+            lineId: req.user.lineId,
+            type: 'user_points'
+        });
+
+        if (!userPoints || !userPoints['ah-coupon-id'] || userPoints['ah-coupon-id'].length === 0) {
+            return res.json({ success: true, coupons: [] });
+        }
+        
+        // 獲取獎勵資料庫
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const Rewards = cdb.model('PointsRewards', pointsRewardsSchema);
+        
+        // 獲取所有獎勵ID
+        const rewardIds = userPoints['ah-coupon-id'].map(c => c.rewardId);
+        
+        // 查詢所有獎勵詳情
+        const rewards = await Rewards.find({ 
+            _id: { $in: rewardIds },
+            type: 'points_reward'
+        });
+        
+        // 合併優惠券和獎勵數據
+        const coupons = userPoints['ah-coupon-id'].map(coupon => {
+            const rewardData = rewards.find(r => r._id.equals(coupon.rewardId));
+            return {
+                id: coupon.rewardId,
+                count: coupon.count || 1,
+                name: rewardData ? rewardData.name : '未知獎勵',
+                img: rewardData ? rewardData.img : '',
+                points: rewardData ? rewardData.points : 0
+            };
+        });
+        
+        res.json({ 
+            success: true, 
+            coupons: coupons
+        });
+    } catch (error) {
+        console.error('Error getting user coupons:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: '獲取優惠券列表失敗，請稍後再試',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
 module.exports = router; 
