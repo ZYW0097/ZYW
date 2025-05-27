@@ -227,16 +227,7 @@ body {
 .mobile-user {
   display: flex; 
   align-items: center; 
-  width: 100%;
-  padding: 1rem 0;
-  margin: 0.5rem 0;
-  text-decoration: none;
-  color: inherit;
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
-}
-.mobile-user:hover {
-  background-color: #f5f5f5;
+  margin: 2rem 0 1.5rem 0;
 }
 .mobile-user .user-icon { 
   width: 48px; 
@@ -255,10 +246,10 @@ body {
   font-size: 1.2rem; 
   text-decoration: none; 
   border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 .mobile-link:hover { 
-  background-color: #f5f5f5; 
+  background: #f5f5f5; 
 }
 .mobile-menu-overlay {
   display: none; 
