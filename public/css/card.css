@@ -12,39 +12,44 @@ body {
     width: 100%;
     margin: 0 auto;
     background: #fff;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     overflow: hidden;
     position: relative;
 }
 
+.card-header {
+    position: relative;
+    overflow: hidden;
+}
+
 .card-header-img {
     width: 100%;
-    height: 200px;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/dine.jpg') center/cover no-repeat;
+    height: 450px;
+    overflow: hidden;
     position: relative;
 }
 
+.card-header-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(5px) brightness(0.8);
+    transform: scale(1.05); /* 略微放大避免邊緣模糊後出現空白 */
+}
+
+/* 添加一個覆蓋層增強可讀性 */
 .card-header-img::after {
-    content: none;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
 }
 
-.card-content {
-    padding: 0 24px 32px;
-    position: relative;
-}
-
-.restaurant-name {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 700;
-    margin: 20px 0 25px;
-    color: #222;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    position: relative;
-}
-
-/* 添加一個更醒目的餐廳標題樣式，用於圖片頂部 */
+/* 餐廳標題樣式，確保在模糊背景上清晰可見 */
 .card-header-title {
     position: absolute;
     top: 50%;
@@ -53,19 +58,26 @@ body {
     transform: translateY(-50%);
     text-align: center;
     color: white;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 800;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    z-index: 2;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    z-index: 2; /* 確保文字在覆蓋層之上 */
 }
+
+.card-content {
+    padding: 20px 24px 32px;
+    position: relative;
+    background: #fff;
+}
+
 
 /* === 用戶信息摘要 === */
 .user-summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin: 20px 0 30px;
     padding: 15px 10px;
     background: #f9f9f9;
     border-radius: 12px;
@@ -383,17 +395,20 @@ body {
 /* === 響應式設計 === */
 @media (max-width: 768px) {
     body {
-        padding-top: 85px;
-        padding-bottom: 30px;
+        padding-top: 75px; /* 適應行動裝置導航欄高度 */
     }
     
     .card-bg {
-        width: 92%;
-        border-radius: 12px;
+        width: 100%;
     }
     
     .card-header-img {
-        height: 160px;
+        height: 350px;
+    }
+    
+    .card-header-title {
+        font-size: 28px;
+        letter-spacing: 1px;
     }
     
     .card-content {
@@ -454,7 +469,7 @@ body {
     
     .user-summary {
         flex-direction: column;
-        padding: 16px 12px;
+        padding: 15px 16px 24px;
     }
     
     .user-avatar {
@@ -487,6 +502,20 @@ body {
     .points-label, .coupons-label {
         display: flex;
         align-items: center;
+    }
+    
+    .card-header-img {
+        height: 280px;
+    }
+    
+    .card-header-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 380px) {
+    .card-header-img {
+        height: 240px;
     }
 }
 
