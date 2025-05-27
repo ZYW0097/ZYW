@@ -11,29 +11,32 @@ body {
 .card-bg {
     width: 100%;
     margin: 0 auto;
-    background: #fff;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
 }
 
 .card-header {
     position: relative;
     overflow: hidden;
+    height: 600px;
 }
 
 .card-header-img {
     width: 100%;
-    height: 220px; /* 減少高度 */
-    overflow: hidden;
-    position: relative;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
 }
 
 .card-header-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: blur(2px) brightness(0.85);
+    filter: blur(3px) brightness(0.85);
     transform: scale(1.05); /* 略微放大避免邊緣模糊後出現空白 */
 }
 
@@ -45,24 +48,24 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
 
 /* 餐廳標題樣式，確保在模糊背景上清晰可見 */
 .card-header-title {
     position: absolute;
-    top: 50%;
+    top: 25%;
     left: 0;
     right: 0;
     transform: translateY(-50%);
     text-align: center;
     color: white;
-    font-size: 30px;
+    font-size: 34px;
     font-weight: 800;
     letter-spacing: 2px;
     text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    z-index: 2; /* 確保文字在覆蓋層之上 */
+    z-index: 3; /* 確保文字在覆蓋層之上 */
 }
 
 /* === 用戶信息摘要 === */
@@ -70,12 +73,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0;
-    padding: 15px 24px;
-    background: rgba(255, 255, 255, 0.9);
-    position: relative;
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
     z-index: 3;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    padding: 20px 24px;
 }
 
 .user-points, .user-coupons {
@@ -84,22 +87,24 @@ body {
 }
 
 .points-value, .coupons-value {
-    font-size: 32px;
+    font-size: 40px;
     font-weight: 800;
-    color: #333;
+    color: white;
     margin-bottom: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .points-label, .coupons-label {
-    font-size: 16px;
-    color: #666;
+    font-size: 18px;
+    color: white;
     font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .user-avatar {
     position: relative;
-    width: 75px;
-    height: 75px;
+    width: 80px;
+    height: 80px;
     margin: 0 25px;
     display: flex;
     flex-direction: column;
@@ -113,7 +118,7 @@ body {
     object-fit: cover;
     background: #f1f1f1;
     border: 3px solid #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .avatar-placeholder {
@@ -127,17 +132,19 @@ body {
 .user-name {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: white;
     margin-top: 8px;
     text-align: center;
     word-break: break-all;
     width: 100%;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .card-content {
     padding: 20px 24px 32px;
     position: relative;
     background: #fff;
+    z-index: 2;
 }
 
 /* === 規則區塊 === */
@@ -402,36 +409,33 @@ body {
         width: 100%;
     }
     
-    .card-header-img {
-        height: 180px;
+    .card-header {
+        height: 500px;
     }
     
     .card-header-title {
-        font-size: 28px;
+        font-size: 30px;
         letter-spacing: 1px;
-    }
-    
-    .card-content {
-        padding: 16px 16px 24px;
-    }
-    
-    .restaurant-name {
-        font-size: 20px;
-        margin: 16px 0 24px;
+        top: 25%;
     }
     
     .user-summary {
-        padding: 12px 16px;
+        top: 40%;
+        padding: 15px 16px;
     }
     
     .points-value, .coupons-value {
-        font-size: 28px;
+        font-size: 34px;
+    }
+    
+    .points-label, .coupons-label {
+        font-size: 16px;
     }
     
     .user-avatar {
-        width: 65px;
-        height: 65px;
-        margin: 0 16px;
+        width: 70px;
+        height: 70px;
+        margin: 0 20px;
     }
     
     .user-name {
@@ -444,31 +448,32 @@ body {
         padding-top: 80px;
     }
     
-    .card-header-img {
-        height: 160px;
+    .card-header {
+        height: 450px;
     }
     
     .card-header-title {
-        font-size: 24px;
+        font-size: 26px;
+        top: 25%;
     }
     
     .user-summary {
+        top: 40%;
         padding: 12px 16px;
     }
     
     .points-value, .coupons-value {
-        font-size: 26px;
-        margin-bottom: 2px;
+        font-size: 30px;
     }
     
     .points-label, .coupons-label {
-        font-size: 14px;
+        font-size: 15px;
     }
     
     .user-avatar {
-        width: 60px;
-        height: 60px;
-        margin: 0 12px;
+        width: 65px;
+        height: 65px;
+        margin: 0 15px;
     }
     
     .user-name {
