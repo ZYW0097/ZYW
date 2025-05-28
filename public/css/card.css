@@ -543,7 +543,7 @@ body {
 /* === 響應式設計 === */
 @media (max-width: 768px) {
     body {
-        padding-top: 75px; /* 適應行動裝置導航欄高度 */
+        padding-top: 75px; 
     }
     
     .card-bg {
@@ -551,7 +551,7 @@ body {
     }
     
     .card-header {
-        height: 360px; /* 調整適合行動裝置的高度 */
+        height: 360px; 
     }
     
     .card-header-title {
@@ -612,6 +612,7 @@ body {
         display: block;
         height: auto;
         position: relative;
+        min-height: 18px;
     }
     
     .points-value, .coupons-value {
