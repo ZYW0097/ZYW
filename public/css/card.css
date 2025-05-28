@@ -568,32 +568,49 @@ body {
     .user-summary {
         top: 50%;
         padding: 15px 16px;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: 
+            "avatar avatar"
+            "points coupons";
+        gap: 10px;
+        align-items: start;
+        justify-items: center;
     }
     
-    .user-points, .user-coupons {
-        padding: 8px 0;
+    .user-points {
+        grid-area: points;
+        width: 100%;
     }
     
-    .points-value, .coupons-value {
-        font-size: 34px;
-    }
-    
-    .points-label, .coupons-label {
-        font-size: 16px;
+    .user-coupons {
+        grid-area: coupons;
+        width: 100%;
     }
     
     .user-avatar {
-        width: 70px;
-        height: 70px;
-        margin: 0 20px 12px;
-        order: -1;
-        flex-basis: 100%;
+        grid-area: avatar;
+        width: 60px;
+        height: 60px;
+        margin: 0 0 5px;
     }
     
     .user-name {
-        font-size: 15px;
+        font-size: 14px;
+        margin-top: 4px;
+        width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .points-value, .coupons-value {
+        font-size: 28px;
+    }
+    
+    .points-label, .coupons-label {
+        font-size: 14px;
     }
     
     .tab-indicator {
@@ -612,37 +629,28 @@ body {
     }
     
     .card-header-title {
-        font-size: 26px;
+        font-size: 24px;
         top: 18%;
     }
     
     .user-summary {
         top: 50%;
-        padding: 12px 16px;
-    }
-    
-    .user-points, .user-coupons {
-        padding: 6px 0;
-        flex: 0 0 45%;
-    }
-    
-    .points-value, .coupons-value {
-        font-size: 30px;
-    }
-    
-    .points-label, .coupons-label {
-        font-size: 15px;
+        padding: 10px;
+        gap: 5px;
     }
     
     .user-avatar {
-        width: 65px;
-        height: 65px;
-        margin: 0 15px 12px;
+        width: 50px;
+        height: 50px;
+        margin: 0 0 4px;
     }
     
-    .user-name {
-        font-size: 14px;
-        margin-top: 6px;
+    .points-value, .coupons-value {
+        font-size: 24px;
+    }
+    
+    .points-label, .coupons-label {
+        font-size: 12px;
     }
 }
 
@@ -656,8 +664,18 @@ body {
     }
     
     .user-avatar {
-        width: 60px;
-        height: 60px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .user-name {
+        font-size: 12px;
+        margin-top: 3px;
+        width: 100px;
+    }
+    
+    .points-value, .coupons-value {
+        font-size: 22px;
     }
 }
 
