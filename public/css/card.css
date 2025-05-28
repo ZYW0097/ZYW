@@ -96,14 +96,6 @@ body {
     border-radius: 12px;
 }
 
-.tab:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.tab.active {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
 /* 新增: 提示線樣式 */
 .tab-indicator {
     position: absolute;
@@ -147,7 +139,6 @@ body {
 .user-avatar {
     position: relative;
     width: 80px;
-    height: 80px;
     margin: 0 25px;
     display: flex;
     flex-direction: column;
@@ -181,6 +172,9 @@ body {
     word-break: break-all;
     width: 100%;
     text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    display: inline-block;
+    max-width: 100px;
+    height: auto;
 }
 
 .card-content {
@@ -608,12 +602,16 @@ body {
     .user-name {
         font-size: 14px;
         margin-top: 4px;
-        width: 120px;
+        margin-bottom: 0;
+        width: auto;
+        max-width: 120px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: center;
         display: block;
+        height: auto;
+        position: relative;
     }
     
     .points-value, .coupons-value {
@@ -637,7 +635,7 @@ body {
     }
     
     .card-header {
-        height: 300px; /* 更小螢幕更小高度 */
+        height: 300px; 
     }
     
     .card-header-title {
@@ -658,8 +656,11 @@ body {
     }
     
     .user-name {
-        width: 100%;
+        width: auto;
+        max-width: 100%;
         margin-bottom: 5px;
+        font-size: 13px;
+        min-height: 18px;
     }
     
     .points-value, .coupons-value {
@@ -681,7 +682,7 @@ body {
     }
     
     .card-header {
-        height: 280px; /* 更小高度適合極小螢幕 */
+        height: 280px; 
     }
     
     .user-summary {
@@ -696,7 +697,8 @@ body {
     .user-name {
         font-size: 12px;
         margin-top: 3px;
-        width: 100px;
+        width: auto;
+        max-width: 90px;
     }
     
     .points-value, .coupons-value {
