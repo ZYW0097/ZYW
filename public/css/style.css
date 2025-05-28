@@ -224,20 +224,6 @@ body {
 .close-btn:after { 
   transform: rotate(-45deg); 
 }
-.mobile-user {
-  display: flex; 
-  align-items: center; 
-  margin: 2rem 0 1.5rem 0;
-}
-.mobile-user .user-icon { 
-  width: 48px; 
-  height: 48px; 
-}
-.mobile-username { 
-  margin-left: 1rem; 
-  font-weight: bold; 
-  font-size: 1.1rem; 
-}
 .mobile-link {
   display: block; 
   width: 100%; 
@@ -250,6 +236,21 @@ body {
 }
 .mobile-link:hover { 
   background: #f5f5f5; 
+}
+.mobile-user-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+.mobile-user-content .user-icon {
+  width: 48px;
+  height: 48px;
+}
+.mobile-user-content .mobile-username {
+  margin-left: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 .mobile-menu-overlay {
   display: none; 

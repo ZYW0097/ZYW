@@ -21,9 +21,11 @@
         <div class="mobile-menu-header">
             <a class="nav-logo" href="/">DINE✦</a>
         </div>
-        <a class="mobile-user" href="/account/redirect">
-            <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
-            <div class="mobile-username"><%= user ? user.name : '未登入' %></div>
+        <a class="mobile-link" href="/account/redirect">
+            <div class="mobile-user-content">
+                <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
+                <div class="mobile-username"><%= user ? user.name : '未登入' %></div>
+            </div>
         </a>
         <a class="mobile-link" href="/">餐廳首頁</a>
         <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
