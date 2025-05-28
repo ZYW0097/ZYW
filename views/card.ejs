@@ -33,9 +33,10 @@
         </div>
         <div class="card-header-title"><%= storeName %></div>
         <div class="user-summary">
-          <div class="user-points">
-            <div class="points-value"><%= userPoints['ah-points'] %></div>
+          <div class="user-points tab active" id="pointsTab">
+            <div class="points-value" id="pointsValue"><%= userPoints['ah-points'] %></div>
             <div class="points-label">點數</div>
+            <div class="tooltip">查看您的點數與兌換獎勵</div>
           </div>
           <div class="user-avatar">
             <% if (user && user.avatar) { %>
@@ -45,32 +46,51 @@
             <% } %>
             <div class="user-name"><%= user ? user.name : '用戶名稱' %></div>
           </div>
-          <div class="user-coupons">
+          <div class="user-coupons tab" id="couponsTab">
             <div class="coupons-value">
               <%= userPoints['ah-coupon-id'] ? userPoints['ah-coupon-id'].reduce((sum, c) => sum + (c.count || 0), 0) : 0 %>
             </div>
             <div class="coupons-label">優惠券</div>
+            <div class="tooltip">查看您已兌換的優惠券</div>
           </div>
         </div>
       </div>
       <div class="card-content">
-        <div class="rules-section">
-          <div class="rules-title">使用規則</div>
-          <ul>
-            <% (rules || []).forEach(rule => { %>
-              <li><%= rule.text %></li>
+        <!-- 點數/獎勵區域 -->
+        <div id="pointsContent">
+          <div class="rules-section">
+            <div class="rules-title">使用規則</div>
+            <ul>
+              <% (rules || []).forEach(rule => { %>
+                <li><%= rule.text %></li>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="rewards-section">
+            <div class="rewards-title">獎勵兌換</div>
+            <% (rewards || []).forEach(reward => { %>
+              <div class="reward-row">
+                <img class="reward-img" src="<%= reward.img %>" alt="<%= reward.name %>">
+                <div class="reward-name"><%= reward.name %></div>
+                <button class="reward-points redeem-btn" data-reward-id="<%= reward._id %>"><%= reward.points %>點</button>
+              </div>
             <% }) %>
-          </ul>
+          </div>
         </div>
-        <div class="rewards-section">
-          <div class="rewards-title">獎勵兌換</div>
-          <% (rewards || []).forEach(reward => { %>
-            <div class="reward-row">
-              <img class="reward-img" src="<%= reward.img %>" alt="<%= reward.name %>">
-              <div class="reward-name"><%= reward.name %></div>
-              <button class="reward-points redeem-btn" data-reward-id="<%= reward._id %>"><%= reward.points %>點</button>
+        
+        <!-- 優惠券區域 -->
+        <div id="couponsContent" style="display: none;">
+          <div class="coupons-section">
+            <div class="coupons-title">我的優惠券</div>
+            <div class="coupons-container" id="couponsContainer">
+              <div class="loading-coupons">載入中...</div>
             </div>
-          <% }) %>
+            <div class="empty-coupons-message" style="display: none;">
+              <div class="empty-icon">🎁</div>
+              <h3>尚無優惠券</h3>
+              <p>累積點數並兌換獎勵以獲得優惠券</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

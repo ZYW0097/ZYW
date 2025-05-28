@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <rect width="80" height="80" fill="#f2f2f2" rx="10" ry="10"/>
+  <path d="M20,20 L60,20 L60,60 L20,60 Z" fill="#e0e0e0" stroke="#cccccc" stroke-width="2"/>
+  <path d="M32,30 L48,30 L48,50 L40,45 L32,50 Z" fill="#bbbbbb"/>
+  <text x="40" y="40" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#666666">優惠券</text>
+</svg> 

@@ -7,10 +7,93 @@ document.addEventListener('DOMContentLoaded', function() {
     const pointsValue = document.querySelector('.points-value');
     const couponsValue = document.querySelector('.coupons-value');
     
+    // 新增的頁籤元素
+    const pointsTab = document.getElementById('pointsTab');
+    const couponsTab = document.getElementById('couponsTab');
+    const pointsContent = document.getElementById('pointsContent');
+    const couponsContent = document.getElementById('couponsContent');
+    const couponsContainer = document.getElementById('couponsContainer');
+    const emptyMessage = document.querySelector('.empty-coupons-message');
+    
     // 獲取商店識別碼的通用函數
     function getStoreSlug() {
         const pathParts = window.location.pathname.split('/');
         return pathParts[1]; // 假設 URL 格式為 /storeSlug/card
+    }
+    
+    // 頁籤切換功能
+    if (pointsTab && couponsTab) {
+        pointsTab.addEventListener('click', function() {
+            pointsTab.classList.add('active');
+            couponsTab.classList.remove('active');
+            pointsContent.style.display = 'block';
+            couponsContent.style.display = 'none';
+        });
+        
+        couponsTab.addEventListener('click', function() {
+            couponsTab.classList.add('active');
+            pointsTab.classList.remove('active');
+            couponsContent.style.display = 'block';
+            pointsContent.style.display = 'none';
+            
+            // 如果還沒載入過優惠券，就載入
+            if (!couponsTab.dataset.loaded) {
+                loadCoupons();
+            }
+        });
+    }
+    
+    // 載入優惠券功能
+    async function loadCoupons() {
+        try {
+            const storeSlug = getStoreSlug();
+            
+            if (!storeSlug) {
+                throw new Error('無法獲取商店資訊');
+            }
+            
+            const response = await fetch(`/${storeSlug}/api/points/coupons`);
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                couponsTab.dataset.loaded = 'true';
+                
+                // 移除載入中提示
+                couponsContainer.innerHTML = '';
+                
+                if (data.coupons && data.coupons.length > 0) {
+                    // 顯示優惠券列表
+                    data.coupons.forEach(coupon => {
+                        const couponElement = document.createElement('div');
+                        couponElement.className = 'coupon-row';
+                        couponElement.innerHTML = `
+                            <img class="coupon-img" src="${coupon.img || '/images/coupon-default.svg'}" alt="${coupon.name}">
+                            <div class="coupon-info">
+                                <div class="coupon-name">${coupon.name}</div>
+                                <div class="coupon-count">數量: ${coupon.count}</div>
+                            </div>
+                            <button class="coupon-use" data-coupon-id="${coupon.id}">使用</button>
+                        `;
+                        couponsContainer.appendChild(couponElement);
+                    });
+                    
+                    // 綁定使用優惠券按鈕事件
+                    document.querySelectorAll('.coupon-use').forEach(button => {
+                        button.addEventListener('click', function() {
+                            alert('優惠券使用功能即將推出！');
+                        });
+                    });
+                } else {
+                    // 顯示無優惠券訊息
+                    emptyMessage.style.display = 'block';
+                }
+            } else {
+                throw new Error(data.error || '載入優惠券失敗');
+            }
+        } catch (error) {
+            console.error('Error loading coupons:', error);
+            couponsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #d32f2f;">載入失敗，請重試</div>`;
+        }
     }
 
     // 領取集點卡功能
@@ -102,6 +185,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (couponsValue) {
                         couponsValue.textContent = data.couponCount;
+                    }
+
+                    // 重置優惠券已載入的狀態，以便下次進入重新載入
+                    if (couponsTab) {
+                        couponsTab.dataset.loaded = '';
                     }
 
                     // 顯示成功訊息

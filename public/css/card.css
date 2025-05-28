@@ -18,7 +18,7 @@ body {
 .card-header {
     position: relative;
     overflow: hidden;
-    height: 600px;
+    height: 450px;
 }
 
 .card-header-img {
@@ -74,7 +74,7 @@ body {
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    top: 40%;
+    top: 60%;
     left: 0;
     right: 0;
     z-index: 3;
@@ -84,6 +84,59 @@ body {
 .user-points, .user-coupons {
     flex: 1;
     text-align: center;
+    position: relative;
+}
+
+/* 新增: Tab 樣式 */
+.tab {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 12px 0;
+    border-radius: 12px;
+}
+
+.tab:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab.active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 新增: 提示框樣式 */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    bottom: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.tooltip:after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(0, 0, 0, 0.7);
+}
+
+.tab:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    bottom: -40px;
 }
 
 .points-value, .coupons-value {
@@ -236,6 +289,110 @@ body {
 
 .reward-points:hover {
     background: #666;
+}
+
+/* === 優惠券區塊 === */
+.coupons-section {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.coupons-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.coupons-container {
+    min-height: 150px;
+}
+
+.coupon-row {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coupon-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.coupon-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 16px;
+    background: #f1f1f1;
+}
+
+.coupon-info {
+    flex: 1;
+}
+
+.coupon-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.coupon-count {
+    font-size: 14px;
+    color: #666;
+}
+
+.coupon-use {
+    background: #4caf50;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 16px;
+    padding: 6px 14px;
+    min-width: 60px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.coupon-use:hover {
+    background: #3d8b40;
+}
+
+.loading-coupons {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+.empty-coupons-message {
+    text-align: center;
+    padding: 32px 20px;
+}
+
+.empty-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.empty-coupons-message h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: #555;
+}
+
+.empty-coupons-message p {
+    color: #888;
+    margin: 0;
 }
 
 /* === 登入/領取/overlay區塊 === */
@@ -441,6 +598,11 @@ body {
     .user-name {
         font-size: 15px;
     }
+    
+    .tooltip {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -479,6 +641,10 @@ body {
     .user-name {
         font-size: 14px;
         margin-top: 6px;
+    }
+    
+    .tooltip {
+        display: none; /* 在極小螢幕上隱藏提示 */
     }
 }
 
