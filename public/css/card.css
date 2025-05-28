@@ -104,39 +104,28 @@ body {
     background-color: rgba(255, 255, 255, 0.15);
 }
 
-/* 新增: 提示框樣式 */
-.tooltip {
+/* 新增: 提示線樣式 */
+.tab-indicator {
     position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    bottom: -36px;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    white-space: nowrap;
+    width: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 3px;
+    transition: width 0.2s ease;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    z-index: 10;
 }
 
-.tooltip:after {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid rgba(0, 0, 0, 0.7);
-}
-
-.tab:hover .tooltip {
+.tab.active .tab-indicator {
+    width: 40px;
     opacity: 1;
-    visibility: visible;
-    bottom: -40px;
+}
+
+.tab:hover .tab-indicator {
+    width: 30px;
+    opacity: 0.7;
 }
 
 .points-value, .coupons-value {
@@ -599,9 +588,8 @@ body {
         font-size: 15px;
     }
     
-    .tooltip {
-        font-size: 11px;
-        padding: 6px 10px;
+    .tab-indicator {
+        height: 2px;
     }
 }
 
@@ -641,10 +629,6 @@ body {
     .user-name {
         font-size: 14px;
         margin-top: 6px;
-    }
-    
-    .tooltip {
-        display: none; /* 在極小螢幕上隱藏提示 */
     }
 }
 
