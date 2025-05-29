@@ -81,7 +81,7 @@ body {
     left: 0;
     right: 0;
     z-index: 3;
-    padding: 10px 16px; /* 減少頂部和底部間距 */
+    padding: 6px 16px; /* 縮小間距 */
 }
 
 .user-points, .user-coupons {
@@ -141,8 +141,8 @@ body {
 
 .user-avatar {
     position: relative;
-    width: 70px;
-    margin: 0 10px; /* 縮小左右間距 */
+    width: 65px; /* 縮小頭像尺寸 */
+    margin: 0 6px; /* 縮小左右間距 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -183,7 +183,7 @@ body {
 /* 卡片內容區域 */
 .card-content {
     width: 1100px;
-    padding: 16px 16px 24px;
+    padding: 12px 12px 24px; /* 縮小間距 */
     position: relative;
     z-index: 2;
     border-left: 1px solid #e0e0e0;
@@ -205,6 +205,7 @@ body {
     border: none;
     box-shadow: none;
     max-width: 700px; 
+    /* 移除水平居中 */
 }
 
 .rules-title {
@@ -228,14 +229,13 @@ body {
 
 /* === 獎勵區塊 === */
 .rewards-section {
-    background: transparent; /* 移除背景顏色 */
+    background: transparent;
     border-radius: 12px;
-    padding: 12px 16px; /* 縮小間距 */
+    padding: 12px 16px;
     border: none;
     box-shadow: none;
-    max-width: 700px; /* 限制最大寬度 */
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 700px;
+    /* 移除水平居中 */
 }
 
 .rewards-title {
@@ -248,17 +248,20 @@ body {
 
 .reward-row {
     display: flex;
-    align-items: center;
+    align-items: center; /* 垂直置中 */
+    justify-content: center; /* 水平置中內容 */
     background: #e8e8e8;
-    border-radius: 50px; /* 長橢圓形 */
+    border-radius: 50px;
     margin-bottom: 12px;
-    padding: 0; /* 移除內邊距以便更好控制元素 */
+    padding: 0;
     transition: transform 0.2s ease;
     border: none;
     position: relative;
     overflow: hidden;
     height: 75px;
-    width: 100%; /* 確保長度不會縮小 */
+    width: 100%;
+    margin-left: 0; /* 確保不會有左側自動間距 */
+    margin-right: 0; /* 確保不會有右側自動間距 */
 }
 
 .reward-row:hover {
@@ -322,14 +325,13 @@ body {
 
 /* === 優惠券區塊 === */
 .coupons-section {
-    background: transparent; /* 移除背景顏色 */
+    background: transparent;
     border-radius: 12px;
-    padding: 12px 16px; /* 縮小間距 */
+    padding: 12px 16px;
     border: none;
     box-shadow: none;
-    max-width: 700px; /* 限制最大寬度 */
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 700px;
+    /* 移除水平居中 */
 }
 
 .coupons-title {
@@ -694,14 +696,14 @@ body {
     
     .user-summary {
         top: 45%;
-        padding: 8px 16px;
+        padding: 5px 12px; /* 縮小間距 */
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: auto auto;
         grid-template-areas: 
             "avatar avatar"
             "points coupons";
-        gap: 10px;
+        gap: 6px; /* 縮小間距 */
         align-items: start;
         justify-items: center;
     }
@@ -723,8 +725,8 @@ body {
     
     .user-avatar {
         grid-area: avatar;
-        width: 50px;
-        height: 50px;
+        width: 45px; /* 縮小頭像 */
+        height: 45px; /* 縮小頭像 */
         margin: 0 0 2px;
         display: flex;
         flex-direction: column;
