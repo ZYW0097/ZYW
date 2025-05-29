@@ -227,7 +227,7 @@ body {
     color: #555;
     margin-bottom: 6px; /* 縮小間距 */
     line-height: 1.4;
-    margin-left: 12px;
+    margin-left: 20px;
 }
 
 /* === 獎勵區塊 === */
@@ -665,6 +665,7 @@ body {
     .reward-row, .coupon-row {
         padding: 0;
         height: 60px;
+        position: relative;
     }
     
     .reward-img, .coupon-img {
@@ -673,15 +674,25 @@ body {
     }
     
     .reward-name, .coupon-info {
-        left: 65px;
-        right: 70px;
-        font-size: 14px;
+        margin-right: 70px;
     }
     
     .reward-points, .coupon-use {
-        min-width: 60px;
-        font-size: 12px;
-        padding: 0 10px 0 14px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        width: 70px;
+        min-width: unset;
+        max-width: unset;
+        border-radius: 0 25px 25px 0;
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
     }
     
     .user-summary {
