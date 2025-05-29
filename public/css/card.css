@@ -695,17 +695,8 @@ body {
     }
     
     .user-summary {
-        top: 45%;
-        padding: 5px 12px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
-        grid-template-areas: 
-            "avatar avatar"
-            "points coupons";
-        gap: 4px; /* 進一步縮小間距 */
-        align-items: start;
-        justify-items: center;
+        top: 48%;
+        padding: 10px 0 0 0;
     }
     
     .user-points, .user-coupons {
@@ -723,12 +714,9 @@ body {
     
     .user-avatar {
         grid-area: avatar;
-        width: 45px;
-        height: 45px;
-        margin: 0 0 2px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        width: 70px;
+        height: 70px;
+        margin: 0 0 4px 0;
     }
     
     .points-value, .coupons-value {
@@ -775,19 +763,9 @@ body {
     }
     
     .user-name {
-        font-size: 14px;
-        margin-top: 4px;
+        font-size: 16px;
+        margin-top: 8px;
         margin-bottom: 0;
-        width: auto;
-        max-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: center;
-        display: block;
-        height: auto;
-        position: relative;
-        min-height: 18px;
     }
 }
 
