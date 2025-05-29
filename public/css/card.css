@@ -74,21 +74,21 @@ body {
 /* === 用戶信息摘要 === */
 .user-summary {
     display: flex;
-    justify-content: center; /* 水平置中 */
+    justify-content: center;
     align-items: center;
+    gap: 32px; /* 控制三者間距 */
     position: absolute;
     top: 48%;
     left: 0;
     right: 0;
     z-index: 3;
-    padding: 6px 16px;
+    padding: 0;
 }
 
 .user-points, .user-coupons {
-    flex: 0 0 auto; /* 不再填滿剩餘空間 */
+    flex: 0 1 auto;
     text-align: center;
-    position: relative;
-    padding: 0 25px; /* 控制與頭像的間距 */
+    padding: 0;
 }
 
 /* 新增: Tab 樣式 */
@@ -141,12 +141,13 @@ body {
 }
 
 .user-avatar {
-    position: relative;
-    width: 60px; /* 進一步縮小頭像 */
-    margin: 0 10px; /* 調整間距 */
+    width: 60px;
+    height: 60px;
+    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .user-avatar img, .avatar-placeholder {
@@ -250,42 +251,44 @@ body {
 .reward-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     background: #e8e8e8;
     border-radius: 50px;
-    margin-bottom: 12px;
-    position: relative;
-    overflow: hidden;
+    margin: 0 auto 12px auto;
     height: 75px;
     width: 100%;
-    margin: 0 auto 12px auto; /* 水平置中 */
+    max-width: 700px;
+    position: relative;
+    overflow: hidden;
     transition: transform 0.2s ease;
     border: none;
 }
 
 .reward-img {
-    width: 75px;
-    height: 75px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
     background: #f1f1f1;
-    position: absolute;
-    left: 0;
-    top: 0;
+    margin-left: 16px;
+    margin-right: 24px;
+    position: static;
 }
 
 .reward-name {
-    position: absolute;
-    left: 85px; /* 留出圖片的空間 */
-    right: 90px; /* 留出按鈕的空間 */
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: center;
+    flex: 1;
     font-size: 16px;
     font-weight: 600;
     color: #333;
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
 }
 
 .reward-points {
@@ -294,20 +297,17 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 40px 0 0 40px; /* 恢復半圓形 */
-    padding: 0 14px 0 18px;
-    min-width: 60px;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    border-radius: 0 40px 40px 0;
+    min-width: 70px;
     height: 100%;
+    margin-left: 24px;
+    margin-right: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: static;
 }
 
 .reward-points:hover {
