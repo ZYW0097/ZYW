@@ -113,10 +113,6 @@ body {
     transition: box-shadow 0.2s;
 }
 
-.user-icon:hover {
-    box-shadow: 0 0 0 2px var(--primary-color);
-}
-
 /* 桌機/行動裝置切換 */
 .desktop-only { 
     display: flex; 
