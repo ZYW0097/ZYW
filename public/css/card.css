@@ -74,20 +74,21 @@ body {
 /* === 用戶信息摘要 === */
 .user-summary {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* 水平置中 */
     align-items: center;
     position: absolute;
     top: 48%;
     left: 0;
     right: 0;
     z-index: 3;
-    padding: 6px 16px; /* 縮小間距 */
+    padding: 6px 16px;
 }
 
 .user-points, .user-coupons {
-    flex: 1;
+    flex: 0 0 auto; /* 不再填滿剩餘空間 */
     text-align: center;
     position: relative;
+    padding: 0 25px; /* 控制與頭像的間距 */
 }
 
 /* 新增: Tab 樣式 */
@@ -141,8 +142,8 @@ body {
 
 .user-avatar {
     position: relative;
-    width: 65px; /* 縮小頭像尺寸 */
-    margin: 0 6px; /* 縮小左右間距 */
+    width: 60px; /* 進一步縮小頭像 */
+    margin: 0 10px; /* 調整間距 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -183,7 +184,7 @@ body {
 /* 卡片內容區域 */
 .card-content {
     width: 1100px;
-    padding: 12px 12px 24px; /* 縮小間距 */
+    padding: 12px 12px 24px;
     position: relative;
     z-index: 2;
     border-left: 1px solid #e0e0e0;
@@ -248,53 +249,43 @@ body {
 
 .reward-row {
     display: flex;
-    align-items: center; /* 垂直置中 */
-    justify-content: center; /* 水平置中內容 */
+    align-items: center;
     background: #e8e8e8;
     border-radius: 50px;
     margin-bottom: 12px;
-    padding: 0;
-    transition: transform 0.2s ease;
-    border: none;
     position: relative;
     overflow: hidden;
     height: 75px;
     width: 100%;
-    margin-left: 0; /* 確保不會有左側自動間距 */
-    margin-right: 0; /* 確保不會有右側自動間距 */
-}
-
-.reward-row:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 auto 12px auto; /* 水平置中 */
+    transition: transform 0.2s ease;
+    border: none;
 }
 
 .reward-img {
-    width: 75px; /* 與行高相同 */
-    height: 75px; /* 與行高相同 */
-    border-radius: 50%; /* 圓形圖片 */
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
     object-fit: cover;
-    margin: 0; /* 移除邊距 */
     background: #f1f1f1;
-    position: absolute; /* 絕對定位 */
-    left: 0; /* 置於最左側 */
-    top: 0; /* 頂部對齊 */
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .reward-name {
-    flex: 1;
+    position: absolute;
+    left: 85px; /* 留出圖片的空間 */
+    right: 90px; /* 留出按鈕的空間 */
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
     font-size: 16px;
     font-weight: 600;
     color: #333;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: center; /* 置中顯示 */
-    position: absolute; /* 絕對定位 */
-    left: 75px; /* 圖片寬度 */
-    right: 80px; /* 點數按鈕寬度 */
-    top: 50%; /* 垂直置中 */
-    transform: translateY(-50%);
 }
 
 .reward-points {
@@ -303,9 +294,9 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 40px 0 0 40px; /* 更大的半圓弧度 */
+    border-radius: 40px 0 0 40px; /* 恢復半圓形 */
     padding: 0 14px 0 18px;
-    min-width: 80px; /* 固定最小寬度 */
+    min-width: 60px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -347,10 +338,7 @@ body {
     align-items: center;
     background: #e8e8e8;
     border-radius: 50px;
-    margin-bottom: 12px;
-    padding: 0;
-    transition: transform 0.2s ease;
-    border: none;
+    margin: 0 auto 12px auto; /* 水平置中 */
     position: relative;
     overflow: hidden;
     height: 75px;
@@ -362,7 +350,6 @@ body {
     height: 75px;
     border-radius: 50%;
     object-fit: cover;
-    margin: 0;
     background: #f1f1f1;
     position: absolute;
     left: 0;
@@ -370,16 +357,15 @@ body {
 }
 
 .coupon-info {
-    flex: 1;
+    position: absolute;
+    left: 85px;
+    right: 90px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: center;
-    position: absolute;
-    left: 75px;
-    right: 80px;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .coupon-use {
@@ -390,7 +376,7 @@ body {
     border: none;
     border-radius: 40px 0 0 40px;
     padding: 0 14px 0 18px;
-    min-width: 80px;
+    min-width: 60px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -685,68 +671,52 @@ body {
     }
     
     .reward-name, .coupon-info {
-        left: 60px;
+        left: 65px;
         right: 70px;
+        font-size: 14px;
     }
     
     .reward-points, .coupon-use {
-        min-width: 70px;
+        min-width: 60px;
         font-size: 12px;
+        padding: 0 10px 0 14px;
     }
     
     .user-summary {
         top: 45%;
-        padding: 5px 12px; /* 縮小間距 */
+        padding: 5px 12px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: auto auto;
         grid-template-areas: 
             "avatar avatar"
             "points coupons";
-        gap: 6px; /* 縮小間距 */
+        gap: 4px; /* 進一步縮小間距 */
         align-items: start;
         justify-items: center;
     }
     
     .user-points, .user-coupons {
-        position: relative;
-        padding-bottom: 10px;
+        padding: 0;
+        grid-area: auto;
     }
     
     .user-points {
         grid-area: points;
-        width: 100%;
     }
     
     .user-coupons {
         grid-area: coupons;
-        width: 100%;
     }
     
     .user-avatar {
         grid-area: avatar;
-        width: 45px; /* 縮小頭像 */
-        height: 45px; /* 縮小頭像 */
+        width: 45px;
+        height: 45px;
         margin: 0 0 2px;
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-    
-    .user-name {
-        font-size: 14px;
-        margin-top: 4px;
-        margin-bottom: 0;
-        width: auto;
-        max-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: center;
-        display: block;
-        height: auto;
-        position: relative;
-        min-height: 18px;
     }
     
     .points-value, .coupons-value {
@@ -791,6 +761,22 @@ body {
     .reward-points, .coupon-use {
         font-size: 12px;
         padding: 6px 12px 6px 16px;
+    }
+    
+    .user-name {
+        font-size: 14px;
+        margin-top: 4px;
+        margin-bottom: 0;
+        width: auto;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        display: block;
+        height: auto;
+        position: relative;
+        min-height: 18px;
     }
 }
 
@@ -957,4 +943,9 @@ footer {
 .coupon-count {
     font-size: 14px;
     color: #666;
+}
+
+.reward-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
