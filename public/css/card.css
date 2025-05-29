@@ -76,7 +76,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 32px; /* 控制三者間距 */
+    gap: 15rem;
     position: absolute;
     top: 48%;
     left: 0;
@@ -184,7 +184,7 @@ body {
 
 /* 卡片內容區域 */
 .card-content {
-    width: 1100px;
+    width: 750px;
     padding: 12px 12px 24px;
     position: relative;
     z-index: 2;
@@ -585,7 +585,6 @@ body {
 @media (max-width: 1200px) {
     .card-content {
         width: 90%;
-        max-width: 900px;
     }
     
     .card-bg::after {
