@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     // 更新點數顯示
                     if (pointsValue) {
-                        pointsValue.textContent = data.remainingPoints;
+                        pointsValue.textContent = formatPoints(Number(data.remainingPoints));
                     }
 
                     if (couponsValue) {
@@ -210,4 +210,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-}); 
+
+    // 頁面載入時格式化點數顯示
+    if (pointsValue) {
+        const raw = pointsValue.textContent;
+        pointsValue.textContent = formatPoints(Number(raw));
+    }
+});
+
+function formatPoints(num) {
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 't';
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'm';
+    if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
+    return num.toString();
+} 
