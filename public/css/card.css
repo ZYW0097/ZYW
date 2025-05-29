@@ -58,7 +58,7 @@ body {
 /* 餐廳標題樣式，確保在模糊背景上清晰可見 */
 .card-header-title {
     position: absolute;
-    top: 20%;
+    top: 50%;
     left: 0;
     right: 0;
     transform: translateY(-50%);
