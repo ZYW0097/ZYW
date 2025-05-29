@@ -695,7 +695,6 @@ body {
     }
     
     .user-summary {
-        top: 48%;
         padding: 10px 0 0 0;
     }
     
@@ -785,7 +784,6 @@ body {
     }
     
     .user-summary {
-        top: 42%;
         padding: 6px 12px;
         gap: 7rem;
     }
@@ -827,7 +825,6 @@ body {
     }
     
     .user-summary {
-        top: 40%;
         padding: 5px 8px;
         gap: 7rem;
     }
