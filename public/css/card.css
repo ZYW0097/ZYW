@@ -227,6 +227,7 @@ body {
     color: #555;
     margin-bottom: 6px; /* 縮小間距 */
     line-height: 1.4;
+    margin-left: 12px;
 }
 
 /* === 獎勵區塊 === */
@@ -284,11 +285,6 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    position: static;
-    left: auto;
-    right: auto;
-    top: auto;
-    transform: none;
 }
 
 .reward-points {
@@ -331,19 +327,28 @@ body {
     font-weight: 700;
     color: #333;
     margin-bottom: 14px;
-    text-align: left; /* 標題靠左 */
+    text-align: left; 
 }
 
 .coupon-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     background: #e8e8e8;
     border-radius: 50px;
-    margin: 0 auto 12px auto; /* 水平置中 */
-    position: relative;
-    overflow: hidden;
+    margin: 0 auto 12px auto;
     height: 75px;
     width: 100%;
+    max-width: 500px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    border: none;
+}
+
+.coupon-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .coupon-img {
@@ -358,11 +363,10 @@ body {
 }
 
 .coupon-info {
-    position: absolute;
-    left: 85px;
-    right: 90px;
-    top: 50%;
-    transform: translateY(-50%);
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -375,20 +379,18 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 40px 0 0 40px;
-    padding: 0 14px 0 18px;
-    min-width: 60px;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    height: 100%;
+    border-radius: 0 37.5px 37.5px 0;
+    width: 90px;
+    height: 75px;
+    margin-left: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: static;
+    flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .coupon-use:hover {
