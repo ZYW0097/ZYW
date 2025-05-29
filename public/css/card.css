@@ -198,19 +198,23 @@ body {
 
 /* === 規則區塊 === */
 .rules-section {
-    background: #f9f9f9;
+    background: transparent; /* 移除背景顏色 */
     border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    border: none; /* 移除外框 */
+    padding: 12px 16px; /* 縮小間距 */
+    margin-bottom: 20px; /* 縮小間距 */
+    border: none;
     box-shadow: none;
+    max-width: 700px; /* 限制最大寬度 */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .rules-title {
-    font-size: 22px; /* 放大標題 */
+    font-size: 22px;
     font-weight: 700;
     color: #333;
-    margin-bottom: 16px;
+    margin-bottom: 14px; /* 縮小間距 */
+    text-align: center; /* 置中 */
 }
 
 .rules-section ul {
@@ -219,38 +223,44 @@ body {
 }
 
 .rules-section li {
-    font-size: 16px; /* 放大文字 */
+    font-size: 16px;
     color: #555;
-    margin-bottom: 8px;
-    line-height: 1.5;
+    margin-bottom: 6px; /* 縮小間距 */
+    line-height: 1.4;
 }
 
 /* === 獎勵區塊 === */
 .rewards-section {
-    background: #f9f9f9;
+    background: transparent; /* 移除背景顏色 */
     border-radius: 12px;
-    padding: 16px 20px;
-    border: none; /* 移除外框 */
+    padding: 12px 16px; /* 縮小間距 */
+    border: none;
     box-shadow: none;
+    max-width: 700px; /* 限制最大寬度 */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .rewards-title {
-    font-size: 22px; /* 放大標題 */
+    font-size: 22px;
     font-weight: 700;
     color: #333;
-    margin-bottom: 20px;
-    text-align: center; /* 置中 */
+    margin-bottom: 14px; /* 縮小間距 */
+    text-align: center;
 }
 
 .reward-row {
     display: flex;
     align-items: center;
-    background: #f5f5f5; /* 改為淺灰色背景 */
-    border-radius: 50px; /* 更圓潤的外觀 */
-    margin-bottom: 16px; /* 增加間距 */
-    padding: 16px; /* 放大 */
+    background: #f5f5f5;
+    border-radius: 50px; /* 長橢圓形 */
+    margin-bottom: 12px; /* 縮小間距 */
+    padding: 8px; /* 縮小間距 */
     transition: transform 0.2s ease;
-    border: none; /* 確保沒有邊框 */
+    border: none;
+    position: relative; /* 為半圓形按鈕做準備 */
+    overflow: hidden; /* 確保內容不會溢出 */
+    height: 60px; /* 固定高度 */
 }
 
 .reward-row:hover {
@@ -259,19 +269,24 @@ body {
 }
 
 .reward-img {
-    width: 60px; /* 放大圖片 */
-    height: 60px; /* 放大圖片 */
+    width: 50px; /* 縮小 */
+    height: 50px; /* 縮小 */
     border-radius: 50%; /* 圓形圖片 */
     object-fit: cover;
-    margin-right: 16px;
+    margin-left: 5px; /* 左側留空間 */
+    margin-right: 12px;
     background: #f1f1f1;
 }
 
 .reward-name {
     flex: 1;
-    font-size: 17px; /* 放大文字 */
+    font-size: 16px; /* 縮小 */
     font-weight: 600;
     color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px; /* 為按鈕留空間 */
 }
 
 .reward-points {
@@ -280,12 +295,20 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 50px; /* 更圓潤的按鈕 */
-    padding: 8px 16px;
-    min-width: 50px;
+    border-radius: 50px 0 0 50px; /* 左側半圓形 */
+    padding: 8px 14px 8px 18px; /* 增加左側內邊距 */
+    min-width: 60px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
+    position: absolute; /* 絕對定位 */
+    right: 0; /* 置於右側 */
+    top: 0;
+    bottom: 0;
+    height: 100%; /* 確保高度填滿 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .reward-points:hover {
@@ -294,64 +317,46 @@ body {
 
 /* === 優惠券區塊 === */
 .coupons-section {
-    background: #f9f9f9;
+    background: transparent; /* 移除背景顏色 */
     border-radius: 12px;
-    padding: 16px 20px;
-    border: none; /* 移除外框 */
+    padding: 12px 16px; /* 縮小間距 */
+    border: none;
     box-shadow: none;
+    max-width: 700px; /* 限制最大寬度 */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .coupons-title {
-    font-size: 22px; /* 放大標題 */
+    font-size: 22px;
     font-weight: 700;
     color: #333;
-    margin-bottom: 20px;
-    text-align: center; /* 置中 */
-}
-
-.coupons-container {
-    min-height: 150px;
+    margin-bottom: 14px; /* 縮小間距 */
+    text-align: center;
 }
 
 .coupon-row {
     display: flex;
     align-items: center;
-    background: #f5f5f5; /* 改為淺灰色背景 */
-    border-radius: 50px; /* 更圓潤的外觀 */
-    margin-bottom: 16px; /* 增加間距 */
-    padding: 16px; /* 放大 */
+    background: #f5f5f5;
+    border-radius: 50px; /* 長橢圓形 */
+    margin-bottom: 12px; /* 縮小間距 */
+    padding: 8px; /* 縮小間距 */
     transition: transform 0.2s ease;
-    border: none; /* 確保沒有邊框 */
-}
-
-.coupon-row:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: none;
+    position: relative; /* 為半圓形按鈕做準備 */
+    overflow: hidden; /* 確保內容不會溢出 */
+    height: 60px; /* 固定高度 */
 }
 
 .coupon-img {
-    width: 60px; /* 放大圖片 */
-    height: 60px; /* 放大圖片 */
+    width: 50px; /* 縮小 */
+    height: 50px; /* 縮小 */
     border-radius: 50%; /* 圓形圖片 */
     object-fit: cover;
-    margin-right: 16px;
+    margin-left: 5px; /* 左側留空間 */
+    margin-right: 12px;
     background: #f1f1f1;
-}
-
-.coupon-info {
-    flex: 1;
-}
-
-.coupon-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.coupon-count {
-    font-size: 14px;
-    color: #666;
 }
 
 .coupon-use {
@@ -360,12 +365,20 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 50px; /* 更圓潤的按鈕 */
-    padding: 8px 16px;
-    min-width: 50px;
+    border-radius: 50px 0 0 50px; /* 左側半圓形 */
+    padding: 8px 14px 8px 18px; /* 增加左側內邊距 */
+    min-width: 60px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
+    position: absolute; /* 絕對定位 */
+    right: 0; /* 置於右側 */
+    top: 0;
+    bottom: 0;
+    height: 100%; /* 確保高度填滿 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .coupon-use:hover {
@@ -723,6 +736,31 @@ body {
     .card-bg::before, .card-bg::after {
         display: none;
     }
+    
+    .rules-section, .rewards-section, .coupons-section {
+        padding: 10px 12px;
+        max-width: 100%;
+    }
+    
+    .reward-row, .coupon-row {
+        padding: 6px;
+        height: 50px; /* 縮小高度 */
+    }
+    
+    .reward-img, .coupon-img {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+    }
+    
+    .reward-name, .coupon-name {
+        font-size: 14px;
+    }
+    
+    .reward-points, .coupon-use {
+        font-size: 12px;
+        padding: 6px 12px 6px 16px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -766,6 +804,16 @@ body {
     .reward-points, .coupon-use {
         padding: 6px 12px;
         font-size: 12px;
+    }
+    
+    .reward-row, .coupon-row {
+        height: 45px; /* 進一步縮小高度 */
+    }
+    
+    .reward-img, .coupon-img {
+        width: 35px;
+        height: 35px;
+        margin-right: 8px;
     }
 }
 
@@ -855,4 +903,33 @@ footer {
     width: 1px;
     background-color: #e0e0e0;
     z-index: 1;
+}
+
+.coupons-container {
+    min-height: 150px;
+}
+
+.coupon-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.coupon-info {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px; /* 為按鈕留空間 */
+}
+
+.coupon-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.coupon-count {
+    font-size: 14px;
+    color: #666;
 }
