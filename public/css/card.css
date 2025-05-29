@@ -785,7 +785,7 @@ body {
     
     .user-summary {
         padding: 6px 12px;
-        gap: 7rem;
+        gap: 5rem;
     }
     
     .rules-title, .rewards-title, .coupons-title {
@@ -826,12 +826,7 @@ body {
     
     .user-summary {
         padding: 5px 8px;
-        gap: 7rem;
-    }
-    
-    .user-avatar {
-        width: 45px;
-        height: 45px;
+        gap: 5rem;
     }
     
     .points-value, .coupons-value {
