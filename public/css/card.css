@@ -21,7 +21,7 @@ body {
 .card-header {
     position: relative;
     overflow: hidden;
-    height: 320px;
+    height: 400px;
 }
 
 .card-header-img {
@@ -255,7 +255,7 @@ body {
     justify-content: center;
     background: #e8e8e8;
     border-radius: 50px;
-    margin: 0 auto 12px auto;
+    margin: 0 auto 24px auto;
     height: 75px;
     width: 100%;
     max-width: 500px;
