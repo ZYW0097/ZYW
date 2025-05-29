@@ -237,7 +237,7 @@ body {
     border: none;
     box-shadow: none;
     max-width: 700px;
-    /* 移除水平居中 */
+    margin: 0 auto;
 }
 
 .rewards-title {
@@ -257,7 +257,7 @@ body {
     margin: 0 auto 12px auto;
     height: 75px;
     width: 100%;
-    max-width: 700px;
+    max-width: 500px;
     position: relative;
     overflow: hidden;
     transition: transform 0.2s ease;
@@ -265,14 +265,14 @@ body {
 }
 
 .reward-img {
-    width: 60px;
-    height: 60px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     object-fit: cover;
     background: #f1f1f1;
-    margin-left: 0;
-    margin-right: 24px;
-    position: static;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .reward-name {
@@ -297,9 +297,9 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 0 50% 50% 0;
-    width: 80px;
-    height: 100%;
+    border-radius: 0 37.5px 37.5px 0;
+    width: 90px;
+    height: 75px;
     margin-left: 24px;
     display: flex;
     align-items: center;
@@ -308,6 +308,7 @@ body {
     transition: background 0.2s ease;
     position: static;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .reward-points:hover {
