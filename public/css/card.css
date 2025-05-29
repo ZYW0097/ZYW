@@ -271,9 +271,9 @@ body {
     border-radius: 50%;
     object-fit: cover;
     background: #f1f1f1;
-    position: absolute;
-    left: 0;
-    top: 0;
+    margin-left: 0;
+    margin-right: 24px;
+    position: static;
 }
 
 .reward-name {
@@ -294,7 +294,7 @@ body {
     font-weight: 600;
     border: none;
     border-radius: 0 37.5px 37.5px 0;
-    width: 90px;
+    width: 70px;
     height: 75px;
     margin-left: 24px;
     display: flex;
@@ -357,9 +357,9 @@ body {
     border-radius: 50%;
     object-fit: cover;
     background: #f1f1f1;
-    position: absolute;
-    left: 0;
-    top: 0;
+    margin-left: 0;
+    margin-right: 24px;
+    position: static;
 }
 
 .coupon-info {
@@ -380,7 +380,7 @@ body {
     font-weight: 600;
     border: none;
     border-radius: 0 37.5px 37.5px 0;
-    width: 90px;
+    width: 70px;
     height: 75px;
     margin-left: 24px;
     display: flex;
