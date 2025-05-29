@@ -141,8 +141,8 @@ body {
 }
 
 .user-avatar {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -156,7 +156,6 @@ body {
     border-radius: 50%;
     object-fit: cover;
     background: #f1f1f1;
-    border: 3px solid #fff;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
@@ -169,10 +168,10 @@ body {
 }
 
 .user-name {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: white;
-    margin-top: 8px;
+    margin-top: 12px;
     text-align: center;
     word-break: break-all;
     width: 100%;
@@ -224,6 +223,7 @@ body {
 
 .rules-section li {
     font-size: 16px;
+    font-weight: 600;
     color: #555;
     margin-bottom: 6px; /* 縮小間距 */
     line-height: 1.4;
@@ -664,7 +664,6 @@ body {
     
     .reward-row, .coupon-row {
         padding: 0;
-        height: 60px;
         position: relative;
     }
     
@@ -758,7 +757,6 @@ body {
     
     .reward-row, .coupon-row {
         padding: 6px;
-        height: 50px; /* 縮小高度 */
     }
     
     .reward-img, .coupon-img {
@@ -836,10 +834,6 @@ body {
     .reward-points, .coupon-use {
         min-width: 60px;
         padding: 0 10px 0 14px;
-    }
-    
-    .reward-row, .coupon-row {
-        height: 50px; /* 進一步縮小高度 */
     }
     
     .reward-img, .coupon-img {
