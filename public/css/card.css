@@ -76,7 +76,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10rem;
+    gap: 4rem;
     position: absolute;
     top: 48%;
     left: 0;
@@ -86,9 +86,10 @@ body {
 }
 
 .user-points, .user-coupons {
-    flex: 0 1 auto;
+    min-width: 90px;
+    max-width: 110px;
     text-align: center;
-    padding: 0;
+    overflow: hidden;
 }
 
 /* 新增: Tab 樣式 */
@@ -126,11 +127,12 @@ body {
 }
 
 .points-value, .coupons-value {
-    font-size: 40px;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 4px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    display: block;
+    max-width: 100%;
+    font-size: clamp(24px, 6vw, 40px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .points-label, .coupons-label {
