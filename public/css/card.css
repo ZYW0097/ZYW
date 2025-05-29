@@ -78,7 +78,7 @@ body {
     left: 0;
     right: 0;
     z-index: 3;
-    padding: 20px 16px;
+    padding: 10px 16px; /* 減少頂部和底部間距 */
 }
 
 .user-points, .user-coupons {
@@ -139,7 +139,7 @@ body {
 .user-avatar {
     position: relative;
     width: 70px;
-    margin: 0 15px;
+    margin: 0 10px; /* 縮小左右間距 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -178,16 +178,16 @@ body {
 }
 
 .card-content {
+    width: 1100px;
     padding: 16px 16px 24px;
     position: relative;
-    background: #fff;
     z-index: 2;
     border-left: 1px solid #e0e0e0;
     border-right: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-    border-radius: 0 0 12px 12px;
+    border-bottom: none; /* 移除底部邊框 */
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    margin: 0 16px;
+    margin: 0 auto;
+    padding-bottom: 50px; /* 增加底部間距，讓內容與頁尾有適當間距 */
 }
 
 /* === 規則區塊 === */
@@ -196,15 +196,15 @@ body {
     border-radius: 12px;
     padding: 16px 20px;
     margin-bottom: 24px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: none; /* 移除外框 */
+    box-shadow: none;
 }
 
 .rules-title {
-    font-size: 18px;
+    font-size: 22px; /* 放大標題 */
     font-weight: 700;
     color: #333;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .rules-section ul {
@@ -213,9 +213,9 @@ body {
 }
 
 .rules-section li {
-    font-size: 14px;
+    font-size: 16px; /* 放大文字 */
     color: #555;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.5;
 }
 
@@ -224,26 +224,27 @@ body {
     background: #f9f9f9;
     border-radius: 12px;
     padding: 16px 20px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: none; /* 移除外框 */
+    box-shadow: none;
 }
 
 .rewards-title {
-    font-size: 18px;
+    font-size: 22px; /* 放大標題 */
     font-weight: 700;
     color: #333;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    text-align: center; /* 置中 */
 }
 
 .reward-row {
     display: flex;
     align-items: center;
-    background: #fff;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #f5f5f5; /* 改為淺灰色背景 */
+    border-radius: 50px; /* 更圓潤的外觀 */
+    margin-bottom: 16px; /* 增加間距 */
+    padding: 16px; /* 放大 */
+    transition: transform 0.2s ease;
+    border: none; /* 確保沒有邊框 */
 }
 
 .reward-row:hover {
@@ -252,9 +253,9 @@ body {
 }
 
 .reward-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
+    width: 60px; /* 放大圖片 */
+    height: 60px; /* 放大圖片 */
+    border-radius: 50%; /* 圓形圖片 */
     object-fit: cover;
     margin-right: 16px;
     background: #f1f1f1;
@@ -262,7 +263,7 @@ body {
 
 .reward-name {
     flex: 1;
-    font-size: 15px;
+    font-size: 17px; /* 放大文字 */
     font-weight: 600;
     color: #333;
 }
@@ -273,9 +274,9 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 16px;
-    padding: 6px 14px;
-    min-width: 60px;
+    border-radius: 50px; /* 更圓潤的按鈕 */
+    padding: 8px 16px;
+    min-width: 50px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -290,15 +291,16 @@ body {
     background: #f9f9f9;
     border-radius: 12px;
     padding: 16px 20px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: none; /* 移除外框 */
+    box-shadow: none;
 }
 
 .coupons-title {
-    font-size: 18px;
+    font-size: 22px; /* 放大標題 */
     font-weight: 700;
     color: #333;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    text-align: center; /* 置中 */
 }
 
 .coupons-container {
@@ -308,12 +310,12 @@ body {
 .coupon-row {
     display: flex;
     align-items: center;
-    background: #fff;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #f5f5f5; /* 改為淺灰色背景 */
+    border-radius: 50px; /* 更圓潤的外觀 */
+    margin-bottom: 16px; /* 增加間距 */
+    padding: 16px; /* 放大 */
+    transition: transform 0.2s ease;
+    border: none; /* 確保沒有邊框 */
 }
 
 .coupon-row:hover {
@@ -322,9 +324,9 @@ body {
 }
 
 .coupon-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
+    width: 60px; /* 放大圖片 */
+    height: 60px; /* 放大圖片 */
+    border-radius: 50%; /* 圓形圖片 */
     object-fit: cover;
     margin-right: 16px;
     background: #f1f1f1;
@@ -352,9 +354,9 @@ body {
     font-size: 14px;
     font-weight: 600;
     border: none;
-    border-radius: 16px;
-    padding: 6px 14px;
-    min-width: 60px;
+    border-radius: 50px; /* 更圓潤的按鈕 */
+    padding: 8px 16px;
+    min-width: 50px;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -573,13 +575,37 @@ body {
     }
     
     .card-content {
+        width: auto; /* 在移動版上自適應寬度 */
         margin: 0 16px;
-        padding: 16px 16px 24px;
+        padding: 16px 16px 40px; /* 調整底部間距 */
+        border-left: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+        border-bottom: none;
+    }
+    
+    .rules-title, .rewards-title, .coupons-title {
+        font-size: 20px; /* 調整移動版標題大小 */
+    }
+    
+    .rules-section li {
+        font-size: 15px; /* 調整移動版文字大小 */
+    }
+    
+    .reward-row, .coupon-row {
+        padding: 14px; /* 調整移動版大小 */
+        background: #f5f5f5; /* 確保移動版也有相同背景 */
+        border-radius: 50px; /* 確保移動版也有圓潤外觀 */
+    }
+    
+    .reward-img, .coupon-img {
+        width: 50px; /* 調整移動版圖片大小 */
+        height: 50px;
+        border-radius: 50%; /* 確保移動版也是圓形圖片 */
     }
     
     .user-summary {
         top: 45%;
-        padding: 15px 16px;
+        padding: 8px 16px; /* 縮小移動版間距 */
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: auto auto;
