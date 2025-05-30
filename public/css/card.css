@@ -263,7 +263,7 @@ body {
     overflow: hidden;
     transition: transform 0.2s ease;
     border: none;
-    padding-left: 75px; /* 預設圖片寬度，RWD 下會調整 */
+    padding-left: 85px; /* 圖片75px + 10px間距 */
 }
 
 .reward-img {
@@ -672,8 +672,8 @@ body {
     }
     
     .reward-img, .coupon-img {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
     }
     
     .reward-name, .coupon-info {
@@ -772,7 +772,7 @@ body {
     }
     
     .reward-row {
-        padding-left: 50px;
+        padding-left: 60px; /* 圖片50px + 10px */
     }
 }
 
@@ -846,8 +846,8 @@ body {
     }
     
     .reward-img, .coupon-img {
-        width: 28px;
-        height: 28px;
+        width: 40px;
+        height: 40px;
         margin-right: 10px;
     }
     
@@ -860,7 +860,7 @@ body {
     }
     
     .reward-row {
-        padding-left: 32px;
+        padding-left: 46px; /* 圖片40px + 6px */
     }
 }
 
