@@ -219,9 +219,33 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function formatPoints(num) {
-    if (num >= 1_000_000_000_000) return (num / 1_000_000_000_000).toFixed(1) + 'T'; 
-    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
-    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M'; 
-    if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K'; 
-    return num.toString();
+    if (num < 1000) {
+        return num.toString();
+    }
+
+    const units = [
+        { value: 1_000_000_000_000, symbol: 'T' },
+        { value: 1_000_000_000, symbol: 'B' },
+        { value: 1_000_000, symbol: 'M' },  
+        { value: 1_000, symbol: 'K' }  
+    ];
+
+    for (let i = 0; i < units.length; i++) {
+        const unit = units[i];
+        if (num >= unit.value) {
+            const dividedNum = num / unit.value;
+
+            if (dividedNum < 10) {
+                const floorVal = Math.floor(dividedNum * 10) / 10;
+                if (floorVal % 1 === 0) {
+                    return floorVal.toString() + unit.symbol;
+                } else {
+                    return floorVal.toFixed(1) + unit.symbol; 
+                }
+            } else {
+                return Math.floor(dividedNum).toString() + unit.symbol;
+            }
+        }
+    }
+    return num.toString(); 
 }
