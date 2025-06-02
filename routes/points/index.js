@@ -210,6 +210,84 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
     }
 });
 
+// 使用優惠券 API
+router.post('/:storeSlug/api/coupons/use', isAuthenticated, async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { couponId } = req.body;
+
+        if (!storeSlug || !couponId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '參數不完整' 
+            });
+        }
+
+        // 獲取用戶點數資料
+        const userDb = getClientDb(storeSlug, 'ADB');
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+        const userPoints = await UserPoints.findOne({ 
+            lineId: req.user.lineId,
+            type: 'user_points'
+        });
+
+        if (!userPoints) {
+            return res.status(404).json({ 
+                success: false, 
+                message: '找不到用戶點數資料' 
+            });
+        }
+
+        // 檢查優惠券是否存在
+        const couponIndex = userPoints['ah-coupon-id'].findIndex(
+            coupon => coupon.rewardId.toString() === couponId
+        );
+
+        if (couponIndex === -1) {
+            return res.status(404).json({ 
+                success: false, 
+                message: '找不到優惠券' 
+            });
+        }
+
+        // 檢查優惠券數量
+        if (userPoints['ah-coupon-id'][couponIndex].count <= 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '優惠券已用完' 
+            });
+        }
+
+        // 減少優惠券數量
+        userPoints['ah-coupon-id'][couponIndex].count -= 1;
+        userPoints['ah-coupon'] -= 1;
+
+        // 如果數量為 0，移除該優惠券
+        if (userPoints['ah-coupon-id'][couponIndex].count === 0) {
+            userPoints['ah-coupon-id'].splice(couponIndex, 1);
+        }
+
+        userPoints.updateat = new Date();
+        await userPoints.save();
+
+        // 計算剩餘優惠券總數
+        const remainingCoupons = userPoints['ah-coupon'];
+
+        res.json({
+            success: true,
+            message: '使用優惠券成功',
+            remainingCoupons
+        });
+    } catch (error) {
+        console.error('Error using coupon:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '使用優惠券失敗',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
 // 獲取單個獎勵詳情
 router.get('/:storeSlug/api/points/reward/:rewardId', async (req, res) => {
     try {

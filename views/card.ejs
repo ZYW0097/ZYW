@@ -97,6 +97,17 @@
   <% } %>
 <% } %>
 
+<!-- 確認對話框 -->
+<div id="confirmDialog" class="confirm-dialog">
+    <div class="confirm-dialog-title">確認使用優惠券</div>
+    <div class="confirm-dialog-message">確定要使用這張優惠券嗎？使用後將無法復原。</div>
+    <div class="confirm-dialog-buttons">
+        <button class="confirm-dialog-btn cancel" id="confirmCancelBtn">取消</button>
+        <button class="confirm-dialog-btn confirm" id="confirmUseBtn">確認使用</button>
+    </div>
+</div>
+<div id="confirmDialogOverlay" class="confirm-dialog-overlay"></div>
+
 <!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay" style="display: none;">
     <div class="loading-content">

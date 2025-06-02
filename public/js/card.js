@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const couponsContainer = document.getElementById('couponsContainer');
     const emptyMessage = document.querySelector('.empty-coupons-message');
     
+    // 確認對話框相關元素
+    const confirmDialog = document.getElementById('confirmDialog');
+    const confirmDialogOverlay = document.getElementById('confirmDialogOverlay');
+    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+    const confirmUseBtn = document.getElementById('confirmUseBtn');
+    
+    // 當前要使用的優惠券 ID
+    let currentCouponId = null;
+    
     // 獲取商店識別碼的通用函數
     function getStoreSlug() {
         const pathParts = window.location.pathname.split('/');
@@ -80,12 +89,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 綁定使用優惠券按鈕事件
                     document.querySelectorAll('.coupon-use').forEach(button => {
                         button.addEventListener('click', function() {
-                            alert('優惠券使用功能即將推出！');
+                            const couponId = this.dataset.couponId;
+                            if (couponId) {
+                                showConfirmDialog(couponId);
+                            }
                         });
                     });
+
+                    // 隱藏空優惠券訊息
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'none';
+                    }
                 } else {
                     // 顯示無優惠券訊息
-                    emptyMessage.style.display = 'block';
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'block';
+                    }
                 }
             } else {
                 throw new Error(data.error || '載入優惠券失敗');
@@ -187,20 +206,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         couponsValue.textContent = data.couponCount;
                     }
 
-                    // 重置優惠券已載入的狀態，以便下次進入重新載入
-                    if (couponsTab) {
-                        couponsTab.dataset.loaded = '';
-                    }
-
                     // 顯示成功訊息
                     loadingOverlay.style.display = 'none';
                     redeemSuccessMessage.style.display = 'block';
                     
-                    // 2秒後隱藏成功訊息並重新載入頁面以顯示新獲得的優惠券
+                    // 2秒後隱藏成功訊息
                     setTimeout(() => {
                         redeemSuccessMessage.style.display = 'none';
-                        window.location.reload();
                     }, 2000);
+
+                    // 如果當前在優惠券頁面，重新載入優惠券列表
+                    if (couponsTab && couponsTab.classList.contains('active')) {
+                        await loadCoupons();
+                    }
                 } else {
                     throw new Error(data.error || '兌換失敗');
                 }
@@ -216,6 +234,69 @@ document.addEventListener('DOMContentLoaded', function() {
         const raw = pointsValue.textContent;
         pointsValue.textContent = formatPoints(Number(raw));
     }
+
+    // 顯示確認對話框
+    function showConfirmDialog(couponId) {
+        currentCouponId = couponId;
+        confirmDialog.classList.add('show');
+        confirmDialogOverlay.classList.add('show');
+    }
+
+    // 隱藏確認對話框
+    function hideConfirmDialog() {
+        confirmDialog.classList.remove('show');
+        confirmDialogOverlay.classList.remove('show');
+        currentCouponId = null;
+    }
+
+    // 確認對話框事件監聽
+    confirmCancelBtn.addEventListener('click', hideConfirmDialog);
+    confirmDialogOverlay.addEventListener('click', hideConfirmDialog);
+
+    // 確認使用優惠券
+    confirmUseBtn.addEventListener('click', async () => {
+        if (!currentCouponId) return;
+        
+        try {
+            loadingOverlay.style.display = 'flex';
+            const response = await fetch(`/${storeSlug}/api/coupons/use`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ couponId: currentCouponId })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // 更新優惠券數量顯示
+                if (couponsValue) {
+                    couponsValue.textContent = data.remainingCoupons;
+                }
+                
+                // 重新載入優惠券列表
+                await loadCoupons();
+                
+                // 顯示成功訊息
+                const redeemSuccessMessage = document.getElementById('redeemSuccessMessage');
+                if (redeemSuccessMessage) {
+                    redeemSuccessMessage.style.display = 'block';
+                    setTimeout(() => {
+                        redeemSuccessMessage.style.display = 'none';
+                    }, 2000);
+                }
+            } else {
+                throw new Error(data.message || '使用優惠券失敗');
+            }
+        } catch (error) {
+            console.error('使用優惠券時發生錯誤:', error);
+            alert(error.message || '使用優惠券時發生錯誤，請稍後再試');
+        } finally {
+            loadingOverlay.style.display = 'none';
+            hideConfirmDialog();
+        }
+    });
 });
 
 function formatPoints(num) {
