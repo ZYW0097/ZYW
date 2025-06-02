@@ -202,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         pointsValue.textContent = formatPoints(Number(data.remainingPoints));
                     }
 
+                    // 更新優惠券數量
                     if (couponsValue) {
                         couponsValue.textContent = data.couponCount;
                     }
@@ -217,6 +218,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // 如果當前在優惠券頁面，重新載入優惠券列表
                     if (couponsTab && couponsTab.classList.contains('active')) {
+                        // 強制重新載入優惠券列表
+                        couponsTab.dataset.loaded = 'false';
                         await loadCoupons();
                     }
                 } else {
@@ -269,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            if (response.ok) {
+            if (data.success) {
                 // 更新優惠券數量顯示
                 if (couponsValue) {
                     couponsValue.textContent = data.remainingCoupons;
@@ -329,4 +332,41 @@ function formatPoints(num) {
         }
     }
     return num.toString(); 
+}
+
+// 使用優惠券
+async function useCoupon(couponId) {
+    try {
+        // 從 URL 中獲取 storeSlug
+        const storeSlug = window.location.pathname.split('/')[1];
+        
+        const response = await fetch(`/${storeSlug}/api/coupons/use`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponId })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // 更新優惠券數量
+            const couponsValue = document.querySelector('.coupons-value');
+            if (couponsValue) {
+                couponsValue.textContent = data.remainingCoupons;
+            }
+            
+            // 重新載入優惠券列表
+            await loadCoupons();
+            
+            // 顯示成功訊息
+            showSuccessMessage('使用優惠券成功');
+        } else {
+            showError(data.message || '使用優惠券失敗');
+        }
+    } catch (error) {
+        console.error('Error using coupon:', error);
+        showError('使用優惠券失敗，請稍後再試');
+    }
 }
