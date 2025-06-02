@@ -1,17 +1,307 @@
 .points-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.points-text {
-    font-size: 1.5rem;
+/* 標題區域 */
+.points-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.points-header h2 {
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #444;
+    color: #333;
+    margin-bottom: 0.5rem;
 }
 
-.points-image {
-    width: 280px;
-    height: 280px;
+.points-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* 卡片網格 */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* 集點卡樣式 */
+.loyalty-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.loyalty-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* 卡片圖片 */
+.card-image {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.loyalty-card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(255, 142, 83, 0.8));
+    opacity: 0.7;
+}
+
+/* 卡片內容 */
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.store-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* 統計數據 */
+.card-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 30px;
+    background: #e2e8f0;
+    margin: 0 1rem;
+}
+
+/* 操作區域 */
+.card-action {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    color: #667eea;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.action-text {
+    flex: 1;
+}
+
+/* 底部小貼士 */
+.points-footer {
+    margin-top: 2rem;
+}
+
+.tips-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.tips-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+}
+
+.tips-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-section li {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.tips-section li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #a7f3d0;
+    font-weight: bold;
+}
+
+.tips-section li:last-child {
+    margin-bottom: 0;
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    margin-bottom: 2rem;
+}
+
+.empty-icon img {
+    width: 200px;
+    height: 200px;
+}
+
+.empty-state h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.empty-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .points-container {
+        padding: 1rem;
+    }
+    
+    .points-header h2 {
+        font-size: 2rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .card-content {
+        padding: 1.25rem;
+    }
+    
+    .tips-section {
+        padding: 1.5rem;
+        text-align: left;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-icon img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .empty-state h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .card-stats {
+        padding: 0.75rem;
+    }
 }

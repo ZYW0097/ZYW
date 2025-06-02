@@ -1,5 +1,75 @@
 <% var customCss = '/css/account_points.css'; %>
 <div class="points-container">
-    <p class="points-text">您似乎還沒有任何一家餐廳的集點卡...</p>
-    <img src="/images/thinking.gif" class="points-image" alt="thinking">
+    <% if (userCards && userCards.length > 0) { %>
+        <div class="points-header">
+            <h2>我的集點卡</h2>
+            <p class="points-subtitle">查看您在各餐廳的點數與優惠券</p>
+        </div>
+        
+        <div class="cards-grid">
+            <% userCards.forEach(card => { %>
+                <div class="loyalty-card" onclick="window.location.href='/<%= card.storeSlug %>/card'">
+                    <div class="card-image">
+                        <img src="<%= card.storeImage %>" alt="<%= card.storeName %>" />
+                        <div class="card-overlay"></div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="store-name"><%= card.storeName %></h3>
+                            <div class="card-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="card-stats">
+                            <div class="stat-item">
+                                <div class="stat-value"><%= card.points %></div>
+                                <div class="stat-label">點數</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <div class="stat-value"><%= card.coupons %></div>
+                                <div class="stat-label">優惠券</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-action">
+                            <span class="action-text">點擊查看詳情</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        
+        <div class="points-footer">
+            <div class="tips-section">
+                <h3>💡 使用小貼士</h3>
+                <ul>
+                    <li>點擊任一集點卡可查看詳細資訊和兌換獎勵</li>
+                    <li>累積更多點數可獲得更豐富的獎勵</li>
+                    <li>優惠券請及時使用，避免過期</li>
+                </ul>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <img src="/images/thinking.gif" alt="thinking" />
+            </div>
+            <h2>您還沒有任何集點卡</h2>
+            <p class="empty-text">
+                前往您喜愛的餐廳頁面，<br>
+                領取集點卡開始累積點數吧！
+            </p>
+            <div class="empty-actions">
+                <a href="/" class="action-btn primary">探索餐廳</a>
+            </div>
+        </div>
+    <% } %>
 </div>
