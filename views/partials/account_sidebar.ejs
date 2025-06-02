@@ -1,13 +1,55 @@
 <aside class="account-sidebar">
-    <div class="sidebar-profile">
-        <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="sidebar-avatar" alt="user">
-        <div class="sidebar-name"><%= user.name || '用戶名稱' %></div>
+    <!-- 桌面版sidebar -->
+    <div class="sidebar-desktop desktop-only">
+        <div class="sidebar-profile">
+            <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="sidebar-avatar" alt="user">
+            <div class="sidebar-name"><%= user.name || '用戶名稱' %></div>
+        </div>
+        <div class="sidebar-divider"></div>
+        <nav class="sidebar-nav">
+            <a href="/account/points" class="sidebar-link"><img src="/images/points_card.svg" class="icon">集點卡&nbsp;</a>
+            <a href="/account/profile" class="sidebar-link"><img src="/images/user.svg" class="icon">  基本資料</a>
+            <a href="/account/settings" class="sidebar-link"><img src="/images/setting.svg" class="icon"> 帳號設定</a>
+        </nav>
+        <a href="/auth/logout" class="sidebar-logout">登出</a>
     </div>
-    <div class="sidebar-divider"></div>
-    <nav class="sidebar-nav">
-        <a href="/account/points" class="sidebar-link"><img src="/images/points_card.svg" class="icon">集點卡&nbsp;</a>
-        <a href="/account/profile" class="sidebar-link"><img src="/images/user.svg" class="icon">  基本資料</a>
-        <a href="/account/settings" class="sidebar-link"><img src="/images/setting.svg" class="icon"> 帳號設定</a>
-    </nav>
-    <a href="/auth/logout" class="sidebar-logout">登出</a>
+    
+    <!-- 手機版header -->
+    <div class="sidebar-mobile mobile-only">
+        <div class="mobile-sidebar-header">
+            <div class="mobile-profile">
+                <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="mobile-avatar" alt="user">
+                <div class="mobile-name"><%= user.name || '用戶名稱' %></div>
+            </div>
+            <button class="sidebar-hamburger" id="sidebar-hamburger-btn" aria-label="menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 手機版選單 -->
+    <div class="mobile-sidebar-menu" id="mobile-sidebar-menu">
+        <div class="mobile-sidebar-header">
+            <div class="mobile-profile">
+                <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="mobile-avatar" alt="user">
+                <div class="mobile-name"><%= user.name || '用戶名稱' %></div>
+            </div>
+        </div>
+        <nav class="mobile-sidebar-nav">
+            <a href="/account/points" class="mobile-sidebar-link">
+                <img src="/images/points_card.svg" class="icon">
+                <span>集點卡</span>
+            </a>
+            <a href="/account/profile" class="mobile-sidebar-link">
+                <img src="/images/user.svg" class="icon">
+                <span>基本資料</span>
+            </a>
+            <a href="/account/settings" class="mobile-sidebar-link">
+                <img src="/images/setting.svg" class="icon">
+                <span>帳號設定</span>
+            </a>
+            <a href="/auth/logout" class="mobile-sidebar-logout">登出</a>
+        </nav>
+    </div>
+    <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay"></div>
 </aside>

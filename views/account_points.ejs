@@ -25,7 +25,7 @@
                         
                         <div class="card-stats">
                             <div class="stat-item">
-                                <div class="stat-value"><%= card.points %></div>
+                                <div class="stat-value points-display" data-points="<%= card.points %>"><%= card.points %></div>
                                 <div class="stat-label">點數</div>
                             </div>
                             <div class="stat-divider"></div>
@@ -61,3 +61,5 @@
         </div>
     <% } %>
 </div>
+
+<script src="/js/account.js"></script>

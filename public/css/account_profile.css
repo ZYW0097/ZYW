@@ -42,11 +42,12 @@
 
 .profile-form {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.5rem;
+    padding: 0 2rem;
 }
 
 .profile-form label {
@@ -56,17 +57,23 @@
 }
 
 .profile-form input, .profile-form select {
-    padding: 0.7rem;
+    padding: 0.8rem;
     border-radius: 8px;
     border: 1.5px solid #bbb;
     font-size: 1.1rem;
+    transition: border-color 0.2s;
+}
+
+.profile-form input:focus, .profile-form select:focus {
+    outline: none;
+    border-color: #007AFF;
 }
 
 .profile-save-btn {
     background: #007AFF;
     color: #fff;
     border: none;
-    padding: 0.9rem;
+    padding: 1rem;
     border-radius: 8px;
     font-size: 1.1rem;
     font-weight: 700;
@@ -79,12 +86,65 @@
     background: #0056b3;
 }
 
-@media (max-width: 900px) {
-    .profile-header {
-        margin-top: 1rem;
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .profile-header-bg {
+        min-height: 250px;
+        margin-bottom: 1.5rem;
     }
+    
+    .profile-header {
+        padding: 1rem 0;
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-name {
+        font-size: 1.3rem;
+    }
+    
     .profile-form {
-        max-width: 98vw;
-        padding: 0 1vw;
+        max-width: 100%;
+        padding: 0 1rem;
+        gap: 1.2rem;
+    }
+    
+    .profile-form input, .profile-form select {
+        padding: 0.7rem;
+        font-size: 1rem;
+    }
+    
+    .profile-save-btn {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header-bg {
+        min-height: 200px;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .profile-name {
+        font-size: 1.2rem;
+    }
+    
+    .profile-form {
+        padding: 0 0.75rem;
+        gap: 1rem;
+    }
+    
+    .profile-form input, .profile-form select {
+        padding: 0.6rem;
+        font-size: 0.95rem;
     }
 }
