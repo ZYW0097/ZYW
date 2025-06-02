@@ -30,6 +30,12 @@ router.get('/login', (req, res) => {
     if (req.query.redirect) {
         req.session.loginRedirect = req.query.redirect;
     }
+    
+    // 儲存記住我參數到 session
+    if (req.query.remember === 'true') {
+        req.session.rememberMe = true;
+    }
+    
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINE_CALLBACK_URL)}&state=${state}&scope=profile%20openid%20email`;
     res.redirect(redirectUrl);
     console.log('LINE_CLIENT_ID:', LINE_CLIENT_ID);
@@ -96,6 +102,31 @@ router.get('/line/callback', async (req, res) => {
 
         // 設定 session
         req.session.userId = user._id;
+
+        // 處理記住我功能
+        await handleLoginSuccess(user);
+
+        // 檢查是否有記住我的要求（從session中取得）
+        if (req.session.rememberMe) {
+            const { generateRememberToken } = require('../utils/auth');
+            const rememberToken = generateRememberToken();
+            const rememberExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7天
+            
+            user.rememberToken = rememberToken;
+            user.rememberExpires = rememberExpires;
+            await user.save();
+            
+            // 設置 cookie
+            res.cookie('remember_token', rememberToken, {
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7天
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
+            });
+            
+            // 清除session中的rememberMe標記
+            delete req.session.rememberMe;
+        }
 
         // 取出 loginRedirect
         const loginRedirect = req.session.loginRedirect;

@@ -16,8 +16,8 @@
         </div>
     <% } %>
 
-    <!-- 電話號碼登入表單 -->
-    <form class="auth-form" action="/auth/login/phone" method="POST" id="loginForm">
+    <!-- 密碼登入表單 -->
+    <form class="auth-form" action="/auth/login/phone" method="POST" id="passwordForm">
         <div class="form-group">
             <label class="form-label" for="phone">手機號碼</label>
             <input 
@@ -54,7 +54,7 @@
             <label class="remember-label" for="remember">記住我 7 天</label>
         </div>
 
-        <button type="submit" class="auth-btn auth-btn-primary" id="loginBtn">
+        <button type="submit" class="auth-btn auth-btn-primary" id="passwordBtn">
             登入
         </button>
     </form>
@@ -65,24 +65,27 @@
     </div>
 
     <!-- LINE 登入 -->
-    <a href="/account/login" class="auth-btn auth-btn-line">
+    <a href="/account/login" class="auth-btn auth-btn-line" id="lineLoginBtn">
         使用 LINE 登入
     </a>
 
     <!-- 切換到註冊 -->
     <div class="auth-switch">
         <p class="auth-switch-text">還沒有帳號嗎？</p>
-        <a href="/auth/register" class="auth-switch-link">立即註冊</a>
+        <a href="/auth/register" class="auth-switch-link">使用 LINE 註冊</a>
     </div>
 </div>
 
 <link rel="stylesheet" href="/css/auth.css">
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm');
-    const loginBtn = document.getElementById('loginBtn');
+    const passwordForm = document.getElementById('passwordForm');
+    const passwordBtn = document.getElementById('passwordBtn');
     const phoneInput = document.getElementById('phone');
     const passwordInput = document.getElementById('password');
+    const rememberCheckbox = document.getElementById('remember');
+    const lineLoginBtn = document.getElementById('lineLoginBtn');
 
     // 電話號碼格式化
     phoneInput.addEventListener('input', function() {
@@ -100,8 +103,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 表單提交
-    loginForm.addEventListener('submit', function(e) {
+    // LINE登入時處理記住我選項
+    lineLoginBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // 阻止預設連結行為
+        
+        let lineLoginUrl = '/account/login';
+        
+        if (rememberCheckbox.checked) {
+            // 將記住我狀態添加到URL參數
+            lineLoginUrl += '?remember=true';
+        }
+        
+        // 跳轉到LINE登入
+        window.location.href = lineLoginUrl;
+    });
+
+    // 密碼登入表單提交
+    passwordForm.addEventListener('submit', function(e) {
         const phone = phoneInput.value;
         const password = passwordInput.value;
 
@@ -122,9 +140,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // 顯示載入狀態
-        loginBtn.classList.add('btn-loading');
-        loginBtn.disabled = true;
-        loginBtn.textContent = '登入中...';
+        passwordBtn.classList.add('btn-loading');
+        passwordBtn.disabled = true;
+        passwordBtn.textContent = '登入中...';
     });
 
     // 移除錯誤狀態

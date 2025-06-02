@@ -13,7 +13,7 @@ const {
 } = require('../utils/auth');
 const { redirectIfAuthenticated } = require('../middleware/auth');
 
-// 註冊頁面
+// 註冊頁面 (只顯示LINE註冊選項)
 router.get('/register', redirectIfAuthenticated, (req, res) => {
     res.render('auth/register', { 
         layout: 'layouts/main',
@@ -21,83 +21,6 @@ router.get('/register', redirectIfAuthenticated, (req, res) => {
         success: null,
         formData: {}
     });
-});
-
-// 處理註冊
-router.post('/register', async (req, res) => {
-    try {
-        const { name, phone, password, confirmPassword } = req.body;
-        let errors = [];
-        
-        // 基本驗證
-        if (!name || name.trim().length < 2) {
-            errors.push('姓名至少需要2個字元');
-        }
-        
-        if (!validatePhone(phone)) {
-            errors.push('請輸入正確的手機號碼格式');
-        }
-        
-        // 密碼強度驗證
-        const passwordValidation = validatePassword(password);
-        if (!passwordValidation.isValid) {
-            errors = errors.concat(passwordValidation.errors);
-        }
-        
-        if (password !== confirmPassword) {
-            errors.push('密碼確認不一致');
-        }
-        
-        if (errors.length > 0) {
-            return res.render('auth/register', {
-                layout: 'layouts/main',
-                error: errors,
-                success: null,
-                formData: { name, phone }
-            });
-        }
-        
-        // 檢查手機號碼是否已註冊
-        const adb = getClientDb('main', 'ADB');
-        const User = adb.model('User', userSchema);
-        const existingUser = await User.findOne({ phone });
-        
-        if (existingUser) {
-            return res.render('auth/register', {
-                layout: 'layouts/main',
-                error: '此手機號碼已經註冊過了',
-                success: null,
-                formData: { name, phone }
-            });
-        }
-        
-        // 加密密碼並創建用戶
-        const hashedPassword = await hashPassword(password);
-        const newUser = await User.create({
-            lineId: `phone_${phone}`, // 用手機號碼作為唯一識別
-            name: name.trim(),
-            phone,
-            password: hashedPassword,
-            hasPassword: true,
-            createdAt: new Date()
-        });
-        
-        // 自動登入
-        req.session.userId = newUser._id;
-        await handleLoginSuccess(newUser);
-        
-        // 直接重導向，而不是渲染頁面後再跳轉
-        res.redirect('/account/profile');
-        
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.render('auth/register', {
-            layout: 'layouts/main',
-            error: '註冊失敗，請稍後再試',
-            success: null,
-            formData: req.body
-        });
-    }
 });
 
 // 登入頁面
@@ -227,25 +150,6 @@ router.get('/logout', (req, res) => {
             console.error('Logout error:', err);
         }
         res.redirect('/');
-    });
-});
-
-// 忘記密碼頁面 (預留)
-router.get('/forgot-password', (req, res) => {
-    res.render('auth/forgot-password', {
-        layout: 'layouts/main',
-        error: null,
-        success: null
-    });
-});
-
-// 處理忘記密碼 (預留)
-router.post('/forgot-password', async (req, res) => {
-    // TODO: 實作忘記密碼功能 (發送簡訊或 Email)
-    res.render('auth/forgot-password', {
-        layout: 'layouts/main',
-        error: null,
-        success: '重設密碼連結已發送到您的手機'
     });
 });
 

@@ -1,7 +1,7 @@
 <div class="auth-container">
     <div class="auth-header">
         <h1 class="auth-title">建立帳號</h1>
-        <p class="auth-subtitle">註冊新帳號，開始您的數位體驗</p>
+        <p class="auth-subtitle">使用 LINE 帳號快速註冊，開始您的數位體驗</p>
     </div>
 
     <% if (typeof error !== 'undefined' && error) { %>
@@ -24,78 +24,26 @@
         </div>
     <% } %>
 
-    <!-- 註冊表單 -->
-    <form class="auth-form" action="/auth/register" method="POST" id="registerForm">
-        <div class="form-group">
-            <label class="form-label" for="name">姓名</label>
-            <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                class="form-input" 
-                placeholder="請輸入您的姓名"
-                value="<%= typeof formData !== 'undefined' ? formData.name || '' : '' %>"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="phone">手機號碼</label>
-            <input 
-                type="tel" 
-                id="phone" 
-                name="phone" 
-                class="form-input" 
-                placeholder="請輸入手機號碼（例：0912345678）"
-                value="<%= typeof formData !== 'undefined' ? formData.phone || '' : '' %>"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="password">密碼</label>
-            <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                class="form-input" 
-                placeholder="請設定密碼（至少8字元）"
-                required
-            >
-            <div class="password-strength" id="passwordStrength" style="display: none;">
-                <div class="strength-bar">
-                    <div class="strength-fill"></div>
-                </div>
-                <div class="strength-text"></div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="confirmPassword">確認密碼</label>
-            <input 
-                type="password" 
-                id="confirmPassword" 
-                name="confirmPassword" 
-                class="form-input" 
-                placeholder="請再次輸入密碼"
-                required
-            >
-        </div>
-
-        <button type="submit" class="auth-btn auth-btn-primary" id="registerBtn">
-            建立帳號
-        </button>
-    </form>
-
-    <!-- 分隔線 -->
-    <div class="auth-divider">
-        <span class="auth-divider-text">或者</span>
-    </div>
-
-    <!-- LINE 登入 -->
-    <a href="/account/login" class="auth-btn auth-btn-line">
+    <!-- LINE 註冊 -->
+    <a href="/account/login" class="auth-btn auth-btn-line auth-btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.628-.629.628M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
         使用 LINE 註冊
     </a>
+
+    <!-- 註冊說明 -->
+    <div class="auth-info">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-content">
+            <h3>快速註冊流程</h3>
+            <ul>
+                <li>點擊上方按鈕使用 LINE 帳號註冊</li>
+                <li>授權後即可完成註冊並開始使用</li>
+                <li>首次登入可完善個人資料以獲得更好體驗</li>
+            </ul>
+        </div>
+    </div>
 
     <!-- 切換到登入 -->
     <div class="auth-switch">
@@ -105,149 +53,70 @@
 </div>
 
 <link rel="stylesheet" href="/css/auth.css">
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const registerForm = document.getElementById('registerForm');
-    const registerBtn = document.getElementById('registerBtn');
-    const nameInput = document.getElementById('name');
-    const phoneInput = document.getElementById('phone');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const passwordStrength = document.getElementById('passwordStrength');
+<style>
+.auth-btn-primary {
+    background: #00C300;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    // 電話號碼格式化
-    phoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.length > 10) {
-            value = value.substring(0, 10);
-        }
-        this.value = value;
-        
-        // 驗證格式
-        if (value.length === 10 && value.startsWith('09')) {
-            this.classList.remove('error');
-        } else if (value.length > 0) {
-            this.classList.add('error');
-        }
-    });
+.auth-btn-primary:hover {
+    background: #00B300;
+    color: white;
+}
 
-    // 密碼強度檢查
-    passwordInput.addEventListener('input', function() {
-        const password = this.value;
-        
-        if (password.length > 0) {
-            passwordStrength.style.display = 'block';
-            checkPasswordStrength(password);
-        } else {
-            passwordStrength.style.display = 'none';
-        }
-    });
+.auth-info {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    display: flex;
+    gap: 16px;
+}
 
-    // 確認密碼檢查
-    confirmPasswordInput.addEventListener('input', function() {
-        const password = passwordInput.value;
-        const confirmPassword = this.value;
-        
-        if (confirmPassword.length > 0) {
-            if (password === confirmPassword) {
-                this.classList.remove('error');
-            } else {
-                this.classList.add('error');
-            }
-        }
-    });
+.info-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
 
-    // 密碼強度檢查函數
-    function checkPasswordStrength(password) {
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        const isLongEnough = password.length >= 8;
-        
-        let score = 0;
-        if (hasUpperCase) score++;
-        if (hasLowerCase) score++;
-        if (hasNumbers) score++;
-        if (hasSpecialChar) score++;
-        if (isLongEnough) score++;
-        
-        const strengthBar = passwordStrength.querySelector('.strength-bar');
-        const strengthText = passwordStrength.querySelector('.strength-text');
-        
-        // 移除所有強度類別
-        strengthBar.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
-        
-        if (score < 3) {
-            strengthBar.classList.add('strength-weak');
-            strengthText.textContent = '密碼強度：弱';
-            strengthText.style.color = '#f44336';
-        } else if (score < 5) {
-            strengthBar.classList.add('strength-medium');
-            strengthText.textContent = '密碼強度：中等';
-            strengthText.style.color = '#ff9800';
-        } else {
-            strengthBar.classList.add('strength-strong');
-            strengthText.textContent = '密碼強度：強';
-            strengthText.style.color = '#4caf50';
-        }
+.info-content h3 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-content ul {
+    margin: 0;
+    padding-left: 16px;
+    color: #666;
+}
+
+.info-content li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.info-content li:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+    .auth-info {
+        flex-direction: column;
+        text-align: center;
     }
-
-    // 表單提交驗證
-    registerForm.addEventListener('submit', function(e) {
-        const name = nameInput.value.trim();
-        const phone = phoneInput.value;
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        // 驗證姓名
-        if (name.length < 2) {
-            e.preventDefault();
-            nameInput.classList.add('error');
-            alert('姓名至少需要2個字元');
-            return;
-        }
-
-        // 驗證電話號碼格式
-        if (!/^09\d{8}$/.test(phone)) {
-            e.preventDefault();
-            phoneInput.classList.add('error');
-            alert('請輸入正確的手機號碼格式（例：0912345678）');
-            return;
-        }
-
-        // 驗證密碼強度
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
-        if (password.length < 8 || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
-            e.preventDefault();
-            passwordInput.classList.add('error');
-            alert('密碼需要包含至少8字元，且包含大小寫字母、數字和特殊字元');
-            return;
-        }
-
-        // 驗證密碼確認
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            confirmPasswordInput.classList.add('error');
-            alert('密碼確認不一致');
-            return;
-        }
-
-        // 顯示載入狀態
-        registerBtn.classList.add('btn-loading');
-        registerBtn.disabled = true;
-        registerBtn.textContent = '建立中...';
-    });
-
-    // 移除錯誤狀態
-    [nameInput, phoneInput, passwordInput, confirmPasswordInput].forEach(input => {
-        input.addEventListener('focus', function() {
-            this.classList.remove('error');
-        });
-    });
-});
-</script> 
+    
+    .info-content {
+        text-align: left;
+    }
+}
+</style> 
