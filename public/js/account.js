@@ -38,3 +38,44 @@ document.addEventListener('DOMContentLoaded', function() {
         element.textContent = formatPoints(points);
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const accountHamburger = document.getElementById('account-hamburger-btn');
+    const accountMobileMenu = document.getElementById('account-mobile-menu');
+    const accountMobileOverlay = document.getElementById('account-mobile-overlay');
+    
+    // 隱藏header的漢堡選單功能，避免衝突
+    const headerHamburger = document.getElementById('hamburger-btn');
+    if (headerHamburger) {
+        headerHamburger.style.display = 'none';
+    }
+    
+    if (accountHamburger && accountMobileMenu && accountMobileOverlay) {
+        // 開啟/關閉選單
+        accountHamburger.addEventListener('click', function() {
+            accountHamburger.classList.toggle('active');
+            accountMobileMenu.classList.toggle('active');
+            accountMobileOverlay.classList.toggle('active');
+            document.body.style.overflow = accountMobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        // 點擊遮罩關閉選單
+        accountMobileOverlay.addEventListener('click', function() {
+            accountHamburger.classList.remove('active');
+            accountMobileMenu.classList.remove('active');
+            accountMobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // 點擊選單項目後關閉選單
+        const accountMobileLinks = document.querySelectorAll('.account-mobile-link, .account-mobile-logout');
+        accountMobileLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                accountHamburger.classList.remove('active');
+                accountMobileMenu.classList.remove('active');
+                accountMobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+});

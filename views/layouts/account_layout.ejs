@@ -22,42 +22,6 @@
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Account Sidebar 響應式控制
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebarHamburger = document.getElementById('sidebar-hamburger-btn');
-            const mobileSidebarMenu = document.getElementById('mobile-sidebar-menu');
-            const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
-            
-            if (sidebarHamburger && mobileSidebarMenu && mobileSidebarOverlay) {
-                // 開啟/關閉選單
-                sidebarHamburger.addEventListener('click', function() {
-                    sidebarHamburger.classList.toggle('active');
-                    mobileSidebarMenu.classList.toggle('active');
-                    mobileSidebarOverlay.classList.toggle('active');
-                    document.body.style.overflow = mobileSidebarMenu.classList.contains('active') ? 'hidden' : '';
-                });
-                
-                // 點擊遮罩關閉選單
-                mobileSidebarOverlay.addEventListener('click', function() {
-                    sidebarHamburger.classList.remove('active');
-                    mobileSidebarMenu.classList.remove('active');
-                    mobileSidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                });
-                
-                // 點擊選單項目後關閉選單
-                const mobileLinks = document.querySelectorAll('.mobile-sidebar-link, .mobile-sidebar-logout');
-                mobileLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        sidebarHamburger.classList.remove('active');
-                        mobileSidebarMenu.classList.remove('active');
-                        mobileSidebarOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    });
-                });
-            }
-        });
-    </script>
+    <script src="/js/account.js"></script>
 </body>
 </html>

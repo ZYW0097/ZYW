@@ -144,8 +144,8 @@
     color: #333;
 }
 
-/* 漢堡選單按鈕 */
-.sidebar-hamburger {
+/* Account專用漢堡選單按鈕 */
+.account-hamburger {
     background: none;
     border: none;
     cursor: pointer;
@@ -155,9 +155,10 @@
     gap: 4px;
     width: 30px;
     height: 30px;
+    z-index: 1002;
 }
 
-.sidebar-hamburger span {
+.account-hamburger span {
     display: block;
     width: 25px;
     height: 3px;
@@ -166,51 +167,102 @@
     border-radius: 2px;
 }
 
-.sidebar-hamburger.active span:nth-child(1) {
+.account-hamburger.active span:nth-child(1) {
     transform: rotate(45deg) translate(6px, 6px);
 }
 
-.sidebar-hamburger.active span:nth-child(2) {
+.account-hamburger.active span:nth-child(2) {
     opacity: 0;
 }
 
-.sidebar-hamburger.active span:nth-child(3) {
+.account-hamburger.active span:nth-child(3) {
     transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* 手機版選單 */
-.mobile-sidebar-menu {
+/* 統一的手機版選單 */
+.account-mobile-menu {
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 300px;
+    right: -380px;
+    width: 380px;
     height: 100vh;
     background: white;
-    z-index: 1000;
+    z-index: 1001;
     transition: right 0.3s ease;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
-.mobile-sidebar-menu.active {
+.account-mobile-menu.active {
     right: 0;
 }
 
-.mobile-sidebar-menu .mobile-sidebar-header {
+/* 選單header */
+.account-mobile-header {
     background: #f8f9fa;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    min-height: 75px;
+    box-sizing: border-box;
+}
+
+.account-mobile-header .nav-logo {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #111;
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+/* 用戶資訊區域 */
+.account-mobile-user {
+    background: #fff;
     border-bottom: 1px solid #e0e0e0;
     padding: 1.5rem;
 }
 
-.mobile-sidebar-nav {
-    flex: 1;
-    padding: 1rem 0;
+.mobile-user-content {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
-.mobile-sidebar-link {
+.mobile-user-content .user-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #111;
+    padding: 2px;
+}
+
+.mobile-user-content .mobile-username {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* 選單區塊 */
+.account-menu-section {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem 0;
+}
+
+.menu-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.account-mobile-link {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -220,22 +272,24 @@
     font-size: 1.1rem;
     font-weight: 500;
     transition: background 0.2s;
+    border: none;
+    background: none;
 }
 
-.mobile-sidebar-link:hover {
+.account-mobile-link:hover {
     background: #f8f9fa;
     color: #333;
 }
 
-.mobile-sidebar-link .icon {
+.account-mobile-link .link-icon {
     width: 20px;
     height: 20px;
-    margin-right: 0;
+    flex-shrink: 0;
 }
 
-.mobile-sidebar-logout {
-    margin-top: auto;
-    margin: auto 1.5rem 2rem 1.5rem;
+.account-mobile-logout {
+    display: block;
+    margin: 0 1.5rem;
     background: #e57373;
     color: white;
     padding: 0.75rem 1.5rem;
@@ -244,28 +298,29 @@
     font-weight: 600;
     text-decoration: none;
     transition: background 0.2s;
+    font-size: 1.1rem;
 }
 
-.mobile-sidebar-logout:hover {
+.account-mobile-logout:hover {
     background: #d32f2f;
     color: white;
 }
 
 /* 遮罩層 */
-.mobile-sidebar-overlay {
+.account-mobile-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 1000;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
 }
 
-.mobile-sidebar-overlay.active {
+.account-mobile-overlay.active {
     opacity: 1;
     visibility: visible;
 }
@@ -279,4 +334,21 @@
     .mobile-only {
         display: block;
     }
+    
+    .account-mobile-menu {
+        width: 320px;
+        right: -320px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-mobile-menu {
+        width: 90vw;
+        right: -90vw;
+    }
+}
+
+/* 隱藏header在account頁面的漢堡選單以避免衝突 */
+.account-wrapper .custom-navbar .hamburger {
+    display: none !important;
 }

@@ -162,7 +162,14 @@ function renderWithSidebar(res, view, params) {
     if (view === 'account_profile') customCss = '/css/account_profile.css';
     if (view === 'account_points') customCss = '/css/account_points.css';
     if (view === 'account_settings') customCss = '/css/account_settings.css';
-    res.render(view, { ...params, layout: 'layouts/account_layout', customCss });
+    
+    // 添加默認的storeSlug，如果沒有提供的話
+    const defaultParams = {
+        storeSlug: '', // 默認為空，這樣連結會指向根路徑
+        ...params
+    };
+    
+    res.render(view, { ...defaultParams, layout: 'layouts/account_layout', customCss });
 }
 
 // 基本資料頁

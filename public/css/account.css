@@ -33,6 +33,11 @@
     padding: 0;
 }
 
+/* 在account頁面隱藏header的漢堡選單 */
+.account-wrapper .custom-navbar .hamburger {
+    display: none !important;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
     .account-wrapper {
@@ -53,5 +58,10 @@
         margin-top: 0;
         min-height: calc(100vh - 75px - 80px);
         padding: 1rem;
+    }
+    
+    /* 在mobile版本確保account漢堡選單可見 */
+    .account-wrapper .account-hamburger {
+        display: flex !important;
     }
 }
