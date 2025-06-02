@@ -7,9 +7,15 @@
                 <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡&nbsp;</a>
                 <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
             </div>
-            <a class="nav-user" href="/account/redirect">
-                <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
-            </a>
+            <% if (user) { %>
+                <a class="nav-user" href="/account/profile">
+                    <img src="<%= user.avatar || '/images/user_icon.svg' %>" alt="user" class="user-icon">
+                </a>
+            <% } else { %>
+                <a class="nav-user" href="/auth/login">
+                    <img src="/images/user_icon.svg" alt="login" class="user-icon">
+                </a>
+            <% } %>
         </div>
         <!-- 漢堡按鈕 -->
         <button class="hamburger mobile-only" id="hamburger-btn" aria-label="menu">
@@ -21,15 +27,27 @@
         <div class="mobile-menu-header">
             <a class="nav-logo" href="/">DINE✦</a>
         </div>
-        <a class="mobile-link" href="/account/redirect">
-            <div class="mobile-user-content">
-                <img src="<%= (user && user.avatar) ? user.avatar : '/images/user_icon.svg' %>" alt="user" class="user-icon">
-                <div class="mobile-username"><%= user ? user.name : '未登入' %></div>
-            </div>
-        </a>
+        <% if (user) { %>
+            <a class="mobile-link" href="/account/profile">
+                <div class="mobile-user-content">
+                    <img src="<%= user.avatar || '/images/user_icon.svg' %>" alt="user" class="user-icon">
+                    <div class="mobile-username"><%= user.name %></div>
+                </div>
+            </a>
+        <% } else { %>
+            <a class="mobile-link" href="/auth/login">
+                <div class="mobile-user-content">
+                    <img src="/images/user_icon.svg" alt="login" class="user-icon">
+                    <div class="mobile-username">登入 / 註冊</div>
+                </div>
+            </a>
+        <% } %>
         <a class="mobile-link" href="/">餐廳首頁</a>
         <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
         <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+        <% if (user) { %>
+            <a class="mobile-link" href="/auth/logout" style="color: #f44336; margin-top: 20px;">登出</a>
+        <% } %>
     </div>
     <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
 </nav>

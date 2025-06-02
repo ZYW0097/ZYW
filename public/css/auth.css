@@ -1,0 +1,331 @@
+/* Auth Pages Styles - 比照 card.css 風格 */
+body {
+    margin: 0;
+    padding-top: 76px;
+    background-color: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* 主要容器 */
+.auth-container {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+/* 頁面標題 */
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.auth-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* 表單樣式 */
+.auth-form {
+    margin-bottom: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-input.error {
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+/* 記住我選項 */
+.remember-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.remember-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    accent-color: #007AFF;
+}
+
+.remember-label {
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
+/* 按鈕樣式 */
+.auth-btn {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.auth-btn-primary {
+    background: #333;
+    color: white;
+}
+
+.auth-btn-primary:hover {
+    background: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.auth-btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.auth-btn-line {
+    background: #06C755;
+    color: white;
+}
+
+.auth-btn-line:hover {
+    background: #05a548;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 199, 85, 0.3);
+}
+
+/* 分隔線 */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.auth-divider-text {
+    padding: 0 16px;
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+}
+
+/* 錯誤訊息 */
+.error-message {
+    background: #ffebee;
+    color: #d32f2f;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 4px solid #d32f2f;
+}
+
+.error-list {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.error-list li {
+    margin-bottom: 4px;
+}
+
+/* 成功訊息 */
+.success-message {
+    background: #e8f5e8;
+    color: #2e7d32;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 4px solid #4caf50;
+}
+
+/* 切換頁面連結 */
+.auth-switch {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.auth-switch-text {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.auth-switch-link {
+    color: #007AFF;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.auth-switch-link:hover {
+    text-decoration: underline;
+}
+
+/* Loading 動畫 */
+.btn-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+/* 密碼強度指示器 */
+.password-strength {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.strength-bar {
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 2px;
+    margin: 8px 0 4px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak .strength-fill {
+    width: 33%;
+    background: #f44336;
+}
+
+.strength-medium .strength-fill {
+    width: 66%;
+    background: #ff9800;
+}
+
+.strength-strong .strength-fill {
+    width: 100%;
+    background: #4caf50;
+}
+
+.strength-text {
+    color: #666;
+    font-size: 12px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .auth-container {
+        margin: 20px 16px;
+        padding: 24px 20px;
+        border-radius: 12px;
+    }
+    
+    .auth-title {
+        font-size: 24px;
+    }
+    
+    .form-input {
+        padding: 12px 14px;
+        font-size: 16px; /* iOS 防止自動縮放 */
+    }
+    
+    .auth-btn {
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 16px 12px;
+        padding: 20px 16px;
+    }
+    
+    .auth-title {
+        font-size: 22px;
+    }
+}
+
+/* 動畫 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-container {
+    animation: fadeIn 0.3s ease-out;
+} 

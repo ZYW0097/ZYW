@@ -10,6 +10,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.0",
+    "cookie-parser": "^1.4.6",
     "multer-storage-cloudinary": "^4.0.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",

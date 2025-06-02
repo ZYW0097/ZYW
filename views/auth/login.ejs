@@ -1,0 +1,137 @@
+<div class="auth-container">
+    <div class="auth-header">
+        <h1 class="auth-title">歡迎回來</h1>
+        <p class="auth-subtitle">登入您的帳號，享受更多服務</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-message">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success-message">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <!-- 電話號碼登入表單 -->
+    <form class="auth-form" action="/auth/login/phone" method="POST" id="loginForm">
+        <div class="form-group">
+            <label class="form-label" for="phone">手機號碼</label>
+            <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                class="form-input" 
+                placeholder="請輸入手機號碼（例：0912345678）"
+                value="<%= typeof formData !== 'undefined' ? formData.phone || '' : '' %>"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">密碼</label>
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                class="form-input" 
+                placeholder="請輸入密碼"
+                required
+            >
+        </div>
+
+        <div class="remember-group">
+            <input 
+                type="checkbox" 
+                id="remember" 
+                name="remember" 
+                class="remember-checkbox"
+                <%= typeof formData !== 'undefined' && formData.remember ? 'checked' : '' %>
+            >
+            <label class="remember-label" for="remember">記住我 7 天</label>
+        </div>
+
+        <button type="submit" class="auth-btn auth-btn-primary" id="loginBtn">
+            登入
+        </button>
+    </form>
+
+    <!-- 分隔線 -->
+    <div class="auth-divider">
+        <span class="auth-divider-text">或者</span>
+    </div>
+
+    <!-- LINE 登入 -->
+    <a href="/account/login" class="auth-btn auth-btn-line">
+        使用 LINE 登入
+    </a>
+
+    <!-- 切換到註冊 -->
+    <div class="auth-switch">
+        <p class="auth-switch-text">還沒有帳號嗎？</p>
+        <a href="/auth/register" class="auth-switch-link">立即註冊</a>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/css/auth.css">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('password');
+
+    // 電話號碼格式化
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 10) {
+            value = value.substring(0, 10);
+        }
+        this.value = value;
+        
+        // 驗證格式
+        if (value.length === 10 && value.startsWith('09')) {
+            this.classList.remove('error');
+        } else if (value.length > 0) {
+            this.classList.add('error');
+        }
+    });
+
+    // 表單提交
+    loginForm.addEventListener('submit', function(e) {
+        const phone = phoneInput.value;
+        const password = passwordInput.value;
+
+        // 驗證電話號碼格式
+        if (!/^09\d{8}$/.test(phone)) {
+            e.preventDefault();
+            phoneInput.classList.add('error');
+            alert('請輸入正確的手機號碼格式（例：0912345678）');
+            return;
+        }
+
+        // 驗證密碼長度
+        if (password.length < 8) {
+            e.preventDefault();
+            passwordInput.classList.add('error');
+            alert('密碼至少需要8個字元');
+            return;
+        }
+
+        // 顯示載入狀態
+        loginBtn.classList.add('btn-loading');
+        loginBtn.disabled = true;
+        loginBtn.textContent = '登入中...';
+    });
+
+    // 移除錯誤狀態
+    [phoneInput, passwordInput].forEach(input => {
+        input.addEventListener('focus', function() {
+            this.classList.remove('error');
+        });
+    });
+});
+</script> 

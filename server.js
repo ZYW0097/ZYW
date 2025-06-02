@@ -1,13 +1,16 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
 const expressLayouts = require('express-ejs-layouts');
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
 const accountRouter = require('./routes/account');
+const authRouter = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
 const pointsRoutes = require('./routes/points/index');
+const { loadUser } = require('./middleware/auth');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/favicon.ico', express.static(path.join(__dirname, 'favicon.ico')));
+app.use(cookieParser());
 
 // Session 設置
 app.use(session({
@@ -36,32 +40,8 @@ app.use(session({
     proxy: true
 }));
 
-// 掛載 user 到 req.user/res.locals.user
-const getClientDb = require('./utils/dbManager');
-const userSchema = require('./models/user');
-app.use(async (req, res, next) => {
-    if (req.session && req.session.userId) {
-        try {
-            const adb = getClientDb('main', 'ADB');
-            const User = adb.model('User', userSchema);
-            const user = await User.findById(req.session.userId);
-            if (user) {
-                req.user = user;
-                res.locals.user = user;
-            } else {
-                req.user = null;
-                res.locals.user = null;
-            }
-        } catch (e) {
-            req.user = null;
-            res.locals.user = null;
-        }
-    } else {
-        req.user = null;
-        res.locals.user = null;
-    }
-    next();
-});
+// 用戶加載中間件 (替換原有的)
+app.use(loadUser);
 
 // 設置全局變數
 app.use((req, res, next) => {
@@ -70,6 +50,7 @@ app.use((req, res, next) => {
 });
 
 // 路由
+app.use('/auth', authRouter);
 app.use('/account', accountRouter);
 app.use('/', pointsRoutes); 
 app.use('/', indexRouter);  

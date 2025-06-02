@@ -4,6 +4,13 @@ const userSchema = require('../models/user');
 const axios = require('axios');
 const { cloudinary } = require('../config/cloudinary');
 const qs = require('querystring');
+const { 
+    hashPassword, 
+    comparePassword, 
+    validatePassword, 
+    validatePhone, 
+    handleLoginSuccess 
+} = require('../utils/auth');
 
 const router = express.Router();
 
@@ -155,7 +162,15 @@ router.get('/settings', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
-    renderWithSidebar(res, 'account_settings', { user });
+    renderWithSidebar(res, 'account_settings', { 
+        user,
+        error: req.session.settingsError,
+        success: req.session.settingsSuccess
+    });
+    
+    // 清除一次性訊息
+    delete req.session.settingsError;
+    delete req.session.settingsSuccess;
 });
 
 // 9. 儲存/更新基本資料
@@ -163,8 +178,136 @@ router.post('/profile', requireLogin, async (req, res) => {
     const { phone, birthday, gender } = req.body;
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
-    await User.findByIdAndUpdate(req.session.userId, { birthday, gender });
-    res.redirect('/account/points');
+    
+    try {
+        // 如果更新手機號碼，需要驗證格式和唯一性
+        if (phone) {
+            if (!validatePhone(phone)) {
+                req.session.settingsError = '手機號碼格式不正確';
+                return res.redirect('/account/settings');
+            }
+            
+            // 檢查手機號碼是否被其他用戶使用
+            const existingUser = await User.findOne({ 
+                phone, 
+                _id: { $ne: req.session.userId } 
+            });
+            
+            if (existingUser) {
+                req.session.settingsError = '此手機號碼已被其他帳號使用';
+                return res.redirect('/account/settings');
+            }
+        }
+        
+        await User.findByIdAndUpdate(req.session.userId, { phone, birthday, gender });
+        res.redirect('/account/points');
+    } catch (error) {
+        console.error('Profile update error:', error);
+        req.session.settingsError = '更新失敗，請稍後再試';
+        res.redirect('/account/settings');
+    }
+});
+
+// 新增：密碼設定/修改
+router.post('/settings/password', requireLogin, async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        // 驗證新密碼強度
+        const passwordValidation = validatePassword(newPassword);
+        if (!passwordValidation.isValid) {
+            req.session.settingsError = passwordValidation.errors.join('、');
+            return res.redirect('/account/settings');
+        }
+        
+        // 確認密碼一致性
+        if (newPassword !== confirmPassword) {
+            req.session.settingsError = '密碼確認不一致';
+            return res.redirect('/account/settings');
+        }
+        
+        // 如果用戶已有密碼，需要驗證現有密碼
+        if (user.hasPassword) {
+            if (!currentPassword) {
+                req.session.settingsError = '請輸入目前的密碼';
+                return res.redirect('/account/settings');
+            }
+            
+            const isCurrentPasswordValid = await comparePassword(currentPassword, user.password);
+            if (!isCurrentPasswordValid) {
+                req.session.settingsError = '目前密碼不正確';
+                return res.redirect('/account/settings');
+            }
+        }
+        
+        // 更新密碼
+        const hashedPassword = await hashPassword(newPassword);
+        user.password = hashedPassword;
+        user.hasPassword = true;
+        await user.save();
+        
+        req.session.settingsSuccess = user.hasPassword ? '密碼已成功更新' : '密碼已成功設定';
+        res.redirect('/account/settings');
+        
+    } catch (error) {
+        console.error('Password update error:', error);
+        req.session.settingsError = '密碼設定失敗，請稍後再試';
+        res.redirect('/account/settings');
+    }
+});
+
+// 新增：移除密碼登入
+router.post('/settings/remove-password', requireLogin, async (req, res) => {
+    try {
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        // 確保用戶有綁定 LINE 帳號
+        if (!user.lineId || user.lineId.startsWith('phone_')) {
+            return res.status(400).json({ 
+                error: '無法移除密碼登入，請先綁定 LINE 帳號' 
+            });
+        }
+        
+        user.password = undefined;
+        user.hasPassword = false;
+        user.phone = undefined; // 同時移除手機號碼
+        user.rememberToken = undefined;
+        user.rememberExpires = undefined;
+        user.loginAttempts = 0;
+        user.lockUntil = undefined;
+        await user.save();
+        
+        res.json({ success: true });
+        
+    } catch (error) {
+        console.error('Remove password error:', error);
+        res.status(500).json({ error: '操作失敗，請稍後再試' });
+    }
+});
+
+// 新增：刪除帳號
+router.post('/settings/delete-account', requireLogin, async (req, res) => {
+    try {
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        
+        // 刪除用戶帳號
+        await User.findByIdAndDelete(req.session.userId);
+        
+        // 清除 session
+        req.session.destroy();
+        
+        res.json({ success: true });
+        
+    } catch (error) {
+        console.error('Delete account error:', error);
+        res.status(500).json({ error: '刪除失敗，請稍後再試' });
+    }
 });
 
 // 動態跳轉處理（整合各種登入和跳轉情境）
