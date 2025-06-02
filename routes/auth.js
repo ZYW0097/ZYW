@@ -140,7 +140,25 @@ router.post('/login/phone', async (req, res) => {
 });
 
 // 登出 (覆蓋原有的登出路由)
-router.get('/logout', (req, res) => {
+router.get('/logout', async (req, res) => {
+    try {
+        // 如果用戶已登入，清除數據庫中的記住我數據
+        if (req.session.userId) {
+            const adb = getClientDb('main', 'ADB');
+            const User = adb.model('User', userSchema);
+            
+            // 清除用戶的記住我 token 和過期時間
+            await User.findByIdAndUpdate(req.session.userId, {
+                $unset: {
+                    rememberToken: "",
+                    rememberExpires: ""
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Clear remember token error:', error);
+    }
+    
     // 清除記住我的 cookie
     res.clearCookie('remember_token');
     

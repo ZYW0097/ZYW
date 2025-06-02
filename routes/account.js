@@ -149,20 +149,13 @@ router.get('/line/callback', async (req, res) => {
     }
 });
 
-// 3. 登出
-router.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/');
-    });
-});
-
-// 4. 需要登入的頁面
+// 需要登入的頁面
 function requireLogin(req, res, next) {
     if (!req.session.userId) return res.redirect('/account/login');
     next();
 }
 
-// 5. 側邊欄共用 layout
+// 側邊欄共用 layout
 function renderWithSidebar(res, view, params) {
     // 根據 view 名稱自動帶入對應 CSS
     let customCss = '';
@@ -172,7 +165,7 @@ function renderWithSidebar(res, view, params) {
     res.render(view, { ...params, layout: 'layouts/account_layout', customCss });
 }
 
-// 6. 基本資料頁
+// 基本資料頁
 router.get('/profile', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
@@ -180,7 +173,7 @@ router.get('/profile', requireLogin, async (req, res) => {
     renderWithSidebar(res, 'account_profile', { user });
 });
 
-// 7. 集點卡頁
+// 集點卡頁
 router.get('/points', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
@@ -188,7 +181,7 @@ router.get('/points', requireLogin, async (req, res) => {
     renderWithSidebar(res, 'account_points', { user });
 });
 
-// 8. 帳號設定頁
+// 帳號設定頁
 router.get('/settings', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
@@ -204,7 +197,7 @@ router.get('/settings', requireLogin, async (req, res) => {
     delete req.session.settingsSuccess;
 });
 
-// 9. 儲存/更新基本資料
+// 儲存/更新基本資料
 router.post('/profile', requireLogin, async (req, res) => {
     const { phone, birthday, gender } = req.body;
     const adb = getClientDb('main', 'ADB');
