@@ -205,12 +205,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         redeemSuccessMessage.style.display = 'none';
                     }, 2000);
 
-                    // 如果當前在優惠券頁面，重新載入優惠券列表
-                    if (couponsTab && couponsTab.classList.contains('active')) {
-                        // 強制重新載入優惠券列表
-                        couponsTab.dataset.loaded = 'false';
-                        await loadCoupons();
+                    // 強制重設 dataset.loaded 並立即載入最新優惠券數量與列表
+                    if (couponsTab) {
+                        couponsTab.dataset.loaded = '';
                     }
+                    await loadCoupons();
                 } else {
                     throw new Error(data.error || '兌換失敗');
                 }
