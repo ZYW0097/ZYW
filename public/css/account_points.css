@@ -26,7 +26,7 @@
 /* 卡片網格 */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin-bottom: 3rem;
 }
@@ -63,16 +63,6 @@
 
 .loyalty-card:hover .card-image img {
     transform: scale(1.05);
-}
-
-.card-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(255, 142, 83, 0.8));
-    opacity: 0.7;
 }
 
 /* 卡片內容 */
@@ -254,6 +244,13 @@
 }
 
 /* 響應式設計 */
+@media (max-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .points-container {
         padding: 1rem;
