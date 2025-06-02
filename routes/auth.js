@@ -107,10 +107,10 @@ router.post('/login/phone', async (req, res) => {
         // 記住我功能
         if (remember) {
             const rememberToken = generateRememberToken();
-            const rememberExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7天
+            const userAgent = req.get('User-Agent') || '';
             
-            user.rememberToken = rememberToken;
-            user.rememberExpires = rememberExpires;
+            // 使用新的多 token 系統
+            user.addRememberToken(rememberToken, userAgent);
             await user.save();
             
             // 設置 cookie
@@ -146,14 +146,25 @@ router.get('/logout', async (req, res) => {
         if (req.session.userId) {
             const adb = getClientDb('main', 'ADB');
             const User = adb.model('User', userSchema);
+            const user = await User.findById(req.session.userId);
             
-            // 清除用戶的記住我 token 和過期時間
-            await User.findByIdAndUpdate(req.session.userId, {
-                $unset: {
-                    rememberToken: "",
-                    rememberExpires: ""
+            if (user) {
+                // 檢查是否有特定的記住我 token 要清除
+                const currentToken = req.cookies.remember_token;
+                if (currentToken) {
+                    // 只清除當前裝置的 token
+                    user.removeRememberToken(currentToken);
+                } else {
+                    // 如果沒有 cookie，清除所有 token（為了安全）
+                    user.clearAllRememberTokens();
                 }
-            });
+                
+                // 同時清除舊格式的 token（向下相容）
+                user.rememberToken = undefined;
+                user.rememberExpires = undefined;
+                
+                await user.save();
+            }
         }
     } catch (error) {
         console.error('Clear remember token error:', error);

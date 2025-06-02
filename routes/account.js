@@ -110,10 +110,10 @@ router.get('/line/callback', async (req, res) => {
         if (req.session.rememberMe) {
             const { generateRememberToken } = require('../utils/auth');
             const rememberToken = generateRememberToken();
-            const rememberExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7天
+            const userAgent = req.get('User-Agent') || '';
             
-            user.rememberToken = rememberToken;
-            user.rememberExpires = rememberExpires;
+            // 使用新的多 token 系統
+            user.addRememberToken(rememberToken, userAgent);
             await user.save();
             
             // 設置 cookie
@@ -366,6 +366,8 @@ router.post('/settings/remove-password', requireLogin, async (req, res) => {
         user.password = undefined;
         user.hasPassword = false;
         user.phone = undefined; // 同時移除手機號碼
+        user.clearAllRememberTokens(); // 使用新方法清除所有記住我 token
+        // 同時清除舊格式（向下相容）
         user.rememberToken = undefined;
         user.rememberExpires = undefined;
         user.loginAttempts = 0;
@@ -397,6 +399,107 @@ router.post('/settings/delete-account', requireLogin, async (req, res) => {
     } catch (error) {
         console.error('Delete account error:', error);
         res.status(500).json({ error: '刪除失敗，請稍後再試' });
+    }
+});
+
+// 新增：獲取記住我裝置列表
+router.get('/settings/remember-devices', requireLogin, async (req, res) => {
+    try {
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: '用戶不存在' });
+        }
+        
+        // 清理過期的 tokens
+        user.cleanExpiredTokens();
+        await user.save();
+        
+        // 格式化裝置列表
+        const devices = user.rememberTokens.map((tokenObj, index) => {
+            const userAgent = tokenObj.userAgent || '';
+            let deviceInfo = '未知裝置';
+            
+            // 簡單的 User-Agent 解析
+            if (userAgent.includes('iPhone')) deviceInfo = 'iPhone';
+            else if (userAgent.includes('Android')) deviceInfo = 'Android';
+            else if (userAgent.includes('Windows')) deviceInfo = 'Windows';
+            else if (userAgent.includes('Mac')) deviceInfo = 'Mac';
+            else if (userAgent.includes('Linux')) deviceInfo = 'Linux';
+            
+            if (userAgent.includes('Chrome')) deviceInfo += ' - Chrome';
+            else if (userAgent.includes('Firefox')) deviceInfo += ' - Firefox';
+            else if (userAgent.includes('Safari')) deviceInfo += ' - Safari';
+            else if (userAgent.includes('Edge')) deviceInfo += ' - Edge';
+            
+            return {
+                id: index,
+                token: tokenObj.token,
+                deviceInfo,
+                createdAt: tokenObj.createdAt,
+                expires: tokenObj.expires,
+                isCurrent: req.cookies.remember_token === tokenObj.token
+            };
+        });
+        
+        res.json({ success: true, devices });
+        
+    } catch (error) {
+        console.error('Get remember devices error:', error);
+        res.status(500).json({ error: '獲取裝置列表失敗' });
+    }
+});
+
+// 新增：移除特定裝置的記住我
+router.post('/settings/remove-device', requireLogin, async (req, res) => {
+    try {
+        const { token } = req.body;
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: '用戶不存在' });
+        }
+        
+        user.removeRememberToken(token);
+        await user.save();
+        
+        res.json({ success: true, message: '裝置已移除' });
+        
+    } catch (error) {
+        console.error('Remove device error:', error);
+        res.status(500).json({ error: '移除裝置失敗' });
+    }
+});
+
+// 新增：清除所有記住我裝置
+router.post('/settings/clear-all-devices', requireLogin, async (req, res) => {
+    try {
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: '用戶不存在' });
+        }
+        
+        user.clearAllRememberTokens();
+        // 同時清除舊格式
+        user.rememberToken = undefined;
+        user.rememberExpires = undefined;
+        await user.save();
+        
+        // 清除當前瀏覽器的 cookie
+        res.clearCookie('remember_token');
+        
+        res.json({ success: true, message: '所有裝置已清除' });
+        
+    } catch (error) {
+        console.error('Clear all devices error:', error);
+        res.status(500).json({ error: '清除所有裝置失敗' });
     }
 });
 

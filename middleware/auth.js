@@ -14,12 +14,35 @@ const isAuthenticated = async (req, res, next) => {
             const adb = getClientDb('main', 'ADB');
             const User = adb.model('User', userSchema);
             
-            const user = await User.findOne({
-                rememberToken,
-                rememberExpires: { $gt: new Date() }
+            // 先嘗試新的多 token 系統
+            let user = await User.findOne({
+                'rememberTokens.token': rememberToken,
+                'rememberTokens.expires': { $gt: new Date() }
             });
             
+            // 如果新系統找不到，嘗試舊的單 token 系統（向下相容）
+            if (!user) {
+                user = await User.findOne({
+                    rememberToken,
+                    rememberExpires: { $gt: new Date() }
+                });
+                
+                // 如果找到舊格式的token，遷移到新格式
+                if (user) {
+                    const userAgent = req.get('User-Agent') || '';
+                    user.addRememberToken(rememberToken, userAgent);
+                    // 清除舊格式
+                    user.rememberToken = undefined;
+                    user.rememberExpires = undefined;
+                    await user.save();
+                }
+            }
+            
             if (user) {
+                // 清理過期的 tokens
+                user.cleanExpiredTokens();
+                await user.save();
+                
                 // 自動登入
                 req.session.userId = user._id;
                 return next();
