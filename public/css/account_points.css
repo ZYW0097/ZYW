@@ -1,13 +1,13 @@
 .points-container {
     padding: 2rem;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
 /* 標題區域 */
 .points-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
 }
 
 .points-header h2 {
@@ -27,8 +27,8 @@
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-bottom: 3rem;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
 }
 
 /* 集點卡樣式 */
@@ -40,6 +40,7 @@
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    min-height: 320px;
 }
 
 .loyalty-card:hover {
@@ -50,7 +51,7 @@
 /* 卡片圖片 */
 .card-image {
     position: relative;
-    height: 160px;
+    height: 180px;
     overflow: hidden;
 }
 
@@ -67,7 +68,7 @@
 
 /* 卡片內容 */
 .card-content {
-    padding: 1.5rem;
+    padding: 2rem;
 }
 
 .card-header {
@@ -146,48 +147,6 @@
     flex: 1;
 }
 
-/* 底部小貼士 */
-.points-footer {
-    margin-top: 2rem;
-}
-
-.tips-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 20px;
-    text-align: center;
-}
-
-.tips-section h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
-}
-
-.tips-section ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.tips-section li {
-    margin-bottom: 0.75rem;
-    padding-left: 1.5rem;
-    position: relative;
-}
-
-.tips-section li:before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #a7f3d0;
-    font-weight: bold;
-}
-
-.tips-section li:last-child {
-    margin-bottom: 0;
-}
-
 /* 空狀態 */
 .empty-state {
     text-align: center;
@@ -244,16 +203,39 @@
 }
 
 /* 響應式設計 */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
+    .points-container {
+        max-width: 1200px;
+        padding: 1.5rem;
+    }
+    
+    .cards-grid {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1024px) {
     .cards-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
+    }
+    
+    .loyalty-card {
+        min-height: 300px;
+    }
+    
+    .card-image {
+        height: 160px;
     }
 }
 
 @media (max-width: 768px) {
     .points-container {
         padding: 1rem;
+    }
+    
+    .points-header {
+        margin-bottom: 2.5rem;
     }
     
     .points-header h2 {
@@ -266,13 +248,12 @@
         margin-bottom: 2rem;
     }
     
-    .card-content {
-        padding: 1.25rem;
+    .loyalty-card {
+        min-height: 280px;
     }
     
-    .tips-section {
+    .card-content {
         padding: 1.5rem;
-        text-align: left;
     }
     
     .empty-state {
@@ -290,6 +271,30 @@
 }
 
 @media (max-width: 480px) {
+    .points-container {
+        padding: 0.75rem;
+    }
+    
+    .points-header h2 {
+        font-size: 1.75rem;
+    }
+    
+    .cards-grid {
+        gap: 1rem;
+    }
+    
+    .loyalty-card {
+        min-height: 260px;
+    }
+    
+    .card-image {
+        height: 140px;
+    }
+    
+    .card-content {
+        padding: 1.25rem;
+    }
+    
     .stat-value {
         font-size: 1.5rem;
     }
