@@ -60,6 +60,10 @@ const isAuthenticated = async (req, res, next) => {
 // 載入用戶資料的中間件
 const loadUser = async (req, res, next) => {
     try {
+        // 預設設置為 null
+        req.user = null;
+        res.locals.user = null;
+        
         if (req.session && req.session.userId) {
             const adb = getClientDb('main', 'ADB');
             const User = adb.model('User', userSchema);
@@ -77,6 +81,9 @@ const loadUser = async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Load user middleware error:', error);
+        // 確保即使出錯也設置預設值
+        req.user = null;
+        res.locals.user = null;
         next();
     }
 };

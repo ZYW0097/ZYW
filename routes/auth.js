@@ -11,9 +11,10 @@ const {
     handleLoginFailure,
     handleLoginSuccess
 } = require('../utils/auth');
+const { redirectIfAuthenticated } = require('../middleware/auth');
 
 // 註冊頁面
-router.get('/register', (req, res) => {
+router.get('/register', redirectIfAuthenticated, (req, res) => {
     res.render('auth/register', { 
         layout: 'layouts/main',
         error: null,
@@ -85,17 +86,8 @@ router.post('/register', async (req, res) => {
         req.session.userId = newUser._id;
         await handleLoginSuccess(newUser);
         
-        res.render('auth/login', {
-            layout: 'layouts/main',
-            success: '註冊成功！正在為您登入...',
-            error: null,
-            formData: {}
-        });
-        
-        // 延遲跳轉到個人資料頁
-        setTimeout(() => {
-            res.redirect('/account/profile');
-        }, 2000);
+        // 直接重導向，而不是渲染頁面後再跳轉
+        res.redirect('/account/profile');
         
     } catch (error) {
         console.error('Registration error:', error);
@@ -109,12 +101,7 @@ router.post('/register', async (req, res) => {
 });
 
 // 登入頁面
-router.get('/login', (req, res) => {
-    // 如果已經登入，重導向
-    if (req.session.userId) {
-        return res.redirect('/account/profile');
-    }
-    
+router.get('/login', redirectIfAuthenticated, (req, res) => {
     res.render('auth/login', {
         layout: 'layouts/main',
         error: null,

@@ -31,7 +31,7 @@
             <a class="mobile-link" href="/account/profile">
                 <div class="mobile-user-content">
                     <img src="<%= user.avatar || '/images/user_icon.svg' %>" alt="user" class="user-icon">
-                    <div class="mobile-username"><%= user.name %></div>
+                    <div class="mobile-username"><%= user.name || '用戶名稱' %></div>
                 </div>
             </a>
         <% } else { %>
