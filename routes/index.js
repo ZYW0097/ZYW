@@ -168,10 +168,16 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
 
         // 發送確認郵件
         if (req.body.email) {
+            // 構建完整的logo URL
+            const protocol = req.protocol;
+            const host = req.get('host');
+            const logoUrl = `${protocol}://${host}/images/dine.jpg`;
+            
             await sendBookingConfirmation(req.body.email, {
                 ...req.body,
                 bookingId: reservation._id,
-                clientname
+                clientname,
+                logoUrl // 使用完整的URL
             });
         }
 
