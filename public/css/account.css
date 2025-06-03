@@ -1,15 +1,21 @@
+/* 為帳號頁面添加專用的body樣式 */
+.account-body {
+    margin: 0;
+    padding: 0;
+}
+
 .account-wrapper {
     display: flex;
     flex-direction: row;
-    min-height: calc(100vh - 75px);
+    min-height: 100vh; /* 移除header後改為100vh */
     box-sizing: border-box;
 }
 
 .account-sidebar {
     width: 260px;
-    height: calc(100vh - 75px);
+    height: 100vh; /* 移除header後改為100vh */
     position: sticky;
-    top: 75px;
+    top: 0; /* 移除header後改為0 */
     left: 0;
     background: #ededed;
     /* border-right: 2px solid #222; */
@@ -23,8 +29,8 @@
 
 .account-main {
     flex: 1;
-    min-height: calc(100vh - 75px);
-    margin-top: 75px;
+    min-height: 100vh; /* 移除header後改為100vh */
+    margin-top: 0; /* 移除header後改為0 */
     background: var(--background-color);
     display: flex;
     flex-direction: column;
@@ -56,12 +62,22 @@
     
     .account-main {
         margin-top: 0;
-        min-height: calc(100vh - 75px - 80px);
+        min-height: calc(100vh - 80px); /* 減去手機版sidebar的高度 */
         padding: 1rem;
     }
     
-    /* 在mobile版本確保account漢堡選單可見 */
-    .account-wrapper .account-hamburger {
+    /* 確保手機版漢堡選單可見且功能正常 */
+    .account-hamburger {
         display: flex !important;
+        z-index: 1002;
+    }
+    
+    /* 確保遮罩層正確顯示 */
+    .account-mobile-overlay {
+        z-index: 1000;
+    }
+    
+    .account-mobile-menu {
+        z-index: 1001;
     }
 }

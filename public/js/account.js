@@ -4,12 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const accountMobileMenu = document.getElementById('account-mobile-menu');
     const accountMobileOverlay = document.getElementById('account-mobile-overlay');
     
-    // 隱藏header的漢堡選單功能，避免衝突
-    const headerHamburger = document.getElementById('hamburger-btn');
-    if (headerHamburger) {
-        headerHamburger.style.display = 'none';
-    }
-    
     if (accountHamburger && accountMobileMenu && accountMobileOverlay) {
         // 開啟/關閉選單
         accountHamburger.addEventListener('click', function() {

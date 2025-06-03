@@ -118,7 +118,8 @@ router.post('/login/phone', async (req, res) => {
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7天
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax'
+                sameSite: 'lax',
+                path: '/' // 確保cookie在整個網站都有效
             });
         }
         
