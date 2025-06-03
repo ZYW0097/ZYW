@@ -68,14 +68,16 @@
     margin-left: 0.5rem;
 }
 
-/* 右側表單容器 */
+/* 右側表單容器 - 固定大小 */
 .booking-form-container {
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 3rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 100%; /* 確保佔滿可用寬度 */
-    box-sizing: border-box; /* 確保padding包含在寬度內 */
+    height: 800px; /* 固定高度 */
+    box-sizing: border-box; /* 確保padding包含在尺寸內 */
+    overflow-y: auto; /* 如果內容超出則可滾動 */
 }
 
 .booking-form-container h1 {
@@ -287,6 +289,7 @@ textarea {
     
     .booking-form-container {
         padding: 2rem;
+        height: 700px; /* 調整1024px時的固定高度 */
     }
     
     .restaurant-image {
@@ -326,6 +329,8 @@ textarea {
     
     .booking-form-container {
         padding: 1.5rem;
+        height: auto; /* 768px以下使用自動高度 */
+        min-height: 500px; /* 設定最小高度 */
     }
     
     .booking-form-container h1 {
