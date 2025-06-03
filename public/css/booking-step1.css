@@ -1,6 +1,6 @@
 /* 頁面容器 - 簡潔風格 */
 .page-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 2rem auto;
     padding: 2rem;
     background: white;
@@ -23,17 +23,77 @@
     line-height: 1.6;
 }
 
-.booking-form-container {
-    max-width: 800px;
+/* 主要布局 - 左右分割 */
+.booking-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 3rem;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
-    background: #fff;
-    border: 2px solid #000;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* 日曆樣式 - 黑白設計 */
+/* 左側餐廳信息卡片 */
+.restaurant-info-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.restaurant-info-card .restaurant-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.restaurant-info-card .restaurant-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurant-details {
+    padding: 1.5rem;
+}
+
+.restaurant-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 0.5rem 0;
+}
+
+.restaurant-address {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 右側訂位選擇容器 */
+.booking-form-container {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 區塊標題樣式 */
+.booking-form-container h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+/* 日曆樣式 */
 .calendar-section {
     margin-bottom: 3rem;
 }
@@ -47,17 +107,17 @@
 }
 
 .calendar-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #000;
     margin: 0;
 }
 
 .calendar-nav-btn {
-    background: #000;
-    color: white;
-    border: none;
-    font-size: 1.2rem;
+    background: #f8f8f8;
+    color: #333;
+    border: 1px solid #ddd;
+    font-size: 1.1rem;
     cursor: pointer;
     padding: 0.8rem 1.2rem;
     border-radius: 8px;
@@ -66,8 +126,8 @@
 }
 
 .calendar-nav-btn:hover {
-    background: #333;
-    transform: translateY(-2px);
+    background: #e0e0e0;
+    border-color: #bbb;
 }
 
 .days-container {
@@ -91,15 +151,15 @@
 }
 
 .day:hover:not(.disabled) {
-    background: #000;
+    background: #333;
     color: white;
-    border-color: #000;
+    border-color: #333;
 }
 
 .day.selected {
-    background: #000;
+    background: #333;
     color: white;
-    border-color: #000;
+    border-color: #333;
     font-weight: 600;
 }
 
@@ -110,27 +170,20 @@
     border-color: #eee;
 }
 
-/* 時段選擇樣式 - 黑白設計 */
+/* 時段選擇樣式 */
 .time-picker-container {
-    margin: 3rem 0;
-}
-
-.time-section h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #000;
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
 }
 
 .time-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
 }
 
 .time-button {
     padding: 1rem;
-    border: 2px solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 10px;
     background: white;
     cursor: pointer;
@@ -141,16 +194,17 @@
 }
 
 .time-button:hover:not(.disabled) {
-    background: #000;
+    background: #333;
     color: white;
-    border-color: #000;
+    border-color: #333;
     transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .time-button.selected {
-    background: #000;
+    background: #333;
     color: white;
-    border-color: #000;
+    border-color: #333;
     font-weight: 600;
 }
 
@@ -161,23 +215,21 @@
     border-color: #eee;
 }
 
-/* 人數選擇樣式 - 黑白設計 */
+/* 人數選擇樣式 */
 .people-selector {
-    margin: 3rem 0;
+    margin-bottom: 3rem;
 }
 
-.people-selector h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #000;
-    margin-bottom: 1.5rem;
+.people-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    margin-bottom: 1.5rem;
 }
 
 .form-group label {
@@ -188,7 +240,7 @@
 
 .form-group select {
     padding: 1rem;
-    border: 2px solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -197,14 +249,14 @@
 }
 
 .form-group select:focus {
-    border-color: #000;
+    border-color: #333;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
 }
 
-/* 下一步按鈕 - 黑白設計 */
+/* 下一步按鈕 */
 .next-button {
-    background: #000;
+    background: #333;
     color: white;
     border: none;
     padding: 1.2rem 2rem;
@@ -214,12 +266,11 @@
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
-    margin-top: 2rem;
     letter-spacing: 1px;
 }
 
 .next-button:hover:not(:disabled) {
-    background: #333;
+    background: #555;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -232,17 +283,21 @@
 
 /* 響應式設計 */
 @media (max-width: 1024px) {
-    .page-container {
-        margin: 1.5rem;
-        padding: 1.5rem;
+    .booking-layout {
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+    
+    .restaurant-info-card .restaurant-image {
+        height: 150px;
     }
     
     .booking-form-container {
-        padding: 1.5rem;
+        padding: 2rem;
     }
     
     .time-buttons {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.8rem;
     }
 }
@@ -257,9 +312,22 @@
         font-size: 2rem;
     }
     
+    .booking-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .restaurant-info-card {
+        position: static;
+        order: -1;
+    }
+    
+    .restaurant-info-card .restaurant-image {
+        height: 180px;
+    }
+    
     .booking-form-container {
-        padding: 1rem;
-        border-width: 1px;
+        padding: 1.5rem;
     }
     
     .calendar-header {
@@ -288,6 +356,11 @@
         padding: 0.8rem;
         font-size: 0.9rem;
     }
+    
+    .people-inputs {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -300,14 +373,35 @@
         font-size: 1.75rem;
     }
     
+    .restaurant-info-card .restaurant-image {
+        height: 150px;
+    }
+    
+    .restaurant-details {
+        padding: 1rem;
+    }
+    
+    .restaurant-name {
+        font-size: 1.1rem;
+    }
+    
+    .restaurant-address {
+        font-size: 0.9rem;
+    }
+    
     .booking-form-container {
-        padding: 0.8rem;
+        padding: 1rem;
+    }
+    
+    .booking-form-container h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
     }
     
     .calendar-section,
     .time-picker-container,
     .people-selector {
-        margin: 2rem 0;
+        margin-bottom: 2rem;
     }
     
     .time-buttons {

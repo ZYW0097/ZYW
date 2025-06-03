@@ -2,39 +2,60 @@
     <h1>訂位系統</h1>
     <p class="custom-text"><%= bookingpagetext %></p>
 
-    <div class="booking-form-container">
-        <div class="calendar-section">
-            <div class="calendar-header">
-                <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
-                <h2 id="calendar-title"></h2>
-                <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
+    <div class="booking-layout">
+        <!-- 左側餐廳信息容器 -->
+        <div class="restaurant-info-card">
+            <div class="restaurant-image">
+                <img src="/images/dine.jpg" alt="餐廳圖片">
             </div>
-            <div class="days-container"></div>
-        </div>
-
-        <div class="time-buttons" style="margin: 2rem 0;"></div>
-
-        <div class="people-selector" style="margin: 2rem 0;">
-            <div class="form-group">
-                <label for="adults">大人人數</label>
-                <select id="adults" name="adults" required>
-                    <option value="1">1位</option>
-                    <option value="2">2位</option>
-                    <option value="3">3位</option>
-                    <option value="4">4位</option>
-                    <option value="5">5位</option>
-                    <option value="6">6位</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="children">小孩人數</label>
-                <select id="children" name="children" required>
-                    <option value="0">0位</option>
-                </select>
+            <div class="restaurant-details">
+                <h3 class="restaurant-name">餐廳名稱</h3>
+                <p class="restaurant-address">餐廳地址</p>
             </div>
         </div>
 
-        <button type="button" class="next-button" disabled>下一步</button>
+        <!-- 右側訂位選擇容器 -->
+        <div class="booking-form-container">
+            <div class="calendar-section">
+                <h3>用餐日期選擇</h3>
+                <div class="calendar-header">
+                    <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
+                    <h2 id="calendar-title"></h2>
+                    <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
+                </div>
+                <div class="days-container"></div>
+            </div>
+
+            <div class="time-picker-container">
+                <h3>用餐時段選擇</h3>
+                <div class="time-buttons"></div>
+            </div>
+
+            <div class="people-selector">
+                <h3>用餐人數選擇</h3>
+                <div class="people-inputs">
+                    <div class="form-group">
+                        <label for="adults">大人人數</label>
+                        <select id="adults" name="adults" required>
+                            <option value="1">1位</option>
+                            <option value="2">2位</option>
+                            <option value="3">3位</option>
+                            <option value="4">4位</option>
+                            <option value="5">5位</option>
+                            <option value="6">6位</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="children">小孩人數</label>
+                        <select id="children" name="children" required>
+                            <option value="0">0位</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="next-button" disabled>下一步</button>
+        </div>
     </div>
 </div>
 

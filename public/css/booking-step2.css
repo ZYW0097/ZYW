@@ -15,16 +15,16 @@
     margin-bottom: 3rem;
 }
 
-/* 訂位摘要卡片 - 新設計 */
+/* 訂位摘要卡片 - 簡潔設計 */
 .booking-summary-card {
     max-width: 800px;
     margin: 0 auto 3rem;
     display: flex;
     background: white;
-    border: 2px solid #000;
-    border-radius: 20px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .restaurant-image {
@@ -37,7 +37,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(100%);
 }
 
 .booking-details {
@@ -79,9 +78,9 @@
     margin: 0 auto;
     padding: 2rem;
     background: #fff;
-    border: 2px solid #000;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 表單區塊標題 */
@@ -91,7 +90,7 @@
     color: #000;
     margin-bottom: 2rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #000;
+    border-bottom: 1px solid #eee;
 }
 
 /* 表單行布局 */
@@ -124,14 +123,14 @@
     margin-left: 3px;
 }
 
-/* 輸入框樣式 - 黑白設計 */
+/* 輸入框樣式 */
 .form-group input[type="text"],
 .form-group input[type="tel"],
 .form-group input[type="email"],
 .form-group select,
 .form-group textarea {
     padding: 1rem;
-    border: 2px solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -142,9 +141,9 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #000;
+    border-color: #333;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
 }
 
 /* 性別選擇樣式 */
@@ -166,7 +165,7 @@
 .gender-options input[type="radio"] {
     width: 1.2rem;
     height: 1.2rem;
-    accent-color: #000;
+    accent-color: #333;
 }
 
 /* 文本區域 */
@@ -176,7 +175,7 @@ textarea {
     font-family: inherit;
 }
 
-/* 用餐規則樣式 - 黑白設計 */
+/* 用餐規則樣式 */
 .dining-rules {
     background: #f8f8f8;
     border: 1px solid #ddd;
@@ -206,7 +205,7 @@ textarea {
 /* 同意條款樣式 */
 .agreement-box {
     background: white;
-    border: 2px solid #000;
+    border: 1px solid #ddd;
     border-radius: 10px;
     padding: 1.5rem;
 }
@@ -223,10 +222,10 @@ textarea {
 .agreement-box input[type="checkbox"] {
     width: 1.3rem;
     height: 1.3rem;
-    accent-color: #000;
+    accent-color: #333;
 }
 
-/* 按鈕樣式 - 黑白設計 */
+/* 按鈕樣式 */
 .form-buttons {
     display: flex;
     gap: 1.5rem;
@@ -247,24 +246,24 @@ textarea {
 
 .back-btn {
     background: white;
-    color: #000;
-    border: 2px solid #000;
+    color: #333;
+    border: 1px solid #ddd;
 }
 
 .back-btn:hover {
-    background: #000;
-    color: white;
+    background: #f8f8f8;
+    border-color: #bbb;
     transform: translateY(-2px);
 }
 
 .submit-btn {
-    background: #000;
+    background: #333;
     color: white;
     border: none;
 }
 
 .submit-btn:hover:not(:disabled) {
-    background: #333;
+    background: #555;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -320,7 +319,6 @@ textarea {
     /* 表單響應式 */
     .booking-form-container {
         padding: 1rem;
-        border-width: 1px;
     }
     
     .form-row {
