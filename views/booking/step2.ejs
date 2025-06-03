@@ -1,106 +1,110 @@
 <div class="page-container">
-    <h1>確認訂位資訊</h1>
-    
-    <div class="booking-summary-card">
-        <div class="restaurant-image">
-            <img src="/images/dine.jpg" alt="餐廳圖片">
-        </div>
-        <div class="booking-details">
-            <div class="detail-item">
-                <span class="detail-label">日期:</span>
-                <span class="detail-value" id="displayDate">YYYY/MM/DD 時段</span>
+    <div class="booking-layout">
+        <!-- 左側摘要信息容器 -->
+        <div class="booking-summary-card">
+            <div class="restaurant-image">
+                <img src="/images/dine.jpg" alt="餐廳圖片">
             </div>
-            <div class="detail-item">
-                <span class="detail-label">人數:</span>
-                <span class="detail-value" id="displayPeople">0大0小</span>
+            <div class="booking-details">
+                <div class="detail-item">
+                    <span class="detail-label">日期:</span>
+                    <span class="detail-value" id="displayDate">YYYY/MM/DD 時段</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">人數:</span>
+                    <span class="detail-value" id="displayPeople">0大0小</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="booking-form-container">
-        <form id="bookingForm" class="booking-form">
-            <div class="form-section">
-                <h3>聯絡資訊</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="name">姓名<span class="required">*</span></label>
-                        <input type="text" id="name" name="name" required placeholder="請輸入姓名">
+        <!-- 右側表單容器 -->
+        <div class="booking-form-container">
+            <h1>確認訂位資訊</h1>
+            
+            <form id="bookingForm" class="booking-form">
+                <div class="form-section">
+                    <h3>聯絡資訊</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">姓名<span class="required">*</span></label>
+                            <input type="text" id="name" name="name" required placeholder="請輸入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>稱謂<span class="required">*</span></label>
+                            <div class="gender-options">
+                                <label><input type="radio" name="gender" value="先生" required> 先生</label>
+                                <label><input type="radio" name="gender" value="小姐"> 小姐</label>
+                                <label><input type="radio" name="gender" value="其他"> 其他</label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>稱謂<span class="required">*</span></label>
-                        <div class="gender-options">
-                            <label><input type="radio" name="gender" value="先生" required> 先生</label>
-                            <label><input type="radio" name="gender" value="小姐"> 小姐</label>
-                            <label><input type="radio" name="gender" value="其他"> 其他</label>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">電話<span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required placeholder="0912345678">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">電子郵件<span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required placeholder="xxx@gmail.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vegetarian">素食選項</label>
+                            <select id="vegetarian" name="vegetarian">
+                                <option value="否">否</option>
+                                <option value="是">是</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="specialNeeds">特殊需求</label>
+                            <select id="specialNeeds" name="specialNeeds">
+                                <option value="無">無</option>
+                                <option value="有行動不便者">有行動不便者</option>
+                                <option value="有嬰兒車">有嬰兒車</option>
+                                <option value="攜帶寵物">攜帶寵物</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="notes">備註</label>
+                            <textarea id="notes" name="notes" maxlength="30" 
+                                     placeholder="有任何需求都可在此提出，如兒童椅等等…（最多30字）"></textarea>
                         </div>
                     </div>
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">電話<span class="required">*</span></label>
-                        <input type="tel" id="phone" name="phone" required placeholder="0912345678">
+                
+                <div class="dining-rules">
+                    <h3>⭐用餐規則</h3>
+                    <ol>
+                        <li>假日用餐時間為90分鐘（入座後開始計時）</li>
+                        <li>訂位保留10分鐘，10分鐘未到將自動取消。線上訂位超過3次以上（含）自動加入黑名單，如有特殊原因請致電 03 558 7360 或其它方式聯絡我們</li>
+                        <li>請填寫正確的電話號碼以方便聯絡，以及正確的電子郵件接受訂位資訊（含訂位代碼）</li>
+                        <li>若當日有重複的訂位，只會採用最新的一組訂位</li>
+                    </ol>
+                    
+                    <div class="agreement-box">
+                        <label>
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                            我同意以上規則並已詳細閱讀
+                        </label>
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">電子郵件<span class="required">*</span></label>
-                        <input type="email" id="email" name="email" required placeholder="xxx@gmail.com">
-                    </div>
+                <div class="form-buttons">
+                    <button type="button" class="back-btn" onclick="history.back()">上一步</button>
+                    <button type="submit" id="submitBtn" class="submit-btn" disabled>確認訂位</button>
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="vegetarian">素食選項</label>
-                        <select id="vegetarian" name="vegetarian">
-                            <option value="否">否</option>
-                            <option value="是">是</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="specialNeeds">特殊需求</label>
-                        <select id="specialNeeds" name="specialNeeds">
-                            <option value="無">無</option>
-                            <option value="有行動不便者">有行動不便者</option>
-                            <option value="有嬰兒車">有嬰兒車</option>
-                            <option value="攜帶寵物">攜帶寵物</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="notes">備註</label>
-                        <textarea id="notes" name="notes" maxlength="30" 
-                                 placeholder="有任何需求都可在此提出，如兒童椅等等…（最多30字）"></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="dining-rules">
-                <h3>⭐用餐規則</h3>
-                <ol>
-                    <li>假日用餐時間為90分鐘（入座後開始計時）</li>
-                    <li>訂位保留10分鐘，10分鐘未到將自動取消。線上訂位超過3次以上（含）自動加入黑名單，如有特殊原因請致電 03 558 7360 或其它方式聯絡我們</li>
-                    <li>請填寫正確的電話號碼以方便聯絡，以及正確的電子郵件接受訂位資訊（含訂位代碼）</li>
-                    <li>若當日有重複的訂位，只會採用最新的一組訂位</li>
-                </ol>
-                
-                <div class="agreement-box">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                        我同意以上規則並已詳細閱讀
-                    </label>
-                </div>
-            </div>
-            
-            <div class="form-buttons">
-                <button type="button" class="back-btn" onclick="history.back()">上一步</button>
-                <button type="submit" id="submitBtn" class="submit-btn" disabled>確認訂位</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 

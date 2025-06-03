@@ -1,10 +1,11 @@
 /* 頁面容器 - 簡潔風格 */
 .page-container {
     max-width: 1400px;
-    margin: 2rem auto;
+    margin: 0 auto;
     padding: 2rem;
     background: white;
-    min-height: calc(100vh - 4rem);
+    min-height: 100vh;
+    padding-top: 100px; /* 避免被header遮擋 */
 }
 
 .page-container h1 {
@@ -28,7 +29,7 @@
     display: grid;
     grid-template-columns: 350px 1fr;
     gap: 3rem;
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
@@ -74,21 +75,22 @@
     line-height: 1.4;
 }
 
-/* 右側訂位選擇容器 */
+/* 右側訂位選擇容器 - 加大尺寸 */
 .booking-form-container {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 15px;
-    padding: 2.5rem;
+    padding: 3rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
 }
 
 /* 區塊標題樣式 */
 .booking-form-container h3 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #000;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #eee;
 }
@@ -170,19 +172,19 @@
     border-color: #eee;
 }
 
-/* 時段選擇樣式 */
+/* 時段選擇樣式 - 4個一排 */
 .time-picker-container {
     margin-bottom: 3rem;
 }
 
 .time-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
 }
 
 .time-button {
-    padding: 1rem;
+    padding: 1.2rem;
     border: 1px solid #ddd;
     border-radius: 10px;
     background: white;
@@ -190,7 +192,7 @@
     transition: all 0.3s ease;
     text-align: center;
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .time-button:hover:not(.disabled) {
@@ -283,9 +285,14 @@
 
 /* 響應式設計 */
 @media (max-width: 1024px) {
+    .page-container {
+        padding-top: 80px;
+    }
+    
     .booking-layout {
         grid-template-columns: 300px 1fr;
         gap: 2rem;
+        max-width: 1100px;
     }
     
     .restaurant-info-card .restaurant-image {
@@ -297,15 +304,16 @@
     }
     
     .time-buttons {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.8rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
     }
 }
 
 @media (max-width: 768px) {
     .page-container {
-        margin: 1rem;
+        margin: 0;
         padding: 1rem;
+        padding-top: 80px;
     }
     
     .page-container h1 {
@@ -349,11 +357,11 @@
     
     .time-buttons {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
+        gap: 0.8rem;
     }
     
     .time-button {
-        padding: 0.8rem;
+        padding: 1rem;
         font-size: 0.9rem;
     }
     
@@ -365,8 +373,8 @@
 
 @media (max-width: 480px) {
     .page-container {
-        margin: 0.5rem;
         padding: 0.5rem;
+        padding-top: 70px;
     }
     
     .page-container h1 {
@@ -394,8 +402,8 @@
     }
     
     .booking-form-container h3 {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
     }
     
     .calendar-section,
@@ -406,6 +414,7 @@
     
     .time-buttons {
         grid-template-columns: 1fr;
+        gap: 0.8rem;
     }
     
     .form-group select {
