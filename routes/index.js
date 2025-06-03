@@ -50,6 +50,7 @@ router.get('/:storeSlug/booking/step1', async (req, res) => {
     const client = await Client.findOne({ slugname: storeSlug });
     res.render('booking/step1', {
         storeSlug,
+        clientname: client ? client.clientname : '餐廳名稱',
         bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
     });
 });
@@ -59,6 +60,7 @@ router.get('/:storeSlug/booking/step2', async (req, res) => {
     const client = await Client.findOne({ slugname: storeSlug });
     res.render('booking/step2', {
         storeSlug,
+        clientname: client ? client.clientname : '餐廳名稱',
         bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
     });
 });
@@ -177,51 +179,6 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// 訂位 API
-router.post('/api/booking', async (req, res) => {
-    try {
-        const {
-            date,
-            time,
-            adults,
-            children,
-            name,
-            gender,
-            phone,
-            email,
-            isVegetarian,
-            specialNeeds,
-            notes
-        } = req.body;
-
-        // 創建新的訂位記錄
-        const reservation = new Reservation({
-            date,
-            time,
-            adults,
-            children,
-            name,
-            gender,
-            phone,
-            email,
-            isVegetarian,
-            specialNeeds,
-            notes,
-            status: 'pending'
-        });
-
-        // 保存到數據庫
-        await reservation.save();
-
-        // 返回訂位ID
-        res.json({ bookingId: reservation._id });
-
-    } catch (error) {
-        console.error('訂位錯誤:', error);
-        res.status(500).json({ error: '訂位失敗，請稍後再試' });
     }
 });
 
