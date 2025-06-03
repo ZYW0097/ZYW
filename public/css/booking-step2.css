@@ -74,6 +74,8 @@
     border-radius: 15px;
     padding: 3rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%; /* 確保佔滿可用寬度 */
+    box-sizing: border-box; /* 確保padding包含在寬度內 */
 }
 
 .booking-form-container h1 {
