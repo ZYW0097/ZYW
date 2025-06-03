@@ -123,6 +123,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
+    height: 75px;
+    box-sizing: border-box;
 }
 
 .mobile-profile {
@@ -149,27 +151,28 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 5px;
+    width: 40px;
+    height: 40px;
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 30px;
-    height: 30px;
+    justify-content: center;
+    align-items: center;
     z-index: 1002;
+    padding: 5px;
 }
 
 .account-hamburger span {
     display: block;
     position: absolute;
-    width: 25px;
+    width: 28px;
     height: 3px;
-    background: #333;
+    background: #222;
     transition: all 0.3s ease;
     border-radius: 2px;
 }
 
 .account-hamburger span:nth-child(1) {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
 }
 
 .account-hamburger span:nth-child(2) {
@@ -177,7 +180,7 @@
 }
 
 .account-hamburger span:nth-child(3) {
-    transform: translateY(6px);
+    transform: translateY(8px);
 }
 
 .account-hamburger.active span:nth-child(1) {
@@ -186,6 +189,7 @@
 
 .account-hamburger.active span:nth-child(2) {
     opacity: 0;
+    transform: translateX(-20px);
 }
 
 .account-hamburger.active span:nth-child(3) {
@@ -352,12 +356,39 @@
         width: 320px;
         right: -320px;
     }
+    
+    .account-hamburger {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        align-self: center !important;
+        height: 50px !important;
+        position: relative;
+        top: 0;
+        transform: translateY(0);
+    }
+    
+    .account-hamburger.active span:nth-child(1),
+    .account-hamburger.active span:nth-child(3) {
+        width: 28px;
+    }
+    
+    .mobile-sidebar-header {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
     .account-mobile-menu {
         width: 90vw;
         right: -90vw;
+    }
+    
+    .mobile-sidebar-header {
+        padding-left: 2.5rem;
+        padding-right: 1.5rem;
     }
 }
 
