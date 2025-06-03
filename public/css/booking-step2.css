@@ -3,7 +3,6 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
-    background: white;
     min-height: 100vh;
     padding-top: 100px; /* 避免被header遮擋 */
 }
@@ -19,7 +18,6 @@
 
 /* 左側摘要卡片 - 小容器 */
 .booking-summary-card {
-    background: white;
     border: 1px solid #ddd;
     border-radius: 15px;
     overflow: hidden;
@@ -43,6 +41,7 @@
 
 .booking-details {
     padding: 1.5rem;
+    background: #f8f8f8;
 }
 
 .detail-item {
@@ -71,7 +70,6 @@
 
 /* 右側表單容器 */
 .booking-form-container {
-    background: #fff;
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 3rem;
@@ -137,7 +135,6 @@
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: white;
     font-weight: 500;
 }
 
@@ -207,7 +204,6 @@ textarea {
 
 /* 同意條款樣式 */
 .agreement-box {
-    background: white;
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 1.5rem;
@@ -248,13 +244,11 @@ textarea {
 }
 
 .back-btn {
-    background: white;
     color: #333;
     border: 1px solid #ddd;
 }
 
 .back-btn:hover {
-    background: #f8f8f8;
     border-color: #bbb;
     transform: translateY(-2px);
 }

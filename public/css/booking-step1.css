@@ -3,7 +3,6 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
-    background: white;
     min-height: 100vh;
     padding-top: 100px; /* 避免被header遮擋 */
 }
@@ -35,7 +34,6 @@
 
 /* 左側餐廳信息卡片 */
 .restaurant-info-card {
-    background: white;
     border: 1px solid #ddd;
     border-radius: 15px;
     overflow: hidden;
@@ -75,9 +73,8 @@
     line-height: 1.4;
 }
 
-/* 右側訂位選擇容器 - 加大尺寸 */
+/* 右側訂位選擇容器 - 與step2一致的大小 */
 .booking-form-container {
-    background: #fff;
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 3rem;
@@ -116,7 +113,6 @@
 }
 
 .calendar-nav-btn {
-    background: #f8f8f8;
     color: #333;
     border: 1px solid #ddd;
     font-size: 1.1rem;
@@ -128,7 +124,6 @@
 }
 
 .calendar-nav-btn:hover {
-    background: #e0e0e0;
     border-color: #bbb;
 }
 
@@ -149,7 +144,6 @@
     transition: all 0.3s ease;
     font-weight: 500;
     border-radius: 8px;
-    background: white;
 }
 
 .day:hover:not(.disabled) {
@@ -166,7 +160,6 @@
 }
 
 .day.disabled {
-    background: #f5f5f5;
     color: #999;
     cursor: not-allowed;
     border-color: #eee;
@@ -187,7 +180,6 @@
     padding: 1.2rem;
     border: 1px solid #ddd;
     border-radius: 10px;
-    background: white;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
@@ -211,7 +203,6 @@
 }
 
 .time-button.disabled {
-    background: #f5f5f5;
     color: #999;
     cursor: not-allowed;
     border-color: #eee;
@@ -246,7 +237,6 @@
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: white;
     font-weight: 500;
 }
 
