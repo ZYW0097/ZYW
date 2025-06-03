@@ -195,22 +195,24 @@ router.get('/points', requireLogin, async (req, res) => {
             });
         }
         
-        // 獲取所有客戶（餐廳）
+        // 獲取所有客戶（餐廳）- 添加限制和排序
         const Client = require('../models/Client');
-        const clients = await Client.find({});
+        const clients = await Client.find({}).limit(20).sort({ createdAt: -1 });
         
-        // 查詢用戶在每個餐廳的集點卡
-        const userCards = [];
-        
-        for (const client of clients) {
+        // 並行查詢所有餐廳的集點卡數據
+        const cardPromises = clients.map(async (client) => {
             try {
-                // 查詢用戶在這個餐廳的集點卡
                 const userDb = getClientDb(client.slugname, 'ADB');
                 const UserPoints = userDb.model('UserPoints', require('../models/points/userPoints'));
-                const userPoints = await UserPoints.findOne({ 
-                    lineId: user.lineId,
-                    type: 'user_points'
-                });
+                
+                // 使用 lean() 提高查詢性能，只查詢必要字段
+                const userPoints = await UserPoints.findOne(
+                    { 
+                        lineId: user.lineId,
+                        type: 'user_points'
+                    },
+                    'ah-points ah-coupon ah-coupon-id' // 只查詢需要的字段
+                ).lean();
                 
                 if (userPoints) {
                     // 計算優惠券總數
@@ -218,21 +220,25 @@ router.get('/points', requireLogin, async (req, res) => {
                         ? userPoints['ah-coupon-id'].reduce((sum, c) => sum + (c.count || 0), 0)
                         : userPoints['ah-coupon'] || 0;
                     
-                    userCards.push({
+                    return {
                         storeSlug: client.slugname,
                         storeName: client.clientname,
                         storeImage: '/images/dine.jpg', // 預設圖片
                         points: userPoints['ah-points'] || 0,
                         coupons: totalCoupons,
                         cardData: userPoints
-                    });
+                    };
                 }
+                return null;
             } catch (error) {
-                // 如果某個餐廳的數據庫查詢失敗，跳過該餐廳
                 console.error(`Error querying ${client.slugname}:`, error.message);
-                continue;
+                return null;
             }
-        }
+        });
+        
+        // 等待所有查詢完成並過濾掉空值
+        const results = await Promise.all(cardPromises);
+        const userCards = results.filter(card => card !== null);
         
         renderWithSidebar(res, 'account_points', { 
             user, 

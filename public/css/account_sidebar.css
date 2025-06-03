@@ -168,7 +168,7 @@
 }
 
 .account-hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: rotate(45deg) translate(5px, 5px);
 }
 
 .account-hamburger.active span:nth-child(2) {
@@ -176,7 +176,7 @@
 }
 
 .account-hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: rotate(-45deg) translate(7px, -6px);
 }
 
 /* 統一的手機版選單 */
