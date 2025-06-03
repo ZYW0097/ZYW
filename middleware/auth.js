@@ -87,6 +87,7 @@ const loadUser = async (req, res, next) => {
         req.user = null;
         res.locals.user = null;
         
+        // 先檢查 session
         if (req.session && req.session.userId) {
             const adb = getClientDb('main', 'ADB');
             const User = adb.model('User', userSchema);
@@ -100,7 +101,53 @@ const loadUser = async (req, res, next) => {
                 req.session.destroy();
                 res.clearCookie('remember_token');
             }
+        } else {
+            // Session 不存在，檢查記住登入的 cookie
+            const rememberToken = req.cookies.remember_token;
+            if (rememberToken) {
+                const adb = getClientDb('main', 'ADB');
+                const User = adb.model('User', userSchema);
+                
+                // 先嘗試新的多 token 系統
+                let user = await User.findOne({
+                    'rememberTokens.token': rememberToken,
+                    'rememberTokens.expires': { $gt: new Date() }
+                });
+                
+                // 如果新系統找不到，嘗試舊的單 token 系統（向下相容）
+                if (!user) {
+                    user = await User.findOne({
+                        rememberToken,
+                        rememberExpires: { $gt: new Date() }
+                    });
+                    
+                    // 如果找到舊格式的token，遷移到新格式
+                    if (user) {
+                        const userAgent = req.get('User-Agent') || '';
+                        user.addRememberToken(rememberToken, userAgent);
+                        // 清除舊格式
+                        user.rememberToken = undefined;
+                        user.rememberExpires = undefined;
+                        await user.save();
+                    }
+                }
+                
+                if (user) {
+                    // 清理過期的 tokens
+                    user.cleanExpiredTokens();
+                    await user.save();
+                    
+                    // 自動恢復登入狀態
+                    req.session.userId = user._id;
+                    req.user = user;
+                    res.locals.user = user;
+                } else {
+                    // token 無效或過期，清除 cookie
+                    res.clearCookie('remember_token');
+                }
+            }
         }
+        
         next();
     } catch (error) {
         console.error('Load user middleware error:', error);

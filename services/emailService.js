@@ -176,7 +176,7 @@ async function sendBookingConfirmation(to, bookingInfo) {
                     }
                     
                     .logo-banner img {
-                        max-height: 80px;
+                        max-height: 120px;
                     }
                     
                     .email-header,
