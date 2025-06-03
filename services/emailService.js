@@ -43,20 +43,27 @@ async function sendBookingConfirmation(to, bookingInfo) {
                     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
                 }
                 
+                /* Logo Banner 區域 */
+                .logo-banner {
+                    width: 100%;
+                    padding: 0;
+                    text-align: center;
+                    background: white;
+                }
+                
+                .logo-banner img {
+                    width: 100%;
+                    height: auto;
+                    max-height: 120px;
+                    object-fit: contain;
+                    display: block;
+                }
+                
                 .email-header {
                     background: #fafafa;
                     padding: 2rem;
                     border-bottom: 1px solid #f0f0f0;
                     text-align: center;
-                }
-                
-                .logo-image {
-                    max-height: 80px;
-                    max-width: 200px;
-                    margin-bottom: 1rem;
-                    display: block;
-                    margin-left: auto;
-                    margin-right: auto;
                 }
                 
                 .restaurant-name {
@@ -181,16 +188,14 @@ async function sendBookingConfirmation(to, bookingInfo) {
                         border-radius: 0;
                     }
                     
+                    .logo-banner img {
+                        max-height: 80px;
+                    }
+                    
                     .email-header,
                     .email-body,
                     .email-footer {
                         padding: 1.5rem;
-                    }
-                    
-                    .logo-image {
-                        max-height: 60px;
-                        max-width: 180px;
-                        margin-bottom: 0.75rem;
                     }
                     
                     .restaurant-name {
@@ -222,9 +227,15 @@ async function sendBookingConfirmation(to, bookingInfo) {
         </head>
         <body>
             <div class="email-container">
+                <!-- Logo Banner -->
+                ${bookingInfo.logoUrl ? `
+                <div class="logo-banner">
+                    <img src="${bookingInfo.logoUrl}" alt="Restaurant Banner">
+                </div>
+                ` : ''}
+                
                 <!-- Header -->
                 <div class="email-header">
-                    ${bookingInfo.logoUrl ? `<img src="${bookingInfo.logoUrl}" alt="Restaurant Logo" class="logo-image">` : ''}
                     <div class="restaurant-name">${bookingInfo.clientname || 'Restaurant'}</div>
                     <div class="email-title">訂位確認通知</div>
                     <div class="email-subtitle">您的訂位已成功確認</div>

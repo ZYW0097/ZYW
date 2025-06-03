@@ -171,7 +171,7 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             // 構建完整的logo URL
             const protocol = req.protocol;
             const host = req.get('host');
-            const logoUrl = `${protocol}://${host}/images/dine.jpg`;
+            const logoUrl = `${protocol}://${host}/images/dineplus.png`;
             
             await sendBookingConfirmation(req.body.email, {
                 ...req.body,
