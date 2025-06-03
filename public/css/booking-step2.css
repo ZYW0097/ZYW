@@ -1,203 +1,398 @@
-/* 頁面容器 */
+/* 頁面容器 - 簡潔風格 */
 .page-container {
     max-width: 1200px;
-    margin: 100px auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.custom-text {
-    font-size: 1.2rem;
-    color: #666;
-    margin-top: 1rem;
-}
-
-.booking-form-container {
-    max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    background: white;
+    min-height: calc(100vh - 4rem);
 }
 
-/* 訂位摘要樣式 */
-.reservation-summary {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
+.page-container h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+/* 訂位摘要卡片 - 新設計 */
+.booking-summary-card {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    display: flex;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-image {
+    width: 200px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.restaurant-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%);
+}
+
+.booking-details {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #f8f8f8;
+}
+
+.detail-item {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #000;
+    min-width: 50px;
+    font-size: 1.1rem;
+}
+
+.detail-value {
+    color: #333;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-left: 0.5rem;
+}
+
+/* 表單容器 */
+.booking-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 表單區塊標題 */
+.form-section h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #000;
+}
+
+/* 表單行布局 */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
     margin-bottom: 2rem;
 }
 
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
+.form-row .form-group.full-width {
+    grid-column: 1 / -1;
 }
 
-.summary-label {
-    color: #666;
-    font-weight: 500;
-}
-
-.summary-value {
-    color: #333;
-    font-weight: 600;
-}
-
-/* 表單樣式 */
+/* 表單群組樣式 */
 .form-group {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: #000;
+    font-size: 1rem;
 }
 
+.required {
+    color: #e74c3c;
+    margin-left: 3px;
+}
+
+/* 輸入框樣式 - 黑白設計 */
 .form-group input[type="text"],
 .form-group input[type="tel"],
 .form-group input[type="email"],
+.form-group select,
 .form-group textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 2px solid #eee;
-    border-radius: 8px;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background: white;
+    font-weight: 500;
 }
 
 .form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
-    border-color: var(--primary-color);
+    border-color: #000;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 性別選擇樣式 */
 .gender-options {
     display: flex;
-    gap: 1rem;
-}
-
-.gender-option {
-    display: flex;
+    gap: 1.5rem;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.gender-option input[type="radio"] {
-    width: 1.2rem;
-    height: 1.2rem;
-}
-
-/* 特殊需求樣式 */
-.special-needs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
     margin-top: 0.5rem;
 }
 
-.special-need-option {
+.gender-options label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
 }
 
-.special-need-option input[type="checkbox"] {
+.gender-options input[type="radio"] {
     width: 1.2rem;
     height: 1.2rem;
+    accent-color: #000;
 }
 
-/* 用餐規則樣式 */
+/* 文本區域 */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+/* 用餐規則樣式 - 黑白設計 */
 .dining-rules {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin: 2rem 0;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 3rem 0;
 }
 
-.rules-title {
+.dining-rules h3 {
     font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #000;
+    font-size: 1.2rem;
+}
+
+.dining-rules ol {
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dining-rules li {
     margin-bottom: 1rem;
+    line-height: 1.6;
     color: #333;
 }
 
-.rules-list {
-    list-style: none;
-    padding: 0;
-}
-
-.rules-list li {
-    margin-bottom: 0.5rem;
-    padding-left: 1.5rem;
-    position: relative;
-}
-
-.rules-list li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--primary-color);
-}
-
 /* 同意條款樣式 */
-.agreement {
+.agreement-box {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.agreement-box label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 1.5rem 0;
-}
-
-.agreement input[type="checkbox"] {
-    width: 1.2rem;
-    height: 1.2rem;
-}
-
-/* 按鈕樣式 */
-.button-group {
-    display: flex;
     gap: 1rem;
-    margin-top: 2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0;
 }
 
-.back-button,
-.submit-button {
-    padding: 1rem 2rem;
-    border-radius: 8px;
+.agreement-box input[type="checkbox"] {
+    width: 1.3rem;
+    height: 1.3rem;
+    accent-color: #000;
+}
+
+/* 按鈕樣式 - 黑白設計 */
+.form-buttons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.back-btn,
+.submit-btn {
+    padding: 1.2rem 2rem;
+    border-radius: 12px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     flex: 1;
+    letter-spacing: 1px;
 }
 
-.back-button {
-    background: #f8f9fa;
-    color: #333;
-    border: 2px solid #eee;
+.back-btn {
+    background: white;
+    color: #000;
+    border: 2px solid #000;
 }
 
-.back-button:hover {
-    background: #eee;
+.back-btn:hover {
+    background: #000;
+    color: white;
+    transform: translateY(-2px);
 }
 
-.submit-button {
-    background: var(--primary-color);
+.submit-btn {
+    background: #000;
     color: white;
     border: none;
 }
 
-.submit-button:hover:not(:disabled) {
-    background: var(--secondary-color);
+.submit-btn:hover:not(:disabled) {
+    background: #333;
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.submit-button:disabled {
+.submit-btn:disabled {
     background: #ccc;
     cursor: not-allowed;
+    color: #666;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+    .page-container {
+        margin: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .booking-form-container {
+        padding: 1.5rem;
+    }
+    
+    .restaurant-image {
+        width: 150px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+    
+    .page-container h1 {
+        font-size: 2rem;
+    }
+    
+    /* 摘要卡片響應式 */
+    .booking-summary-card {
+        flex-direction: column;
+        margin-bottom: 2rem;
+    }
+    
+    .restaurant-image {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .booking-details {
+        padding: 1.5rem;
+    }
+    
+    /* 表單響應式 */
+    .booking-form-container {
+        padding: 1rem;
+        border-width: 1px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .gender-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-container {
+        margin: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .page-container h1 {
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+    }
+    
+    .booking-summary-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .restaurant-image {
+        height: 150px;
+    }
+    
+    .booking-details {
+        padding: 1rem;
+    }
+    
+    .detail-label,
+    .detail-value {
+        font-size: 1rem;
+    }
+    
+    .booking-form-container {
+        padding: 0.8rem;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row {
+        margin-bottom: 1.5rem;
+    }
+    
+    .dining-rules {
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .form-buttons {
+        margin-top: 2rem;
+    }
+    
+    .back-btn,
+    .submit-btn {
+        padding: 1rem;
+        font-size: 1rem;
+    }
 } 

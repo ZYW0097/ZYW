@@ -8,17 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // 顯示選擇的日期和時間
-    document.getElementById('displayDate').textContent = bookingData.date;
-    document.getElementById('displayTime').textContent = bookingData.time;
+    // 顯示選擇的日期和時間 (合併顯示)
+    const dateTimeText = `${bookingData.date} ${bookingData.time}`;
+    document.getElementById('displayDate').textContent = dateTimeText;
 
-    // 顯示選擇的人數
-    let peopleText = [];
-    peopleText.push(`${bookingData.adults}位大人`);
-    if (bookingData.children && bookingData.children !== 0) {
-        peopleText.push(`${bookingData.children}位小孩`);
-    }
-    document.getElementById('displayPeople').textContent = peopleText.join('、');
+    // 顯示選擇的人數 (簡潔格式 XY小)
+    const adults = bookingData.adults || 0;
+    const children = bookingData.children || 0;
+    const peopleText = `${adults}大${children}小`;
+    document.getElementById('displayPeople').textContent = peopleText;
 
     // 同意條款與提交按鈕連動
     const agreeCheckbox = document.getElementById('agreeTerms');
