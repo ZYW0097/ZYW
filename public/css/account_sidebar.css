@@ -160,6 +160,7 @@
 
 .account-hamburger span {
     display: block;
+    position: absolute;
     width: 25px;
     height: 3px;
     background: #333;
@@ -167,8 +168,20 @@
     border-radius: 2px;
 }
 
+.account-hamburger span:nth-child(1) {
+    transform: translateY(-6px);
+}
+
+.account-hamburger span:nth-child(2) {
+    transform: translateY(0);
+}
+
+.account-hamburger span:nth-child(3) {
+    transform: translateY(6px);
+}
+
 .account-hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: rotate(45deg);
 }
 
 .account-hamburger.active span:nth-child(2) {
@@ -176,7 +189,7 @@
 }
 
 .account-hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: rotate(-45deg);
 }
 
 /* 統一的手機版選單 */
