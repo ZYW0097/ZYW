@@ -90,19 +90,6 @@ async function sendBookingConfirmation(to, bookingInfo) {
                     padding: 2.5rem;
                 }
                 
-                .success-badge {
-                    background: #333;
-                    color: white;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 50px;
-                    font-weight: 600;
-                    text-align: center;
-                    margin-bottom: 2rem;
-                    display: inline-block;
-                    width: 100%;
-                    box-sizing: border-box;
-                }
-                
                 .booking-details {
                     background: #fafafa;
                     border: 1px solid #f0f0f0;
@@ -243,9 +230,6 @@ async function sendBookingConfirmation(to, bookingInfo) {
                 
                 <!-- Body -->
                 <div class="email-body">
-                    <div class="success-badge">
-                        ✓ 訂位成功確認
-                    </div>
                     
                     <p style="color: #666; margin-bottom: 2rem; line-height: 1.6;">
                         親愛的顧客您好，<br>
