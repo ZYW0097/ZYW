@@ -278,6 +278,62 @@
     margin: 0;
 }
 
+/* 編輯按鈕樣式 */
+.edit-password-btn {
+    background: #f8f9fa;
+    color: #333;
+    border: 2px solid #e9ecef;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-password-btn:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.card-info {
+    flex: 1;
+}
+
+/* 密碼操作區域 */
+.password-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+/* 禁用狀態的輸入框 */
+.form-input:disabled {
+    background: #f1f1f1 !important;
+    color: #a0aec0 !important;
+    cursor: not-allowed;
+    border-color: #e9ecef !important;
+    opacity: 0.7;
+}
+
+/* 取消按鈕樣式 */
+.card-btn-secondary {
+    background: #f8f9fa;
+    color: #333;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: none;
+}
+
+.card-btn-secondary:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
 /* 行動裝置下全部單欄 */
 @media (max-width: 1024px) {
     .dashboard-grid {
@@ -613,23 +669,55 @@ input:disabled + .toggle-slider {
 
 /* 消息樣式 */
 .error-message, .success-message {
-    padding: 1rem 1.25rem;
+    padding: 1.2rem 1.5rem;
     border-radius: 12px;
     margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    border-left: 4px solid;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.error-message::before, .success-message::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    line-height: 1;
 }
 
 .error-message {
-    color: #721c24;
-    background: #f8d7da;
-    border-color: #dc3545;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.error-message::before {
+    content: '!';
+    background: #666;
+    font-size: 0.9rem;
 }
 
 .success-message {
-    color: #155724;
-    background: #d4edda;
-    border-color: #000;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.success-message::before {
+    content: '✓';
+    background: #000;
+    font-size: 0.85rem;
 }
 
 /* 響應式設計 - 行動裝置填滿畫面 */
