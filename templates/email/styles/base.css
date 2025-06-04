@@ -1,0 +1,190 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f8f8;
+    padding: 20px;
+}
+
+.email-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* Logo Banner 區域 */
+.logo-banner {
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    background: white;
+}
+
+.logo-banner img {
+    width: 100%;
+    height: auto;
+    max-height: 120px;
+    object-fit: contain;
+    display: block;
+}
+
+.email-header {
+    background: #fafafa;
+    padding: 2rem;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.restaurant-name {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.email-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.email-subtitle {
+    color: #666;
+    font-size: 1rem;
+}
+
+.email-body {
+    padding: 2.5rem;
+}
+
+.booking-details {
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.detail-grid {
+    display: table;
+    width: 100%;
+}
+
+.detail-row {
+    display: table-row;
+}
+
+.detail-label {
+    display: table-cell;
+    font-weight: 600;
+    color: #333;
+    padding: 0.75rem 1rem 0.75rem 0;
+    width: 30%;
+    vertical-align: top;
+}
+
+.detail-value {
+    display: table-cell;
+    color: #666;
+    font-weight: 500;
+    padding: 0.75rem 0;
+    vertical-align: top;
+}
+
+.booking-id {
+    background: #333;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.notice-section {
+    background: #fff8f0;
+    border-left: 4px solid #ff9800;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.notice-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.notice-text {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.email-footer {
+    background: #fafafa;
+    padding: 2rem;
+    text-align: center;
+    border-top: 1px solid #f0f0f0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.footer-logo {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* 響應式設計 */
+@media only screen and (max-width: 600px) {
+    .email-container {
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .logo-banner img {
+        max-height: 120px;
+    }
+    
+    .email-header,
+    .email-body,
+    .email-footer {
+        padding: 1.5rem;
+    }
+    
+    .restaurant-name {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .email-title {
+        font-size: 1.3rem;
+    }
+    
+    .booking-details {
+        padding: 1.5rem;
+    }
+    
+    .detail-label,
+    .detail-value {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0;
+    }
+    
+    .detail-label {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+} 

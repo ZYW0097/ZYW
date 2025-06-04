@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{emailTitle}}</title>
+    <style>
+        {{emailStyles}}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Logo Banner -->
+        {{#logoUrl}}
+        <div class="logo-banner">
+            <img src="{{logoUrl}}" alt="Restaurant Banner">
+        </div>
+        {{/logoUrl}}
+        
+        <!-- Header -->
+        <div class="email-header">
+            <div class="restaurant-name">{{clientname}}</div>
+            <div class="email-title">{{emailTitle}}</div>
+            <div class="email-subtitle">{{emailSubtitle}}</div>
+        </div>
+        
+        <!-- Body -->
+        <div class="email-body">
+            {{emailContent}}
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <div class="footer-logo">{{clientname}}</div>
+            <div>此為系統自動發送的郵件，請勿直接回覆</div>
+        </div>
+    </div>
+</body>
+</html> 
