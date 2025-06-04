@@ -373,13 +373,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.card-btn-primary:hover {
-    background: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transition: none;
 }
 
 .card-btn-danger {
@@ -393,13 +387,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.card-btn-danger:hover {
-    background: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+    transition: none;
 }
 
 .btn-icon {

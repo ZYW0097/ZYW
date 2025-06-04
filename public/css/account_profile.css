@@ -130,12 +130,6 @@
     color: white;
 }
 
-.card-btn-primary:hover {
-    background: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
 /* 頭像區域樣式 */
 .avatar-section {
     display: flex;
@@ -493,33 +487,12 @@
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: none;
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
     overflow: hidden;
     margin-top: 1rem;
-}
-
-.profile-save-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-}
-
-.profile-save-btn:hover::before {
-    left: 100%;
-}
-
-.profile-save-btn:hover {
-    background: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .profile-save-btn:active {
@@ -541,31 +514,54 @@
     max-width: 600px;
     font-size: 0.95rem;
     font-weight: 500;
-    border-left: 4px solid;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .alert::before {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent, currentColor, transparent);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .alert-success {
-    background: #d4edda;
-    border-color: #000;
-    color: #155724;
+    background: #f0f9ff;
+    border: 2px solid #e0f2fe;
+    color: #0f172a;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.1);
+}
+
+.alert-success::before {
+    content: '✓';
+    background: #06b6d4;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+    line-height: 1;
 }
 
 .alert-error {
-    background: #f8d7da;
-    border-color: #dc3545;
-    color: #721c24;
+    background: #fef2f2;
+    border: 2px solid #fecaca;
+    color: #7f1d1d;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+}
+
+.alert-error::before {
+    content: '!';
+    background: #ef4444;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    line-height: 1;
 }
 
 /* 響應式設計 */
