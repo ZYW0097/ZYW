@@ -211,12 +211,11 @@
 }
 
 .dashboard-card {
-    background: white;
+    background: #fff;
+    box-shadow: none;
     border: none;
     border-radius: 0;
     margin: 0;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transition: none;
     padding: 2rem 1.5rem;
     border-right: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
@@ -280,20 +279,21 @@
 
 /* 編輯按鈕樣式 */
 .edit-password-btn {
-    background: #f8f9fa;
-    color: #333;
-    border: 2px solid #e9ecef;
+    background: #fff;
+    color: #000;
+    border: 1.5px solid #000;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: none;
 }
 
 .edit-password-btn:hover {
-    background: #e9ecef;
-    border-color: #dee2e6;
+    background: #fff;
+    color: #000;
+    border: 1.5px solid #000;
 }
 
 .card-info {
@@ -318,9 +318,9 @@
 
 /* 取消按鈕樣式 */
 .card-btn-secondary {
-    background: #f8f9fa;
-    color: #333;
-    border: 2px solid #e9ecef;
+    background: #fff;
+    color: #000;
+    border: 1.5px solid #000;
     padding: 0.75rem 1.5rem;
     border-radius: 12px;
     font-size: 0.9rem;
@@ -330,8 +330,9 @@
 }
 
 .card-btn-secondary:hover {
-    background: #e9ecef;
-    border-color: #dee2e6;
+    background: #fff;
+    color: #000;
+    border: 1.5px solid #000;
 }
 
 /* 行動裝置下全部單欄 */
@@ -359,7 +360,7 @@
 
 /* 移除所有hover特效 */
 .dashboard-card:hover {
-    transform: none;
+    background: #fff;
     box-shadow: none;
 }
 
@@ -422,7 +423,7 @@
 
 .card-btn-primary {
     background: #000;
-    color: white;
+    color: #fff;
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 12px;
@@ -434,7 +435,7 @@
 
 .card-btn-danger {
     background: #dc3545;
-    color: white;
+    color: #fff;
     margin-right: 0.75rem;
     margin-bottom: 0.5rem;
     padding: 0.75rem 1.5rem;
@@ -444,6 +445,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: none;
+}
+
+.card-btn-danger:hover {
+    background: #dc3545;
+    color: #fff;
 }
 
 .btn-icon {
