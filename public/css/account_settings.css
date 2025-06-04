@@ -241,17 +241,9 @@
     width: 100%;
     border-right: none;
     border-bottom: none;
-    border-radius: 0 0 18px 18px;
+    border-radius: 0;
     background: #fff5f5;
     border-top: 1px solid #e0e0e0;
-}
-
-/* 第一行卡片圓角 */
-.dashboard-card.password-card {
-    border-radius: 18px 0 0 0;
-}
-.dashboard-card.security-card {
-    border-radius: 0 18px 0 0;
 }
 
 /* 卡片標題現代化 */
@@ -295,10 +287,10 @@
         border-right: none;
     }
     .dashboard-card.password-card {
-        border-radius: 14px 14px 0 0;
+        border-radius: 14px 14px 0 0 !important;
     }
     .dashboard-card.danger-card {
-        border-radius: 0 0 14px 14px;
+        border-radius: 0 0 14px 14px !important;
     }
 }
 
