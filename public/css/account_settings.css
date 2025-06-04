@@ -191,12 +191,12 @@
     max-width: none;
     margin: 0;
     padding: 0;
-    background: #f8f9fa;
+    background: #f6f7fa;
     min-height: 100vh;
     box-sizing: border-box;
 }
 
-/* Dashboard Grid 新排版 */
+/* Dashboard Grid 新極簡設計 */
 .dashboard-grid {
     display: flex;
     flex-wrap: wrap;
@@ -204,15 +204,26 @@
     margin: 0;
     gap: 0;
     box-sizing: border-box;
+    background: #e9ecef;
+    border-radius: 18px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
 }
 
 .dashboard-card {
+    background: #fff;
+    border: none;
     border-radius: 0;
     margin: 0;
-    border-right: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    border-top: none;
-    border-left: none;
+    box-shadow: none;
+    transition: none;
+    padding: 2rem 1.5rem;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-width: 0;
 }
 
 .dashboard-card.password-card,
@@ -220,11 +231,6 @@
 .dashboard-card.security-card {
     width: 33.3333%;
     min-width: 320px;
-    border-top: 1px solid #f0f0f0;
-}
-
-.dashboard-card.info-card {
-    border-right: 1px solid #f0f0f0;
 }
 
 .dashboard-card.security-card {
@@ -233,22 +239,52 @@
 
 .dashboard-card.danger-card {
     width: 100%;
-    border-top: 1px solid #f0f0f0;
     border-right: none;
     border-bottom: none;
-    border-radius: 0 0 16px 16px;
+    border-radius: 0 0 18px 18px;
+    background: #fff5f5;
+    border-top: 1px solid #e0e0e0;
 }
 
 /* 第一行卡片圓角 */
 .dashboard-card.password-card {
-    border-radius: 16px 0 0 0;
+    border-radius: 18px 0 0 0;
 }
 .dashboard-card.security-card {
-    border-radius: 0 16px 0 0;
+    border-radius: 0 18px 0 0;
+}
+
+/* 卡片標題現代化 */
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f2f2f2;
+}
+.card-icon {
+    font-size: 1.7rem;
+    margin-right: 0.75rem;
+    color: #007aff;
+}
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 0.2rem 0;
+}
+.card-description {
+    color: #888;
+    font-size: 0.92rem;
+    margin: 0;
 }
 
 /* 行動裝置下全部單欄 */
 @media (max-width: 1024px) {
+    .dashboard-grid {
+        flex-direction: column;
+        border-radius: 14px;
+    }
     .dashboard-card.password-card,
     .dashboard-card.info-card,
     .dashboard-card.security-card,
@@ -259,50 +295,17 @@
         border-right: none;
     }
     .dashboard-card.password-card {
-        border-radius: 16px 16px 0 0;
+        border-radius: 14px 14px 0 0;
     }
     .dashboard-card.danger-card {
-        border-radius: 0 0 16px 16px;
+        border-radius: 0 0 14px 14px;
     }
 }
 
-/* 卡片基本樣式 */
+/* 移除所有hover特效 */
 .dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-/* 卡片標題區 */
-.card-header {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f5f5f5;
-}
-
-.card-icon {
-    font-size: 2rem;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.card-info {
-    flex: 1;
-}
-
-.card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 0.5rem 0;
-}
-
-.card-description {
-    color: #666;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin: 0;
+    transform: none;
+    box-shadow: none;
 }
 
 /* 表單樣式 */
