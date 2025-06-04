@@ -187,17 +187,41 @@
 
 /* 控制面板容器 */
 .dashboard-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    background: #f8f9fa;
+    min-height: 100vh;
 }
 
-/* 網格布局 */
+/* 網格布局 - 桌面版橫向排列 */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    gap: 1.5rem;
     margin-top: 1rem;
+}
+
+/* 桌面版：2x2 網格 */
+@media (min-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+}
+
+/* 平板版：2列 */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* 手機版：單列 */
+@media (max-width: 767px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 
 /* 卡片基本樣式 */
@@ -561,36 +585,46 @@ input:disabled + .toggle-slider {
     border-color: #28a745;
 }
 
-/* 響應式設計 */
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 1rem;
+/* 響應式設計 - 行動裝置填滿畫面 */
+@media (max-width: 767px) {
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f8f9fa;
     }
     
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .dashboard-container {
+        padding: 0.75rem;
+        margin: 0;
+        min-height: 100vh;
+        background: #f8f9fa;
     }
     
     .dashboard-card {
         padding: 1.5rem;
+        margin-bottom: 0.75rem;
+        border-radius: 12px;
     }
     
     .card-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
     }
     
     .card-icon {
         margin-right: 0;
+        font-size: 1.75rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-description {
+        font-size: 0.85rem;
     }
     
     .info-row {
@@ -607,6 +641,7 @@ input:disabled + .toggle-slider {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
+        padding: 0.875rem;
     }
     
     .security-toggle {
@@ -622,15 +657,21 @@ input:disabled + .toggle-slider {
         width: 100%;
         justify-content: center;
     }
+    
+    .form-input {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
     .dashboard-container {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
     
     .dashboard-card {
         padding: 1.25rem;
+        border-radius: 10px;
     }
     
     .card-icon {
@@ -638,10 +679,19 @@ input:disabled + .toggle-slider {
     }
     
     .card-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .card-description {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+    }
+    
+    .form-input {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .security-item {
+        padding: 0.75rem;
     }
 }
