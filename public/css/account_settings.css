@@ -184,3 +184,464 @@
         width: 100%;
     }
 }
+
+/* 控制面板容器 */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* 網格布局 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+/* 卡片基本樣式 */
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* 卡片標題區 */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.card-info {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+}
+
+.card-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* 表單樣式 */
+.card-form {
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    background: #fafafa;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #007AFF;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-input.error {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+/* 按鈕樣式 */
+.card-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-btn-primary {
+    background: #007AFF;
+    color: white;
+}
+
+.card-btn-primary:hover {
+    background: #0056CC;
+    transform: translateY(-1px);
+}
+
+.card-btn-danger {
+    background: #dc3545;
+    color: white;
+    margin-right: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.btn-icon {
+    font-size: 1rem;
+}
+
+/* 登入資訊樣式 */
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.info-item {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.info-status-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-value {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.info-status {
+    font-weight: bold;
+    font-size: 1rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+}
+
+.status-connected {
+    background: #28a745;
+}
+
+.status-disconnected {
+    background: #dc3545;
+}
+
+/* 安全設定樣式 */
+.security-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.security-info {
+    flex: 1;
+}
+
+.security-label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.security-desc {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.security-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 切換開關樣式 */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #007AFF;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+input:disabled + .toggle-slider {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.coming-soon {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.security-status {
+    font-size: 0.75rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* 危險操作樣式 */
+.danger-card {
+    border-left: 4px solid #dc3545;
+}
+
+.danger-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* 密碼強度樣式 */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak .strength-fill {
+    width: 33%;
+    background: #dc3545;
+}
+
+.strength-medium .strength-fill {
+    width: 66%;
+    background: #ffc107;
+}
+
+.strength-strong .strength-fill {
+    width: 100%;
+    background: #28a745;
+}
+
+.strength-text {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+/* 消息樣式 */
+.error-message, .success-message {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border-left: 4px solid;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #dc3545;
+}
+
+.success-message {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #28a745;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .dashboard-card {
+        padding: 1.5rem;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .card-icon {
+        margin-right: 0;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .info-status-group {
+        align-self: flex-end;
+    }
+    
+    .security-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .security-toggle {
+        align-self: flex-end;
+    }
+    
+    .danger-actions {
+        flex-direction: column;
+    }
+    
+    .card-btn-danger {
+        margin-right: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.75rem;
+    }
+    
+    .dashboard-card {
+        padding: 1.25rem;
+    }
+    
+    .card-icon {
+        font-size: 1.5rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-description {
+        font-size: 0.85rem;
+    }
+}

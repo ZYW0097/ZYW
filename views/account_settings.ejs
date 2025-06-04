@@ -1,7 +1,5 @@
 <% var customCss = '/css/account_settings.css'; %>
-<div class="settings-container">
-    <h2 class="settings-title">帳號設定</h2>
-
+<div class="dashboard-container">
     <% if (typeof error !== 'undefined' && error) { %>
         <div class="error-message">
             <%= error %>
@@ -14,353 +12,211 @@
         </div>
     <% } %>
 
-    <!-- 密碼設定區塊 -->
-    <div class="settings-section">
-        <h3 class="section-title">
-            <% if (user.hasPassword) { %>
-                修改密碼
-            <% } else { %>
-                設定密碼
-            <% } %>
-        </h3>
-        <p class="section-description">
-            <% if (user.hasPassword) { %>
-                變更您的登入密碼，確保帳號安全
-            <% } else { %>
-                設定密碼後，您可以使用手機號碼和密碼登入
-            <% } %>
-        </p>
+    <!-- 主要控制面板 -->
+    <div class="dashboard-grid">
+        <!-- 密碼設定卡片 -->
+        <div class="dashboard-card password-card">
+            <div class="card-header">
+                <div class="card-icon">🔒</div>
+                <div class="card-info">
+                    <h3 class="card-title">
+                        <% if (user.hasPassword) { %>
+                            修改密碼
+                        <% } else { %>
+                            設定密碼
+                        <% } %>
+                    </h3>
+                    <p class="card-description">
+                        <% if (user.hasPassword) { %>
+                            變更您的登入密碼，確保帳號安全
+                        <% } else { %>
+                            設定密碼後，您可以使用手機號碼和密碼登入
+                        <% } %>
+                    </p>
+                </div>
+            </div>
 
-        <form class="settings-form" action="/account/settings/password" method="POST" id="passwordForm">
-            <% if (user.hasPassword) { %>
+            <form class="card-form" action="/account/settings/password" method="POST" id="passwordForm">
+                <% if (user.hasPassword) { %>
+                    <div class="form-group">
+                        <label class="form-label" for="currentPassword">目前密碼</label>
+                        <input 
+                            type="password" 
+                            id="currentPassword" 
+                            name="currentPassword" 
+                            class="form-input" 
+                            placeholder="請輸入目前的密碼"
+                            required
+                        >
+                    </div>
+                <% } %>
+
                 <div class="form-group">
-                    <label class="form-label" for="currentPassword">目前密碼</label>
+                    <label class="form-label" for="newPassword">
+                        <%= user.hasPassword ? '新密碼' : '密碼' %>
+                    </label>
                     <input 
                         type="password" 
-                        id="currentPassword" 
-                        name="currentPassword" 
+                        id="newPassword" 
+                        name="newPassword" 
                         class="form-input" 
-                        placeholder="請輸入目前的密碼"
+                        placeholder="請輸入新密碼（至少8字元）"
+                        required
+                    >
+                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill"></div>
+                        </div>
+                        <div class="strength-text"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">確認密碼</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        class="form-input" 
+                        placeholder="請再次輸入密碼"
                         required
                     >
                 </div>
-            <% } %>
 
-            <div class="form-group">
-                <label class="form-label" for="newPassword">
-                    <%= user.hasPassword ? '新密碼' : '密碼' %>
-                </label>
-                <input 
-                    type="password" 
-                    id="newPassword" 
-                    name="newPassword" 
-                    class="form-input" 
-                    placeholder="請輸入新密碼（至少8字元）"
-                    required
-                >
-                <div class="password-strength" id="passwordStrength" style="display: none;">
-                    <div class="strength-bar">
-                        <div class="strength-fill"></div>
-                    </div>
-                    <div class="strength-text"></div>
+                <button type="submit" class="card-btn card-btn-primary" id="passwordBtn">
+                    <%= user.hasPassword ? '更新密碼' : '設定密碼' %>
+                </button>
+            </form>
+        </div>
+
+        <!-- 登入資訊卡片 -->
+        <div class="dashboard-card info-card">
+            <div class="card-header">
+                <div class="card-icon">📱</div>
+                <div class="card-info">
+                    <h3 class="card-title">登入資訊</h3>
+                    <p class="card-description">管理您的登入方式和帳號狀態</p>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="confirmPassword">確認密碼</label>
-                <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    name="confirmPassword" 
-                    class="form-input" 
-                    placeholder="請再次輸入密碼"
-                    required
-                >
-            </div>
-
-            <button type="submit" class="settings-btn settings-btn-primary" id="passwordBtn">
-                <%= user.hasPassword ? '更新密碼' : '設定密碼' %>
-            </button>
-        </form>
-    </div>
-
-    <!-- 登入資訊區塊 -->
-    <div class="settings-section">
-        <h3 class="section-title">登入資訊</h3>
-        <div class="info-grid">
-            <div class="info-item">
-                <span class="info-label">LINE 帳號</span>
-                <span class="info-value">已綁定</span>
-                <span class="info-status status-connected">✓</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">手機號碼</span>
-                <span class="info-value">
-                    <%= user.phone || '尚未設定' %>
-                </span>
-                <span class="info-status <%= user.phone ? 'status-connected' : 'status-disconnected' %>">
-                    <%= user.phone ? '✓' : '!' %>
-                </span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">密碼登入</span>
-                <span class="info-value">
-                    <%= user.hasPassword ? '已設定' : '尚未設定' %>
-                </span>
-                <span class="info-status <%= user.hasPassword ? 'status-connected' : 'status-disconnected' %>">
-                    <%= user.hasPassword ? '✓' : '!' %>
-                </span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">最後登入</span>
-                <span class="info-value">
-                    <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-TW') : '無記錄' %>
-                </span>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">LINE 帳號</span>
+                        <div class="info-status-group">
+                            <span class="info-value">已綁定</span>
+                            <span class="info-status status-connected">✓</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">手機號碼</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.phone || '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.phone ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.phone ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">密碼登入</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.hasPassword ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.hasPassword ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.hasPassword ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">最後登入</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-TW') : '無記錄' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 危險操作區塊 -->
-    <div class="settings-section danger-section">
-        <h3 class="section-title">危險操作</h3>
-        <p class="section-description">這些操作無法復原，請謹慎使用</p>
-        
-        <div class="danger-actions">
-            <% if (user.hasPassword) { %>
-                <button type="button" class="settings-btn settings-btn-danger" onclick="removePassword()">
-                    移除密碼登入
+        <!-- 安全設定卡片 -->
+        <div class="dashboard-card security-card">
+            <div class="card-header">
+                <div class="card-icon">⚡</div>
+                <div class="card-info">
+                    <h3 class="card-title">安全設定</h3>
+                    <p class="card-description">管理您的帳號安全功能</p>
+                </div>
+            </div>
+
+            <div class="security-options">
+                <div class="security-item">
+                    <div class="security-info">
+                        <span class="security-label">雙重驗證</span>
+                        <span class="security-desc">增強帳號安全性</span>
+                    </div>
+                    <div class="security-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="coming-soon">即將推出</span>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="security-info">
+                        <span class="security-label">登入通知</span>
+                        <span class="security-desc">新裝置登入時通知</span>
+                    </div>
+                    <div class="security-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="security-status">已啟用</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 危險操作卡片 -->
+        <div class="dashboard-card danger-card">
+            <div class="card-header">
+                <div class="card-icon">⚠️</div>
+                <div class="card-info">
+                    <h3 class="card-title">危險操作</h3>
+                    <p class="card-description">這些操作無法復原，請謹慎使用</p>
+                </div>
+            </div>
+            
+            <div class="danger-actions">
+                <% if (user.hasPassword) { %>
+                    <button type="button" class="card-btn card-btn-danger" onclick="removePassword()">
+                        <span class="btn-icon">🔓</span>
+                        移除密碼登入
+                    </button>
+                <% } %>
+                <button type="button" class="card-btn card-btn-danger" onclick="deleteAccount()">
+                    <span class="btn-icon">🗑️</span>
+                    刪除帳號
                 </button>
-            <% } %>
-            <button type="button" class="settings-btn settings-btn-danger" onclick="deleteAccount()">
-                刪除帳號
-            </button>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-.settings-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
-.settings-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #333;
-    margin-bottom: 32px;
-    text-align: center;
-}
-
-.settings-section {
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.section-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.section-description {
-    color: #666;
-    margin-bottom: 20px;
-    line-height: 1.5;
-}
-
-.settings-form {
-    margin-top: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-label {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: #007AFF;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-}
-
-.form-input.error {
-    border-color: #d32f2f;
-}
-
-.settings-btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.settings-btn-primary {
-    background: #007AFF;
-    color: white;
-}
-
-.settings-btn-primary:hover {
-    background: #0056CC;
-    transform: translateY(-1px);
-}
-
-.settings-btn-danger {
-    background: #d32f2f;
-    color: white;
-    margin-right: 12px;
-}
-
-.settings-btn-danger:hover {
-    background: #b71c1c;
-}
-
-.info-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #333;
-}
-
-.info-value {
-    color: #666;
-    flex: 1;
-    text-align: right;
-    margin-right: 12px;
-}
-
-.info-status {
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.status-connected {
-    color: #4caf50;
-}
-
-.status-disconnected {
-    color: #f44336;
-}
-
-.danger-section {
-    border: 2px solid #ffebee;
-}
-
-.danger-section .section-title {
-    color: #d32f2f;
-}
-
-.danger-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.error-message {
-    color: #d32f2f;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #d32f2f;
-}
-
-.success-message {
-    color: #2e7d32;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #4caf50;
-}
-
-/* 密碼強度樣式 */
-.password-strength {
-    margin-top: 8px;
-}
-
-.strength-bar {
-    height: 4px;
-    background: #f0f0f0;
-    border-radius: 2px;
-    margin: 8px 0 4px;
-    overflow: hidden;
-}
-
-.strength-fill {
-    height: 100%;
-    transition: all 0.3s ease;
-    border-radius: 2px;
-}
-
-.strength-weak .strength-fill {
-    width: 33%;
-    background: #f44336;
-}
-
-.strength-medium .strength-fill {
-    width: 66%;
-    background: #ff9800;
-}
-
-.strength-strong .strength-fill {
-    width: 100%;
-    background: #4caf50;
-}
-
-.strength-text {
-    color: #666;
-    font-size: 12px;
-}
-
-@media (max-width: 768px) {
-    .settings-container {
-        padding: 16px;
-    }
-    
-    .danger-actions {
-        flex-direction: column;
-    }
-    
-    .settings-btn-danger {
-        margin-right: 0;
-        margin-bottom: 8px;
-    }
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -419,15 +275,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (score < 3) {
             strengthBar.classList.add('strength-weak');
             strengthText.textContent = '密碼強度：弱';
-            strengthText.style.color = '#f44336';
+            strengthText.style.color = '#dc3545';
         } else if (score < 5) {
             strengthBar.classList.add('strength-medium');
             strengthText.textContent = '密碼強度：中等';
-            strengthText.style.color = '#ff9800';
+            strengthText.style.color = '#ffc107';
         } else {
             strengthBar.classList.add('strength-strong');
             strengthText.textContent = '密碼強度：強';
-            strengthText.style.color = '#4caf50';
+            strengthText.style.color = '#28a745';
         }
     }
 
@@ -439,6 +295,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (newPassword !== confirmPassword) {
             e.preventDefault();
             alert('密碼確認不一致');
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            e.preventDefault();
+            alert('密碼長度至少需要8字元');
             return;
         }
 
@@ -460,6 +322,8 @@ function removePassword() {
             } else {
                 alert('操作失敗，請稍後再試');
             }
+        }).catch(() => {
+            alert('操作失敗，請檢查網路連線');
         });
     }
 }
@@ -479,6 +343,8 @@ function deleteAccount() {
                 } else {
                     alert('操作失敗，請稍後再試');
                 }
+            }).catch(() => {
+                alert('操作失敗，請檢查網路連線');
             });
         }
     }
