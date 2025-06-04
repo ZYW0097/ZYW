@@ -191,12 +191,12 @@
     max-width: none;
     margin: 0;
     padding: 0;
-    background: #f6f7fa;
+    background: #f8fafc;
     min-height: 100vh;
     box-sizing: border-box;
 }
 
-
+/* Dashboard Grid 布局 */
 .dashboard-grid {
     display: flex;
     flex-wrap: wrap;
@@ -204,21 +204,22 @@
     margin: 0;
     gap: 0;
     box-sizing: border-box;
-    background: #e9ecef;
-    border: 1px solid #e0e0e0;
+    background: #f8fafc;
+    border-radius: 20px;
+    border: none;
     overflow: hidden;
 }
 
 .dashboard-card {
-    background: #fff;
+    background: white;
     border: none;
     border-radius: 0;
     margin: 0;
-    box-shadow: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     transition: none;
     padding: 2rem 1.5rem;
-    border-right: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -251,21 +252,21 @@
     align-items: center;
     margin-bottom: 1.25rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #f2f2f2;
+    border-bottom: 1px solid #e2e8f0;
 }
 .card-icon {
     font-size: 1.7rem;
     margin-right: 0.75rem;
-    color: #007aff;
+    color: #667eea;
 }
 .card-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #222;
+    color: #333;
     margin: 0 0 0.2rem 0;
 }
 .card-description {
-    color: #888;
+    color: #666;
     font-size: 0.92rem;
     margin: 0;
 }
@@ -310,28 +311,31 @@
 
 .form-label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #333;
+    color: #374151;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
     font-size: 1rem;
     transition: all 0.2s ease;
     box-sizing: border-box;
-    background: #fafafa;
+    background: #f8fafc;
+    color: #333;
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #007AFF;
+    border-color: #667eea;
     background: white;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-input.error {
@@ -354,25 +358,39 @@
 }
 
 .card-btn-primary {
-    background: #007AFF;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .card-btn-primary:hover {
-    background: #0056CC;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
 .card-btn-danger {
-    background: #dc3545;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     color: white;
     margin-right: 0.75rem;
     margin-bottom: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .card-btn-danger:hover {
-    background: #c82333;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
 }
 
 .btn-icon {
@@ -388,9 +406,9 @@
 
 .info-item {
     padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .info-row {
@@ -401,8 +419,10 @@
 
 .info-label {
     font-weight: 600;
-    color: #495057;
-    font-size: 0.9rem;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .info-status-group {
@@ -412,7 +432,7 @@
 }
 
 .info-value {
-    color: #6c757d;
+    color: #666;
     font-size: 0.9rem;
 }
 
@@ -430,7 +450,7 @@
 }
 
 .status-connected {
-    background: #28a745;
+    background: #10b981;
 }
 
 .status-disconnected {
@@ -449,9 +469,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .security-info {
@@ -461,13 +481,15 @@
 .security-label {
     display: block;
     font-weight: 600;
-    color: #495057;
-    font-size: 0.9rem;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .security-desc {
     display: block;
-    color: #6c757d;
+    color: #666;
     font-size: 0.8rem;
     margin-top: 0.25rem;
 }
@@ -517,7 +539,7 @@
 }
 
 input:checked + .toggle-slider {
-    background-color: #007AFF;
+    background-color: #667eea;
 }
 
 input:checked + .toggle-slider:before {
@@ -531,19 +553,20 @@ input:disabled + .toggle-slider {
 
 .coming-soon {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: #666;
     font-style: italic;
 }
 
 .security-status {
     font-size: 0.75rem;
-    color: #28a745;
+    color: #10b981;
     font-weight: 600;
 }
 
 /* 危險操作樣式 */
 .danger-card {
     border-left: 4px solid #dc3545;
+    background: #fff8f8;
 }
 
 .danger-actions {
@@ -583,7 +606,7 @@ input:disabled + .toggle-slider {
 
 .strength-strong .strength-fill {
     width: 100%;
-    background: #28a745;
+    background: #10b981;
 }
 
 .strength-text {
@@ -594,7 +617,7 @@ input:disabled + .toggle-slider {
 /* 消息樣式 */
 .error-message, .success-message {
     padding: 1rem 1.25rem;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
     border-left: 4px solid;
@@ -602,14 +625,14 @@ input:disabled + .toggle-slider {
 
 .error-message {
     color: #721c24;
-    background-color: #f8d7da;
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
     border-color: #dc3545;
 }
 
 .success-message {
     color: #155724;
-    background-color: #d4edda;
-    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-color: #10b981;
 }
 
 /* 響應式設計 - 行動裝置填滿畫面 */

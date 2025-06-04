@@ -133,7 +133,7 @@ router.get('/line/callback', async (req, res) => {
         // 取出 loginRedirect
         const loginRedirect = req.session.loginRedirect;
         delete req.session.loginRedirect;
-        
+
         // 根據條件決定跳轉
         if (isNewUser || !user.birthday || !user.gender) {
             // 首次登入或資料不完整，前往個人資料頁
@@ -193,9 +193,9 @@ router.get('/profile', requireLogin, async (req, res) => {
 // 集點卡頁
 router.get('/points', requireLogin, async (req, res) => {
     try {
-        const adb = getClientDb('main', 'ADB');
-        const User = adb.model('User', userSchema);
-        const user = await User.findById(req.session.userId);
+    const adb = getClientDb('main', 'ADB');
+    const User = adb.model('User', userSchema);
+    const user = await User.findById(req.session.userId);
         
         if (!user || !user.lineId) {
             return renderWithSidebar(res, 'account_points', { 

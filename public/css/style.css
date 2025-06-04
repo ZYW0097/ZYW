@@ -118,8 +118,8 @@ body {
 .desktop-only { 
     display: flex; 
 }
-.mobile-only {
-  display: none !important;
+.mobile-only { 
+    display: none !important; 
 }
 
 /* 漢堡按鈕 */
