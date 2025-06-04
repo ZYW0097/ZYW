@@ -1,21 +1,275 @@
 <% var customCss = '/css/account_profile.css'; %>
-<div class="profile-header-bg">
-    <div class="profile-header">
-        <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="profile-avatar" alt="user">
-        <div class="profile-name"><%= user.name || '用戶名稱' %></div>
+<div class="dashboard-container">
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-message">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success-message">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <!-- 用戶資料控制面板 -->
+    <div class="dashboard-grid">
+        <!-- 基本資料卡片 -->
+        <div class="dashboard-card profile-card">
+            <div class="card-header">
+                <div class="card-icon">👤</div>
+                <div class="card-info">
+                    <h3 class="card-title">基本資料</h3>
+                    <p class="card-description">管理您的個人基本資訊</p>
+                </div>
+            </div>
+
+            <form class="card-form" action="/account/profile" method="POST" id="profileForm">
+                <div class="form-group">
+                    <label class="form-label" for="name">姓名</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form-input" 
+                        value="<%= user.name || '' %>"
+                        placeholder="請輸入您的姓名"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="phone">手機號碼</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        class="form-input" 
+                        value="<%= user.phone || '' %>"
+                        placeholder="請輸入手機號碼"
+                        pattern="[0-9]{10}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">電子郵件</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        value="<%= user.email || '' %>"
+                        placeholder="請輸入電子郵件"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="birthday">生日</label>
+                    <input 
+                        type="date" 
+                        id="birthday" 
+                        name="birthday" 
+                        class="form-input" 
+                        value="<%= user.birthday || '' %>"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="gender">性別</label>
+                    <select id="gender" name="gender" class="form-input">
+                        <option value="">請選擇</option>
+                        <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>男</option>
+                        <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>女</option>
+                        <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>其他</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="card-btn card-btn-primary" id="profileBtn">
+                    儲存資料
+                </button>
+            </form>
+        </div>
+
+        <!-- 個人檔案卡片 -->
+        <div class="dashboard-card avatar-card">
+            <div class="card-header">
+                <div class="card-icon">📷</div>
+                <div class="card-info">
+                    <h3 class="card-title">個人檔案</h3>
+                    <p class="card-description">您的頭像和帳號資訊</p>
+                </div>
+            </div>
+
+            <div class="avatar-section">
+                <div class="avatar-container">
+                    <img src="<%= user.avatar || '/images/user_icon.svg' %>" class="profile-avatar" alt="用戶頭像">
+                    <div class="avatar-info">
+                        <div class="avatar-name"><%= user.name || '未設定姓名' %></div>
+                        <div class="avatar-id">LINE ID: <%= user.lineId %></div>
+                    </div>
+                </div>
+                <div class="avatar-note">
+                    <small>頭像會自動從 LINE 帳號同步</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 資料狀態卡片 -->
+        <div class="dashboard-card status-card">
+            <div class="card-header">
+                <div class="card-icon">📋</div>
+                <div class="card-info">
+                    <h3 class="card-title">資料完整度</h3>
+                    <p class="card-description">檢查您的資料完整程度</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">姓名</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.name ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.name ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.name ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">手機號碼</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.phone ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.phone ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.phone ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">電子郵件</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.email ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.email ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.email ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">生日</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.birthday ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.birthday ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.birthday ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">性別</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.gender ? '已設定' : '尚未設定' %>
+                            </span>
+                            <span class="info-status <%= user.gender ? 'status-connected' : 'status-disconnected' %>">
+                                <%= user.gender ? '✓' : '!' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 帳號資訊卡片 -->
+        <div class="dashboard-card account-info-card">
+            <div class="card-header">
+                <div class="card-icon">ℹ️</div>
+                <div class="card-info">
+                    <h3 class="card-title">帳號資訊</h3>
+                    <p class="card-description">您的帳號建立和使用記錄</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">註冊時間</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-TW') : '無記錄' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">最後登入</span>
+                        <div class="info-status-group">
+                            <span class="info-value">
+                                <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-TW') : '無記錄' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-row">
+                        <span class="info-label">LINE 綁定</span>
+                        <div class="info-status-group">
+                            <span class="info-value">已綁定</span>
+                            <span class="info-status status-connected">✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<form class="profile-form" method="POST" action="/account/profile">
-    <label>電話號碼</label>
-    <input type="tel" name="phone" value="<%= user.phone || '' %>" placeholder="請輸入電話號碼" required>
-    <label>生日</label>
-    <input type="date" name="birthday" value="<%= user.birthday || '' %>" required>
-    <label>性別</label>
-    <select name="gender" required>
-        <option value="">請選擇</option>
-        <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>男</option>
-        <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>女</option>
-        <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>其他</option>
-    </select>
-    <button type="submit" class="profile-save-btn">儲存</button>
-</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profileForm = document.getElementById('profileForm');
+    const profileBtn = document.getElementById('profileBtn');
+
+    // 表單提交
+    profileForm.addEventListener('submit', function(e) {
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+
+        // 手機號碼格式驗證
+        if (phone && !/^[0-9]{10}$/.test(phone)) {
+            e.preventDefault();
+            alert('手機號碼格式不正確，請輸入10位數字');
+            return;
+        }
+
+        // Email格式驗證
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            e.preventDefault();
+            alert('電子郵件格式不正確');
+            return;
+        }
+
+        profileBtn.textContent = '儲存中...';
+        profileBtn.disabled = true;
+    });
+});
+</script>

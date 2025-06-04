@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     name: String,
     avatar: String, // Cloudinary URL
     phone: { type: String, unique: true, sparse: true }, // 允許為空但不能重複
+    email: { type: String, unique: true, sparse: true }, // 允許為空但不能重複
     password: String, // 加密後的密碼
     hasPassword: { type: Boolean, default: false }, // 是否已設定密碼
     birthday: String,

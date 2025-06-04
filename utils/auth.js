@@ -55,6 +55,12 @@ const validatePhone = (phone) => {
     return phoneRegex.test(phone);
 };
 
+// Email格式驗證
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 // 登入失敗處理
 const handleLoginFailure = async (user) => {
     const maxAttempts = 5;
@@ -85,6 +91,7 @@ module.exports = {
     generateRememberToken,
     validatePassword,
     validatePhone,
+    validateEmail,
     handleLoginFailure,
     handleLoginSuccess
 }; 

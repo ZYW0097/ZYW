@@ -9,6 +9,7 @@ const {
     comparePassword, 
     validatePassword, 
     validatePhone, 
+    validateEmail,
     handleLoginSuccess 
 } = require('../utils/auth');
 
@@ -178,7 +179,15 @@ router.get('/profile', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
-    renderWithSidebar(res, 'account_profile', { user });
+    renderWithSidebar(res, 'account_profile', { 
+        user,
+        error: req.session.profileError,
+        success: req.session.profileSuccess
+    });
+    
+    // 清除一次性訊息
+    delete req.session.profileError;
+    delete req.session.profileSuccess;
 });
 
 // 集點卡頁
@@ -272,36 +281,69 @@ router.get('/settings', requireLogin, async (req, res) => {
 
 // 儲存/更新基本資料
 router.post('/profile', requireLogin, async (req, res) => {
-    const { phone, birthday, gender } = req.body;
+    const { name, phone, email, birthday, gender } = req.body;
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     
     try {
-        // 如果更新手機號碼，需要驗證格式和唯一性
+        // Email格式驗證
+        if (email) {
+            if (!validateEmail(email)) {
+                req.session.profileError = '電子郵件格式不正確';
+                return res.redirect('/account/profile');
+            }
+            
+            // 檢查Email是否被其他用戶使用
+            const existingEmailUser = await User.findOne({ 
+                email, 
+                _id: { $ne: req.session.userId } 
+            });
+            
+            if (existingEmailUser) {
+                req.session.profileError = '此電子郵件已被其他帳號使用';
+                return res.redirect('/account/profile');
+            }
+        }
+        
+        // 手機號碼格式驗證
         if (phone) {
             if (!validatePhone(phone)) {
-                req.session.settingsError = '手機號碼格式不正確';
-                return res.redirect('/account/settings');
+                req.session.profileError = '手機號碼格式不正確';
+                return res.redirect('/account/profile');
             }
             
             // 檢查手機號碼是否被其他用戶使用
-            const existingUser = await User.findOne({ 
+            const existingPhoneUser = await User.findOne({ 
                 phone, 
                 _id: { $ne: req.session.userId } 
             });
             
-            if (existingUser) {
-                req.session.settingsError = '此手機號碼已被其他帳號使用';
-                return res.redirect('/account/settings');
+            if (existingPhoneUser) {
+                req.session.profileError = '此手機號碼已被其他帳號使用';
+                return res.redirect('/account/profile');
             }
         }
         
-        await User.findByIdAndUpdate(req.session.userId, { phone, birthday, gender });
-        res.redirect('/account/points');
+        // 姓名驗證
+        if (!name || name.trim().length === 0) {
+            req.session.profileError = '姓名不能為空';
+            return res.redirect('/account/profile');
+        }
+        
+        await User.findByIdAndUpdate(req.session.userId, { 
+            name: name.trim(), 
+            phone: phone || null, 
+            email: email || null, 
+            birthday, 
+            gender 
+        });
+        
+        req.session.profileSuccess = '基本資料更新成功';
+        res.redirect('/account/profile');
     } catch (error) {
         console.error('Profile update error:', error);
-        req.session.settingsError = '更新失敗，請稍後再試';
-        res.redirect('/account/settings');
+        req.session.profileError = '更新失敗，請稍後再試';
+        res.redirect('/account/profile');
     }
 });
 
@@ -541,3 +583,4 @@ router.get('/redirect', async (req, res) => {
 });
 
 module.exports = router;
+
