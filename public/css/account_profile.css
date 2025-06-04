@@ -637,3 +637,12 @@
         font-size: 0.95rem;
     }
 }
+
+.form-group input[readonly] {
+    background: #f1f1f1;
+    color: #a0aec0;
+    cursor: not-allowed;
+    border: 2px solid #e0e0e0;
+    box-shadow: none;
+    pointer-events: none;
+}
