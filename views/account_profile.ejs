@@ -19,25 +19,35 @@
 <% } %>
 
 <form class="profile-form" method="POST" action="/account/profile" id="profileForm">
-    <label>姓名</label>
-    <input type="text" name="name" value="<%= user.name || '' %>" placeholder="請輸入姓名" required>
+    <div class="form-group">
+        <label>姓名</label>
+        <input type="text" name="name" value="<%= user.name || '' %>" placeholder="請輸入姓名" required>
+    </div>
     
-    <label>電話號碼</label>
-    <input type="tel" name="phone" value="<%= user.phone || '' %>" placeholder="請輸入電話號碼" pattern="[0-9]{10}">
+    <div class="form-group">
+        <label>電話號碼</label>
+        <input type="tel" name="phone" value="<%= user.phone || '' %>" placeholder="請輸入電話號碼" pattern="[0-9]{10}">
+    </div>
     
-    <label>電子郵件</label>
-    <input type="email" name="email" value="<%= user.email || '' %>" placeholder="請輸入電子郵件">
+    <div class="form-group">
+        <label>電子郵件</label>
+        <input type="email" name="email" value="<%= user.email || '' %>" placeholder="請輸入電子郵件">
+    </div>
     
-    <label>生日</label>
-    <input type="date" name="birthday" value="<%= user.birthday || '' %>">
+    <div class="form-group">
+        <label>生日</label>
+        <input type="date" name="birthday" value="<%= user.birthday || '' %>">
+    </div>
     
-    <label>性別</label>
-    <select name="gender">
-        <option value="">請選擇</option>
-        <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>男</option>
-        <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>女</option>
-        <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>其他</option>
-    </select>
+    <div class="form-group">
+        <label>性別</label>
+        <select name="gender">
+            <option value="">請選擇</option>
+            <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>男</option>
+            <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>女</option>
+            <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>其他</option>
+        </select>
+    </div>
     
     <button type="submit" class="profile-save-btn" id="profileBtn">儲存資料</button>
 </form>
