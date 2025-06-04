@@ -182,7 +182,8 @@ router.get('/profile', requireLogin, async (req, res) => {
     renderWithSidebar(res, 'account_profile', { 
         user,
         error: req.session.profileError,
-        success: req.session.profileSuccess
+        success: req.session.profileSuccess,
+        customJs: '/js/account_profile.js'
     });
     
     // 清除一次性訊息
@@ -271,7 +272,8 @@ router.get('/settings', requireLogin, async (req, res) => {
     renderWithSidebar(res, 'account_settings', { 
         user,
         error: req.session.settingsError,
-        success: req.session.settingsSuccess
+        success: req.session.settingsSuccess,
+        customJs: '/js/account_settings.js'
     });
     
     // 清除一次性訊息
