@@ -34,9 +34,32 @@
     background: var(--background-color);
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow-y: auto;
     padding: 0;
+    position: relative; /* 加入相對定位 */
+}
+
+/* Account 內容區域 */
+.account-content {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+
+/* Account 頁面的 footer 樣式調整 */
+.account-main .footer {
+    margin-top: auto;
+    width: 100%;
+    background: #f8f9fa;
+    flex-shrink: 0; /* 防止 footer 被壓縮 */
+}
+
+.account-main .footer .container {
+    padding: 1rem 0;
 }
 
 /* 在account頁面隱藏header的漢堡選單 */
@@ -63,7 +86,15 @@
     .account-main {
         margin-top: 0;
         min-height: calc(100vh - 80px); /* 減去手機版sidebar的高度 */
+    }
+    
+    .account-content {
         padding: 1rem;
+    }
+    
+    /* 手機版 footer 調整 */
+    .account-main .footer {
+        margin-top: 1rem;
     }
     
     /* 確保手機版漢堡選單可見且功能正常 */
