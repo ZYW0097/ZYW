@@ -196,7 +196,7 @@
     box-sizing: border-box;
 }
 
-/* Dashboard Grid 新極簡設計 */
+
 .dashboard-grid {
     display: flex;
     flex-wrap: wrap;
@@ -205,7 +205,6 @@
     gap: 0;
     box-sizing: border-box;
     background: #e9ecef;
-    border-radius: 18px;
     border: 1px solid #e0e0e0;
     overflow: hidden;
 }
