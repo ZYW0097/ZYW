@@ -205,7 +205,6 @@
     gap: 0;
     box-sizing: border-box;
     background: #f8fafc;
-    border-radius: 20px;
     border: none;
     overflow: hidden;
 }
@@ -241,8 +240,12 @@
     border-right: none;
     border-bottom: none;
     border-radius: 0;
-    background: #fff5f5;
+    background: #fff8f8;
     border-top: 1px solid #e0e0e0;
+}
+
+.dashboard-card.danger-card:hover {
+    background: #fff8f8;
 }
 
 /* 卡片標題現代化 */
