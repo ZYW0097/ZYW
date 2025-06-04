@@ -51,9 +51,16 @@
     border-bottom: 1px solid #e2e8f0;
 }
 .card-icon {
-    font-size: 1.7rem;
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
     margin-right: 0.75rem;
-    color: #667eea;
 }
 .card-title {
     font-size: 1.1rem;
@@ -80,7 +87,7 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
+    color: #333;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -99,9 +106,9 @@
 
 .form-input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #000;
     background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 按鈕樣式 */
@@ -119,13 +126,14 @@
 }
 
 .card-btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #000;
     color: white;
 }
 
 .card-btn-primary:hover {
+    background: #333;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 /* 頭像區域樣式 */
@@ -194,7 +202,7 @@
 
 .info-label {
     font-weight: 600;
-    color: #374151;
+    color: #333;
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -243,14 +251,14 @@
 
 .error-message {
     color: #721c24;
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    background: #f8d7da;
     border-color: #dc3545;
 }
 
 .success-message {
     color: #155724;
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border-color: #10b981;
+    background: #d4edda;
+    border-color: #000;
 }
 
 /* 響應式設計 */
@@ -396,7 +404,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 4px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: #000;
     border-radius: 0 0 4px 4px;
 }
 
@@ -409,7 +417,7 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
+    color: #333;
     margin-bottom: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -432,9 +440,9 @@
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #000;
     background: white;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
@@ -478,7 +486,7 @@
 .profile-save-btn {
     width: 100%;
     padding: 1.2rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #000;
     color: white;
     border: none;
     border-radius: 12px;
@@ -509,8 +517,9 @@
 }
 
 .profile-save-btn:hover {
+    background: #333;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .profile-save-btn:active {
@@ -548,13 +557,13 @@
 }
 
 .alert-success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border-color: #10b981;
+    background: #d4edda;
+    border-color: #000;
     color: #155724;
 }
 
 .alert-error {
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    background: #f8d7da;
     border-color: #dc3545;
     color: #721c24;
 }
