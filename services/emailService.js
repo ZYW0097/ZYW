@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const EmailTemplateEngine = require('../utils/emailTemplateEngine');
 
 // 創建SMTP傳輸配置
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
         user: process.env.SMTP_USER,
