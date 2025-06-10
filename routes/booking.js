@@ -432,6 +432,29 @@ router.get('/:storeSlug/api/booking/current', async (req, res) => {
     }
 });
 
+// 獲取當前餐廳所有有效訂位（管理用）
+router.get('/:storeSlug/api/booking/all-current', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        const db = getClientDb(storeSlug, 'BDB');
+        const Reservation = db.model('Reservation', reservationSchema);
+        
+        const reservations = await Reservation.find({
+            status: { $ne: 'cancelled' },
+            date: { $gte: new Date().toISOString().split('T')[0] }
+        }).sort({ date: 1, time: 1 }).limit(50); // 限制最多50筆，避免數據過多
+        
+        res.json({ success: true, results: reservations });
+    } catch (error) {
+        console.error('Error fetching all current bookings:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: '獲取訂位資訊時發生錯誤' 
+        });
+    }
+});
+
 // 執行取消訂位（取消訂位頁面使用）
 router.post('/:storeSlug/api/booking/cancel-by-id', async (req, res) => {
     try {

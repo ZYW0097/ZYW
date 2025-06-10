@@ -1,17 +1,66 @@
-/* 取消訂位頁面專用樣式 */
+/* 取消訂位頁面專用樣式 - 與訂位頁面風格一致 */
 
-/* 頁面標題 */
+/* 頁面容器 */
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    padding-top: 100px;
+}
+
 .page-container h1 {
-    color: #dc3545;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.custom-text {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+/* 主要布局 */
+.booking-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* 左右容器 */
+.booking-form-container {
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 3rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    box-sizing: border-box;
+}
+
+/* 右側容器可以延伸 */
+.booking-form-container:last-child {
+    min-height: 800px;
+}
+
+.booking-form-container:last-child .booking-results {
+    min-height: 400px;
 }
 
 /* 容器標題 */
 .booking-form-container h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 600;
     color: #000;
-    margin-bottom: 0.5rem;
-    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
 }
 
 .section-subtitle {
@@ -24,9 +73,9 @@
 
 /* 搜尋表單區塊 */
 .search-form-section {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 15px;
     padding: 2rem;
     margin-bottom: 2rem;
 }
@@ -43,16 +92,16 @@
 .search-type-tabs {
     display: flex;
     margin-bottom: 2rem;
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden;
-    border: 1px solid #dee2e6;
+    border: 1px solid #ddd;
 }
 
 .tab-btn {
     flex: 1;
     padding: 1rem;
     border: none;
-    background: #f8f9fa;
+    background: #fafafa;
     color: #666;
     font-weight: 600;
     cursor: pointer;
@@ -60,12 +109,12 @@
 }
 
 .tab-btn.active {
-    background: #007bff;
+    background: #333;
     color: white;
 }
 
 .tab-btn:hover:not(.active) {
-    background: #e9ecef;
+    background: #f0f0f0;
 }
 
 /* 表單樣式 */
@@ -123,11 +172,11 @@
 
 /* 搜尋按鈕 */
 .search-btn {
-    background: #007bff;
+    background: #333;
     color: white;
     border: none;
     padding: 1rem 2rem;
-    border-radius: 10px;
+    border-radius: 15px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
@@ -136,14 +185,13 @@
     margin-top: 1rem;
 }
 
-.search-btn:hover {
-    background: #0056b3;
+.search-btn:hover:not(:disabled) {
+    background: #000;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .search-btn:disabled {
-    background: #ccc;
+    background: #999;
     cursor: not-allowed;
     transform: none;
 }

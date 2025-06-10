@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // DOM 元素
-    const currentBookingForm = document.getElementById('currentBookingForm');
     const bookingIdForm = document.getElementById('bookingIdForm');
     const customerInfoForm = document.getElementById('customerInfoForm');
-    const currentResults = document.getElementById('currentBookingResults');
+    const allCurrentBookings = document.getElementById('allCurrentBookings');
     const generalResults = document.getElementById('generalBookingResults');
     const cancelModal = document.getElementById('cancelModal');
     const modalBookingDetails = document.getElementById('modalBookingDetails');
@@ -11,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalCloseBtn = document.getElementById('modalCloseBtn');
 
     let currentBookingToCancel = null;
+
+    // 頁面載入時自動獲取所有當前訂位
+    loadAllCurrentBookings();
 
     // 標籤切換功能
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -30,20 +32,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 當前餐廳訂位搜尋
-    currentBookingForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(currentBookingForm);
-        const name = formData.get('name');
-        const phone = formData.get('phone');
+    // 載入所有當前餐廳訂位
+    async function loadAllCurrentBookings() {
+        try {
+            const response = await fetch(`/${storeSlug}/api/booking/all-current`);
+            const result = await response.json();
 
-        if (!name || !phone) {
-            alert('請輸入姓名和電話');
-            return;
+            if (result.success) {
+                displayBookings(result.results, allCurrentBookings, false);
+            } else {
+                throw new Error(result.error || '載入失敗');
+            }
+        } catch (error) {
+            console.error('載入失敗:', error);
+            showNoResults(allCurrentBookings, '載入訂位資訊失敗，請重新整理頁面');
         }
-
-        await searchCurrentBookings(name, phone);
-    });
+    }
 
     // 訂位編號搜尋
     bookingIdForm.addEventListener('submit', async (e) => {
@@ -74,27 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         await searchByCustomerInfo(name, phone);
     });
 
-    // 搜尋當前餐廳的訂位
-    async function searchCurrentBookings(name, phone) {
-        const submitBtn = currentBookingForm.querySelector('.search-btn');
-        setButtonLoading(submitBtn, true);
 
-        try {
-            const response = await fetch(`/${storeSlug}/api/booking/current?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`);
-            const result = await response.json();
-
-            if (result.success) {
-                displayBookings(result.results, currentResults, false);
-            } else {
-                throw new Error(result.error || '搜尋失敗');
-            }
-        } catch (error) {
-            console.error('搜尋失敗:', error);
-            showNoResults(currentResults, '搜尋失敗，請稍後再試');
-        } finally {
-            setButtonLoading(submitBtn, false);
-        }
-    }
 
     // 依訂位編號搜尋
     async function searchByBookingId(bookingId) {
@@ -187,7 +171,11 @@ document.addEventListener('DOMContentLoaded', function() {
             card.addEventListener('click', () => {
                 const bookingId = card.dataset.bookingId;
                 const targetStoreSlug = card.dataset.storeSlug;
-                const booking = bookings.find(b => b.customBookingId === bookingId);
+                const booking = bookings.find(b => 
+                    (b.customBookingId === bookingId) || 
+                    (b.bookingId === bookingId) ||
+                    (b._id && b._id.toString() === bookingId)
+                );
                 if (booking) {
                     showCancelModal(booking, targetStoreSlug);
                 }
@@ -195,26 +183,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 格式化日期
+    function formatDate(dateString) {
+        if (!dateString) return '未知日期';
+        
+        // 處理ISO日期格式 (2025-06-18T00:00:00.000Z)
+        if (dateString.includes('T')) {
+            dateString = dateString.split('T')[0];
+        }
+        
+        // 如果已經是 YYYY-MM-DD 格式，轉換為更友好的格式
+        const date = new Date(dateString + 'T00:00:00');
+        if (isNaN(date.getTime())) return dateString; // 如果無法解析，返回原始字符串
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}/${month}/${day}`;
+    }
+
     // 創建訂位卡片
     function createBookingCard(booking, showRestaurant) {
+        const bookingId = booking.customBookingId || booking.bookingId || 'N/A';
+        const formattedDate = formatDate(booking.date);
+        
         return `
-            <div class="booking-card" data-booking-id="${booking.customBookingId}" data-store-slug="${booking.storeSlug || storeSlug}">
+            <div class="booking-card" data-booking-id="${bookingId}" data-store-slug="${booking.storeSlug || storeSlug}">
                 <div class="booking-header">
-                    <span class="booking-id">${booking.customBookingId}</span>
-                    ${showRestaurant ? `<span class="restaurant-name">${booking.clientname}</span>` : ''}
+                    <span class="booking-id">${bookingId}</span>
+                    ${showRestaurant ? `<span class="restaurant-name">${booking.clientname || '未知餐廳'}</span>` : ''}
                 </div>
                 <div class="booking-info">
                     <div class="info-item">
                         <div class="info-label">日期</div>
-                        <div class="info-value">${booking.date}</div>
+                        <div class="info-value">${formattedDate}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">時段</div>
-                        <div class="info-value">${booking.time}</div>
+                        <div class="info-value">${booking.time || '未知時間'}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">人數</div>
-                        <div class="info-value">${booking.adults}大${booking.children}小</div>
+                        <div class="info-value">${booking.adults || 0}大${booking.children || 0}小</div>
                     </div>
                 </div>
             </div>
@@ -254,20 +265,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // 顯示取消確認彈窗
     function showCancelModal(booking, targetStoreSlug) {
         currentBookingToCancel = { ...booking, targetStoreSlug };
+        const bookingId = booking.customBookingId || booking.bookingId || 'N/A';
+        const formattedDate = formatDate(booking.date);
         
         modalBookingDetails.innerHTML = `
             <div class="info-item">
-                <strong>訂位編號：</strong>${booking.customBookingId}
+                <strong>訂位編號：</strong>${bookingId}
             </div>
             ${booking.clientname ? `<div class="info-item"><strong>餐廳：</strong>${booking.clientname}</div>` : ''}
             <div class="info-item">
-                <strong>日期時間：</strong>${booking.date} ${booking.time}
+                <strong>日期時間：</strong>${formattedDate} ${booking.time || '未知時間'}
             </div>
             <div class="info-item">
-                <strong>人數：</strong>${booking.adults}大${booking.children}小
+                <strong>人數：</strong>${booking.adults || 0}大${booking.children || 0}小
             </div>
             <div class="info-item">
-                <strong>聯絡人：</strong>${booking.name} ${booking.gender}
+                <strong>聯絡人：</strong>${booking.name || '未提供'} ${booking.gender || ''}
             </div>
         `;
         
@@ -291,11 +304,12 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmCancelBtn.innerHTML = '<span class="loading-spinner"></span>取消中...';
 
         try {
+            const bookingId = currentBookingToCancel.customBookingId || currentBookingToCancel.bookingId;
             const response = await fetch(`/${storeSlug}/api/booking/cancel-by-id`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    bookingId: currentBookingToCancel.customBookingId,
+                    bookingId: bookingId,
                     targetStoreSlug: currentBookingToCancel.targetStoreSlug
                 })
             });
