@@ -181,7 +181,10 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             email: email ? email.trim() : '',
             date,
             time,
+            adults: parseInt(req.body.adults) || Math.floor(guestNum * 0.8), // 估算大人數
+            children: parseInt(req.body.children) || (guestNum - Math.floor(guestNum * 0.8)), // 估算小孩數
             guests: guestNum,
+            gender: req.body.gender || '先生',
             vegetarian: req.body.vegetarian || 'no',
             special: req.body.special ? req.body.special.trim() : '',
             createdAt: new Date(),
@@ -335,12 +338,12 @@ router.post('/:storeSlug/api/booking/search', async (req, res) => {
                 customBookingId: searchValue.trim().toUpperCase(),
                 status: { $ne: 'cancelled' },
                 date: { $gte: new Date().toISOString().split('T')[0] }
-            });
+            }).lean();
             
             if (reservation) {
-                const client = await Client.findOne({ slugname: storeSlug });
+                const client = await Client.findOne({ slugname: storeSlug }).lean();
                 results.push({
-                    ...reservation.toObject(),
+                    ...reservation,
                     clientname: client ? client.clientname : '餐廳',
                     storeSlug
                 });
@@ -440,10 +443,31 @@ router.get('/:storeSlug/api/booking/all-current', async (req, res) => {
         const db = getClientDb(storeSlug, 'BDB');
         const Reservation = db.model('Reservation', reservationSchema);
         
+        // 確保有適當的索引
+        try {
+            await Reservation.collection.createIndex({ status: 1, date: 1 });
+            await Reservation.collection.createIndex({ customBookingId: 1 });
+        } catch (indexError) {
+            // 索引可能已存在，忽略錯誤
+        }
+        
+        // 優化查詢：只查詢最近30天的訂位
+        const today = new Date();
+        const thirtyDaysLater = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+        const todayStr = today.toISOString().split('T')[0];
+        const endDateStr = thirtyDaysLater.toISOString().split('T')[0];
+        
         const reservations = await Reservation.find({
             status: { $ne: 'cancelled' },
-            date: { $gte: new Date().toISOString().split('T')[0] }
-        }).sort({ date: 1, time: 1 }).limit(50); // 限制最多50筆，避免數據過多
+            date: { 
+                $gte: todayStr,
+                $lte: endDateStr
+            }
+        })
+        .select('customBookingId name phone date time adults children guests status createdAt') // 只選擇需要的欄位
+        .sort({ date: 1, time: 1 })
+        .limit(50)
+        .lean(); // 使用lean()提高性能
         
         res.json({ success: true, results: reservations });
     } catch (error) {

@@ -34,12 +34,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 載入所有當前餐廳訂位
     async function loadAllCurrentBookings() {
+        // 顯示載入狀態
+        allCurrentBookings.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <span>載入中...</span>
+            </div>
+        `;
+
         try {
             const response = await fetch(`/${storeSlug}/api/booking/all-current`);
             const result = await response.json();
 
             if (result.success) {
-                displayBookings(result.results, allCurrentBookings, false);
+                setTimeout(() => {
+                    displayBookings(result.results, allCurrentBookings, false);
+                }, 300); // 短暫延遲讓用戶看到載入狀態
             } else {
                 throw new Error(result.error || '載入失敗');
             }
@@ -84,6 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
     async function searchByBookingId(bookingId) {
         const submitBtn = bookingIdForm.querySelector('.search-btn');
         setButtonLoading(submitBtn, true);
+        
+        // 顯示載入狀態
+        generalResults.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <span>搜尋中...</span>
+            </div>
+        `;
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/search`, {
@@ -91,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     searchType: 'bookingId',
-                    searchValue: bookingId
+                    searchValue: bookingId.trim().toUpperCase()
                 })
             });
             const result = await response.json();
@@ -113,6 +131,14 @@ document.addEventListener('DOMContentLoaded', function() {
     async function searchByCustomerInfo(name, phone) {
         const submitBtn = customerInfoForm.querySelector('.search-btn');
         setButtonLoading(submitBtn, true);
+        
+        // 顯示載入狀態
+        generalResults.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <span>搜尋中...</span>
+            </div>
+        `;
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/search`, {
@@ -120,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     searchType: 'customerInfo',
-                    searchValue: `${name}, ${phone}`
+                    searchValue: `${name.trim()}, ${phone.trim()}`
                 })
             });
             const result = await response.json();
@@ -146,18 +172,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const hasMultiple = bookings.length > 3;
+        const isMobile = window.innerWidth <= 768;
         let html = '';
 
         if (hasMultiple) {
+            const defaultCollapsed = isMobile; // 行動版預設收合，桌面版預設展開
             html += `
                 <div class="results-header">
                     <span class="results-count">找到 ${bookings.length} 筆訂位</span>
-                    <button class="toggle-btn" onclick="toggleResults(this)">收合</button>
+                    <button class="toggle-btn" onclick="toggleResults(this)">${defaultCollapsed ? '展開' : '收合'}</button>
                 </div>
             `;
+            html += `<div class="results-list ${defaultCollapsed ? 'collapsed' : ''}">`;
+        } else {
+            html += `<div class="results-list">`;
         }
-
-        html += `<div class="results-list ${hasMultiple ? 'collapsed' : ''}">`;
 
         bookings.forEach(booking => {
             html += createBookingCard(booking, showRestaurant);
