@@ -28,23 +28,26 @@ const reservationSchema = new mongoose.Schema({
     },
     adults: {
         type: Number,
-        required: true,
-        min: 1,
-        max: 6
+        required: false, // 改為非必填，舊資料可能沒有這些欄位
+        min: 0,
+        max: 10,
+        default: 1
     },
     children: {
         type: Number,
-        required: true,
+        required: false,
         min: 0,
-        max: 6
+        max: 10,
+        default: 0
     },
     guests: {
         type: Number,
-        required: true
+        required: false // 改為非必填，舊資料可能沒有
     },
     gender: {
         type: String,
-        required: true
+        required: false, // 改為非必填
+        default: '先生'
     },
     vegetarian: {
         type: String,

@@ -252,7 +252,12 @@
     font-family: 'Courier New', monospace;
     font-weight: bold;
     color: #007bff;
-    font-size: 1.1rem;
+    background: #e7f3ff;
+    font-size: 1rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #007bff;
+    display: inline-block;
 }
 
 .restaurant-name {

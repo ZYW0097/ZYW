@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 載入所有當前餐廳訂位
     async function loadAllCurrentBookings() {
+        console.log('開始載入餐廳訂位:', storeSlug);
+        
         // 顯示載入狀態
         allCurrentBookings.innerHTML = `
             <div class="loading-container">
@@ -44,9 +46,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/all-current`);
+            console.log('API回應狀態:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const result = await response.json();
+            console.log('API回應內容:', result);
 
             if (result.success) {
+                console.log('找到訂位記錄:', result.results?.length || 0, '筆');
                 setTimeout(() => {
                     displayBookings(result.results, allCurrentBookings, false);
                 }, 300); // 短暫延遲讓用戶看到載入狀態
@@ -55,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('載入失敗:', error);
-            showNoResults(allCurrentBookings, '載入訂位資訊失敗，請重新整理頁面');
+            showNoResults(allCurrentBookings, `載入訂位資訊失敗：${error.message}<br><button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">重新載入</button>`);
         }
     }
 
@@ -152,7 +162,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                displayBookings(result.results, generalResults, true);
+                // 過濾掉已經在左邊顯示的同餐廳訂位
+                const currentStoreResults = result.results.filter(booking => 
+                    booking.storeSlug === storeSlug
+                );
+                
+                const otherStoreResults = result.results.filter(booking => 
+                    booking.storeSlug !== storeSlug
+                );
+                
+                // 檢查左邊是否有訂位顯示
+                const leftSideHasBookings = allCurrentBookings.querySelector('.booking-card') !== null;
+                
+                let filteredResults = result.results;
+                let filterMessage = '';
+                
+                if (leftSideHasBookings && currentStoreResults.length > 0) {
+                    // 如果左邊有顯示且搜尋到同餐廳的訂位，只顯示其他餐廳的訂位
+                    filteredResults = otherStoreResults;
+                    filterMessage = `已過濾 ${currentStoreResults.length} 筆本餐廳的訂位（左側已顯示）`;
+                }
+                
+                if (filteredResults.length === 0 && filterMessage) {
+                    showNoResults(generalResults, filterMessage + '<br>沒有其他餐廳的訂位');
+                } else {
+                    displayBookings(filteredResults, generalResults, true);
+                    if (filterMessage) {
+                        // 在結果上方顯示過濾信息
+                        const filterInfo = document.createElement('div');
+                        filterInfo.className = 'filter-info';
+                        filterInfo.innerHTML = `<small style="color: #666; margin-bottom: 1rem; display: block;">${filterMessage}</small>`;
+                        generalResults.insertBefore(filterInfo, generalResults.firstChild);
+                    }
+                }
             } else {
                 throw new Error(result.error || '搜尋失敗');
             }
@@ -200,11 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             card.addEventListener('click', () => {
                 const bookingId = card.dataset.bookingId;
                 const targetStoreSlug = card.dataset.storeSlug;
-                const booking = bookings.find(b => 
-                    (b.customBookingId === bookingId) || 
-                    (b.bookingId === bookingId) ||
-                    (b._id && b._id.toString() === bookingId)
-                );
+                const booking = bookings.find(b => b.customBookingId === bookingId);
                 if (booking) {
                     showCancelModal(booking, targetStoreSlug);
                 }
@@ -234,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 創建訂位卡片
     function createBookingCard(booking, showRestaurant) {
-        const bookingId = booking.customBookingId || booking.bookingId || 'N/A';
+        const bookingId = booking.customBookingId;
         const formattedDate = formatDate(booking.date);
         
         return `
@@ -245,18 +283,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="booking-info">
                     <div class="info-item">
+                        <div class="info-label">姓名</div>
+                        <div class="info-value">${booking.name}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">電話</div>
+                        <div class="info-value">${booking.phone}</div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">日期</div>
                         <div class="info-value">${formattedDate}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">時段</div>
-                        <div class="info-value">${booking.time || '未知時間'}</div>
+                        <div class="info-value">${booking.time}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">人數</div>
-                        <div class="info-value">${booking.adults || 0}大${booking.children || 0}小</div>
+                        <div class="info-value">${booking.guests}人</div>
                     </div>
                 </div>
+                <button class="cancel-btn" onclick="showCancelModal(${JSON.stringify(booking).replace(/"/g, '&quot;')}, '${booking.storeSlug || storeSlug}')">
+                    取消訂位
+                </button>
             </div>
         `;
     }

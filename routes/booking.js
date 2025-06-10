@@ -32,6 +32,8 @@ async function getClientInfo(storeSlug) {
     };
 }
 
+
+
 // ==================== 頁面路由 ====================
 
 // 訂位主頁重定向
@@ -335,7 +337,7 @@ router.post('/:storeSlug/api/booking/search', async (req, res) => {
             const Reservation = db.model('Reservation', reservationSchema);
             
             const reservation = await Reservation.findOne({ 
-                customBookingId: searchValue.trim().toUpperCase(),
+                customBookingId: searchValue.trim(),
                 status: { $ne: 'cancelled' },
                 date: { $gte: new Date().toISOString().split('T')[0] }
             }).lean();
@@ -372,11 +374,11 @@ router.post('/:storeSlug/api/booking/search', async (req, res) => {
                         phone: phone,
                         status: { $ne: 'cancelled' },
                         date: { $gte: new Date().toISOString().split('T')[0] }
-                    });
+                    }).lean();
                     
                     reservations.forEach(reservation => {
                         results.push({
-                            ...reservation.toObject(),
+                            ...reservation,
                             clientname: client.clientname,
                             storeSlug: client.slugname
                         });
@@ -423,7 +425,9 @@ router.get('/:storeSlug/api/booking/current', async (req, res) => {
             phone: phone.trim(),
             status: { $ne: 'cancelled' },
             date: { $gte: new Date().toISOString().split('T')[0] }
-        }).sort({ date: 1, time: 1 });
+        }).sort({ date: 1, time: 1 }).lean();
+        
+        console.log(`用戶 ${name}/${phone} 的訂位記錄:`, reservations.length, '筆');
         
         res.json({ success: true, results: reservations });
     } catch (error) {
@@ -466,8 +470,11 @@ router.get('/:storeSlug/api/booking/all-current', async (req, res) => {
         })
         .select('customBookingId name phone date time adults children guests status createdAt') // 只選擇需要的欄位
         .sort({ date: 1, time: 1 })
-        .limit(50)
+        .limit(100)
         .lean(); // 使用lean()提高性能
+        
+        console.log(`找到 ${reservations.length} 筆有效訂位記錄 (${storeSlug})`);
+        console.log('訂位記錄樣本:', reservations.slice(0, 2));
         
         res.json({ success: true, results: reservations });
     } catch (error) {
@@ -499,8 +506,8 @@ router.post('/:storeSlug/api/booking/cancel-by-id', async (req, res) => {
         // 找到並更新訂位狀態
         const reservation = await Reservation.findOneAndUpdate(
             { 
-                customBookingId: bookingId.trim().toUpperCase(),
-                status: { $ne: 'cancelled' } // 確保不重複取消
+                customBookingId: bookingId.trim(),
+                status: { $ne: 'cancelled' }
             },
             { 
                 status: 'cancelled',
