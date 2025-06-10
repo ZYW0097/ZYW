@@ -1,0 +1,449 @@
+/* 取消訂位頁面專用樣式 */
+
+/* 頁面標題 */
+.page-container h1 {
+    color: #dc3545;
+}
+
+/* 容器標題 */
+.booking-form-container h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.section-subtitle {
+    color: #666;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* 搜尋表單區塊 */
+.search-form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.search-form-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* 搜尋類型切換標籤 */
+.search-type-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: #f8f9fa;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #e9ecef;
+}
+
+/* 表單樣式 */
+.search-form {
+    display: none;
+}
+
+.search-form.active {
+    display: block;
+}
+
+.current-booking-form {
+    display: block;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #000;
+    font-size: 1rem;
+}
+
+.form-group input {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.form-group input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-group small {
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* 搜尋按鈕 */
+.search-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.search-btn:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.search-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 搜尋結果區域 */
+.booking-results {
+    margin-top: 2rem;
+}
+
+.no-results {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px dashed #dee2e6;
+}
+
+/* 訂位卡片 */
+.booking-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.booking-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.booking-card.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.booking-id {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #007bff;
+    font-size: 1.1rem;
+}
+
+.restaurant-name {
+    color: #666;
+    font-weight: 600;
+    background: #f8f9fa;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+.booking-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.info-item {
+    text-align: center;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.3rem;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #000;
+    font-size: 0.95rem;
+}
+
+/* 展開/收合功能 */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.results-count {
+    font-weight: 600;
+    color: #000;
+}
+
+.toggle-btn {
+    background: none;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.results-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.results-list.collapsed {
+    max-height: 120px;
+}
+
+/* 確認取消彈窗 */
+.cancel-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-modal.show {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    z-index: 2;
+    position: relative;
+    text-align: center;
+}
+
+.modal-content h3 {
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.modal-content .booking-details {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.warning-text {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-buttons .cancel-btn,
+.modal-buttons .keep-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.modal-buttons .cancel-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.modal-buttons .cancel-btn:hover {
+    background: #c82333;
+}
+
+.modal-buttons .keep-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.modal-buttons .keep-btn:hover {
+    background: #5a6268;
+}
+
+/* 載入狀態 */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .booking-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .search-form-section {
+        padding: 1.5rem;
+    }
+    
+    .booking-info {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .booking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .results-list {
+        max-height: 300px;
+    }
+    
+    .results-list.collapsed {
+        max-height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-container {
+        padding: 1rem;
+    }
+    
+    .search-form-section {
+        padding: 1rem;
+    }
+    
+    .booking-card {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .search-type-tabs {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        padding: 0.8rem;
+    }
+} 

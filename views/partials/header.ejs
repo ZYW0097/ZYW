@@ -5,7 +5,16 @@
             <div class="nav-links">
                 <a class="nav-link" href="/">餐廳首頁</a>
                 <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡&nbsp;</a>
-                <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+                <!-- 訂位下拉選單 -->
+                <div class="nav-dropdown">
+                    <a class="nav-link dropdown-trigger" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">
+                        訂位 <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+                        <a class="dropdown-item" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking/cancel">取消訂位</a>
+                    </div>
+                </div>
             </div>
             <% if (user) { %>
                 <a class="nav-user" href="/account/profile">
@@ -44,7 +53,16 @@
         <% } %>
         <a class="mobile-link" href="/">餐廳首頁</a>
         <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/card">集點卡</a>
-        <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">訂位</a>
+        <!-- 行動版訂位下拉 -->
+        <div class="mobile-dropdown">
+            <a class="mobile-link dropdown-trigger-mobile" href="javascript:void(0)">
+                訂位 <span class="mobile-dropdown-arrow">▼</span>
+            </a>
+            <div class="mobile-dropdown-menu">
+                <a class="mobile-dropdown-item" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking">　訂位</a>
+                <a class="mobile-dropdown-item" href="/<%= typeof storeSlug !== 'undefined' ? storeSlug : '' %>/booking/cancel">　取消訂位</a>
+            </div>
+        </div>
         <% if (user) { %>
             <a class="mobile-link" href="/auth/logout" style="color: #f44336; margin-top: 20px;">登出</a>
         <% } %>

@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
 const mongoose = require('mongoose');
-const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
-const { sendBookingConfirmation, sendBookingCancellation } = require('../services/emailService');
 const fs = require('fs');
 const path = require('path');
 
 const pointsRoutes = require('./points');
+const bookingRoutes = require('./booking');
 
 // 主頁路由
 router.get('/', (req, res) => {
@@ -39,66 +38,7 @@ router.get('/loading', (req, res) => {
     res.render('loading', { slugname: req.query.slugname });
 });
 
-// 訂位系統第一階段
 
-router.get('/:storeSlug/booking', (req, res) => {
-    res.redirect(`/${req.params.storeSlug}/booking/step1`);
-});
-
-router.get('/:storeSlug/booking/step1', async (req, res) => {
-    const { storeSlug } = req.params;
-    const client = await Client.findOne({ slugname: storeSlug });
-    res.render('booking/step1', {
-        storeSlug,
-        clientname: client ? client.clientname : '餐廳名稱',
-        bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
-    });
-});
-
-router.get('/:storeSlug/booking/step2', async (req, res) => {
-    const { storeSlug } = req.params;
-    const client = await Client.findOne({ slugname: storeSlug });
-    res.render('booking/step2', {
-        storeSlug,
-        clientname: client ? client.clientname : '餐廳名稱',
-        bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
-    });
-});
-
-router.get('/:storeSlug/booking/success', async (req, res) => {
-    const { bookingId } = req.query;
-    const { storeSlug } = req.params;
-    
-    // 檢查是否有 session 中的訂位資訊（防止直接訪問）
-    if (!req.session.lastBooking || 
-        req.session.lastBooking.bookingId !== bookingId ||
-        req.session.lastBooking.storeSlug !== storeSlug ||
-        Date.now() - req.session.lastBooking.timestamp > 60000) { // 1分鐘過期
-        // 重定向到訂位頁面
-        return res.redirect(`/${storeSlug}/booking/step1`);
-    }
-    
-    try {
-        // 獲取訂位資訊
-        const bookingInfo = req.session.lastBooking;
-        
-        // 獲取客戶資訊
-        const client = await Client.findOne({ slugname: storeSlug });
-        const clientname = client ? client.clientname : '餐廳名稱';
-        
-        // 渲染成功頁面
-        res.render('booking/success', { 
-            bookingId,
-            storeSlug,
-            clientname,
-            bookingInfo,
-            timestamp: bookingInfo.timestamp
-        });
-    } catch (error) {
-        console.error('Error in success page:', error);
-        res.redirect(`/${storeSlug}/booking/step1`);
-    }
-});
 
 // API路由 - 創建客戶
 router.post('/api/setup', async (req, res) => {
@@ -176,131 +116,10 @@ router.get('/:storeSlug/:page', async (req, res) => {
     }
 });
 
-// API路由 - 處理訂位
-router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
-    try {
-        // 優先用 session
-        let storeSlug = req.session && req.session.storeSlug;
-        // 其次用 params/body/query
-        if (!storeSlug) storeSlug = req.params.storeSlug || req.body.storeSlug || req.query.storeSlug;
-        if (!storeSlug) return res.status(400).json({ error: 'storeSlug required' });
 
-        // 生成新的訂位編號格式：[clientslug-六位數隨機大寫英文加數字]
-        function generateBookingId(storeSlug) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let randomPart = '';
-            for (let i = 0; i < 6; i++) {
-                randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return `${storeSlug.toUpperCase()}-${randomPart}`;
-        }
 
-        // 使用客戶特定的訂位資料庫
-        const db = getClientDb(storeSlug, 'BDB');
-        const Reservation = db.model('Reservation', reservationSchema);
-
-        // 生成自訂訂位編號
-        const customBookingId = generateBookingId(storeSlug);
-
-        // 創建訂位記錄，包含自訂編號
-        const reservationData = {
-            ...req.body,
-            customBookingId,
-            createdAt: new Date(),
-            status: 'confirmed' // 預設狀態為確認
-        };
-        
-        const reservation = await Reservation.create(reservationData);
-
-        // 查詢 clientname
-        const client = await Client.findOne({ slugname: storeSlug });
-        const clientname = client ? client.clientname : '';
-
-        // 保存訂位資訊到 session（用於 success 頁面驗證）
-        req.session.lastBooking = {
-            bookingId: customBookingId,
-            storeSlug,
-            timestamp: Date.now(),
-            ...req.body
-        };
-
-        // 發送確認郵件
-        if (req.body.email) {
-            // 構建完整的logo URL
-            const protocol = req.protocol;
-            const host = req.get('host');
-            const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-            
-            await sendBookingConfirmation(req.body.email, {
-                ...req.body,
-                bookingId: customBookingId,
-                clientname,
-                logoUrl // 使用完整的URL
-            });
-        }
-
-        res.json({ success: true, reservation, bookingId: customBookingId });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// API路由 - 取消訂位
-router.post('/:storeSlug/api/booking/cancel', async (req, res) => {
-    try {
-        const { storeSlug } = req.params;
-        const { bookingId } = req.body;
-        
-        // 驗證 session
-        if (!req.session.lastBooking || 
-            req.session.lastBooking.bookingId !== bookingId ||
-            req.session.lastBooking.storeSlug !== storeSlug) {
-            return res.status(400).json({ error: '無效的訂位資訊' });
-        }
-        
-        // 使用客戶特定的訂位資料庫
-        const db = getClientDb(storeSlug, 'BDB');
-        const Reservation = db.model('Reservation', reservationSchema);
-        
-        // 更新訂位狀態為已取消
-        await Reservation.findOneAndUpdate(
-            { customBookingId: bookingId },
-            { 
-                status: 'cancelled',
-                cancelledAt: new Date()
-            }
-        );
-        
-        // 獲取客戶資訊
-        const client = await Client.findOne({ slugname: storeSlug });
-        const clientname = client ? client.clientname : '';
-        
-        // 發送取消確認郵件
-        const bookingInfo = req.session.lastBooking;
-        if (bookingInfo.email) {
-            const protocol = req.protocol;
-            const host = req.get('host');
-            const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-            
-            await sendBookingCancellation(bookingInfo.email, {
-                ...bookingInfo,
-                bookingId,
-                clientname,
-                logoUrl,
-                cancelTime: new Date().toLocaleString('zh-TW')
-            });
-        }
-        
-        // 清除 session 中的訂位資訊
-        delete req.session.lastBooking;
-        
-        res.json({ success: true, message: '訂位已成功取消' });
-    } catch (error) {
-        console.error('Error cancelling booking:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+// 訂位系統路由
+router.use('/', bookingRoutes);
 
 // 點數系統路由
 router.use('/', pointsRoutes);
@@ -311,5 +130,7 @@ router.use((req, res) => {
         message: '找不到該頁面'
     });
 });
+
+
 
 module.exports = router; 

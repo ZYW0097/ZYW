@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>取消訂位</title>
+    <link rel="stylesheet" href="/css/booking-step2.css">
+    <link rel="stylesheet" href="/css/booking-cancel.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <div class="page-container">
+        <h1>取消訂位</h1>
+        <p class="custom-text"><%= bookingpagetext %></p>
+        
+        <div class="booking-layout">
+            <!-- 左側：當前餐廳訂位 -->
+            <div class="booking-form-container">
+                <h2>您想要取消<%= clientname %>的訂位嗎？</h2>
+                <p class="section-subtitle">以下是您的所有訂位</p>
+                
+                <!-- 搜尋表單 -->
+                <div class="search-form-section">
+                    <h3>輸入您的資訊</h3>
+                    <form id="currentBookingForm" class="current-booking-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerName">姓名</label>
+                                <input type="text" id="customerName" name="name" placeholder="請輸入姓名" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerPhone">電話</label>
+                                <input type="tel" id="customerPhone" name="phone" placeholder="請輸入電話號碼" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="search-btn">搜尋我的訂位</button>
+                    </form>
+                </div>
+                
+                <!-- 搜尋結果 -->
+                <div class="booking-results" id="currentBookingResults">
+                    <div class="no-results">請輸入您的資訊來查看訂位</div>
+                </div>
+            </div>
+
+            <!-- 右側：通用搜尋 -->
+            <div class="booking-form-container">
+                <h2>沒有找到您想取消的訂位嗎？</h2>
+                <p class="section-subtitle">您可以在這裡查找不分餐廳！只需要輸入訂位編號或是訂位資訊</p>
+                
+                <!-- 搜尋類型選擇 -->
+                <div class="search-type-tabs">
+                    <button class="tab-btn active" data-type="bookingId">訂位編號</button>
+                    <button class="tab-btn" data-type="customerInfo">訂位資訊</button>
+                </div>
+                
+                <!-- 訂位編號搜尋 -->
+                <form id="bookingIdForm" class="search-form active">
+                    <div class="form-group">
+                        <label for="bookingIdInput">訂位編號</label>
+                        <input type="text" id="bookingIdInput" name="bookingId" placeholder="例如：DINEPLUS-A5B3K9" required>
+                        <small>訂位編號只會找到對應的編號訂位資訊</small>
+                    </div>
+                    <button type="submit" class="search-btn">搜尋訂位</button>
+                </form>
+                
+                <!-- 訂位資訊搜尋 -->
+                <form id="customerInfoForm" class="search-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="searchName">姓名</label>
+                            <input type="text" id="searchName" name="name" placeholder="請輸入姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchPhone">電話</label>
+                            <input type="tel" id="searchPhone" name="phone" placeholder="請輸入電話號碼" required>
+                        </div>
+                    </div>
+                    <small>訂位資訊（姓名跟電話）會顯示所有餐廳的訂位資訊</small>
+                    <button type="submit" class="search-btn">搜尋訂位</button>
+                </form>
+                
+                <!-- 通用搜尋結果 -->
+                <div class="booking-results" id="generalBookingResults">
+                    <div class="no-results">請選擇搜尋方式並輸入相關資訊</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 確認取消彈窗 -->
+    <div class="cancel-modal" id="cancelModal">
+        <div class="modal-content">
+            <h3>確認取消訂位</h3>
+            <div class="booking-details" id="modalBookingDetails"></div>
+            <p class="warning-text">此操作無法恢復，確定要取消此訂位嗎？</p>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="confirmCancelBtn">確認取消</button>
+                <button class="keep-btn" id="modalCloseBtn">保留訂位</button>
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+
+    <script>
+        const storeSlug = '<%= storeSlug %>';
+        const clientname = '<%= clientname %>';
+    </script>
+    <script src="/js/booking-cancel.js"></script>
+</body>
+</html> 
