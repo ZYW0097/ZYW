@@ -179,16 +179,21 @@ router.get('/profile', requireLogin, async (req, res) => {
     const adb = getClientDb('main', 'ADB');
     const User = adb.model('User', userSchema);
     const user = await User.findById(req.session.userId);
-    renderWithSidebar(res, 'account_profile', { 
-        user,
-        error: req.session.profileError,
-        success: req.session.profileSuccess,
-        customJs: '/js/account_profile.js'
-    });
+    
+    // 先保存訊息
+    const error = req.session.profileError;
+    const success = req.session.profileSuccess;
     
     // 清除一次性訊息
     delete req.session.profileError;
     delete req.session.profileSuccess;
+    
+    renderWithSidebar(res, 'account_profile', { 
+        user,
+        error,
+        success,
+        customJs: '/js/account_profile.js'
+    });
 });
 
 // 集點卡頁

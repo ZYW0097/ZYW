@@ -213,7 +213,6 @@
     background: #fff;
     box-shadow: none;
     border: none;
-    border-radius: 0;
     margin: 0;
     padding: 2rem 1.5rem;
     border-right: 1px solid #e2e8f0;
@@ -239,7 +238,6 @@
     width: 100%;
     border-right: none;
     border-bottom: none;
-    border-radius: 0;
     background: #fff8f8;
     border-top: 1px solid #e0e0e0;
 }
