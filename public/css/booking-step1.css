@@ -311,6 +311,7 @@
         margin: 0;
         padding: 1rem;
         padding-top: 80px;
+        box-sizing: border-box;
     }
     
     .page-container h1 {
@@ -335,6 +336,10 @@
         padding: 1.5rem;
         height: auto; /* 768px以下使用自動高度 */
         min-height: 500px; /* 設定最小高度 */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden; /* 防止水平滾動 */
     }
     
     .calendar-header {
@@ -348,6 +353,10 @@
     .calendar-nav-btn {
         padding: 0.6rem 0.8rem;
         font-size: 1rem;
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
     
     .days-container {
@@ -357,21 +366,41 @@
     .day {
         min-height: 45px; /* 調整移動端按鈕大小 */
         font-size: 1rem;
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
     
     .time-buttons {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 0.8rem;
     }
     
     .time-button {
-        padding: 1rem;
-        font-size: 0.9rem;
+        padding: 0.8rem 0.5rem;
+        font-size: 0.85rem;
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
     
     .people-inputs {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+    }
+    
+    .form-group select {
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+        padding-right: 3rem;
     }
 }
 
@@ -379,6 +408,7 @@
     .page-container {
         padding: 0.5rem;
         padding-top: 70px;
+        box-sizing: border-box;
     }
     
     .page-container h1 {
@@ -403,6 +433,10 @@
     
     .booking-form-container {
         padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden; /* 防止水平滾動 */
     }
     
     .booking-form-container h3 {
@@ -417,16 +451,38 @@
     }
     
     .time-buttons {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.6rem;
+    }
+    
+    .time-button {
+        padding: 0.7rem 0.3rem;
+        font-size: 0.8rem;
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
     
     .form-group select {
         padding: 0.8rem;
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+        padding-right: 3rem;
     }
     
     .next-button {
         padding: 1rem;
         font-size: 1rem;
+        background: #333;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
 } 
