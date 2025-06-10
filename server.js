@@ -54,7 +54,17 @@ app.use(loadUser);
 
 // 設置全局變數
 app.use((req, res, next) => {
-    res.locals.storeSlug = req.params.storeSlug || '';
+    // 從URL路徑中提取storeSlug
+    const pathParts = req.path.split('/');
+    let storeSlug = '';
+    
+    // 如果路徑符合 /:storeSlug/... 格式，提取storeSlug
+    if (pathParts.length > 1 && pathParts[1] && 
+        !['auth', 'account', 'api', 'setup', 'loading'].includes(pathParts[1])) {
+        storeSlug = pathParts[1];
+    }
+    
+    res.locals.storeSlug = storeSlug;
     next();
 });
 

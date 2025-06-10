@@ -79,6 +79,28 @@ router.post('/api/setup', async (req, res) => {
     }
 });
 
+// 訂位系統路由 (必須在客戶特定路由之前)
+router.use('/', bookingRoutes);
+
+// 客戶主頁路由 - 重定向到card頁面
+router.get('/:storeSlug', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 查找客戶是否存在
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client) {
+            return res.status(404).render('error', { message: '客戶不存在' });
+        }
+
+        // 重定向到集點卡頁面
+        res.redirect(`/${storeSlug}/card`);
+    } catch (error) {
+        console.error('Error in restaurant home:', error);
+        res.status(500).render('error', { message: '系統錯誤' });
+    }
+});
+
 // 客戶特定路由
 router.get('/:storeSlug/:page', async (req, res) => {
     try {
@@ -115,11 +137,6 @@ router.get('/:storeSlug/:page', async (req, res) => {
         res.status(500).render('error', { message: '系統錯誤' });
     }
 });
-
-
-
-// 訂位系統路由
-router.use('/', bookingRoutes);
 
 // 點數系統路由
 router.use('/', pointsRoutes);
