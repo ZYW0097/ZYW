@@ -271,6 +271,16 @@ body {
   .mobile-only {
     display: block !important;
   }
+  .nav-dropdown {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .nav-dropdown {
+    display: inline-block !important;
+    visibility: visible !important;
+  }
   .nav-container {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -316,6 +326,13 @@ body {
 .dropdown-trigger {
     position: relative;
     cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.dropdown-trigger:hover {
+    color: var(--primary-color);
 }
 
 .dropdown-arrow {
@@ -338,6 +355,14 @@ body {
     transition: all 0.3s ease;
     z-index: 1000;
     margin-top: 0.5rem;
+    pointer-events: none;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
 }
 
 .dropdown-item {

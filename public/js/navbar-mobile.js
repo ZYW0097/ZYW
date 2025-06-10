@@ -4,17 +4,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('mobile-menu-overlay');
     
     // Desktop版下拉選單功能
-    const desktopDropdown = document.getElementById('desktop-booking-dropdown');
-    const bookingTrigger = document.getElementById('booking-trigger');
-    const dropdownMenu = document.getElementById('booking-dropdown-menu');
+    const desktopDropdown = document.querySelector('.nav-dropdown');
+    const bookingTrigger = document.querySelector('#booking-trigger');
+    const dropdownMenu = document.querySelector('#booking-dropdown-menu');
     
     if (desktopDropdown && bookingTrigger && dropdownMenu) {
         let isDropdownOpen = false;
         let hoverTimeout;
         
+        function openDropdown() {
+            isDropdownOpen = true;
+            dropdownMenu.classList.add('show');
+        }
+        
+        function closeDropdown() {
+            isDropdownOpen = false;
+            dropdownMenu.classList.remove('show');
+        }
+        
         // 點擊觸發器展開/關閉
         bookingTrigger.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             if (isDropdownOpen) {
                 closeDropdown();
             } else {
@@ -25,42 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // 鼠標懸停自動展開
         desktopDropdown.addEventListener('mouseenter', function() {
             clearTimeout(hoverTimeout);
-            if (!isDropdownOpen) {
-                openDropdown();
-            }
+            openDropdown();
         });
         
         // 鼠標離開自動關閉（有延遲）
         desktopDropdown.addEventListener('mouseleave', function() {
             hoverTimeout = setTimeout(() => {
                 closeDropdown();
-            }, 300); // 300ms延遲，避免意外關閉
+            }, 300);
         });
-        
-        // 點擊下拉選項後關閉
-        dropdownMenu.addEventListener('click', function() {
-            closeDropdown();
-        });
-        
-        function openDropdown() {
-            isDropdownOpen = true;
-            dropdownMenu.style.opacity = '1';
-            dropdownMenu.style.visibility = 'visible';
-            dropdownMenu.style.transform = 'translateX(-50%) translateY(0)';
-        }
-        
-        function closeDropdown() {
-            isDropdownOpen = false;
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.visibility = 'hidden';
-            dropdownMenu.style.transform = 'translateX(-50%) translateY(-10px)';
-        }
         
         // 點擊其他地方關閉下拉選單
         document.addEventListener('click', function(e) {
             if (!desktopDropdown.contains(e.target)) {
                 closeDropdown();
             }
+        });
+        
+        // 防止下拉選單內的點擊關閉選單
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     }
   
