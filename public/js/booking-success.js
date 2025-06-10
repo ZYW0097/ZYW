@@ -36,6 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
         isActionTaken = true;
         clearInterval(countdownTimer);
         
+        // 立即更改標題和圖標為取消狀態
+        const successTitle = document.getElementById('successTitle');
+        const successIcon = document.querySelector('.success-icon');
+        successTitle.textContent = '訂位已取消';
+        successTitle.classList.add('cancelled');
+        successIcon.textContent = '✗';
+        successIcon.classList.add('cancelled');
+        
         cancelBtn.disabled = true;
         cancelBtn.textContent = '處理中...';
         
@@ -58,6 +66,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('取消訂位失敗:', error);
             alert('取消訂位失敗，請稍後再試');
+            
+            // 如果取消失敗，恢復原狀態
+            successTitle.textContent = '訂位成功';
+            successTitle.classList.remove('cancelled');
+            successIcon.textContent = '✓';
+            successIcon.classList.remove('cancelled');
+            
             isActionTaken = false;
             cancelBtn.disabled = false;
             cancelBtn.textContent = '取消訂位';

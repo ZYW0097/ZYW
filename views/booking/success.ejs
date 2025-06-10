@@ -18,7 +18,11 @@
 
             <div class="success-container">
                 <div class="success-icon">✓</div>
-                <h1 class="success-title">訂位成功</h1>
+                <h1 class="success-title" id="successTitle">訂位成功</h1>
+                
+                <!-- 餐廳名稱 -->
+                <div class="restaurant-name-display"><%= clientname %></div>
+                
                 <p class="success-message">感謝您的訂位，我們已收到您的訂位請求。</p>
                 
                 <!-- 訂位編號 -->
@@ -31,24 +35,20 @@
                 <div class="booking-info-details">
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">餐廳名稱</div>
-                            <div class="info-value"><%= clientname %></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">用餐日期</div>
-                            <div class="info-value"><%= bookingInfo.date %></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">用餐時間</div>
-                            <div class="info-value"><%= bookingInfo.time %></div>
+                            <div class="info-label">聯絡人</div>
+                            <div class="info-value"><%= bookingInfo.name %> <%= bookingInfo.gender %></div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">用餐人數</div>
                             <div class="info-value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">聯絡人</div>
-                            <div class="info-value"><%= bookingInfo.name %> <%= bookingInfo.gender %></div>
+                            <div class="info-label">用餐日期</div>
+                            <div class="info-value"><%= bookingInfo.date %></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">用餐時段</div>
+                            <div class="info-value"><%= bookingInfo.time %></div>
                         </div>
                     </div>
                 </div>

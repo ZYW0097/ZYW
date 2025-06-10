@@ -1,3 +1,15 @@
+/* 餐廳名稱顯示 */
+.restaurant-name-display {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
 /* Success 頁面專用樣式 */
 .success-page.booking-form-container {
     max-width: 800px;
@@ -39,6 +51,12 @@
     font-size: 4rem;
     color: #28a745;
     margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+/* 取消狀態的圖標 */
+.success-icon.cancelled {
+    color: #dc3545;
 }
 
 .success-title {
@@ -46,6 +64,12 @@
     font-weight: 700;
     color: #000;
     margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+/* 取消狀態的標題 */
+.success-title.cancelled {
+    color: #dc3545;
 }
 
 .success-message {
@@ -212,6 +236,12 @@
         box-sizing: border-box;
     }
     
+    .restaurant-name-display {
+        font-size: 1.5rem;
+        padding: 0.8rem 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    
     .success-title {
         font-size: 2rem;
     }
@@ -240,6 +270,12 @@
 @media (max-width: 480px) {
     .success-page.booking-form-container {
         padding: 1rem;
+    }
+    
+    .restaurant-name-display {
+        font-size: 1.3rem;
+        padding: 0.6rem 1rem;
+        margin-bottom: 1rem;
     }
     
     .success-title {
