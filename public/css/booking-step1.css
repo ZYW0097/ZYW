@@ -385,6 +385,7 @@
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+        color: #333;
     }
     
     .people-inputs {
@@ -479,6 +480,7 @@
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+        color: #333;
     }
     
     .form-group select {
