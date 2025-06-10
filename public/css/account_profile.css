@@ -369,8 +369,8 @@
 .profile-name {
     font-size: 1.5rem;
     font-weight: bold;
-    color: black;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.5);
     margin-bottom: 0.5rem;
     text-align: center;
 }
@@ -582,6 +582,8 @@
     
     .profile-name {
         font-size: 1.3rem;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.5);
     }
     
     .profile-form {
@@ -625,6 +627,8 @@
     
     .profile-name {
         font-size: 1.2rem;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.5);
     }
     
     .profile-form {

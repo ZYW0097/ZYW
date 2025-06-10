@@ -1,11 +1,6 @@
 <% var customCss = '/css/account_points.css'; %>
 <div class="points-container">
     <% if (userCards && userCards.length > 0) { %>
-        <div class="points-header">
-            <h2>我的集點卡</h2>
-            <p class="points-subtitle">查看您在各餐廳的點數與優惠券</p>
-        </div>
-        
         <div class="cards-grid">
             <% userCards.forEach(card => { %>
                 <div class="loyalty-card" onclick="window.location.href='/<%= card.storeSlug %>/card'">

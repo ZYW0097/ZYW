@@ -87,10 +87,6 @@
         min-height: calc(100vh - 80px); /* 減去手機版sidebar的高度 */
     }
     
-    .account-content {
-        padding: 1rem;
-    }
-    
     /* 手機版 footer 調整 */
     .account-main .footer {
         margin-top: 1rem;
