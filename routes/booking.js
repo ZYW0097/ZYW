@@ -45,6 +45,9 @@ router.get('/:storeSlug/booking/step1', async (req, res) => {
         const { storeSlug } = req.params;
         const clientInfo = await getClientInfo(storeSlug);
         
+        // 設置session中的storeSlug
+        req.session.storeSlug = storeSlug;
+        
         res.render('booking/step1', {
             storeSlug,
             ...clientInfo
@@ -60,6 +63,9 @@ router.get('/:storeSlug/booking/step2', async (req, res) => {
     try {
         const { storeSlug } = req.params;
         const clientInfo = await getClientInfo(storeSlug);
+        
+        // 設置session中的storeSlug
+        req.session.storeSlug = storeSlug;
         
         res.render('booking/step2', {
             storeSlug,
@@ -105,6 +111,9 @@ router.get('/:storeSlug/booking/cancel', async (req, res) => {
     try {
         const { storeSlug } = req.params;
         const clientInfo = await getClientInfo(storeSlug);
+        
+        // 設置session中的storeSlug
+        req.session.storeSlug = storeSlug;
         
         res.render('booking/cancel', {
             storeSlug,

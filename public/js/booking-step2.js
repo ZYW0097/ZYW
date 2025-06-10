@@ -34,15 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true;
 
         const formData = new FormData(form);
-        // 合併第一步 bookingData
+        // 合併第一步 bookingData 並計算總人數
         const data = {
             ...bookingData,
             ...Object.fromEntries(formData.entries()),
+            guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數
             storeSlug
         };
 
         try {
-            const response = await fetch('/api/booking', {
+            const response = await fetch(`/${storeSlug}/api/booking`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
