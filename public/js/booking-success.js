@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         isActionTaken = true;
         clearInterval(countdownTimer);
         
-        const message = isAuto ? '時間已到，已為您保留訂位' : '已為您保留訂位';
+        const message = isAuto ? '時間已到，已自動為您保留訂位' : '已為您保留訂位';
         showResult('✓', message, '#28a745');
     }
     

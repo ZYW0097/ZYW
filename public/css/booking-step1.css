@@ -168,6 +168,7 @@
     color: #999;
     cursor: not-allowed;
     border-color: #eee;
+    pointer-events: none; /* 保持不能點擊但不顯示禁止圖標 */
 }
 
 /* 時段選擇樣式 - 4個一排 */
