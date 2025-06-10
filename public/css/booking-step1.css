@@ -360,16 +360,17 @@
     }
     
     .days-container {
-        gap: 0.6rem; /* 調整移動端間距 */
+        gap: 0.4rem; /* 減少間距 */
     }
     
     .day {
-        min-height: 45px; /* 調整移動端按鈕大小 */
-        font-size: 1rem;
+        min-height: 40px; /* 減少按鈕高度 */
+        font-size: 0.9rem; /* 減少字體大小 */
         background: white;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+        padding: 0.2rem; /* 增加內邊距控制 */
     }
     
     .time-buttons {
@@ -396,11 +397,12 @@
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 1em;
         padding-right: 3rem;
+        color: #333;
     }
 }
 
@@ -450,6 +452,21 @@
         margin-bottom: 2rem;
     }
     
+    .days-container {
+        gap: 0.2rem; /* 進一步減少間距 */
+    }
+    
+    .day {
+        min-height: 35px; /* 進一步減少按鈕高度 */
+        font-size: 0.8rem; /* 進一步減少字體大小 */
+        background: white;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 0.1rem; /* 減少內邊距 */
+        border-radius: 8px; /* 減少圓角 */
+    }
+    
     .time-buttons {
         grid-template-columns: repeat(4, 1fr);
         gap: 0.6rem;
@@ -470,11 +487,12 @@
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 1em;
         padding-right: 3rem;
+        color: #333;
     }
     
     .next-button {

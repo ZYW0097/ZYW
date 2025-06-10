@@ -110,6 +110,14 @@
     grid-column: 1 / -1;
 }
 
+/* 確保電話和電子郵件在同一排 */
+.contact-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
 /* 表單群組樣式 */
 .form-group {
     display: flex;
@@ -342,7 +350,8 @@ textarea {
         font-size: 2rem;
     }
     
-    .form-row {
+    .form-row,
+    .contact-row {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
@@ -382,16 +391,29 @@ textarea {
         background: white;
     }
     
+    .gender-options label {
+        color: #333;
+        font-weight: 500;
+    }
+    
     .form-group select {
         background: white;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 1em;
         padding-right: 3rem;
+        color: #333;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="tel"],
+    .form-group input[type="email"],
+    .form-group textarea {
+        color: #333;
     }
     
     .agreement-box input[type="checkbox"] {
@@ -420,6 +442,11 @@ textarea {
         color: white;
         font-size: 0.8rem;
         font-weight: bold;
+    }
+    
+    .agreement-box label {
+        color: #333;
+        font-weight: 500;
     }
     
     .form-buttons {
@@ -478,7 +505,8 @@ textarea {
         margin-bottom: 1.5rem;
     }
     
-    .form-row {
+    .form-row,
+    .contact-row {
         margin-bottom: 1.5rem;
     }
     
@@ -487,11 +515,19 @@ textarea {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 1em;
         padding-right: 3rem;
+        color: #333;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="tel"],
+    .form-group input[type="email"],
+    .form-group textarea {
+        color: #333;
     }
     
     .gender-options input[type="radio"] {
@@ -523,6 +559,11 @@ textarea {
         background: white;
     }
     
+    .gender-options label {
+        color: #333;
+        font-weight: 500;
+    }
+    
     .agreement-box input[type="checkbox"] {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -549,6 +590,11 @@ textarea {
         color: white;
         font-size: 0.8rem;
         font-weight: bold;
+    }
+    
+    .agreement-box label {
+        color: #333;
+        font-weight: 500;
     }
     
     .dining-rules {
