@@ -11,6 +11,7 @@ const authRouter = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
 const pointsRoutes = require('./routes/points/index');
 const bookingReminderRouter = require('./routes/booking-reminder');
+const bookingRouter = require('./routes/booking');
 const adminRouter = require('./routes/admin');
 const webhookRouter = require('./routes/webhook');
 const reminderService = require('./services/reminderService');
@@ -76,6 +77,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/account', accountRouter);
 app.use('/booking-reminder', bookingReminderRouter);
+app.use('/', bookingRouter);
 app.use('/webhook', webhookRouter);
 app.use('/admin', adminRouter);
 app.use('/', pointsRoutes); 
