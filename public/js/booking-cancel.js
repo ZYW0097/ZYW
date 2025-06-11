@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 載入所有當前餐廳訂位
     async function loadAllCurrentBookings() {
-        console.log('開始載入餐廳訂位:', storeSlug);
         
         // 顯示載入狀態
         allCurrentBookings.innerHTML = `
@@ -46,17 +45,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/all-current`);
-            console.log('API回應狀態:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
             const result = await response.json();
-            console.log('API回應內容:', result);
 
             if (result.success) {
-                console.log('找到訂位記錄:', result.results?.length || 0, '筆');
                 setTimeout(() => {
                     displayBookings(result.results, allCurrentBookings, false);
                     // 如果有結果，為左側容器添加has-results class
@@ -454,7 +450,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.search-btn').forEach(btn => {
         btn.dataset.originalText = btn.textContent;
     });
-    
-    // 確保漢堡選單正常工作 - 移除重複初始化，讓navbar-mobile.js處理
-    // navbar-mobile.js會自動處理漢堡選單，這裡不需要重複綁定
+
 }); 

@@ -1,84 +1,74 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>訂位成功</title>
-    <link rel="stylesheet" href="/css/booking-step2.css">
-    <link rel="stylesheet" href="/css/booking-success.css">
-</head>
-<body>
-    <div class="page-container">
-        <!-- 只保留右側成功信息容器 -->
-        <div class="booking-form-container success-page">
-            <!-- 倒數時間 -->
-            <div class="countdown-container">
-                <div class="countdown-text">請在 <span id="countdown">60</span> 秒內選擇</div>
+<div class="page-container">
+    <!-- 只保留右側成功信息容器 -->
+    <div class="booking-form-container success-page">
+        <!-- 倒數時間 -->
+        <div class="countdown-container">
+            <div class="countdown-text">請在 <span id="countdown">60</span> 秒內選擇</div>
+        </div>
+
+        <div class="success-container">
+            <div class="success-icon">✓</div>
+            <h1 class="success-title" id="successTitle">訂位成功</h1>
+            
+            <!-- 餐廳名稱 -->
+            <div class="restaurant-name-display"><%= clientname %></div>
+            
+            <p class="success-message">感謝您的訂位，我們已收到您的訂位請求。</p>
+            
+            <!-- 訂位編號 -->
+            <div class="booking-id-section">
+                <div class="booking-id-label">訂位編號</div>
+                <div class="booking-id"><%= bookingId %></div>
             </div>
 
-            <div class="success-container">
-                <div class="success-icon">✓</div>
-                <h1 class="success-title" id="successTitle">訂位成功</h1>
-                
-                <!-- 餐廳名稱 -->
-                <div class="restaurant-name-display"><%= clientname %></div>
-                
-                <p class="success-message">感謝您的訂位，我們已收到您的訂位請求。</p>
-                
-                <!-- 訂位編號 -->
-                <div class="booking-id-section">
-                    <div class="booking-id-label">訂位編號</div>
-                    <div class="booking-id"><%= bookingId %></div>
-                </div>
-
-                <!-- 詳細資訊 -->
-                <div class="booking-info-details">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">聯絡人</div>
-                            <div class="info-value"><%= bookingInfo.name %> <%= bookingInfo.gender %></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">用餐人數</div>
-                            <div class="info-value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">用餐日期</div>
-                            <div class="info-value"><%= bookingInfo.date %></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">用餐時段</div>
-                            <div class="info-value"><%= bookingInfo.time %></div>
-                        </div>
+            <!-- 詳細資訊 -->
+            <div class="booking-info-details">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">聯絡人</div>
+                        <div class="info-value"><%= bookingInfo.name %> <%= bookingInfo.gender %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">用餐人數</div>
+                        <div class="info-value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">用餐日期</div>
+                        <div class="info-value"><%= bookingInfo.date %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">用餐時段</div>
+                        <div class="info-value"><%= bookingInfo.time %></div>
                     </div>
                 </div>
-
-                <!-- 操作按鈕區域 -->
-                <div class="action-buttons" id="actionButtons">
-                    <button class="cancel-btn" id="cancelBtn">取消訂位</button>
-                    <button class="keep-btn" id="keepBtn">保留訂位</button>
-                </div>
-
-                <!-- 結果訊息區域 -->
-                <div class="result-message" id="resultMessage" style="display: none;">
-                    <div class="result-icon" id="resultIcon"></div>
-                    <div class="result-text" id="resultText"></div>
-                    <button class="home-btn" id="homeBtn">返回首頁</button>
-                </div>
-
-                <p class="success-message">
-                    我們將盡快確認您的訂位，並發送確認郵件至您的電子郵箱。<br>
-                    如有任何問題，請隨時與我們聯繫。
-                </p>
             </div>
+
+            <!-- 操作按鈕區域 -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="cancel-btn" id="cancelBtn">取消訂位</button>
+                <button class="keep-btn" id="keepBtn">保留訂位</button>
+            </div>
+
+            <!-- 結果訊息區域 -->
+            <div class="result-message" id="resultMessage" style="display: none;">
+                <div class="result-icon" id="resultIcon"></div>
+                <div class="result-text" id="resultText"></div>
+                <button class="home-btn" id="homeBtn">返回首頁</button>
+            </div>
+
+            <p class="success-message">
+                我們將盡快確認您的訂位，並發送確認郵件至您的電子郵箱。<br>
+                如有任何問題，請隨時與我們聯繫。
+            </p>
         </div>
     </div>
+</div>
 
-    <script>
-        const storeSlug = '<%= storeSlug %>';
-        const bookingId = '<%= bookingId %>';
-        const bookingTimestamp = '<%= timestamp %>';
-    </script>
-    <script src="/js/booking-success.js"></script>
-</body>
-</html> 
+<link rel="stylesheet" href="/css/booking-step2.css">
+<link rel="stylesheet" href="/css/booking-success.css">
+<script>
+    const storeSlug = '<%= storeSlug %>';
+    const bookingId = '<%= bookingId %>';
+    const bookingTimestamp = '<%= timestamp %>';
+</script>
+<script src="/js/booking-success.js"></script> 
