@@ -59,6 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('找到訂位記錄:', result.results?.length || 0, '筆');
                 setTimeout(() => {
                     displayBookings(result.results, allCurrentBookings, false);
+                    // 如果有結果，為左側容器添加has-results class
+                    if (result.results && result.results.length > 0) {
+                        allCurrentBookings.closest('.booking-form-container').classList.add('has-results');
+                    }
                 }, 300); // 短暫延遲讓用戶看到載入狀態
             } else {
                 throw new Error(result.error || '載入失敗');
@@ -105,13 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = bookingIdForm.querySelector('.search-btn');
         setButtonLoading(submitBtn, true);
         
-        // 顯示載入狀態
-        generalResults.innerHTML = `
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <span>搜尋中...</span>
-            </div>
-        `;
+        // 只清空結果區域，不顯示載入動畫
+        generalResults.innerHTML = '';
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/search`, {
@@ -126,12 +125,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (result.success) {
                 displayBookings(result.results, generalResults, true);
+                // 如果有結果，為右側容器添加has-results class
+                if (result.results && result.results.length > 0) {
+                    generalResults.closest('.booking-form-container').classList.add('has-results');
+                } else {
+                    generalResults.closest('.booking-form-container').classList.remove('has-results');
+                }
             } else {
                 throw new Error(result.error || '搜尋失敗');
             }
         } catch (error) {
             console.error('搜尋失敗:', error);
             showNoResults(generalResults, '搜尋失敗，請稍後再試');
+            generalResults.closest('.booking-form-container').classList.remove('has-results');
         } finally {
             setButtonLoading(submitBtn, false);
         }
@@ -142,13 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = customerInfoForm.querySelector('.search-btn');
         setButtonLoading(submitBtn, true);
         
-        // 顯示載入狀態
-        generalResults.innerHTML = `
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <span>搜尋中...</span>
-            </div>
-        `;
+        // 只清空結果區域，不顯示載入動畫
+        generalResults.innerHTML = '';
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking/search`, {
@@ -185,8 +186,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (filteredResults.length === 0 && filterMessage) {
                     showNoResults(generalResults, filterMessage + '<br>沒有其他餐廳的訂位');
+                    generalResults.closest('.booking-form-container').classList.remove('has-results');
                 } else {
                     displayBookings(filteredResults, generalResults, true);
+                    // 如果有結果，為右側容器添加has-results class
+                    if (filteredResults.length > 0) {
+                        generalResults.closest('.booking-form-container').classList.add('has-results');
+                    } else {
+                        generalResults.closest('.booking-form-container').classList.remove('has-results');
+                    }
                     if (filterMessage) {
                         // 在結果上方顯示過濾信息
                         const filterInfo = document.createElement('div');
@@ -201,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('搜尋失敗:', error);
             showNoResults(generalResults, '搜尋失敗，請稍後再試');
+            generalResults.closest('.booking-form-container').classList.remove('has-results');
         } finally {
             setButtonLoading(submitBtn, false);
         }
@@ -237,9 +246,28 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '</div>';
         container.innerHTML = html;
 
-        // 綁定點擊事件
+        // 綁定點擊事件給卡片，但排除取消按鈕
         container.querySelectorAll('.booking-card').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                // 如果點擊的是取消按鈕，不觸發卡片點擊事件
+                if (e.target.classList.contains('cancel-btn') || e.target.closest('.cancel-btn')) {
+                    return;
+                }
+                
+                const bookingId = card.dataset.bookingId;
+                const targetStoreSlug = card.dataset.storeSlug;
+                const booking = bookings.find(b => b.customBookingId === bookingId);
+                if (booking) {
+                    showCancelModal(booking, targetStoreSlug);
+                }
+            });
+        });
+        
+        // 綁定取消按鈕的點擊事件
+        container.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止冒泡
+                const card = btn.closest('.booking-card');
                 const bookingId = card.dataset.bookingId;
                 const targetStoreSlug = card.dataset.storeSlug;
                 const booking = bookings.find(b => b.customBookingId === bookingId);
@@ -270,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}/${month}/${day}`;
     }
 
-    // 創建訂位卡片
+    // 創建訂位卡片 - 修改取消按鈕
     function createBookingCard(booking, showRestaurant) {
         const bookingId = booking.customBookingId;
         const formattedDate = formatDate(booking.date);
@@ -300,10 +328,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="info-item">
                         <div class="info-label">人數</div>
-                        <div class="info-value">${booking.guests}人</div>
+                        <div class="info-value">${booking.guests || (booking.adults || 0) + (booking.children || 0)}人</div>
                     </div>
                 </div>
-                <button class="cancel-btn" onclick="showCancelModal(${JSON.stringify(booking).replace(/"/g, '&quot;')}, '${booking.storeSlug || storeSlug}')">
+                <button class="cancel-btn" type="button">
                     取消訂位
                 </button>
             </div>
@@ -319,10 +347,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function setButtonLoading(btn, loading) {
         if (loading) {
             btn.disabled = true;
+            const originalText = btn.textContent;
+            btn.dataset.originalText = originalText;
             btn.innerHTML = '<span class="loading-spinner"></span>搜尋中...';
         } else {
             btn.disabled = false;
-            btn.innerHTML = btn.dataset.originalText || '搜尋';
+            btn.innerHTML = btn.dataset.originalText || '搜尋訂位';
         }
     }
 
@@ -373,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentBookingToCancel = null;
     }
 
-    // 確認取消訂位
+    // 確認取消訂位 - 修改為後端處理
     confirmCancelBtn.addEventListener('click', async () => {
         if (!currentBookingToCancel) return;
 
@@ -388,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     bookingId: bookingId,
-                    targetStoreSlug: currentBookingToCancel.targetStoreSlug
+                    targetStoreSlug: currentBookingToCancel.targetStoreSlug || storeSlug
                 })
             });
 
@@ -398,11 +428,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('訂位已成功取消！');
                 hideCancelModal();
                 
-                // 移除已取消的訂位卡片
-                const cardToRemove = document.querySelector(`[data-booking-id="${currentBookingToCancel.customBookingId}"]`);
-                if (cardToRemove) {
-                    cardToRemove.remove();
-                }
+                // 重新載入訂位列表
+                loadAllCurrentBookings();
+                
+                // 清空搜尋結果
+                generalResults.innerHTML = `<div class="no-results">請選擇搜尋方式並輸入相關資訊</div>`;
+                generalResults.closest('.booking-form-container').classList.remove('has-results');
+                
+                // 重置表單
+                bookingIdForm.reset();
+                customerInfoForm.reset();
             } else {
                 throw new Error(result.error || '取消失敗');
             }
@@ -423,4 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.search-btn').forEach(btn => {
         btn.dataset.originalText = btn.textContent;
     });
+    
+    // 確保漢堡選單正常工作 - 移除重複初始化，讓navbar-mobile.js處理
+    // navbar-mobile.js會自動處理漢堡選單，這裡不需要重複綁定
 }); 

@@ -19,7 +19,7 @@ const reservationSchema = new mongoose.Schema({
         required: true
     },
     date: {
-        type: String, // 改為String因為前端發送'YYYY-MM-DD'格式
+        type: String,
         required: true
     },
     time: {
@@ -28,7 +28,7 @@ const reservationSchema = new mongoose.Schema({
     },
     adults: {
         type: Number,
-        required: false, // 改為非必填，舊資料可能沒有這些欄位
+        required: false,
         min: 0,
         max: 10,
         default: 1
@@ -42,7 +42,7 @@ const reservationSchema = new mongoose.Schema({
     },
     guests: {
         type: Number,
-        required: false // 改為非必填，舊資料可能沒有
+        required: false 
     },
     gender: {
         type: String,

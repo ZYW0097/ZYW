@@ -427,8 +427,6 @@ router.get('/:storeSlug/api/booking/current', async (req, res) => {
             date: { $gte: new Date().toISOString().split('T')[0] }
         }).sort({ date: 1, time: 1 }).lean();
         
-        console.log(`用戶 ${name}/${phone} 的訂位記錄:`, reservations.length, '筆');
-        
         res.json({ success: true, results: reservations });
     } catch (error) {
         console.error('Error fetching current bookings:', error);

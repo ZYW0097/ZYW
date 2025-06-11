@@ -11,7 +11,7 @@
 
 @media (max-width: 768px) {
     .page-container {
-        padding-top: 120px;
+        padding-top: 130px; /* 增加padding避免header遮擋 */
         padding-left: 1rem;
         padding-right: 1rem;
     }
@@ -48,17 +48,19 @@
     border-radius: 15px;
     padding: 3rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    height: fit-content;
+    height: 600px; /* 固定初始高度 */
     box-sizing: border-box;
+    transition: height 0.3s ease;
 }
 
-/* 右側容器可以延伸 */
-.booking-form-container:last-child {
+/* 右側容器在有搜尋結果時可以延伸 */
+.booking-form-container:last-child.has-results {
+    height: auto;
     min-height: 800px;
 }
 
 .booking-form-container:last-child .booking-results {
-    min-height: 400px;
+    min-height: 200px;
 }
 
 /* 容器標題 */
@@ -219,7 +221,7 @@
     border: 1px dashed #dee2e6;
 }
 
-/* 訂位卡片 */
+/* 訂位卡片 - 重新設計 */
 .booking-card {
     background: white;
     border: 1px solid #dee2e6;
@@ -228,6 +230,10 @@
     margin-bottom: 1rem;
     transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .booking-card:hover {
@@ -269,26 +275,53 @@
     font-size: 0.9rem;
 }
 
+/* 重新設計訂位資訊佈局 */
 .booking-info {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .info-item {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
 .info-label {
     font-size: 0.8rem;
     color: #666;
-    margin-bottom: 0.3rem;
+    font-weight: 500;
 }
 
 .info-value {
     font-weight: 600;
     color: #000;
     font-size: 0.95rem;
+}
+
+/* 取消訂位按鈕 - 移到右下角並重新設計 */
+.booking-card .cancel-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.booking-card .cancel-btn:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
 /* 展開/收合功能 */
@@ -355,7 +388,7 @@
     max-height: 120px;
 }
 
-/* 確認取消彈窗 */
+/* 確認取消彈窗 - 移除展開後容器的圓角 */
 .cancel-modal {
     position: fixed;
     top: 0;
@@ -384,7 +417,7 @@
 
 .modal-content {
     background: white;
-    border-radius: 15px;
+    border-radius: 0; /* 移除圓角 */
     padding: 2rem;
     max-width: 500px;
     width: 90%;
@@ -401,10 +434,19 @@
 
 .modal-content .booking-details {
     background: #f8f9fa;
-    border-radius: 10px;
+    border-radius: 0; /* 移除圓角 */
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     text-align: left;
+}
+
+/* 訂位懸停展開後的容器不要圓角 */
+.nav-dropdown .dropdown-menu {
+    border-radius: 0 !important;
+}
+
+.mobile-dropdown .mobile-dropdown-menu {
+    border-radius: 0 !important;
 }
 
 .warning-text {
@@ -481,6 +523,12 @@
         gap: 2rem;
     }
     
+    .booking-form-container {
+        height: auto; /* 行動版不限制高度 */
+        min-height: 400px;
+        padding: 2rem;
+    }
+    
     .form-row {
         grid-template-columns: 1fr;
         gap: 1rem;
@@ -490,9 +538,36 @@
         padding: 1.5rem;
     }
     
+    /* 重新設計行動版訂位卡片 */
+    .booking-card {
+        padding: 1.5rem;
+        padding-bottom: 4rem; /* 為取消按鈕留出空間 */
+    }
+    
     .booking-info {
         grid-template-columns: 1fr;
-        gap: 0.8rem;
+        gap: 1rem;
+    }
+    
+    .info-item {
+        background: #f8f9fa;
+        padding: 0.8rem;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #007bff;
+        font-weight: 600;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: #333;
+        margin-top: 0.2rem;
     }
     
     .booking-header {
@@ -501,22 +576,34 @@
         gap: 0.5rem;
     }
     
+    .booking-card .cancel-btn {
+        position: static;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+    
     .modal-buttons {
         flex-direction: column;
+        gap: 0.8rem;
     }
     
     .results-list {
-        max-height: 300px;
+        max-height: none;
     }
     
     .results-list.collapsed {
-        max-height: 100px;
+        max-height: 200px;
+        overflow: hidden;
     }
 }
 
 @media (max-width: 480px) {
     .page-container {
-        padding: 1rem;
+        padding-top: 140px; /* 進一步增加padding */
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
     
     .search-form-section {
@@ -525,6 +612,7 @@
     
     .booking-card {
         padding: 1rem;
+        padding-bottom: 3.5rem;
     }
     
     .modal-content {
