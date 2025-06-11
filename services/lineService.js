@@ -54,28 +54,69 @@ class LineService {
     }
 
     /**
+     * 檢查用戶是否為 Bot 好友
+     */
+    async checkUserFriendship(userId) {
+        if (!this.isConfigured()) {
+            console.warn('⚠️  LINE Bot 未設定');
+            return false;
+        }
+
+        try {
+            console.log('🔍 檢查用戶好友狀態:', userId);
+            
+            // 嘗試取得用戶資料
+            const result = await this.sendLineRequest('/v2/bot/profile/' + userId, null, 'GET');
+            
+            console.log('✅ 用戶是好友，資料:', JSON.stringify(result.parsed, null, 2));
+            return true;
+            
+        } catch (error) {
+            console.log('❌ 用戶好友狀態檢查失敗:');
+            console.log('錯誤詳情:', JSON.stringify(error, null, 2));
+            
+            if (error.statusCode === 404) {
+                console.log('🚫 用戶不是 Bot 的好友，或用戶 ID 不存在');
+                return 'not_friend';
+            } else if (error.statusCode === 403) {
+                console.log('🔒 Bot 沒有權限取得用戶資料');
+                return 'no_permission';
+            }
+            
+            return false;
+        }
+    }
+
+    /**
      * 發送 HTTP 請求到 LINE API
      */
-    async sendLineRequest(path, data) {
+    async sendLineRequest(path, data, method = 'POST') {
         return new Promise((resolve, reject) => {
-            const postData = JSON.stringify(data);
+            let postData = '';
+            if (data) {
+                postData = JSON.stringify(data);
+            }
             
             console.log('🔗 發送 LINE API 請求:');
+            console.log('  方法:', method);
             console.log('  路徑:', path);
-            console.log('  數據:', postData);
+            if (data) console.log('  數據:', postData);
             console.log('  Token:', this.channelAccessToken ? `${this.channelAccessToken.substring(0, 20)}...` : '未設定');
             
             const options = {
                 hostname: this.apiBaseUrl,
                 port: 443,
                 path: path,
-                method: 'POST',
+                method: method,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(postData),
                     'Authorization': `Bearer ${this.channelAccessToken}`
                 }
             };
+
+            if (data) {
+                options.headers['Content-Type'] = 'application/json';
+                options.headers['Content-Length'] = Buffer.byteLength(postData);
+            }
 
             const req = https.request(options, (res) => {
                 let responseData = '';
@@ -93,8 +134,10 @@ class LineService {
                     
                     let parsedResponse;
                     try {
-                        parsedResponse = JSON.parse(responseData);
-                        console.log('  解析後的回應:', JSON.stringify(parsedResponse, null, 2));
+                        if (responseData) {
+                            parsedResponse = JSON.parse(responseData);
+                            console.log('  解析後的回應:', JSON.stringify(parsedResponse, null, 2));
+                        }
                     } catch (e) {
                         console.log('  無法解析 JSON 回應:', e.message);
                     }
@@ -136,7 +179,9 @@ class LineService {
                 });
             });
 
-            req.write(postData);
+            if (data) {
+                req.write(postData);
+            }
             req.end();
         });
     }
@@ -157,6 +202,21 @@ class LineService {
         }
 
         try {
+            // 首先檢查用戶是否為好友
+            console.log('🔍 步驟 1: 檢查用戶好友狀態...');
+            const friendshipStatus = await this.checkUserFriendship(userId);
+            
+            if (friendshipStatus === 'not_friend') {
+                console.log('❌ 用戶不是 Bot 好友，無法發送 Push Message');
+                return 'not_friend';
+            } else if (friendshipStatus === 'no_permission') {
+                console.log('⚠️  Bot 無權限取得用戶資料，但仍嘗試發送訊息');
+            } else if (friendshipStatus === true) {
+                console.log('✅ 確認用戶是 Bot 好友');
+            }
+
+            console.log('📤 步驟 2: 發送 LINE 訊息...');
+            
             // 使用簡單文字訊息進行測試
             const message = {
                 type: 'text',
