@@ -38,6 +38,8 @@
     gap: 3rem;
     max-width: 1300px;
     margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* 左右容器 */
@@ -49,16 +51,24 @@
     height: 600px; /* 固定初始高度 */
     box-sizing: border-box;
     transition: height 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow: auto; /* 允許滾動而不是隱藏內容 */
 }
 
 /* 右側容器在有搜尋結果時可以延伸 */
 .booking-form-container:last-child.has-results {
     height: auto;
     min-height: 800px;
+    max-height: none; /* 允許完全延伸 */
+    overflow: visible; /* 讓內容可見 */
 }
 
 .booking-form-container:last-child .booking-results {
     min-height: 200px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden; /* 防止水平溢出 */
 }
 
 /* 容器標題 */
@@ -225,12 +235,17 @@
     border: 1px solid #dee2e6;
     border-radius: 12px;
     padding: 1.5rem;
+    padding-bottom: 4rem; /* 為右下角按鈕留出空間 */
     margin-bottom: 1rem;
     cursor: pointer;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden; /* 防止內容溢出 */
 }
 
 .booking-card.loading {
@@ -355,9 +370,26 @@
 @media (min-width: 769px) {
     .results-list {
         display: block !important;
+        max-height: 600px; /* 桌面版增加最大高度 */
     }
     .toggle-btn {
         display: none;
+    }
+    
+    /* 桌面版確保卡片不超出容器 */
+    .booking-card {
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* 確保所有內容都在容器內 */
+    .booking-form-container {
+        overflow: auto; /* 允許滾動而不是隱藏 */
+    }
+    
+    .booking-form-container:last-child.has-results {
+        overflow: auto; /* 有結果時允許滾動 */
     }
 }
 
@@ -372,8 +404,11 @@
 }
 
 .results-list {
-    max-height: 400px;
+    max-height: 500px; /* 增加高度 */
     overflow-y: auto;
+    overflow-x: hidden; /* 防止水平溢出 */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .results-list.collapsed {
