@@ -221,25 +221,18 @@
     border: 1px dashed #dee2e6;
 }
 
-/* 訂位卡片 - 重新設計 */
+/* 訂位卡片 - 重新設計，移除hover效果 */
 .booking-card {
     background: white;
     border: 1px solid #dee2e6;
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1rem;
-    transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
-
-.booking-card:hover {
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-    transform: translateY(-2px);
 }
 
 .booking-card.loading {
@@ -254,15 +247,16 @@
     margin-bottom: 1rem;
 }
 
+/* 修改booking-id為黑白配色 */
 .booking-id {
     font-family: 'Courier New', monospace;
     font-weight: bold;
-    color: #007bff;
-    background: #e7f3ff;
+    color: #000;
+    background: #fff;
     font-size: 1rem;
     padding: 0.3rem 0.6rem;
     border-radius: 6px;
-    border: 1px solid #007bff;
+    border: 2px solid #000;
     display: inline-block;
 }
 
@@ -275,7 +269,7 @@
     font-size: 0.9rem;
 }
 
-/* 重新設計訂位資訊佈局 */
+/* 保持桌電顯示方式的訂位資訊佈局 */
 .booking-info {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -538,29 +532,31 @@
         padding: 1.5rem;
     }
     
-    /* 重新設計行動版訂位卡片 */
+    /* 行動裝置保持桌電樣式但優化顯示 */
     .booking-card {
         padding: 1.5rem;
         padding-bottom: 4rem; /* 為取消按鈕留出空間 */
     }
     
+    /* 在行動裝置上優化info佈局，但保持2列 */
     .booking-info {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
     }
     
     .info-item {
         background: #f8f9fa;
         padding: 0.8rem;
         border-radius: 8px;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #333;
     }
     
     .info-label {
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #007bff;
+        color: #333;
         font-weight: 600;
     }
     
@@ -613,6 +609,12 @@
     .booking-card {
         padding: 1rem;
         padding-bottom: 3.5rem;
+    }
+    
+    /* 在更小螢幕上改為單列顯示 */
+    .booking-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .modal-content {

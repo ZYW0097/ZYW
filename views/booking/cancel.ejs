@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>取消訂位</title>
-    <link rel="stylesheet" href="/css/booking-step2.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/booking-cancel.css">
 </head>
 <body>
@@ -86,7 +86,9 @@
         const storeSlug = '<%= storeSlug %>';
         const clientname = '<%= clientname %>';
     </script>
+    <!-- 確保navbar-mobile.js先載入 -->
     <script src="/js/navbar-mobile.js"></script>
+    <!-- 然後載入booking-cancel.js -->
     <script src="/js/booking-cancel.js"></script>
 </body>
 </html> 
