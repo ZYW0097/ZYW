@@ -88,6 +88,17 @@ const reservationSchema = new mongoose.Schema({
     },
     cancelReason: {
         type: String
+    },
+    // LINE 用戶 ID（直接儲存，方便查詢和提醒）
+    lineUserId: {
+        type: String,
+        required: false,
+        sparse: true // 允許為空
+    },
+    // LINE 通知狀態
+    lineNotificationSent: {
+        type: Boolean,
+        default: false
     }
 });
 

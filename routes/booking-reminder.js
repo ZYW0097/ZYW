@@ -4,6 +4,7 @@ const Client = require('../models/Client');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
 const { sendBookingCancellation } = require('../services/emailService');
+const notificationService = require('../services/notificationService');
 
 // 確認訂位（用戶點擊郵件中的確認連結）
 router.get('/confirm/:token', async (req, res) => {
@@ -142,23 +143,16 @@ router.get('/cancel/:token', async (req, res) => {
         const client = await Client.findOne({ slugname: storeSlug });
         const clientname = client ? client.clientname : '';
         
-        // 發送取消確認郵件
-        if (reservation.email) {
-            try {
-                const protocol = req.protocol;
-                const host = req.get('host');
-                const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-                
-                await sendBookingCancellation(reservation.email, {
-                    ...reservation.toObject(),
-                    bookingId,
-                    clientname,
-                    logoUrl,
-                    cancelTime: new Date().toLocaleString('zh-TW')
-                });
-            } catch (emailError) {
-                console.error('Cancel email sending failed:', emailError);
-            }
+        // 發送取消通知（郵件 + LINE）
+        try {
+            await notificationService.sendBookingCancellation({
+                ...reservation.toObject(),
+                customBookingId: bookingId,
+                storeName: clientname
+            }, '透過提醒郵件取消');
+            console.log('✅ 取消通知已發送');
+        } catch (notificationError) {
+            console.error('❌ 取消通知發送失敗:', notificationError);
         }
         
         res.render('booking/reminder-result', {

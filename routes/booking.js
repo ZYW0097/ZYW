@@ -4,6 +4,7 @@ const Client = require('../models/Client');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
 const { sendBookingConfirmation, sendBookingCancellation } = require('../services/emailService');
+const notificationService = require('../services/notificationService');
 
 // 生成訂位編號的輔助函數
 function generateBookingId(storeSlug) {
@@ -175,6 +176,22 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         // 生成自訂訂位編號
         const customBookingId = generateBookingId(storeSlug);
 
+        // 取得用戶的 LINE ID（如果已登入）
+        let lineUserId = null;
+        if (req.session.userId) {
+            try {
+                const adb = require('../utils/dbManager')('main', 'ADB');
+                const userSchema = require('../models/user');
+                const User = adb.model('User', userSchema);
+                const user = await User.findById(req.session.userId).select('lineId');
+                if (user) {
+                    lineUserId = user.lineId;
+                }
+            } catch (error) {
+                console.error('❌ 取得用戶 LINE ID 失敗:', error);
+            }
+        }
+
         // 準備訂位資料（過濾和清理輸入）
         const reservationData = {
             customBookingId,
@@ -190,7 +207,9 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             vegetarian: req.body.vegetarian || 'no',
             special: req.body.special ? req.body.special.trim() : '',
             createdAt: new Date(),
-            status: 'confirmed'
+            status: 'confirmed',
+            // 如果用戶已登入，儲存 LINE ID
+            lineUserId: lineUserId
         };
         
         // 創建訂位記錄
@@ -208,23 +227,17 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             ...reservationData
         };
 
-        // 發送確認郵件（如果有提供email）
-        if (email) {
-            try {
-                const protocol = req.protocol;
-                const host = req.get('host');
-                const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-                
-                await sendBookingConfirmation(email, {
-                    ...reservationData,
-                    bookingId: customBookingId,
-                    clientname,
-                    logoUrl
-                });
-            } catch (emailError) {
-                console.error('Email sending failed:', emailError);
-                // 不因為郵件發送失敗而影響訂位成功
-            }
+        // 發送通知（郵件 + LINE）
+        try {
+            await notificationService.sendBookingConfirmation({
+                ...reservationData,
+                storeName: clientname,
+                customBookingId
+            });
+            console.log('✅ 訂位通知已發送');
+        } catch (notificationError) {
+            console.error('❌ 通知發送失敗:', notificationError);
+            // 不因為通知發送失敗而影響訂位成功
         }
 
         res.json({ 
@@ -280,24 +293,17 @@ router.post('/:storeSlug/api/booking/cancel', async (req, res) => {
         const client = await Client.findOne({ slugname: storeSlug });
         const clientname = client ? client.clientname : '';
         
-        // 發送取消確認郵件
+        // 發送取消通知（郵件 + LINE）
         const bookingInfo = req.session.lastBooking;
-        if (bookingInfo.email) {
-            try {
-                const protocol = req.protocol;
-                const host = req.get('host');
-                const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-                
-                await sendBookingCancellation(bookingInfo.email, {
-                    ...bookingInfo,
-                    bookingId,
-                    clientname,
-                    logoUrl,
-                    cancelTime: new Date().toLocaleString('zh-TW')
-                });
-            } catch (emailError) {
-                console.error('Cancel email sending failed:', emailError);
-            }
+        try {
+            await notificationService.sendBookingCancellation({
+                ...bookingInfo,
+                customBookingId: bookingId,
+                storeName: clientname
+            }, '用戶主動取消');
+            console.log('✅ 取消通知已發送');
+        } catch (notificationError) {
+            console.error('❌ 取消通知發送失敗:', notificationError);
         }
         
         // 清除session中的訂位資訊
@@ -522,23 +528,16 @@ router.post('/:storeSlug/api/booking/cancel-by-id', async (req, res) => {
         const client = await Client.findOne({ slugname: actualStoreSlug });
         const clientname = client ? client.clientname : '';
         
-        // 發送取消確認郵件
-        if (reservation.email) {
-            try {
-                const protocol = req.protocol;
-                const host = req.get('host');
-                const logoUrl = `${protocol}://${host}/images/dineplus.png`;
-                
-                await sendBookingCancellation(reservation.email, {
-                    ...reservation.toObject(),
-                    bookingId,
-                    clientname,
-                    logoUrl,
-                    cancelTime: new Date().toLocaleString('zh-TW')
-                });
-            } catch (emailError) {
-                console.error('Cancel email sending failed:', emailError);
-            }
+        // 發送取消通知（郵件 + LINE）
+        try {
+            await notificationService.sendBookingCancellation({
+                ...reservation.toObject(),
+                customBookingId: bookingId,
+                storeName: clientname
+            }, '用戶主動取消');
+            console.log('✅ 取消通知已發送');
+        } catch (notificationError) {
+            console.error('❌ 取消通知發送失敗:', notificationError);
         }
         
         res.json({ 

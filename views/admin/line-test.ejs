@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE 通知測試</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #00C300;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .section h2 {
+            color: #333;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: #00C300;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #00A300;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .config-status {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .config-status.configured {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .config-status.not-configured {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #004085;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🟢 LINE 通知測試面板</h1>
+
+        <!-- 設定狀態 -->
+        <div id="configStatus" class="config-status">
+            <strong>⚙️ 檢查 LINE Bot 設定狀態...</strong>
+        </div>
+
+        <!-- 設定說明 -->
+        <div class="info-box">
+            <h3>📋 設定步驟</h3>
+            <p><strong>1. 建立 LINE Official Account</strong></p>
+            <p>• 前往 <a href="https://manager.line.biz/" target="_blank">LINE Official Account Manager</a></p>
+            <p>• 建立新的官方帳號</p>
+            
+            <p><strong>2. 建立 LINE Bot</strong></p>
+            <p>• 前往 <a href="https://developers.line.biz/" target="_blank">LINE Developers Console</a></p>
+            <p>• 建立新的 Provider 和 Channel (Messaging API)</p>
+            
+            <p><strong>3. 設定環境變數</strong></p>
+            <p>• <code>LINE_BOT_ACCESS_TOKEN</code>: 從通知機器人 Channel 設定頁面取得</p>
+            
+            <p><strong>4. 注意事項</strong></p>
+            <p>• 由於本系統只用於發送通知，不需要設定 Webhook</p>
+            <p>• Channel Secret 也不需要設定，只需要 Access Token</p>
+        </div>
+
+        <!-- 訂位確認測試 -->
+        <div class="section">
+            <h2>📝 測試訂位確認通知</h2>
+            <form id="bookingConfirmationForm">
+                <div class="form-group">
+                    <label>LINE 用戶 ID:</label>
+                    <input type="text" id="userId1" placeholder="用戶的 LINE User ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>餐廳名稱:</label>
+                    <input type="text" id="storeName" value="測試餐廳" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位日期:</label>
+                    <input type="date" id="bookingDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>時段:</label>
+                    <select id="timeSlot" required>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>顧客姓名:</label>
+                    <input type="text" id="customerName" value="測試用戶" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>電話:</label>
+                    <input type="text" id="phone" value="0912-345-678" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="email" value="test@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>用餐人數:</label>
+                    <input type="number" id="partySize" value="2" min="1" max="20" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位編號:</label>
+                    <input type="text" id="bookingId" value="TEST-123456" required>
+                </div>
+                
+                <button type="submit">發送訂位確認通知</button>
+            </form>
+            <div id="result1" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 訂位提醒測試 -->
+        <div class="section">
+            <h2>⏰ 測試訂位提醒通知</h2>
+            <form id="bookingReminderForm">
+                <div class="form-group">
+                    <label>LINE 用戶 ID:</label>
+                    <input type="text" id="userId2" placeholder="用戶的 LINE User ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>餐廳名稱:</label>
+                    <input type="text" id="storeName2" value="測試餐廳" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位日期:</label>
+                    <input type="date" id="bookingDate2" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>時段:</label>
+                    <select id="timeSlot2" required>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>顧客姓名:</label>
+                    <input type="text" id="customerName2" value="測試用戶" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>用餐人數:</label>
+                    <input type="number" id="partySize2" value="2" min="1" max="20" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位編號:</label>
+                    <input type="text" id="bookingId2" value="TEST-123456" required>
+                </div>
+                
+                <button type="submit">發送訂位提醒通知</button>
+            </form>
+            <div id="result2" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 取消通知測試 -->
+        <div class="section">
+            <h2>❌ 測試訂位取消通知</h2>
+            <form id="cancellationForm">
+                <div class="form-group">
+                    <label>LINE 用戶 ID:</label>
+                    <input type="text" id="userId3" placeholder="用戶的 LINE User ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>餐廳名稱:</label>
+                    <input type="text" id="storeName3" value="測試餐廳" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位日期:</label>
+                    <input type="date" id="bookingDate3" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>時段:</label>
+                    <select id="timeSlot3" required>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>顧客姓名:</label>
+                    <input type="text" id="customerName3" value="測試用戶" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>訂位編號:</label>
+                    <input type="text" id="bookingId3" value="TEST-123456" required>
+                </div>
+                
+                <button type="submit">發送取消通知</button>
+            </form>
+            <div id="result3" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 檢查 LINE Bot 設定狀態
+        async function checkLineConfig() {
+            try {
+                const response = await fetch('/line/send-booking-confirmation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: 'test',
+                        bookingData: {}
+                    })
+                });
+                
+                const result = await response.json();
+                const statusDiv = document.getElementById('configStatus');
+                
+                if (response.status === 400) {
+                    statusDiv.className = 'config-status not-configured';
+                    statusDiv.innerHTML = '<strong>⚠️ LINE 通知機器人未設定</strong><br>請設定 LINE_BOT_ACCESS_TOKEN 和 LINE_BOT_SECRET 環境變數';
+                } else {
+                    statusDiv.className = 'config-status configured';
+                    statusDiv.innerHTML = '<strong>✅ LINE 通知機器人已設定完成</strong><br>可以開始測試 LINE 通知功能';
+                }
+            } catch (error) {
+                const statusDiv = document.getElementById('configStatus');
+                statusDiv.className = 'config-status not-configured';
+                statusDiv.innerHTML = '<strong>❌ 無法檢查設定狀態</strong><br>請檢查伺服器連線';
+            }
+        }
+
+        // 設定今天的日期作為預設值
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookingDate').value = today;
+        document.getElementById('bookingDate2').value = today;
+        document.getElementById('bookingDate3').value = today;
+
+        // 訂位確認表單
+        document.getElementById('bookingConfirmationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bookingData = {
+                storeName: document.getElementById('storeName').value,
+                date: document.getElementById('bookingDate').value,
+                timeSlot: document.getElementById('timeSlot').value,
+                customerName: document.getElementById('customerName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                partySize: parseInt(document.getElementById('partySize').value),
+                bookingId: document.getElementById('bookingId').value,
+                vegetarianRequirement: '無',
+                specialRequirement: '無',
+                note: '測試訂位'
+            };
+
+            await sendLineMessage('/line/send-booking-confirmation', {
+                userId: document.getElementById('userId1').value,
+                bookingData: bookingData
+            }, 'result1');
+        });
+
+        // 訂位提醒表單
+        document.getElementById('bookingReminderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bookingData = {
+                storeName: document.getElementById('storeName2').value,
+                date: document.getElementById('bookingDate2').value,
+                timeSlot: document.getElementById('timeSlot2').value,
+                customerName: document.getElementById('customerName2').value,
+                partySize: parseInt(document.getElementById('partySize2').value),
+                bookingId: document.getElementById('bookingId2').value
+            };
+
+            await sendLineMessage('/line/send-booking-reminder', {
+                userId: document.getElementById('userId2').value,
+                bookingData: bookingData
+            }, 'result2');
+        });
+
+        // 取消通知表單
+        document.getElementById('cancellationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bookingData = {
+                storeName: document.getElementById('storeName3').value,
+                date: document.getElementById('bookingDate3').value,
+                timeSlot: document.getElementById('timeSlot3').value,
+                customerName: document.getElementById('customerName3').value,
+                bookingId: document.getElementById('bookingId3').value
+            };
+
+            await sendLineMessage('/line/send-cancellation', {
+                userId: document.getElementById('userId3').value,
+                bookingData: bookingData
+            }, 'result3');
+        });
+
+        // 發送 LINE 訊息的通用函數
+        async function sendLineMessage(endpoint, data, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            const button = event.target.querySelector('button[type="submit"]');
+            
+            button.disabled = true;
+            button.textContent = '發送中...';
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                resultDiv.style.display = 'block';
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ' + result.message;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ ' + result.message;
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ 發送失敗: ' + error.message;
+            } finally {
+                button.disabled = false;
+                button.textContent = button.form.id.includes('confirmation') ? '發送訂位確認通知' :
+                                   button.form.id.includes('reminder') ? '發送訂位提醒通知' : '發送取消通知';
+            }
+        }
+
+        // 頁面載入時檢查設定狀態
+        window.addEventListener('load', checkLineConfig);
+    </script>
+</body>
+</html> 

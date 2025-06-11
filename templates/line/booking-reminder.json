@@ -1,0 +1,164 @@
+{
+    "type": "bubble",
+    "size": "mega",
+    "hero": {
+      "type": "image",
+      "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover",
+      "size": "full"
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "⏰ 訂位提醒",
+          "size": "xxl",
+          "align": "center",
+          "weight": "bold",
+          "margin": "none",
+          "color": "#FF6B35"
+        },
+        {
+          "type": "text",
+          "weight": "bold",
+          "size": "lg",
+          "text": "{{storeName}}",
+          "align": "center",
+          "margin": "sm"
+        },
+        {
+          "type": "text",
+          "weight": "bold",
+          "size": "lg",
+          "text": "{{bookingDate}} {{timeSlot}}",
+          "align": "center",
+          "margin": "sm",
+          "color": "#FF6B35"
+        },
+        {
+          "type": "text",
+          "text": "親愛的顧客，您的訂位時間即將到來！",
+          "align": "center",
+          "margin": "lg",
+          "color": "#666666",
+          "wrap": true
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "margin": "lg",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "訂位人",
+                  "color": "#5F5F5F",
+                  "size": "sm",
+                  "flex": 2,
+                  "margin": "sm"
+                },
+                {
+                  "type": "text",
+                  "text": "{{customerName}}",
+                  "wrap": true,
+                  "color": "#000000",
+                  "size": "sm",
+                  "flex": 5,
+                  "weight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "separator",
+              "margin": "sm"
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "用餐人數",
+                  "color": "#5F5F5F",
+                  "size": "sm",
+                  "flex": 2,
+                  "margin": "sm"
+                },
+                {
+                  "type": "text",
+                  "text": "{{partySize}}人",
+                  "wrap": true,
+                  "color": "#000000",
+                  "size": "sm",
+                  "flex": 5,
+                  "weight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "separator",
+              "margin": "sm"
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "訂位編號",
+                  "color": "#5F5F5F",
+                  "size": "sm",
+                  "flex": 2,
+                  "margin": "sm"
+                },
+                {
+                  "type": "text",
+                  "text": "{{bookingId}}",
+                  "wrap": true,
+                  "color": "#FF6B35",
+                  "size": "sm",
+                  "flex": 5,
+                  "weight": "bold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "請準時前來用餐，期待您的光臨！",
+          "align": "center",
+          "margin": "lg",
+          "color": "#666666",
+          "wrap": true
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "button",
+          "action": {
+            "type": "uri",
+            "label": "查看詳細資訊",
+            "uri": "https://您的網站.com/booking/{{bookingId}}"
+          },
+          "style": "primary",
+          "color": "#FF6B35"
+        }
+      ],
+      "spacing": "sm"
+    }
+  } 

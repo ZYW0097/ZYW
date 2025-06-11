@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const Client = require('../models/Client');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
-const { sendBookingReminder } = require('./emailService');
+const notificationService = require('./notificationService');
 
 class ReminderService {
     constructor() {
@@ -80,20 +80,23 @@ class ReminderService {
             const startTime = this.formatTime(startWindow);
             const endTime = this.formatTime(endWindow);
 
-            // 查找需要發送提醒的訂位
+            // 查找需要發送提醒的訂位（只要有 email 或 lineUserId 即可）
             const reservations = await Reservation.find({
                 date: targetDate,
                 time: { $gte: startTime, $lte: endTime },
                 status: 'confirmed',
-                email: { $exists: true, $ne: '' },
+                $or: [
+                    { email: { $exists: true, $ne: '' } },
+                    { lineUserId: { $exists: true, $ne: '' } }
+                ],
                 reminderSent: { $ne: true } // 尚未發送提醒
             });
 
             console.log(`Found ${reservations.length} reservations for ${clientname} requiring reminders`);
 
-            // 發送提醒郵件
+            // 發送提醒通知（郵件 + LINE）
             for (const reservation of reservations) {
-                await this.sendReminderEmail(reservation, client);
+                await this.sendReminder(reservation, client);
             }
 
         } catch (error) {
@@ -101,46 +104,49 @@ class ReminderService {
         }
     }
 
-    // 發送提醒郵件
-    async sendReminderEmail(reservation, client) {
+    // 發送提醒通知（郵件 + LINE）
+    async sendReminder(reservation, client) {
         try {
-            const { customBookingId, email, date, time, adults, children } = reservation;
+            const { customBookingId, email, lineUserId, date, time, adults, children } = reservation;
             const { slugname, clientname } = client;
 
-            // 生成token（用於確認/取消連結）
-            const timestamp = Date.now();
-            const tokenData = `${customBookingId}_${slugname}_${timestamp}`;
-            const token = Buffer.from(tokenData).toString('base64');
+            console.log(`發送提醒 - 訂位 ${customBookingId}:`, {
+                email: !!email,
+                lineUserId: !!lineUserId
+            });
 
-            // 構建確認和取消連結
-            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-            const confirmUrl = `${baseUrl}/booking-reminder/confirm/${token}`;
-            const cancelUrl = `${baseUrl}/booking-reminder/cancel/${token}`;
-            const logoUrl = `${baseUrl}/images/dineplus.png`;
-
-            // 發送提醒郵件
-            await sendBookingReminder(email, {
-                clientname,
-                logoUrl,
+            // 準備提醒資料
+            const reminderData = {
+                ...reservation.toObject(),
+                storeName: clientname,
+                customBookingId,
+                email,
+                lineUserId,
                 date,
                 time,
                 adults: adults || 1,
-                children: children || 0,
-                bookingId: customBookingId,
-                confirmUrl,
-                cancelUrl
-            });
+                children: children || 0
+            };
 
-            // 標記為已發送提醒
-            await reservation.updateOne({
-                reminderSent: true,
-                reminderSentAt: new Date()
-            });
+            // 使用通知服務發送提醒
+            const results = await notificationService.sendBookingReminder(reminderData);
 
-            console.log(`Reminder sent for booking ${customBookingId} to ${email}`);
+            // 記錄通知狀態
+            await notificationService.logNotificationStatus(customBookingId, 'reminder', results);
+
+            // 標記為已發送提醒（只要有任一方式成功即可）
+            if (results.success) {
+                await reservation.updateOne({
+                    reminderSent: true,
+                    reminderSentAt: new Date()
+                });
+                console.log(`✅ 提醒成功發送 - 訂位 ${customBookingId}`);
+            } else {
+                console.log(`⚠️  提醒發送失敗 - 訂位 ${customBookingId}:`, results);
+            }
 
         } catch (error) {
-            console.error(`Error sending reminder for booking ${reservation.customBookingId}:`, error);
+            console.error(`❌ 發送提醒失敗 - 訂位 ${reservation.customBookingId}:`, error);
         }
     }
 
