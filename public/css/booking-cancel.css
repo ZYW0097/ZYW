@@ -5,6 +5,15 @@ body {
     padding-top: 0; /* 讓其他地方的padding-top生效 */
 }
 
+/* 移除訂位懸停展開後的容器圓角 */
+.nav-dropdown .dropdown-menu {
+    border-radius: 0 !important;
+}
+
+.mobile-dropdown .mobile-dropdown-menu {
+    border-radius: 0 !important;
+}
+
 /* 頁面容器 */
 .page-container {
     max-width: 1400px;
@@ -530,52 +539,74 @@ body {
         padding: 1.5rem;
     }
     
-    /* 行動裝置保持桌電樣式但優化顯示 */
+    /* 行動裝置保持桌電版的2×2佈局但優化顯示效果 */
     .booking-card {
         padding: 1.5rem;
         padding-bottom: 4rem; /* 為取消按鈕留出空間 */
+        background: #fafafa;
+        border: 2px solid #333;
     }
     
-    /* 在行動裝置上優化info佈局，但保持2列 */
+    /* 保持2×2佈局：姓名-人數，日期-時段 */
     .booking-info {
-        grid-template-columns: 1fr 1fr;
-        gap: 1.2rem;
+        grid-template-columns: 1fr 1fr; /* 強制保持2列 */
+        gap: 1rem;
         margin-bottom: 1.5rem;
     }
     
     .info-item {
-        background: #f8f9fa;
-        padding: 0.8rem;
+        background: white;
+        padding: 1rem;
         border-radius: 8px;
-        border-left: 4px solid #333;
+        border: 1px solid #333;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .info-label {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: #333;
-        font-weight: 600;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
     }
     
     .info-value {
-        font-size: 1rem;
-        color: #333;
-        margin-top: 0.2rem;
+        font-size: 1.1rem;
+        color: #000;
+        font-weight: 600;
+        line-height: 1.2;
     }
     
     .booking-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .booking-id {
+        font-size: 1.1rem;
+        padding: 0.5rem 1rem;
+        font-weight: bold;
+    }
+    
+    .restaurant-name {
+        font-size: 1rem;
+        padding: 0.4rem 1rem;
+        background: #333;
+        color: white;
+        border-radius: 20px;
     }
     
     .booking-card .cancel-btn {
         position: static;
         width: 100%;
-        margin-top: 1rem;
-        padding: 0.8rem;
-        font-size: 1rem;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        font-weight: 700;
     }
     
     .modal-buttons {
@@ -605,14 +636,26 @@ body {
     }
     
     .booking-card {
-        padding: 1rem;
-        padding-bottom: 3.5rem;
+        padding: 1.2rem;
+        padding-bottom: 4rem;
     }
     
-    /* 在更小螢幕上改為單列顯示 */
+    /* 在更小螢幕上依然保持2×2佈局 */
     .booking-info {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr 1fr; /* 強制保持2列，即使在小螢幕 */
+        gap: 0.8rem;
+    }
+    
+    .info-item {
+        padding: 0.8rem;
+    }
+    
+    .info-label {
+        font-size: 0.75rem;
+    }
+    
+    .info-value {
+        font-size: 1rem;
     }
     
     .modal-content {

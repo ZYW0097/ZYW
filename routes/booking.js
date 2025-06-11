@@ -471,9 +471,6 @@ router.get('/:storeSlug/api/booking/all-current', async (req, res) => {
         .limit(100)
         .lean(); // 使用lean()提高性能
         
-        console.log(`找到 ${reservations.length} 筆有效訂位記錄 (${storeSlug})`);
-        console.log('訂位記錄樣本:', reservations.slice(0, 2));
-        
         res.json({ success: true, results: reservations });
     } catch (error) {
         console.error('Error fetching all current bookings:', error);
