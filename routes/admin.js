@@ -7,6 +7,11 @@ router.get('/reminder-test', (req, res) => {
     res.render('admin/reminder-test', { layout: false });
 });
 
+// 顯示 Webhook 測試頁面
+router.get('/webhook-test', (req, res) => {
+    res.render('admin/webhook-test', { layout: false });
+});
+
 // 手動觸發提醒檢查（測試用）
 router.post('/trigger-reminder-check', async (req, res) => {
     try {

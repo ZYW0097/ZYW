@@ -70,11 +70,11 @@ class ReminderService {
             const db = getClientDb(slugname, 'BDB');
             const Reservation = db.model('Reservation', reservationSchema);
 
-            // 計算12小時後的時間範圍
+            // 計算12小時後的時間範圍 (放寬到40分鐘窗口以配合20分鐘檢查間隔)
             const now = new Date();
             const targetTime = new Date(now.getTime() + (12 * 60 * 60 * 1000)); // 12小時後
-            const startWindow = new Date(targetTime.getTime() - (30 * 60 * 1000)); // 提前30分鐘
-            const endWindow = new Date(targetTime.getTime() + (30 * 60 * 1000)); // 延後30分鐘
+            const startWindow = new Date(targetTime.getTime() - (40 * 60 * 1000)); // 提前40分鐘
+            const endWindow = new Date(targetTime.getTime() + (40 * 60 * 1000)); // 延後40分鐘
             
             const targetDate = targetTime.toISOString().split('T')[0];
             const startTime = this.formatTime(startWindow);
@@ -160,11 +160,12 @@ class ReminderService {
     getStatus() {
         return {
             isRunning: this.isRunning,
-            cronExpression: this.isRunning ? '0 * * * * (每小時執行)' : null,
+            cronExpression: this.isRunning ? '0 * * * * (內部每小時執行，外部20分鐘檢查)' : null,
             lastCheck: this.lastCheckTime || null,
             cronJobExists: !!this.cronJob,
             nodeVersion: process.version,
-            uptime: process.uptime()
+            uptime: process.uptime(),
+            timeWindow: '12小時前 ±40分鐘'
         };
     }
 
