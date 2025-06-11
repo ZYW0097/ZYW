@@ -85,31 +85,54 @@ class LineService {
                 });
 
                 res.on('end', () => {
-                    console.log('📥 LINE API 回應:');
+                    console.log('📥 LINE API 完整回應:');
                     console.log('  狀態碼:', res.statusCode);
+                    console.log('  狀態訊息:', res.statusMessage);
+                    console.log('  回應標頭:', JSON.stringify(res.headers, null, 2));
                     console.log('  回應內容:', responseData);
+                    
+                    let parsedResponse;
+                    try {
+                        parsedResponse = JSON.parse(responseData);
+                        console.log('  解析後的回應:', JSON.stringify(parsedResponse, null, 2));
+                    } catch (e) {
+                        console.log('  無法解析 JSON 回應:', e.message);
+                    }
                     
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         resolve({
                             success: true,
                             statusCode: res.statusCode,
-                            data: responseData
+                            data: responseData,
+                            parsed: parsedResponse
                         });
                     } else {
-                        reject({
+                        const errorDetails = {
                             success: false,
                             statusCode: res.statusCode,
-                            error: responseData
-                        });
+                            statusMessage: res.statusMessage,
+                            headers: res.headers,
+                            error: responseData,
+                            parsed: parsedResponse
+                        };
+                        console.error('❌ LINE API 詳細錯誤信息:', JSON.stringify(errorDetails, null, 2));
+                        reject(errorDetails);
                     }
                 });
             });
 
             req.on('error', (error) => {
-                console.error('❌ LINE API 請求錯誤:', error);
+                console.error('❌ HTTP 請求錯誤 - 完整錯誤對象:', error);
+                console.error('❌ 錯誤堆疊:', error.stack);
+                console.error('❌ 錯誤代碼:', error.code);
+                console.error('❌ 錯誤訊息:', error.message);
                 reject({
                     success: false,
-                    error: error.message
+                    type: 'HTTP_REQUEST_ERROR',
+                    error: error.message,
+                    code: error.code,
+                    stack: error.stack,
+                    fullError: error
                 });
             });
 
@@ -149,13 +172,22 @@ class LineService {
             console.log('📤 準備發送 LINE 訊息:', JSON.stringify(requestData, null, 2));
 
             // 發送訊息
-            await this.sendLineRequest('/v2/bot/message/push', requestData);
+            const result = await this.sendLineRequest('/v2/bot/message/push', requestData);
 
-            console.log(`LINE 訂位成功通知已發送給用戶: ${userId}`);
+            console.log(`✅ LINE 訂位成功通知已發送給用戶: ${userId}`);
+            console.log('✅ 發送結果:', JSON.stringify(result, null, 2));
             return true;
 
         } catch (error) {
-            console.error('發送 LINE 訂位成功通知失敗:', error);
+            console.error('❌ 發送 LINE 訂位成功通知失敗 - 完整錯誤信息:');
+            console.error('錯誤類型:', typeof error);
+            console.error('錯誤內容:', error);
+            console.error('錯誤 JSON:', JSON.stringify(error, null, 2));
+            
+            if (error.stack) {
+                console.error('錯誤堆疊:', error.stack);
+            }
+            
             return false;
         }
     }
