@@ -53,6 +53,11 @@
             border: 1px solid #f5c6cb;
             color: #721c24;
         }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +74,7 @@
             <h3>操作</h3>
             <button class="button" onclick="triggerCheck()">手動觸發提醒檢查</button>
             <button class="button" onclick="restartService()">重啟提醒服務</button>
+            <button class="button" onclick="checkAndRepair()" style="background: #28a745;">檢查並修復服務</button>
         </div>
         
         <div id="result"></div>
@@ -80,8 +86,12 @@
                 const response = await fetch('/admin/reminder-status');
                 const data = await response.json();
                 document.getElementById('status-info').innerHTML = `
-                    <p><strong>運行狀態:</strong> ${data.isRunning ? '運行中' : '已停止'}</p>
-                    <p><strong>下次執行:</strong> ${data.nextRun || '未排程'}</p>
+                    <p><strong>運行狀態:</strong> <span style="color: ${data.isRunning ? 'green' : 'red'}">${data.isRunning ? '運行中' : '已停止'}</span></p>
+                    <p><strong>執行頻率:</strong> ${data.cronExpression || '未排程'}</p>
+                    <p><strong>最後檢查:</strong> ${data.lastCheck ? new Date(data.lastCheck).toLocaleString('zh-TW') : '尚未執行'}</p>
+                    <p><strong>CronJob存在:</strong> ${data.cronJobExists ? '是' : '否'}</p>
+                    <p><strong>Node版本:</strong> ${data.nodeVersion}</p>
+                    <p><strong>運行時間:</strong> ${Math.floor(data.uptime / 60)} 分鐘</p>
                 `;
             } catch (error) {
                 showResult('檢查狀態失敗: ' + error.message, 'error');
@@ -114,13 +124,32 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showResult(data.message, 'success');
+                    showResult(data.message + (data.status ? ` (狀態: ${data.status.isRunning ? '運行中' : '已停止'})` : ''), 'success');
                     checkStatus(); // 更新狀態
                 } else {
-                    showResult(data.error, 'error');
+                    showResult(data.error + (data.details ? `: ${data.details}` : ''), 'error');
                 }
             } catch (error) {
                 showResult('重啟服務失敗: ' + error.message, 'error');
+            }
+        }
+
+        async function checkAndRepair() {
+            try {
+                showResult('正在檢查和修復服務...', 'info');
+                const response = await fetch('/admin/check-and-repair-reminder', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.message + (data.status ? ` (狀態: ${data.status.isRunning ? '運行中' : '已停止'})` : ''), 'success');
+                    checkStatus(); // 更新狀態
+                } else {
+                    showResult(data.error + (data.details ? `: ${data.details}` : ''), 'error');
+                }
+            } catch (error) {
+                showResult('檢查修復失敗: ' + error.message, 'error');
             }
         }
 

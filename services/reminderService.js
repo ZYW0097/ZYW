@@ -8,6 +8,7 @@ class ReminderService {
     constructor() {
         this.isRunning = false;
         this.cronJob = null;
+        this.lastCheckTime = null;
     }
 
     // 啟動提醒服務
@@ -17,17 +18,25 @@ class ReminderService {
             return;
         }
 
-        // 每小時檢查一次是否有需要發送提醒的訂位
-        this.cronJob = cron.schedule('0 * * * *', async () => {
-            console.log('Running booking reminder check...');
-            await this.checkAndSendReminders();
-        }, {
-            scheduled: false
-        });
+        try {
+            console.log('Creating cron job...');
+            // 每小時檢查一次是否有需要發送提醒的訂位
+            this.cronJob = cron.schedule('0 * * * *', async () => {
+                console.log('Running booking reminder check...');
+                this.lastCheckTime = new Date();
+                await this.checkAndSendReminders();
+            }, {
+                scheduled: false
+            });
 
-        this.cronJob.start();
-        this.isRunning = true;
-        console.log('Booking reminder service started - checking every hour');
+            console.log('Starting cron job...');
+            this.cronJob.start();
+            this.isRunning = true;
+            console.log('Booking reminder service started successfully - checking every hour');
+        } catch (error) {
+            console.error('Error starting reminder service:', error);
+            this.isRunning = false;
+        }
     }
 
     // 停止提醒服務
@@ -143,6 +152,7 @@ class ReminderService {
     // 手動觸發檢查（用於測試）
     async triggerCheck() {
         console.log('Manually triggering reminder check...');
+        this.lastCheckTime = new Date();
         await this.checkAndSendReminders();
     }
 
@@ -150,8 +160,27 @@ class ReminderService {
     getStatus() {
         return {
             isRunning: this.isRunning,
-            nextRun: this.cronJob ? this.cronJob.nextDates().toString() : null
+            cronExpression: this.isRunning ? '0 * * * * (每小時執行)' : null,
+            lastCheck: this.lastCheckTime || null,
+            cronJobExists: !!this.cronJob,
+            nodeVersion: process.version,
+            uptime: process.uptime()
         };
+    }
+
+    // 檢查和修復服務
+    checkAndRepair() {
+        console.log('Checking reminder service health...');
+        
+        if (!this.isRunning || !this.cronJob) {
+            console.log('Service appears to be stopped, attempting to restart...');
+            this.stop();
+            this.start();
+        } else {
+            console.log('Service appears to be running normally');
+        }
+        
+        return this.getStatus();
     }
 }
 
