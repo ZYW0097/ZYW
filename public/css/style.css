@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #007AFF;
-    --secondary-color: #5856D6;
+    --primary-color: #333;
+    --secondary-color: #666;
     --background-color: #F5F5F7;
     --text-color: #1D1D1F;
     --transition: all 0.3s ease;
@@ -31,86 +31,91 @@ body {
 
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background: #333;
-    color: white;
 }
 
 .index-nav {
+    background: #fafafa;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
+    height: 75px;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .custom-navbar {
+    background: #fafafa;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
+    height: 75px;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .nav-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 1rem 2rem;
+    max-width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    height: 60px;
+    justify-content: space-between;
+    padding-left: 4.5rem;
+    padding-right: 4.5rem;
+    box-sizing: border-box;
 }
 
 .nav-logo {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #000;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #111;
     text-decoration: none;
-    letter-spacing: -1px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    height: 75px;
 }
 
 .nav-right-group {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .nav-links {
     display: flex;
+    gap: 2.5rem;
     align-items: center;
-    gap: 2rem;
 }
 
 .nav-link {
-    color: #000;
+    color: #444;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 1px;
     transition: color 0.2s;
 }
 
 .nav-link:hover {
-    color: #333;
+    color: var(--primary-color);
 }
 
 .nav-user {
     display: flex;
     align-items: center;
+    margin-left: 2.5rem;
 }
 
 .user-icon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    transition: border-color 0.2s;
+    background: #111;
+    padding: 2px;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s;
 }
 
 /* 桌機/行動裝置切換 */
@@ -225,19 +230,19 @@ body {
   display: block; 
   width: 100%; 
   padding: 1rem 0; 
-  color: #222; 
-  font-size: 1.2rem; 
+  color: #333; 
   text-decoration: none; 
-  border-bottom: 1px solid #eee;
+  font-size: 1.2rem; 
+  font-weight: 500; 
+  border-bottom: 1px solid #f0f0f0; 
   transition: background 0.2s;
 }
 .mobile-link:hover { 
-  background: #f5f5f5; 
+  background: #f8f9fa; 
 }
 .mobile-user-content {
   display: flex;
   align-items: center;
-  width: 100%;
   padding: 0.5rem 0;
 }
 .mobile-user-content .user-icon {
