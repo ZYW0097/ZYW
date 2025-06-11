@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}/${month}/${day}`;
     }
 
-    // 創建訂位卡片 - 修改取消按鈕
+    // 創建訂位卡片 - 調整顯示格式：移除電話，調整為姓名-人數，日期-時段
     function createBookingCard(booking, showRestaurant) {
         const bookingId = booking.customBookingId;
         const formattedDate = formatDate(booking.date);
@@ -315,8 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="info-value">${booking.name}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">電話</div>
-                        <div class="info-value">${booking.phone}</div>
+                        <div class="info-label">人數</div>
+                        <div class="info-value">${booking.guests || (booking.adults || 0) + (booking.children || 0)}人</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">日期</div>
@@ -325,10 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="info-item">
                         <div class="info-label">時段</div>
                         <div class="info-value">${booking.time}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">人數</div>
-                        <div class="info-value">${booking.guests || (booking.adults || 0) + (booking.children || 0)}人</div>
                     </div>
                 </div>
                 <button class="cancel-btn" type="button">

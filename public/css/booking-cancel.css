@@ -1,5 +1,10 @@
 /* 取消訂位頁面專用樣式 - 與訂位頁面風格一致 */
 
+/* 確保不影響navbar */
+body {
+    padding-top: 0; /* 讓其他地方的padding-top生效 */
+}
+
 /* 頁面容器 */
 .page-container {
     max-width: 1400px;
@@ -7,6 +12,8 @@
     padding: 2rem;
     min-height: 100vh;
     padding-top: 100px;
+    position: relative;
+    z-index: 1; /* 確保低於navbar */
 }
 
 @media (max-width: 768px) {
@@ -247,9 +254,9 @@
     margin-bottom: 1rem;
 }
 
-/* 修改booking-id為黑白配色 */
+/* 修改booking-id為普通字體，黑白配色 */
 .booking-id {
-    font-family: 'Courier New', monospace;
+    font-family: inherit; /* 使用一般字體 */
     font-weight: bold;
     color: #000;
     background: #fff;
@@ -269,7 +276,7 @@
     font-size: 0.9rem;
 }
 
-/* 保持桌電顯示方式的訂位資訊佈局 */
+/* 調整訂位資訊佈局：姓名-人數，日期-時段 */
 .booking-info {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -382,7 +389,7 @@
     max-height: 120px;
 }
 
-/* 確認取消彈窗 - 移除展開後容器的圓角 */
+/* 確認取消彈窗 */
 .cancel-modal {
     position: fixed;
     top: 0;
@@ -432,15 +439,6 @@
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     text-align: left;
-}
-
-/* 訂位懸停展開後的容器不要圓角 */
-.nav-dropdown .dropdown-menu {
-    border-radius: 0 !important;
-}
-
-.mobile-dropdown .mobile-dropdown-menu {
-    border-radius: 0 !important;
 }
 
 .warning-text {
