@@ -1,0 +1,94 @@
+<p style="color: #666; margin-bottom: 2rem; line-height: 1.6;">
+    親愛的顧客您好，<br>
+    提醒您明天有在我們餐廳的用餐預約，我們很期待為您提供優質的用餐體驗。
+</p>
+
+<!-- 訂位詳情 -->
+<div class="booking-details">
+    <h3 style="margin-bottom: 1.5rem; color: #333; font-weight: 700;">訂位詳情</h3>
+    <div class="detail-grid">
+        <div class="detail-row">
+            <div class="detail-label">餐廳名稱：</div>
+            <div class="detail-value">{{clientname}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">用餐日期：</div>
+            <div class="detail-value">{{date}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">用餐時間：</div>
+            <div class="detail-value">{{time}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">用餐人數：</div>
+            <div class="detail-value">{{adults}}大 {{children}}小</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">訂位編號：</div>
+            <div class="detail-value">
+                <span class="booking-id">{{bookingId}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 確認按鈕區域 -->
+<div style="text-align: center; margin: 2.5rem 0;">
+    <p style="color: #333; font-weight: 600; margin-bottom: 1.5rem; font-size: 1.1rem;">
+        請確認您是否會如期前來用餐：
+    </p>
+    
+    <!-- 按鈕容器 -->
+    <div style="display: inline-block; margin: 0 auto;">
+        <table style="border-spacing: 10px;">
+            <tr>
+                <td>
+                    <a href="{{confirmUrl}}" 
+                       style="display: inline-block; 
+                              background: #28a745; 
+                              color: white; 
+                              padding: 1rem 2rem; 
+                              text-decoration: none; 
+                              border-radius: 8px; 
+                              font-weight: 600; 
+                              font-size: 1rem;
+                              text-align: center;
+                              min-width: 120px;">
+                        ✓ 確認到場
+                    </a>
+                </td>
+                <td>
+                    <a href="{{cancelUrl}}" 
+                       style="display: inline-block; 
+                              background: #dc3545; 
+                              color: white; 
+                              padding: 1rem 2rem; 
+                              text-decoration: none; 
+                              border-radius: 8px; 
+                              font-weight: 600; 
+                              font-size: 1rem;
+                              text-align: center;
+                              min-width: 120px;">
+                        ✗ 取消訂位
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- 重要提醒 -->
+<div class="notice-section">
+    <div class="notice-title">重要提醒</div>
+    <div class="notice-text">
+        • 如果您不採取任何行動，我們將預設您會如期到場用餐<br>
+        • 若需取消訂位，請點擊上方「取消訂位」按鈕<br>
+        • 請準時到達，如遲到超過15分鐘，我們可能無法保留您的座位<br>
+        • 用餐時間限制為2小時
+    </div>
+</div>
+
+<p style="color: #666; margin-top: 2rem;">
+    如有任何問題或需要協助，請隨時與我們聯絡。<br>
+    感謝您選擇我們的餐廳，期待您的光臨！
+</p> 

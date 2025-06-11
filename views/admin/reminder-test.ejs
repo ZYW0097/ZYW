@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂位提醒測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .status {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>訂位提醒系統測試</h1>
+        
+        <div class="status">
+            <h3>服務狀態</h3>
+            <div id="status-info">載入中...</div>
+            <button class="button" onclick="checkStatus()">更新狀態</button>
+        </div>
+        
+        <div>
+            <h3>操作</h3>
+            <button class="button" onclick="triggerCheck()">手動觸發提醒檢查</button>
+            <button class="button" onclick="restartService()">重啟提醒服務</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            try {
+                const response = await fetch('/admin/reminder-status');
+                const data = await response.json();
+                document.getElementById('status-info').innerHTML = `
+                    <p><strong>運行狀態:</strong> ${data.isRunning ? '運行中' : '已停止'}</p>
+                    <p><strong>下次執行:</strong> ${data.nextRun || '未排程'}</p>
+                `;
+            } catch (error) {
+                showResult('檢查狀態失敗: ' + error.message, 'error');
+            }
+        }
+
+        async function triggerCheck() {
+            try {
+                showResult('正在檢查提醒...', 'info');
+                const response = await fetch('/admin/trigger-reminder-check', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.message, 'success');
+                } else {
+                    showResult(data.error, 'error');
+                }
+            } catch (error) {
+                showResult('觸發檢查失敗: ' + error.message, 'error');
+            }
+        }
+
+        async function restartService() {
+            try {
+                const response = await fetch('/admin/restart-reminder-service', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.message, 'success');
+                    checkStatus(); // 更新狀態
+                } else {
+                    showResult(data.error, 'error');
+                }
+            } catch (error) {
+                showResult('重啟服務失敗: ' + error.message, 'error');
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        // 頁面載入時檢查狀態
+        checkStatus();
+    </script>
+</body>
+</html> 

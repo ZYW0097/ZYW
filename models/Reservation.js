@@ -70,6 +70,24 @@ const reservationSchema = new mongoose.Schema({
     },
     cancelledAt: {
         type: Date
+    },
+    // 提醒相關欄位
+    reminderSent: {
+        type: Boolean,
+        default: false
+    },
+    reminderSentAt: {
+        type: Date
+    },
+    reminderConfirmed: {
+        type: Boolean,
+        default: false
+    },
+    reminderConfirmedAt: {
+        type: Date
+    },
+    cancelReason: {
+        type: String
     }
 });
 

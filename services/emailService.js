@@ -114,7 +114,11 @@ async function sendBookingReminder(to, reminderInfo) {
         logoUrl: reminderInfo.logoUrl,
         date: reminderInfo.date,
         time: reminderInfo.time,
-        bookingId: reminderInfo.bookingId
+        adults: reminderInfo.adults,
+        children: reminderInfo.children,
+        bookingId: reminderInfo.bookingId,
+        confirmUrl: reminderInfo.confirmUrl,
+        cancelUrl: reminderInfo.cancelUrl
     });
 }
 

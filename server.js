@@ -10,6 +10,9 @@ const accountRouter = require('./routes/account');
 const authRouter = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
 const pointsRoutes = require('./routes/points/index');
+const bookingReminderRouter = require('./routes/booking-reminder');
+const adminRouter = require('./routes/admin');
+const reminderService = require('./services/reminderService');
 const { loadUser } = require('./middleware/auth');
 require('dotenv').config();
 
@@ -71,6 +74,8 @@ app.use((req, res, next) => {
 // 路由
 app.use('/auth', authRouter);
 app.use('/account', accountRouter);
+app.use('/booking-reminder', bookingReminderRouter);
+app.use('/admin', adminRouter);
 app.use('/', pointsRoutes); 
 app.use('/', indexRouter);  
 
@@ -86,4 +91,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`服務器運行在端口 ${PORT}`);
+    
+    // 啟動訂位提醒服務
+    reminderService.start();
 });
