@@ -60,6 +60,11 @@ class LineService {
         return new Promise((resolve, reject) => {
             const postData = JSON.stringify(data);
             
+            console.log('🔗 發送 LINE API 請求:');
+            console.log('  路徑:', path);
+            console.log('  數據:', postData);
+            console.log('  Token:', this.channelAccessToken ? `${this.channelAccessToken.substring(0, 20)}...` : '未設定');
+            
             const options = {
                 hostname: this.apiBaseUrl,
                 port: 443,
@@ -80,6 +85,10 @@ class LineService {
                 });
 
                 res.on('end', () => {
+                    console.log('📥 LINE API 回應:');
+                    console.log('  狀態碼:', res.statusCode);
+                    console.log('  回應內容:', responseData);
+                    
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         resolve({
                             success: true,
@@ -97,6 +106,7 @@ class LineService {
             });
 
             req.on('error', (error) => {
+                console.error('❌ LINE API 請求錯誤:', error);
                 reject({
                     success: false,
                     error: error.message
@@ -124,36 +134,19 @@ class LineService {
         }
 
         try {
-            // 載入訂位成功模板
-            const template = await this.loadTemplate('booking-confirmation');
-            
-            // 準備替換變數
-            const variables = {
-                'storeName': bookingData.storeName || '餐廳',
-                'bookingDate': bookingData.date || '',
-                'timeSlot': bookingData.timeSlot || '',
-                'customerName': bookingData.customerName || '',
-                'phone': bookingData.phone || '',
-                'email': bookingData.email || '',
-                'partySize': bookingData.partySize || '',
-                'vegetarianRequirement': bookingData.vegetarianRequirement || '無',
-                'specialRequirement': bookingData.specialRequirement || '無',
-                'note': bookingData.note || '無',
-                'bookingId': bookingData.bookingId || ''
+            // 使用簡單文字訊息進行測試
+            const message = {
+                type: 'text',
+                text: `✅ 訂位成功通知\n\n親愛的 ${bookingData.customerName}，您好！\n\n您的訂位已確認：\n🏪 餐廳：${bookingData.storeName}\n🗓️ 日期：${bookingData.date}\n🕐 時間：${bookingData.timeSlot}\n👥 人數：${bookingData.partySize}人\n🆔 訂位編號：${bookingData.bookingId}\n\n期待您的光臨！`
             };
-
-            // 替換模板變數
-            const message = this.replaceTemplateVariables(template, variables);
 
             // 準備發送的資料
             const requestData = {
                 to: userId,
-                messages: [{
-                    type: 'flex',
-                    altText: '訂位成功通知',
-                    contents: message
-                }]
+                messages: [message]
             };
+
+            console.log('📤 準備發送 LINE 訊息:', JSON.stringify(requestData, null, 2));
 
             // 發送訊息
             await this.sendLineRequest('/v2/bot/message/push', requestData);
