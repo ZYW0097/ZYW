@@ -84,6 +84,15 @@ class LineService {
             console.error('錯誤狀態:', error.response?.status);
             console.error('錯誤訊息:', error.response?.data?.message || error.message);
             console.error('完整錯誤回應:', JSON.stringify(error.response?.data, null, 2));
+            console.error('完整錯誤物件:', JSON.stringify({
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                headers: error.response?.headers,
+                data: error.response?.data,
+                message: error.message,
+                stack: error.stack
+            }, null, 2));
+            console.error('發送的訊息內容:', JSON.stringify(messages, null, 2));
             
             return false;
         }
@@ -102,6 +111,25 @@ class LineService {
                     delete obj.action.color;
                 }
                 
+                // 檢查並移除有問題的 URI
+                if (obj.action && obj.action.uri) {
+                    const uri = obj.action.uri;
+                    // 如果 URI 包含中文或無效格式，移除整個 action
+                    if (uri.includes('您的網站') || uri.includes('${') || !/^https?:\/\//.test(uri)) {
+                        console.warn('⚠️ 移除無效的 URI:', uri);
+                        const label = obj.action.label;
+                        delete obj.action;
+                        // 如果這是一個 button，將其類型改為 text
+                        if (obj.type === 'button') {
+                            obj.type = 'text';
+                            obj.text = label || '訂位確認';
+                            obj.align = 'center';
+                            obj.color = '#FF6B35';
+                            obj.weight = 'bold';
+                        }
+                    }
+                }
+                
                 // 遞迴處理所有子物件
                 Object.values(obj).forEach(value => {
                     if (typeof value === 'object') {
@@ -117,26 +145,29 @@ class LineService {
     }
 
     /**
-     * 替換模板變數
+     * 替換模板變數 - 參考 server-OLD.js 的做法
      */
     replaceTemplateVariables(template, data) {
-        let templateStr = JSON.stringify(template);
+        // 深拷貝模板
+        const result = JSON.parse(JSON.stringify(template));
         
         // 安全的變數處理函數
         const safeValue = (value, defaultValue = '') => {
-            if (value === null || value === undefined) return defaultValue;
+            if (value === null || value === undefined || value === '') return defaultValue;
             return String(value);
         };
         
-        // 處理素食需求
-        const vegetarianText = data.vegetarian === 'yes' || data.vegetarian === true || data.vegetarian === '是' ? '是' : '否';
-        
-        // 處理用餐人數
+        // 處理用餐人數 - 參考 server-OLD.js
         const adults = parseInt(data.adults) || 0;
         const children = parseInt(data.children) || 0;
-        const partySize = children > 0 ? `${adults}大${children}小` : `${adults}人`;
+        const partySize = children > 0 ? `${adults}大${children}小` : `${adults}`;
         
-        // 定義變數映射 - 使用 ${} 格式
+        // 直接使用前端資料，保持原始值
+        const vegetarianText = data.vegetarian || '否';
+        const specialText = data.special || '無';
+        const noteText = data.note || data.notes || '無';
+        
+        // 定義變數映射
         const variableMap = {
             '${storeName}': safeValue(data.storeName, '餐廳'),
             '${bookingDate}': safeValue(data.date || data.bookingDate),
@@ -150,31 +181,44 @@ class LineService {
             '${email}': safeValue(data.email),
             '${partySize}': partySize,
             '${vegetarianRequirement}': vegetarianText,
-            '${specialRequirement}': safeValue(data.special || data.specialNeeds, '無'),
-            '${note}': safeValue(data.note || data.notes, '無'),
+            '${specialRequirement}': specialText,
+            '${note}': noteText,
             '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
         };
 
-        // 替換所有變數
-        Object.entries(variableMap).forEach(([placeholder, value]) => {
-            templateStr = templateStr.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+        console.log('📊 原始資料:', {
+            name: data.name,
+            vegetarian: data.vegetarian,
+            special: data.special,
+            note: data.note,
+            adults: data.adults,
+            children: data.children
         });
 
-        try {
-            const result = JSON.parse(templateStr);
-            
-            // 檢查是否還有未替換的變數
-            const unreplacedVars = templateStr.match(/\$\{[^}]+\}/g);
-            if (unreplacedVars) {
-                console.warn('發現未替換的變數:', unreplacedVars);
+        // 遞迴替換函數
+        const replaceInObject = (obj) => {
+            if (Array.isArray(obj)) {
+                obj.forEach(item => replaceInObject(item));
+            } else if (obj && typeof obj === 'object') {
+                Object.keys(obj).forEach(key => {
+                    if (typeof obj[key] === 'string') {
+                        // 替換字串中的變數
+                        Object.entries(variableMap).forEach(([placeholder, value]) => {
+                            obj[key] = obj[key].replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+                        });
+                    } else if (typeof obj[key] === 'object') {
+                        replaceInObject(obj[key]);
+                    }
+                });
             }
-            
-            return result;
-        } catch (parseError) {
-            console.error('模板解析失敗:', parseError.message);
-            console.error('處理後的模板:', templateStr.substring(0, 500));
-            throw parseError;
-        }
+        };
+
+        replaceInObject(result);
+
+        console.log('🔄 模板變數替換完成');
+        console.log('📝 變數映射:', variableMap);
+        
+        return result;
     }
 
     /**
