@@ -1,261 +1,230 @@
 {
     "type": "bubble",
-    "size": "mega",
-    "hero": {
-      "type": "image",
-      "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
-      "aspectRatio": "20:13",
-      "aspectMode": "cover",
-      "size": "full"
+    "header": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "訂位成功通知",
+                        "color": "#ffffff",
+                        "align": "center",
+                        "gravity": "center",
+                        "size": "lg",
+                        "flex": 4,
+                        "weight": "bold"
+                    }
+                ],
+                "alignItems": "center"
+            }
+        ],
+        "backgroundColor": "#8CBF7E",
+        "paddingAll": "20px"
     },
     "body": {
-      "type": "box",
-      "layout": "vertical",
-      "contents": [
-        {
-          "type": "text",
-          "text": "訂位成功通知",
-          "size": "xxl",
-          "align": "center",
-          "weight": "bold",
-          "margin": "none",
-          "color": "#8CBF7E"
-        },
-        {
-          "type": "text",
-          "weight": "bold",
-          "size": "lg",
-          "text": "{{storeName}}",
-          "align": "center",
-          "margin": "none"
-        },
-        {
-          "type": "text",
-          "weight": "bold",
-          "size": "lg",
-          "text": "{{bookingDate}} {{timeSlot}}",
-          "align": "center",
-          "margin": "sm"
-        },
-        {
-          "type": "box",
-          "layout": "vertical",
-          "margin": "lg",
-          "spacing": "sm",
-          "contents": [
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
             {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "姓名",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{customerName}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
+                "type": "text",
+                "text": "${storeName}",
+                "weight": "bold",
+                "size": "md",
+                "wrap": true,
+                "align": "center",
+                "color": "#2E4A62"
             },
             {
-              "type": "separator",
-              "margin": "sm"
+                "type": "text",
+                "text": "${bookingDate} ${timeSlot}",
+                "weight": "bold",
+                "size": "md",
+                "wrap": true,
+                "align": "center",
+                "color": "#8CBF7E",
+                "margin": "sm"
             },
             {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "電話",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{phone}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "電子郵件",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "margin": "sm",
-                  "flex": 2
-                },
-                {
-                  "type": "text",
-                  "text": "{{email}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "用餐人數",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{partySize}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "素食需求",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{vegetarianRequirement}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "特殊需求",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{specialRequirement}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "備註",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "margin": "sm",
-                  "flex": 2
-                },
-                {
-                  "type": "text",
-                  "text": "{{note}}",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
+                "type": "box",
+                "layout": "vertical",
+                "margin": "lg",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "姓名",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${customerName}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "電話",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${phone}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "電子郵件",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${email}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "用餐人數",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${partySize}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "素食需求",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${vegetarianRequirement}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "特殊需求",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${specialRequirement}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "備註",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${note}",
+                                "size": "sm",
+                                "color": "#111111",
+                                "flex": 5
+                            }
+                        ],
+                        "margin": "md"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "訂位編號",
+                                "size": "sm",
+                                "color": "#555555",
+                                "flex": 2
+                            },
+                            {
+                                "type": "text",
+                                "text": "${bookingId}",
+                                "size": "sm",
+                                "color": "#8CBF7E",
+                                "flex": 5,
+                                "weight": "bold"
+                            }
+                        ],
+                        "margin": "md"
+                    }
+                ]
             }
-          ]
-        }
-      ]
-    },
-    "footer": {
-      "type": "box",
-      "layout": "vertical",
-      "contents": [
-        {
-          "type": "text",
-          "text": "{{bookingId}}",
-          "color": "#ffffff",
-          "weight": "bold",
-          "align": "center",
-          "size": "lg",
-          "wrap": true
-        }
-      ],
-      "flex": 0,
-      "backgroundColor": "#8CBF7E",
-      "borderWidth": "medium",
-      "width": "100%",
-      "height": "65px",
-      "alignItems": "center",
-      "justifyContent": "center"
+        ],
+        "paddingAll": "20px"
     }
-  }
+}

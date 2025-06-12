@@ -47,10 +47,20 @@ class LineService {
         }
 
         try {
-            const response = await axios.post('https://api.line.me/v2/bot/message/push', {
+            const requestData = {
                 to: userId,
                 messages: Array.isArray(message) ? message : [message]
-            }, {
+            };
+
+            console.log('📤 發送 LINE 請求:');
+            console.log('URL:', 'https://api.line.me/v2/bot/message/push');
+            console.log('Headers:', {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.accessToken.substring(0, 10)}...`
+            });
+            console.log('Request Body:', JSON.stringify(requestData, null, 2));
+
+            const response = await axios.post('https://api.line.me/v2/bot/message/push', requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.accessToken}`
@@ -64,6 +74,13 @@ class LineService {
             console.error('錯誤狀態:', error.response?.status);
             console.error('錯誤訊息:', error.response?.data?.message || error.message);
             console.error('完整錯誤回應:', JSON.stringify(error.response?.data, null, 2));
+            console.error('完整錯誤物件:', JSON.stringify({
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                headers: error.response?.headers,
+                data: error.response?.data,
+                message: error.message
+            }, null, 2));
             
             return false;
         }
@@ -89,19 +106,23 @@ class LineService {
         const children = parseInt(data.children) || 0;
         const partySize = children > 0 ? `${adults}大${children}小` : `${adults}人`;
         
-        // 定義變數映射
+        // 定義變數映射 - 使用 ${} 格式
         const variableMap = {
-            '{{storeName}}': safeValue(data.storeName, '餐廳'),
-            '{{bookingDate}}': safeValue(data.date || data.bookingDate),
-            '{{timeSlot}}': safeValue(data.time || data.timeSlot),
-            '{{customerName}}': safeValue(data.name || data.customerName),
-            '{{phone}}': safeValue(data.phone),
-            '{{email}}': safeValue(data.email),
-            '{{partySize}}': partySize,
-            '{{vegetarianRequirement}}': vegetarianText,
-            '{{specialRequirement}}': safeValue(data.special || data.specialNeeds, '無'),
-            '{{note}}': safeValue(data.note || data.notes, '無'),
-            '{{bookingId}}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
+            '${storeName}': safeValue(data.storeName, '餐廳'),
+            '${bookingDate}': safeValue(data.date || data.bookingDate),
+            '${timeSlot}': safeValue(data.time || data.timeSlot),
+            '${date}': safeValue(data.date || data.bookingDate),
+            '${time}': safeValue(data.time || data.timeSlot),
+            '${customerName}': safeValue(data.name || data.customerName),
+            '${maskedName}': safeValue(data.maskedName || data.name || data.customerName),
+            '${phone}': safeValue(data.phone),
+            '${maskedPhone}': safeValue(data.maskedPhone || data.phone),
+            '${email}': safeValue(data.email),
+            '${partySize}': partySize,
+            '${vegetarianRequirement}': vegetarianText,
+            '${specialRequirement}': safeValue(data.special || data.specialNeeds, '無'),
+            '${note}': safeValue(data.note || data.notes, '無'),
+            '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
         };
 
         // 替換所有變數
@@ -113,7 +134,7 @@ class LineService {
             const result = JSON.parse(templateStr);
             
             // 檢查是否還有未替換的變數
-            const unreplacedVars = templateStr.match(/\{\{[^}]+\}\}/g);
+            const unreplacedVars = templateStr.match(/\$\{[^}]+\}/g);
             if (unreplacedVars) {
                 console.warn('發現未替換的變數:', unreplacedVars);
             }
