@@ -20,9 +20,6 @@ require('dotenv').config();
 
 const app = express();
 
-const LINE_BOT_ACCESS_TOKEN = process.env.LINE_BOT_ACCESS_TOKEN;
-const USER_ID = 'U7b357bcada7eb3b1f5ef3f35d084cf57';
-
 // 連接數據庫
 connectDB();
 
@@ -104,32 +101,6 @@ app.use('/webhook', webhookRouter);
 app.use('/', pointsRoutes); 
 app.use('/', indexRouter);  
 
-const sendTestMessage = async () => {
-    try {
-      const response = await axios.post(
-        'https://api.line.me/v2/bot/message/push',
-        {
-          to: USER_ID,
-          messages: [
-            {
-              type: 'text',
-              text: '🚀 機器人已啟動，這是一則測試訊息！'
-            }
-          ]
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LINE_BOT_ACCESS_TOKEN}`
-          }
-        }
-      );
-      console.log('✅ 訊息發送成功', response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
 // 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)
 app.use((req, res) => {
     res.status(404).render('error', { message: '頁面不存在' });
@@ -143,6 +114,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`服務器運行在端口 ${PORT}`);
     
-    sendTestMessage();
     reminderService.start();
 });
