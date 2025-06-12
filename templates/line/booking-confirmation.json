@@ -139,7 +139,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "{{partySize}}人",
+                  "text": "{{partySize}}",
                   "wrap": true,
                   "color": "#000000",
                   "size": "sm",

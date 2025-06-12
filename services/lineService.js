@@ -59,8 +59,9 @@ class LineService {
 
             return true;
         } catch (error) {
-            console.error('LINE訊息發送失敗:', error);
-            console.error('錯誤詳情:', error.response?.data || error.message);
+            console.error('LINE訊息發送失敗');
+            console.error('錯誤狀態:', error.response?.status);
+            console.error('錯誤訊息:', error.response?.data?.message || error.message);
             return false;
         }
     }
@@ -80,9 +81,9 @@ class LineService {
             '{{phone}}': data.phone || '',
             '{{email}}': data.email || '',
             '{{partySize}}': `${data.adults ?? 0}大${data.children ?? 0}小`,
-            '{{vegetarianRequirement}}': data.vegetarian || '無',
-            '{{specialRequirement}}': data.specialNeeds || '無',
-            '{{note}}': data.notes || '無',
+            '{{vegetarianRequirement}}': data.vegetarian === 'yes' ? '是' : '否',
+            '{{specialRequirement}}': data.special || '無',
+            '{{note}}': data.note || data.notes || '無',
             '{{bookingId}}': data.bookingCode || data.customBookingId || data.bookingId || ''
         };
 
@@ -116,8 +117,7 @@ class LineService {
 
             return await this.sendPushMessage(lineUserId, message);
         } catch (error) {
-            console.error('發送訂位成功通知失敗:', error);
-            console.error('錯誤詳情:', error.message);
+            console.error('發送訂位成功通知失敗:', error.message);
             return false;
         }
     }
