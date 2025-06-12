@@ -95,6 +95,25 @@ app.use(errorHandler);
 
 // for test
 
+app.post('/webhook', express.json(), (req, res) => {
+    const events = req.body.events;
+  
+    if (!events || events.length === 0) {
+      return res.status(200).send('No events');
+    }
+  
+    events.forEach(event => {
+      if (event.source && event.source.userId) {
+        console.log('收到使用者 userId:', event.source.userId);
+      }
+  
+      // 如果你要回覆訊息（需要 replyToken + webhook）
+      // 也可以在這裡處理
+    });
+  
+    res.status(200).send('OK');
+  });
+
 const sendTestMessage = async () => {
     try {
       const response = await axios.post(
