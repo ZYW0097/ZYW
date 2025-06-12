@@ -76,16 +76,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// 路由
-app.use('/auth', authRouter);
-app.use('/account', accountRouter);
-app.use('/booking-reminder', bookingReminderRouter);
-app.use('/', bookingRouter);
-app.use('/webhook', webhookRouter);
-app.use('/', pointsRoutes); 
-app.use('/', indexRouter);  
-
-app.post('/webhook', express.json(), (req, res) => {
+app.post('/test-webhook', express.json(), (req, res) => {
     const events = req.body.events;
   
     if (!events || events.length === 0) {
@@ -103,6 +94,15 @@ app.post('/webhook', express.json(), (req, res) => {
   
     res.status(200).send('OK');
   });
+
+// 路由
+app.use('/auth', authRouter);
+app.use('/account', accountRouter);
+app.use('/booking-reminder', bookingReminderRouter);
+app.use('/', bookingRouter);
+app.use('/webhook', webhookRouter);
+app.use('/', pointsRoutes); 
+app.use('/', indexRouter);  
 
 const sendTestMessage = async () => {
     try {
@@ -137,8 +137,6 @@ app.use((req, res) => {
 
 // 錯誤處理中間件
 app.use(errorHandler);
-
-// for test
 
 // 啟動服務器
 const PORT = process.env.PORT || 3000;
