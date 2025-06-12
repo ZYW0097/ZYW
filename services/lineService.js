@@ -17,17 +17,34 @@ class LineService {
             const templatesPath = path.join(__dirname, '../templates/line');
             const templateFiles = fs.readdirSync(templatesPath);
             
+            // 清空現有模板
+            this.templates = {};
+            
             templateFiles.forEach(file => {
                 if (file.endsWith('.json')) {
                     const templateName = file.replace('.json', '');
                     const templatePath = path.join(templatesPath, file);
+                    // 強制讀取最新的檔案內容
+                    delete require.cache[require.resolve(templatePath)];
                     this.templates[templateName] = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+                    console.log(`✅ 載入模板: ${templateName}`);
                 }
             });
+            
+            console.log('📋 已載入的模板:', Object.keys(this.templates));
         } catch (error) {
             console.error('載入LINE模板失敗:', error);
             throw error;
         }
+    }
+
+    /**
+     * 強制重新載入模板
+     */
+    reloadTemplates() {
+        console.log('🔄 重新載入 LINE 模板...');
+        this.loadTemplates();
+        return this.templates;
     }
 
     /**
@@ -252,6 +269,9 @@ class LineService {
         }
 
         try {
+            // 重新載入模板以確保使用最新版本
+            this.reloadTemplates();
+            
             const template = this.replaceTemplateVariables(
                 this.templates['booking-confirmation'], 
                 reservationData
