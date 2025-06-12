@@ -46,9 +46,9 @@ class LineService {
             return 'not_configured';
         }
 
+        let messages;
         try {
             // 處理 Flex Message 格式
-            let messages;
             if (typeof message === 'string') {
                 messages = [{ type: 'text', text: message }];
             } else if (Array.isArray(message)) {
@@ -64,6 +64,8 @@ class LineService {
             } else {
                 messages = [message];
             }
+
+            console.log('📤 準備發送的訊息:', JSON.stringify(messages, null, 2));
 
             const requestData = {
                 to: userId,
@@ -92,7 +94,9 @@ class LineService {
                 message: error.message,
                 stack: error.stack
             }, null, 2));
-            console.error('發送的訊息內容:', JSON.stringify(messages, null, 2));
+            if (messages) {
+                console.error('發送的訊息內容:', JSON.stringify(messages, null, 2));
+            }
             
             return false;
         }
