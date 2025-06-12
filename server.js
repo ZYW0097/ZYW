@@ -21,7 +21,7 @@ require('dotenv').config();
 const app = express();
 
 const LINE_BOT_ACCESS_TOKEN = process.env.LINE_BOT_ACCESS_TOKEN;
-const USER_ID = 'Ue3f75104e7e20204e2bb3300a557d095';
+const USER_ID = 'U7b357bcada7eb3b1f5ef3f35d084cf57';
 
 // 連接數據庫
 connectDB();
@@ -126,7 +126,7 @@ const sendTestMessage = async () => {
       );
       console.log('✅ 訊息發送成功', response.data);
     } catch (err) {
-      console.error('❌ 發送失敗:', err.response?.data || err.message);
+      console.error(err);
     }
   };
 
