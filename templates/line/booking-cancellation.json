@@ -1,121 +1,119 @@
 {
-    "type": "bubble",
-    "header": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-            {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                    {
-                        "type": "text",
-                        "text": "訂位取消通知",
-                        "color": "#ffffff",
-                        "align": "center",
-                        "gravity": "center",
-                        "size": "lg",
-                        "flex": 4,
-                        "weight": "bold"
-                    }
-                ],
-                "alignItems": "center"
-            }
-        ],
-        "backgroundColor": "#FF6B6B",
-        "paddingAll": "20px"
-    },
-    "body": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-            {
-                "type": "text",
-                "text": "${storeName}",
-                "weight": "bold",
-                "size": "md",
-                "wrap": true,
-                "align": "center",
-                "color": "#2E4A62"
-            },
-            {
-                "type": "text",
-                "text": "${bookingDate} ${timeSlot}",
-                "weight": "bold",
-                "size": "md",
-                "wrap": true,
-                "align": "center",
-                "color": "#FF6B6B",
-                "margin": "sm"
-            },
-            {
-                "type": "text",
-                "text": "您的訂位已成功取消",
-                "align": "center",
-                "margin": "lg",
-                "color": "#666666",
-                "wrap": true
-            },
-            {
-                "type": "box",
-                "layout": "vertical",
-                "margin": "lg",
-                "spacing": "sm",
-                "contents": [
-                    {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                            {
-                                "type": "text",
-                                "text": "訂位人",
-                                "size": "sm",
-                                "color": "#555555",
-                                "flex": 2
-                            },
-                            {
-                                "type": "text",
-                                "text": "${customerName}",
-                                "size": "sm",
-                                "color": "#111111",
-                                "flex": 5,
-                                "weight": "bold"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                            {
-                                "type": "text",
-                                "text": "訂位編號",
-                                "size": "sm",
-                                "color": "#555555",
-                                "flex": 2
-                            },
-                            {
-                                "type": "text",
-                                "text": "${bookingId}",
-                                "size": "sm",
-                                "color": "#FF6B6B",
-                                "flex": 5,
-                                "weight": "bold"
-                            }
-                        ],
-                        "margin": "md"
-                    }
-                ]
-            },
-            {
-                "type": "text",
-                "text": "如有任何問題，歡迎聯繫我們",
-                "align": "center",
-                "margin": "lg",
-                "color": "#666666",
-                "wrap": true
-            }
-        ],
-        "paddingAll": "20px"
-    }
+	"type": "bubble",
+	"size": "mega",
+	"hero": {
+		"type": "image",
+		"url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
+		"aspectRatio": "20:13",
+		"aspectMode": "cover",
+		"size": "full"
+	},
+	"body": {
+		"type": "box",
+		"layout": "vertical",
+		"contents": [
+			{
+				"type": "text",
+				"text": "訂位取消",
+				"size": "xxl",
+				"align": "center",
+				"weight": "bold",
+				"margin": "none",
+				"color": "#FF6B6B"
+			},
+			{
+				"type": "text",
+				"weight": "bold",
+				"size": "lg",
+				"text": "${storeName}",
+				"align": "center",
+				"margin": "sm"
+			},
+			{
+				"type": "text",
+				"weight": "bold",
+				"size": "lg",
+				"text": "${bookingDate} ${timeSlot}",
+				"align": "center",
+				"margin": "sm",
+				"color": "#FF6B6B"
+			},
+			{
+				"type": "text",
+				"text": "您的訂位已成功取消",
+				"align": "center",
+				"margin": "lg",
+				"color": "#666666",
+				"wrap": true
+			},
+			{
+				"type": "box",
+				"layout": "vertical",
+				"margin": "lg",
+				"spacing": "sm",
+				"contents": [
+					{
+						"type": "box",
+						"layout": "baseline",
+						"spacing": "sm",
+						"contents": [
+							{
+								"type": "text",
+								"text": "訂位人",
+								"color": "#5F5F5F",
+								"size": "sm",
+								"flex": 2,
+								"margin": "sm"
+							},
+							{
+								"type": "text",
+								"text": "${customerName}",
+								"wrap": true,
+								"color": "#000000",
+								"size": "sm",
+								"flex": 5,
+								"weight": "bold"
+							}
+						]
+					},
+					{
+						"type": "separator",
+						"margin": "sm"
+					},
+					{
+						"type": "box",
+						"layout": "baseline",
+						"spacing": "sm",
+						"contents": [
+							{
+								"type": "text",
+								"text": "訂位編號",
+								"color": "#5F5F5F",
+								"size": "sm",
+								"flex": 2,
+								"margin": "sm"
+							},
+							{
+								"type": "text",
+								"text": "${bookingId}",
+								"wrap": true,
+								"color": "#FF6B6B",
+								"size": "sm",
+								"flex": 5,
+								"weight": "bold"
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "text",
+				"text": "如有任何問題請聯繫我們",
+				"align": "center",
+				"margin": "lg",
+				"color": "#666666",
+				"wrap": true
+			}
+		]
+	}
 } 

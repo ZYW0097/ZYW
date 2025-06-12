@@ -1,29 +1,12 @@
 {
     "type": "bubble",
-    "header": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-            {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                    {
-                        "type": "text",
-                        "text": "訂位提醒",
-                        "color": "#ffffff",
-                        "align": "center",
-                        "gravity": "center",
-                        "size": "lg",
-                        "flex": 4,
-                        "weight": "bold"
-                    }
-                ],
-                "alignItems": "center"
-            }
-        ],
-        "backgroundColor": "#FF6B35",
-        "paddingAll": "20px"
+    "size": "mega",
+    "hero": {
+        "type": "image",
+        "url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
+        "aspectRatio": "20:13",
+        "aspectMode": "cover",
+        "size": "full"
     },
     "body": {
         "type": "box",
@@ -31,22 +14,29 @@
         "contents": [
             {
                 "type": "text",
-                "text": "${storeName}",
-                "weight": "bold",
-                "size": "md",
-                "wrap": true,
+                "text": "訂位提醒",
+                "size": "xxl",
                 "align": "center",
-                "color": "#2E4A62"
+                "weight": "bold",
+                "margin": "none",
+                "color": "#FF6B35"
             },
             {
                 "type": "text",
-                "text": "${bookingDate} ${timeSlot}",
                 "weight": "bold",
-                "size": "md",
-                "wrap": true,
+                "size": "lg",
+                "text": "${storeName}",
                 "align": "center",
-                "color": "#FF6B35",
                 "margin": "sm"
+            },
+            {
+                "type": "text",
+                "weight": "bold",
+                "size": "lg",
+                "text": "${bookingDate} ${timeSlot}",
+                "align": "center",
+                "margin": "sm",
+                "color": "#FF6B35"
             },
             {
                 "type": "text",
@@ -64,80 +54,111 @@
                 "contents": [
                     {
                         "type": "box",
-                        "layout": "horizontal",
+                        "layout": "baseline",
+                        "spacing": "sm",
                         "contents": [
                             {
                                 "type": "text",
                                 "text": "訂位人",
+                                "color": "#5F5F5F",
                                 "size": "sm",
-                                "color": "#555555",
-                                "flex": 2
+                                "flex": 2,
+                                "margin": "sm"
                             },
                             {
                                 "type": "text",
                                 "text": "${customerName}",
+                                "wrap": true,
+                                "color": "#000000",
                                 "size": "sm",
-                                "color": "#111111",
                                 "flex": 5,
                                 "weight": "bold"
                             }
                         ]
                     },
                     {
+                        "type": "separator",
+                        "margin": "sm"
+                    },
+                    {
                         "type": "box",
-                        "layout": "horizontal",
+                        "layout": "baseline",
+                        "spacing": "sm",
                         "contents": [
                             {
                                 "type": "text",
                                 "text": "用餐人數",
+                                "color": "#5F5F5F",
                                 "size": "sm",
-                                "color": "#555555",
-                                "flex": 2
+                                "flex": 2,
+                                "margin": "sm"
                             },
                             {
                                 "type": "text",
-                                "text": "${partySize}",
+                                "text": "${partySize}人",
+                                "wrap": true,
+                                "color": "#000000",
                                 "size": "sm",
-                                "color": "#111111",
                                 "flex": 5,
                                 "weight": "bold"
                             }
-                        ],
-                        "margin": "md"
+                        ]
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "sm"
                     },
                     {
                         "type": "box",
-                        "layout": "horizontal",
+                        "layout": "baseline",
+                        "spacing": "sm",
                         "contents": [
                             {
                                 "type": "text",
                                 "text": "訂位編號",
+                                "color": "#5F5F5F",
                                 "size": "sm",
-                                "color": "#555555",
-                                "flex": 2
+                                "flex": 2,
+                                "margin": "sm"
                             },
                             {
                                 "type": "text",
                                 "text": "${bookingId}",
-                                "size": "sm",
+                                "wrap": true,
                                 "color": "#FF6B35",
+                                "size": "sm",
                                 "flex": 5,
                                 "weight": "bold"
                             }
-                        ],
-                        "margin": "md"
+                        ]
                     }
                 ]
             },
             {
                 "type": "text",
-                "text": "請準時前來用餐，期待您的光臨！",
+                "text": "請準時前來用餐！",
                 "align": "center",
                 "margin": "lg",
                 "color": "#666666",
                 "wrap": true
             }
+        ]
+    },
+    "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "button",
+                "action": {
+                    "type": "uri",
+                    "label": "確認到場用餐",
+                    "uri": "https://您的網站.com/booking/${bookingId}"
+                },
+                "style": "primary",
+                "color": "#FF6B35"
+            }
         ],
-        "paddingAll": "20px"
+        "spacing": "sm"
     }
 } 

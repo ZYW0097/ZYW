@@ -47,18 +47,28 @@ class LineService {
         }
 
         try {
+            // 處理 Flex Message 格式
+            let messages;
+            if (typeof message === 'string') {
+                messages = [{ type: 'text', text: message }];
+            } else if (Array.isArray(message)) {
+                messages = message;
+            } else if (message.type === 'flex') {
+                // 深拷貝訊息以避免修改原始物件
+                const flexMessage = JSON.parse(JSON.stringify(message));
+                
+                // 移除可能導致錯誤的屬性
+                this.cleanFlexMessage(flexMessage);
+                
+                messages = [flexMessage];
+            } else {
+                messages = [message];
+            }
+
             const requestData = {
                 to: userId,
-                messages: Array.isArray(message) ? message : [message]
+                messages: messages
             };
-
-            console.log('📤 發送 LINE 請求:');
-            console.log('URL:', 'https://api.line.me/v2/bot/message/push');
-            console.log('Headers:', {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.accessToken.substring(0, 10)}...`
-            });
-            console.log('Request Body:', JSON.stringify(requestData, null, 2));
 
             const response = await axios.post('https://api.line.me/v2/bot/message/push', requestData, {
                 headers: {
@@ -74,15 +84,35 @@ class LineService {
             console.error('錯誤狀態:', error.response?.status);
             console.error('錯誤訊息:', error.response?.data?.message || error.message);
             console.error('完整錯誤回應:', JSON.stringify(error.response?.data, null, 2));
-            console.error('完整錯誤物件:', JSON.stringify({
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                headers: error.response?.headers,
-                data: error.response?.data,
-                message: error.message
-            }, null, 2));
             
             return false;
+        }
+    }
+
+    /**
+     * 清理 Flex Message 中可能有問題的屬性
+     */
+    cleanFlexMessage(flexMessage) {
+        const cleanObject = (obj) => {
+            if (Array.isArray(obj)) {
+                obj.forEach(item => cleanObject(item));
+            } else if (obj && typeof obj === 'object') {
+                // 移除 action 中的 color 屬性
+                if (obj.action && obj.action.color) {
+                    delete obj.action.color;
+                }
+                
+                // 遞迴處理所有子物件
+                Object.values(obj).forEach(value => {
+                    if (typeof value === 'object') {
+                        cleanObject(value);
+                    }
+                });
+            }
+        };
+
+        if (flexMessage.contents) {
+            cleanObject(flexMessage.contents);
         }
     }
 
