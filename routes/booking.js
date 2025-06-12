@@ -36,20 +36,59 @@ async function getClientInfo(storeSlug) {
 // 發送訂位通知的輔助函數
 async function sendBookingNotifications(reservationData, type = 'confirmation') {
     try {
+        console.log('📨 開始發送訂位通知...');
+        console.log('📋 通知類型:', type);
+        console.log('📊 訂位資料:', JSON.stringify(reservationData, null, 2));
+        
         // 一定發送郵件通知
         if (type === 'confirmation') {
+            console.log('📧 發送確認郵件...');
             await emailService.sendBookingConfirmation(reservationData.email, reservationData);
         } else if (type === 'cancellation') {
+            console.log('📧 發送取消郵件...');
             await emailService.sendBookingCancellation(reservationData.email, reservationData);
         }
 
-        // 檢查用戶是否有LINE帳號綁定
-        if (reservationData.lineUserId) {
-            if (type === 'confirmation') {
-                await lineService.sendBookingConfirmation(reservationData.lineUserId, reservationData);
-            } else if (type === 'cancellation') {
-                await lineService.sendBookingCancellation(reservationData.lineUserId, reservationData);
+        // 檢查是否有 LINE 用戶 ID
+        let lineUserId = reservationData.lineUserId;
+        
+        // 如果沒有 lineUserId，嘗試通過電話號碼查找
+        if (!lineUserId && reservationData.phone) {
+            console.log('🔍 通過電話號碼查找 LINE 用戶:', reservationData.phone);
+            try {
+                // 使用正確的 User 模型
+                const userSchema = require('../models/user');
+                const adb = getClientDb('main', 'ADB');
+                const User = adb.model('User', userSchema);
+                
+                const existingLineUser = await User.findOne({ phone: reservationData.phone }).select('lineId');
+                if (existingLineUser && existingLineUser.lineId) {
+                    lineUserId = existingLineUser.lineId;
+                    console.log('✅ 找到綁定的 LINE 用戶:', lineUserId);
+                } else {
+                    console.log('❌ 未找到綁定的 LINE 用戶');
+                }
+            } catch (lineUserError) {
+                console.error('查找 LINE 用戶時發生錯誤:', lineUserError);
             }
+        }
+
+        // 發送 LINE 通知
+        if (lineUserId) {
+            console.log('📱 準備發送 LINE 通知到:', lineUserId);
+            try {
+                if (type === 'confirmation') {
+                    const result = await lineService.sendBookingConfirmation(lineUserId, reservationData);
+                    console.log('📱 LINE 確認通知結果:', result);
+                } else if (type === 'cancellation') {
+                    const result = await lineService.sendBookingCancellation(lineUserId, reservationData);
+                    console.log('📱 LINE 取消通知結果:', result);
+                }
+            } catch (lineError) {
+                console.error('📱 LINE 通知發送失敗:', lineError);
+            }
+        } else {
+            console.log('ℹ️  沒有 LINE 用戶 ID，跳過 LINE 通知');
         }
 
         return true;

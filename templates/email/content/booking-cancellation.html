@@ -1,5 +1,5 @@
 <p style="color: #666; margin-bottom: 2rem; line-height: 1.6;">
-    親愛的顧客您好，<br>
+    親愛的 {{customerName}} {{gender}}，<br>
     您的訂位已成功取消。我們很抱歉無法為您提供這次的用餐服務，期待未來有機會再次為您服務。
 </p>
 
@@ -12,12 +12,24 @@
             <div class="detail-value">{{clientname}}</div>
         </div>
         <div class="detail-row">
+            <div class="detail-label">訂位人：</div>
+            <div class="detail-value">{{customerName}} {{gender}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">聯絡電話：</div>
+            <div class="detail-value">{{phone}}</div>
+        </div>
+        <div class="detail-row">
             <div class="detail-label">原訂日期：</div>
             <div class="detail-value">{{date}}</div>
         </div>
         <div class="detail-row">
             <div class="detail-label">原訂時間：</div>
             <div class="detail-value">{{time}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">用餐人數：</div>
+            <div class="detail-value">{{adults}}大 {{children}}小</div>
         </div>
         <div class="detail-row">
             <div class="detail-label">訂位編號：</div>

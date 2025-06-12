@@ -47,6 +47,9 @@ class LineService {
         }
 
         try {
+            console.log('準備發送LINE訊息到:', userId);
+            console.log('訊息類型:', message.type);
+            
             const response = await axios.post('https://api.line.me/v2/bot/message/push', {
                 to: userId,
                 messages: Array.isArray(message) ? message : [message]
@@ -57,11 +60,18 @@ class LineService {
                 }
             });
 
+            console.log('LINE訊息發送成功');
             return true;
         } catch (error) {
             console.error('LINE訊息發送失敗');
             console.error('錯誤狀態:', error.response?.status);
             console.error('錯誤訊息:', error.response?.data?.message || error.message);
+            
+            // 如果有詳細錯誤資訊，也輸出
+            if (error.response?.data?.details) {
+                console.error('錯誤詳情:', JSON.stringify(error.response.data.details, null, 2));
+            }
+            
             return false;
         }
     }
@@ -72,27 +82,55 @@ class LineService {
     replaceTemplateVariables(template, data) {
         let templateStr = JSON.stringify(template);
         
+        // 安全的變數處理函數
+        const safeValue = (value, defaultValue = '') => {
+            if (value === null || value === undefined) return defaultValue;
+            return String(value);
+        };
+        
+        // 處理素食需求
+        const vegetarianText = data.vegetarian === 'yes' || data.vegetarian === true ? '是' : '否';
+        
+        // 處理用餐人數
+        const adults = parseInt(data.adults) || 0;
+        const children = parseInt(data.children) || 0;
+        const partySize = children > 0 ? `${adults}大${children}小` : `${adults}人`;
+        
         // 定義變數映射
         const variableMap = {
-            '{{storeName}}': data.storeName || '餐廳',
-            '{{bookingDate}}': data.date || data.bookingDate || '',
-            '{{timeSlot}}': data.time || data.timeSlot || '',
-            '{{customerName}}': data.name || data.customerName || '',
-            '{{phone}}': data.phone || '',
-            '{{email}}': data.email || '',
-            '{{partySize}}': `${data.adults ?? 0}大${data.children ?? 0}小`,
-            '{{vegetarianRequirement}}': data.vegetarian === 'yes' ? '是' : '否',
-            '{{specialRequirement}}': data.special || '無',
-            '{{note}}': data.note || data.notes || '無',
-            '{{bookingId}}': data.bookingCode || data.customBookingId || data.bookingId || ''
+            '{{storeName}}': safeValue(data.storeName, '餐廳'),
+            '{{bookingDate}}': safeValue(data.date || data.bookingDate),
+            '{{timeSlot}}': safeValue(data.time || data.timeSlot),
+            '{{customerName}}': safeValue(data.name || data.customerName),
+            '{{phone}}': safeValue(data.phone),
+            '{{email}}': safeValue(data.email),
+            '{{partySize}}': partySize,
+            '{{vegetarianRequirement}}': vegetarianText,
+            '{{specialRequirement}}': safeValue(data.special || data.specialNeeds, '無'),
+            '{{note}}': safeValue(data.note || data.notes, '無'),
+            '{{bookingId}}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
         };
 
         // 替換所有變數
         Object.entries(variableMap).forEach(([placeholder, value]) => {
-            templateStr = templateStr.replace(new RegExp(placeholder, 'g'), value);
+            templateStr = templateStr.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
         });
 
-        return JSON.parse(templateStr);
+        try {
+            const result = JSON.parse(templateStr);
+            
+            // 檢查是否還有未替換的變數
+            const unreplacedVars = templateStr.match(/\{\{[^}]+\}\}/g);
+            if (unreplacedVars) {
+                console.warn('發現未替換的變數:', unreplacedVars);
+            }
+            
+            return result;
+        } catch (parseError) {
+            console.error('模板解析失敗:', parseError.message);
+            console.error('處理後的模板:', templateStr.substring(0, 500));
+            throw parseError;
+        }
     }
 
     /**
@@ -100,10 +138,14 @@ class LineService {
      */
     async sendBookingConfirmation(lineUserId, reservationData) {
         if (!lineUserId) {
+            console.log('沒有LINE用戶ID，跳過發送');
             return 'no_line_id';
         }
 
         try {
+            console.log('準備發送訂位成功通知到:', lineUserId);
+            console.log('訂位資料:', JSON.stringify(reservationData, null, 2));
+            
             const template = this.replaceTemplateVariables(
                 this.templates['booking-confirmation'], 
                 reservationData
@@ -118,6 +160,7 @@ class LineService {
             return await this.sendPushMessage(lineUserId, message);
         } catch (error) {
             console.error('發送訂位成功通知失敗:', error.message);
+            console.error('錯誤堆疊:', error.stack);
             return false;
         }
     }

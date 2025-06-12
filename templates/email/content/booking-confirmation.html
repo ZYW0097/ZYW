@@ -1,5 +1,5 @@
 <p style="color: #666; margin-bottom: 2rem; line-height: 1.6;">
-    親愛的顧客您好，<br>
+    親愛的 {{customerName}} {{gender}}，<br>
     感謝您選擇我們的餐廳。您的訂位已成功確認，我們期待為您提供優質的用餐體驗。
 </p>
 
@@ -12,6 +12,18 @@
             <div class="detail-value">{{clientname}}</div>
         </div>
         <div class="detail-row">
+            <div class="detail-label">訂位人：</div>
+            <div class="detail-value">{{customerName}} {{gender}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">聯絡電話：</div>
+            <div class="detail-value">{{phone}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">電子郵件：</div>
+            <div class="detail-value">{{email}}</div>
+        </div>
+        <div class="detail-row">
             <div class="detail-label">用餐日期：</div>
             <div class="detail-value">{{date}}</div>
         </div>
@@ -22,6 +34,18 @@
         <div class="detail-row">
             <div class="detail-label">用餐人數：</div>
             <div class="detail-value">{{adults}}大 {{children}}小</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">素食需求：</div>
+            <div class="detail-value">{{vegetarianRequirement}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">特殊需求：</div>
+            <div class="detail-value">{{specialRequirement}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">備註：</div>
+            <div class="detail-value">{{note}}</div>
         </div>
         <div class="detail-row">
             <div class="detail-label">訂位編號：</div>

@@ -3,7 +3,7 @@ const EmailTemplateEngine = require('../utils/emailTemplateEngine');
 
 class EmailService {
     constructor() {
-        this.transporter = nodemailer.createTransport({
+        this.transporter = nodemailer.createTransporter({
             service: 'Gmail',
             auth: {
                 user: process.env.SMTP_USER,
@@ -49,16 +49,34 @@ class EmailService {
     }
 
     /**
+     * 處理素食需求文字
+     */
+    getVegetarianText(vegetarian) {
+        if (vegetarian === 'yes' || vegetarian === true) return '是';
+        if (vegetarian === 'no' || vegetarian === false) return '否';
+        return '否';
+    }
+
+    /**
      * 發送訂位確認郵件
      */
     async sendBookingConfirmation(to, bookingInfo) {
+        console.log('📧 準備發送確認郵件，資料:', JSON.stringify(bookingInfo, null, 2));
+        
         return await this.sendEmail(to, 'booking-confirmation', {
-            clientname: bookingInfo.clientname || 'Restaurant',
+            clientname: bookingInfo.storeName || bookingInfo.clientname || 'Restaurant',
+            customerName: bookingInfo.name || bookingInfo.customerName || '顧客',
+            gender: bookingInfo.gender || '先生',
+            phone: bookingInfo.phone || '',
+            email: bookingInfo.email || to,
             logoUrl: bookingInfo.logoUrl,
             date: bookingInfo.date,
             time: bookingInfo.time,
-            adults: bookingInfo.adults,
-            children: bookingInfo.children,
+            adults: bookingInfo.adults || 1,
+            children: bookingInfo.children || 0,
+            vegetarianRequirement: this.getVegetarianText(bookingInfo.vegetarian),
+            specialRequirement: bookingInfo.special || bookingInfo.specialNeeds || '無',
+            note: bookingInfo.note || bookingInfo.notes || '無',
             bookingId: bookingInfo.bookingCode || bookingInfo.customBookingId || bookingInfo.bookingId
         });
     }
@@ -67,11 +85,19 @@ class EmailService {
      * 發送取消訂位郵件
      */
     async sendBookingCancellation(to, bookingInfo) {
+        console.log('📧 準備發送取消郵件，資料:', JSON.stringify(bookingInfo, null, 2));
+        
         return await this.sendEmail(to, 'booking-cancellation', {
-            clientname: bookingInfo.clientname || 'Restaurant',
+            clientname: bookingInfo.storeName || bookingInfo.clientname || 'Restaurant',
+            customerName: bookingInfo.name || bookingInfo.customerName || '顧客',
+            gender: bookingInfo.gender || '先生',
+            phone: bookingInfo.phone || '',
+            email: bookingInfo.email || to,
             logoUrl: bookingInfo.logoUrl,
             date: bookingInfo.date,
             time: bookingInfo.time,
+            adults: bookingInfo.adults || 1,
+            children: bookingInfo.children || 0,
             bookingId: bookingInfo.bookingCode || bookingInfo.customBookingId || bookingInfo.bookingId,
             cancelTime: new Date().toLocaleString('zh-TW')
         });
@@ -81,13 +107,19 @@ class EmailService {
      * 發送用餐提醒郵件
      */
     async sendBookingReminder(to, reminderInfo) {
+        console.log('📧 準備發送提醒郵件，資料:', JSON.stringify(reminderInfo, null, 2));
+        
         return await this.sendEmail(to, 'booking-reminder', {
-            clientname: reminderInfo.clientname || 'Restaurant',
+            clientname: reminderInfo.storeName || reminderInfo.clientname || 'Restaurant',
+            customerName: reminderInfo.name || reminderInfo.customerName || '顧客',
+            gender: reminderInfo.gender || '先生',
+            phone: reminderInfo.phone || '',
+            email: reminderInfo.email || to,
             logoUrl: reminderInfo.logoUrl,
             date: reminderInfo.date,
             time: reminderInfo.time,
-            adults: reminderInfo.adults,
-            children: reminderInfo.children,
+            adults: reminderInfo.adults || 1,
+            children: reminderInfo.children || 0,
             bookingId: reminderInfo.bookingCode || reminderInfo.customBookingId || reminderInfo.bookingId,
             confirmUrl: reminderInfo.confirmUrl,
             cancelUrl: reminderInfo.cancelUrl

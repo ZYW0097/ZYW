@@ -1,5 +1,5 @@
 <p style="color: #666; margin-bottom: 2rem; line-height: 1.6;">
-    親愛的顧客您好，<br>
+    親愛的 {{customerName}} {{gender}}，<br>
     提醒您明天有在我們餐廳的用餐預約，我們很期待為您提供優質的用餐體驗。
 </p>
 
@@ -10,6 +10,14 @@
         <div class="detail-row">
             <div class="detail-label">餐廳名稱：</div>
             <div class="detail-value">{{clientname}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">訂位人：</div>
+            <div class="detail-value">{{customerName}} {{gender}}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">聯絡電話：</div>
+            <div class="detail-value">{{phone}}</div>
         </div>
         <div class="detail-row">
             <div class="detail-label">用餐日期：</div>

@@ -126,17 +126,25 @@ class ReminderService {
      */
     async sendReminder(reservation, client) {
         try {
-            const { customBookingId, email, lineUserId, date, time, adults, children, name } = reservation;
+            const { customBookingId, email, lineUserId, date, time, adults, children, name, gender, phone, vegetarian, special, note } = reservation;
             const { clientname } = client;
 
             const reminderData = {
                 name,
+                customerName: name,
+                gender: gender || '先生',
+                phone: phone || '',
+                email: email || '',
                 date,
                 time,
                 adults: adults || 1,
                 children: children || 0,
+                vegetarian: vegetarian || 'no',
+                special: special || '',
+                note: note || '',
                 bookingCode: customBookingId,
-                storeName: clientname
+                storeName: clientname,
+                clientname
             };
 
             let emailResult = false;
@@ -144,10 +152,7 @@ class ReminderService {
 
             // 發送郵件提醒（如果有email）
             if (email) {
-                emailResult = await emailService.sendBookingReminder(email, {
-                    ...reminderData,
-                    clientname
-                });
+                emailResult = await emailService.sendBookingReminder(email, reminderData);
             }
 
             // 發送LINE提醒（如果有lineUserId）

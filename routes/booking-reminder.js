@@ -145,22 +145,31 @@ router.get('/cancel/:token', async (req, res) => {
         
         // 發送取消通知（郵件 + LINE）
         try {
-            // 一定發送郵件通知
-            await emailService.sendBookingCancellation(reservation.email, {
+            // 準備完整的通知資料
+            const notificationData = {
                 ...reservation.toObject(),
+                name: reservation.name,
+                customerName: reservation.name,
+                gender: reservation.gender || '先生',
+                phone: reservation.phone || '',
+                email: reservation.email || '',
+                adults: reservation.adults || 1,
+                children: reservation.children || 0,
+                vegetarian: reservation.vegetarian || 'no',
+                special: reservation.special || '',
+                note: reservation.note || '',
                 customBookingId: bookingId,
                 bookingCode: bookingId,
-                storeName: clientname
-            });
+                storeName: clientname,
+                clientname: clientname
+            };
+
+            // 一定發送郵件通知
+            await emailService.sendBookingCancellation(reservation.email, notificationData);
 
             // 如果有LINE ID，發送LINE通知
             if (reservation.lineUserId) {
-                await lineService.sendBookingCancellation(reservation.lineUserId, {
-                    ...reservation.toObject(),
-                    customBookingId: bookingId,
-                    bookingCode: bookingId,
-                    storeName: clientname
-                });
+                await lineService.sendBookingCancellation(reservation.lineUserId, notificationData);
             }
 
             console.log('取消通知已發送');
