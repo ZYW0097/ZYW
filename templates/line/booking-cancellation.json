@@ -1,6 +1,5 @@
 {
 	"type": "bubble",
-	"size": "mega",
 	"hero": {
 		"type": "image",
 		"url": "https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png",
@@ -32,7 +31,7 @@
 				"type": "text",
 				"weight": "bold",
 				"size": "lg",
-				"text": "${bookingDate} ${timeSlot}",
+				"text": "${date} ${time}",
 				"align": "center",
 				"margin": "sm",
 				"color": "#FF6B6B"
@@ -114,5 +113,20 @@
 				"wrap": true
 			}
 		]
+	},
+	"footer": {
+		"type": "box",
+		"layout": "vertical",
+		"contents": [
+			{
+				"type": "text",
+				"text": "感謝您的配合",
+				"color": "#ffffff",
+				"weight": "bold",
+				"align": "center",
+				"size": "md"
+			}
+		],
+		"backgroundColor": "#FF6B6B"
 	}
 } 

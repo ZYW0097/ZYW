@@ -34,10 +34,18 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true;
 
         const formData = new FormData(form);
-        // 合併第一步 bookingData 並計算總人數
+        const formEntries = Object.fromEntries(formData.entries());
+        
+        // 修正欄位名稱映射
         const data = {
             ...bookingData,
-            ...Object.fromEntries(formData.entries()),
+            name: formEntries.name,
+            gender: formEntries.gender,
+            phone: formEntries.phone,
+            email: formEntries.email,
+            vegetarian: formEntries.vegetarian,
+            special: formEntries.specialNeeds || '', // 映射 specialNeeds 到 special
+            note: formEntries.notes || '', // 映射 notes 到 note
             guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數
             storeSlug
         };
