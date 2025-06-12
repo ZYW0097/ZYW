@@ -268,6 +268,14 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             console.warn(`人數不一致: adults(${adults}) + children(${children}) = ${adults + children}, 但guests=${guestNum}`);
         }
         
+        // 記錄前端傳送的完整資料用於除錯
+        console.log('📝 前端傳送的完整表單資料:', {
+            body: req.body,
+            special: req.body.special,
+            note: req.body.note,
+            vegetarian: req.body.vegetarian
+        });
+
         const reservationData = {
             customBookingId,
             name: name.trim(),
@@ -281,11 +289,14 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             gender: req.body.gender || '先生',
             vegetarian: req.body.vegetarian || 'no',
             special: req.body.special ? req.body.special.trim() : '',
+            note: req.body.note ? req.body.note.trim() : '', // 添加 note 欄位
             createdAt: new Date(),
             status: 'confirmed',
             // 如果用戶已登入，儲存 LINE ID
             lineUserId: lineUserId
         };
+
+        console.log('💾 準備存入資料庫的資料:', reservationData);
         
         // 創建訂位記錄
         const reservation = await Reservation.create(reservationData);

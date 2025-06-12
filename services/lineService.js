@@ -110,9 +110,15 @@ class LineService {
             if (Array.isArray(obj)) {
                 obj.forEach(item => cleanObject(item));
             } else if (obj && typeof obj === 'object') {
-                // 移除 action 中的 color 屬性
+                // 移除可能有問題的屬性
                 if (obj.action && obj.action.color) {
                     delete obj.action.color;
+                }
+                
+                // 移除 size: "mega" 屬性，改為標準尺寸
+                if (obj.size === 'mega') {
+                    delete obj.size;
+                    console.warn('⚠️ 移除 size: mega 屬性');
                 }
                 
                 // 檢查並移除有問題的 URI
@@ -132,6 +138,17 @@ class LineService {
                             obj.weight = 'bold';
                         }
                     }
+                }
+                
+                // 檢查並移除可能有問題的屬性
+                if (obj.justifyContent) {
+                    delete obj.justifyContent;
+                    console.warn('⚠️ 移除 justifyContent 屬性');
+                }
+                
+                if (obj.alignItems) {
+                    delete obj.alignItems;
+                    console.warn('⚠️ 移除 alignItems 屬性');
                 }
                 
                 // 遞迴處理所有子物件
@@ -168,8 +185,9 @@ class LineService {
         
         // 直接使用前端資料，保持原始值
         const vegetarianText = data.vegetarian || '否';
-        const specialText = data.special || '無';
-        const noteText = data.note || data.notes || '無';
+        const specialText = (data.special && data.special.trim() !== '') ? data.special : '無';
+        const noteText = (data.note && data.note.trim() !== '') ? data.note : 
+                        (data.notes && data.notes.trim() !== '') ? data.notes : '無';
         
         // 定義變數映射
         const variableMap = {
