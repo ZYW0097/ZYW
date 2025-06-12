@@ -85,16 +85,6 @@ app.use('/webhook', webhookRouter);
 app.use('/', pointsRoutes); 
 app.use('/', indexRouter);  
 
-// 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)
-app.use((req, res) => {
-    res.status(404).render('error', { message: '頁面不存在' });
-});
-
-// 錯誤處理中間件
-app.use(errorHandler);
-
-// for test
-
 app.post('/webhook', express.json(), (req, res) => {
     const events = req.body.events;
   
@@ -139,6 +129,16 @@ const sendTestMessage = async () => {
       console.error('❌ 發送失敗:', err.response?.data || err.message);
     }
   };
+
+// 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)
+app.use((req, res) => {
+    res.status(404).render('error', { message: '頁面不存在' });
+});
+
+// 錯誤處理中間件
+app.use(errorHandler);
+
+// for test
 
 // 啟動服務器
 const PORT = process.env.PORT || 3000;
