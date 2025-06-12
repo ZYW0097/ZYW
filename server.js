@@ -111,7 +111,7 @@ const sendTestMessage = async () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+            'Authorization': `Bearer ${LINE_BOT_ACCESS_TOKEN}`
           }
         }
       );
