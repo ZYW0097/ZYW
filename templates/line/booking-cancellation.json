@@ -14,12 +14,12 @@
       "contents": [
         {
           "type": "text",
-          "text": "⏰ 訂位提醒",
+          "text": "訂位取消通知",
           "size": "xxl",
           "align": "center",
           "weight": "bold",
           "margin": "none",
-          "color": "#FF6B35"
+          "color": "#FF6B6B"
         },
         {
           "type": "text",
@@ -36,11 +36,11 @@
           "text": "{{bookingDate}} {{timeSlot}}",
           "align": "center",
           "margin": "sm",
-          "color": "#FF6B35"
+          "color": "#FF6B6B"
         },
         {
           "type": "text",
-          "text": "親愛的顧客，您的訂位時間即將到來！",
+          "text": "您的訂位已成功取消",
           "align": "center",
           "margin": "lg",
           "color": "#666666",
@@ -87,34 +87,6 @@
               "contents": [
                 {
                   "type": "text",
-                  "text": "用餐人數",
-                  "color": "#5F5F5F",
-                  "size": "sm",
-                  "flex": 2,
-                  "margin": "sm"
-                },
-                {
-                  "type": "text",
-                  "text": "{{partySize}}人",
-                  "wrap": true,
-                  "color": "#000000",
-                  "size": "sm",
-                  "flex": 5,
-                  "weight": "bold"
-                }
-              ]
-            },
-            {
-              "type": "separator",
-              "margin": "sm"
-            },
-            {
-              "type": "box",
-              "layout": "baseline",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "text",
                   "text": "訂位編號",
                   "color": "#5F5F5F",
                   "size": "sm",
@@ -125,7 +97,7 @@
                   "type": "text",
                   "text": "{{bookingId}}",
                   "wrap": true,
-                  "color": "#FF6B35",
+                  "color": "#FF6B6B",
                   "size": "sm",
                   "flex": 5,
                   "weight": "bold"
@@ -136,7 +108,7 @@
         },
         {
           "type": "text",
-          "text": "請準時前來用餐，期待您的光臨！",
+          "text": "如有任何問題，歡迎聯繫我們",
           "align": "center",
           "margin": "lg",
           "color": "#666666",
@@ -144,4 +116,4 @@
         }
       ]
     }
-} 
+  } 

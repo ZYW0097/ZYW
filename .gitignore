@@ -24,4 +24,8 @@ Thumbs.db
 
 # 構建輸出
 dist/
-build/ 
+build/
+
+tests/examples/
+ex.js
+server-OLD.js 

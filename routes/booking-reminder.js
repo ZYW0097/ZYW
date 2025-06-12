@@ -3,8 +3,8 @@ const router = express.Router();
 const Client = require('../models/Client');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
-const { sendBookingCancellation } = require('../services/emailService');
-const notificationService = require('../services/notificationService');
+const emailService = require('../services/emailService');
+const lineService = require('../services/lineService');
 
 // 確認訂位（用戶點擊郵件中的確認連結）
 router.get('/confirm/:token', async (req, res) => {
@@ -145,14 +145,27 @@ router.get('/cancel/:token', async (req, res) => {
         
         // 發送取消通知（郵件 + LINE）
         try {
-            await notificationService.sendBookingCancellation({
+            // 一定發送郵件通知
+            await emailService.sendBookingCancellation(reservation.email, {
                 ...reservation.toObject(),
                 customBookingId: bookingId,
+                bookingCode: bookingId,
                 storeName: clientname
-            }, '透過提醒郵件取消');
-            console.log('✅ 取消通知已發送');
+            });
+
+            // 如果有LINE ID，發送LINE通知
+            if (reservation.lineUserId) {
+                await lineService.sendBookingCancellation(reservation.lineUserId, {
+                    ...reservation.toObject(),
+                    customBookingId: bookingId,
+                    bookingCode: bookingId,
+                    storeName: clientname
+                });
+            }
+
+            console.log('取消通知已發送');
         } catch (notificationError) {
-            console.error('❌ 取消通知發送失敗:', notificationError);
+            console.error('取消通知發送失敗:', notificationError);
         }
         
         res.render('booking/reminder-result', {

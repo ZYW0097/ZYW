@@ -3,8 +3,8 @@ const router = express.Router();
 const Client = require('../models/Client');
 const reservationSchema = require('../models/Reservation');
 const getClientDb = require('../utils/dbManager');
-const { sendBookingConfirmation, sendBookingCancellation } = require('../services/emailService');
-const notificationService = require('../services/notificationService');
+const emailService = require('../services/emailService');
+const lineService = require('../services/lineService');
 
 // 生成訂位編號的輔助函數
 function generateBookingId(storeSlug) {
@@ -31,6 +31,33 @@ async function getClientInfo(storeSlug) {
         clientname: client ? client.clientname : '餐廳名稱',
         bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
     };
+}
+
+// 發送訂位通知的輔助函數
+async function sendBookingNotifications(reservationData, type = 'confirmation') {
+    try {
+        // 一定發送郵件通知
+        if (type === 'confirmation') {
+            await emailService.sendBookingConfirmation(reservationData.email, reservationData);
+        } else if (type === 'cancellation') {
+            await emailService.sendBookingCancellation(reservationData.email, reservationData);
+        }
+
+        // 檢查用戶是否有LINE帳號綁定
+        if (reservationData.lineUserId) {
+            if (type === 'confirmation') {
+                await lineService.sendBookingConfirmation(reservationData.lineUserId, reservationData);
+            } else if (type === 'cancellation') {
+                await lineService.sendBookingCancellation(reservationData.lineUserId, reservationData);
+            }
+        }
+
+        return true;
+    } catch (error) {
+        console.error('發送通知失敗:', error);
+        console.error('錯誤詳情:', error.message);
+        return false;
+    }
 }
 
 
@@ -193,6 +220,15 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         }
 
         // 準備訂位資料（過濾和清理輸入）
+        // 直接使用用戶選擇的人數，不進行估算
+        const adults = parseInt(req.body.adults) || 0;
+        const children = parseInt(req.body.children) || 0;
+        
+        // 驗證人數一致性
+        if (adults + children !== guestNum) {
+            console.warn(`人數不一致: adults(${adults}) + children(${children}) = ${adults + children}, 但guests=${guestNum}`);
+        }
+        
         const reservationData = {
             customBookingId,
             name: name.trim(),
@@ -200,8 +236,8 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             email: email ? email.trim() : '',
             date,
             time,
-            adults: parseInt(req.body.adults) || Math.floor(guestNum * 0.8), // 估算大人數
-            children: parseInt(req.body.children) || (guestNum - Math.floor(guestNum * 0.8)), // 估算小孩數
+            adults: adults,
+            children: children,
             guests: guestNum,
             gender: req.body.gender || '先生',
             vegetarian: req.body.vegetarian || 'no',
@@ -229,14 +265,18 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
 
         // 發送通知（郵件 + LINE）
         try {
-            await notificationService.sendBookingConfirmation({
+            const client = await Client.findOne({ slugname: storeSlug });
+            const clientname = client ? client.clientname : '餐廳';
+            
+            await sendBookingNotifications({
                 ...reservationData,
                 storeName: clientname,
-                customBookingId
-            });
-            console.log('✅ 訂位通知已發送');
+                customBookingId,
+                bookingCode: customBookingId
+            }, 'confirmation');
+            console.log('訂位通知已發送');
         } catch (notificationError) {
-            console.error('❌ 通知發送失敗:', notificationError);
+            console.error('通知發送失敗:', notificationError);
             // 不因為通知發送失敗而影響訂位成功
         }
 
@@ -296,14 +336,15 @@ router.post('/:storeSlug/api/booking/cancel', async (req, res) => {
         // 發送取消通知（郵件 + LINE）
         const bookingInfo = req.session.lastBooking;
         try {
-            await notificationService.sendBookingCancellation({
+            await sendBookingNotifications({
                 ...bookingInfo,
                 customBookingId: bookingId,
+                bookingCode: bookingId,
                 storeName: clientname
-            }, '用戶主動取消');
-            console.log('✅ 取消通知已發送');
+            }, 'cancellation');
+            console.log('取消通知已發送');
         } catch (notificationError) {
-            console.error('❌ 取消通知發送失敗:', notificationError);
+            console.error('取消通知發送失敗:', notificationError);
         }
         
         // 清除session中的訂位資訊
@@ -530,14 +571,15 @@ router.post('/:storeSlug/api/booking/cancel-by-id', async (req, res) => {
         
         // 發送取消通知（郵件 + LINE）
         try {
-            await notificationService.sendBookingCancellation({
+            await sendBookingNotifications({
                 ...reservation.toObject(),
                 customBookingId: bookingId,
+                bookingCode: bookingId,
                 storeName: clientname
-            }, '用戶主動取消');
-            console.log('✅ 取消通知已發送');
+            }, 'cancellation');
+            console.log('取消通知已發送');
         } catch (notificationError) {
-            console.error('❌ 取消通知發送失敗:', notificationError);
+            console.error('取消通知發送失敗:', notificationError);
         }
         
         res.json({ 
