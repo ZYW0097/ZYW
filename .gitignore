@@ -26,6 +26,4 @@ Thumbs.db
 dist/
 build/
 
-tests/examples/
-ex.js
-server-OLD.js 
+tests/

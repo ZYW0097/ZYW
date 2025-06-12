@@ -65,7 +65,6 @@ class ReminderService {
     async checkAndSendReminders() {
         this.lastCheckTime = new Date();
         
-        // 只在中午12:00-13:00執行提醒
         if (!this.isReminderTime()) {
             console.log('非提醒時間，跳過檢查');
             return;
