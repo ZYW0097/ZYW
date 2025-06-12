@@ -47,9 +47,6 @@ class LineService {
         }
 
         try {
-            console.log('準備發送LINE訊息到:', userId);
-            console.log('訊息類型:', message.type);
-            
             const response = await axios.post('https://api.line.me/v2/bot/message/push', {
                 to: userId,
                 messages: Array.isArray(message) ? message : [message]
@@ -66,11 +63,7 @@ class LineService {
             console.error('LINE訊息發送失敗');
             console.error('錯誤狀態:', error.response?.status);
             console.error('錯誤訊息:', error.response?.data?.message || error.message);
-            
-            // 如果有詳細錯誤資訊，也輸出
-            if (error.response?.data?.details) {
-                console.error('錯誤詳情:', JSON.stringify(error.response.data.details, null, 2));
-            }
+            console.error('完整錯誤回應:', JSON.stringify(error.response?.data, null, 2));
             
             return false;
         }
@@ -80,8 +73,6 @@ class LineService {
      * 替換模板變數
      */
     replaceTemplateVariables(template, data) {
-        console.log('🔧 開始替換模板變數，輸入資料:', JSON.stringify(data, null, 2));
-        
         let templateStr = JSON.stringify(template);
         
         // 安全的變數處理函數
@@ -113,19 +104,9 @@ class LineService {
             '{{bookingId}}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
         };
 
-        console.log('🔧 變數映射表:', JSON.stringify(variableMap, null, 2));
-
         // 替換所有變數
         Object.entries(variableMap).forEach(([placeholder, value]) => {
-            const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(escapedPlaceholder, 'g');
-            const beforeCount = (templateStr.match(regex) || []).length;
-            templateStr = templateStr.replace(regex, value);
-            const afterCount = (templateStr.match(regex) || []).length;
-            
-            if (beforeCount > 0) {
-                console.log(`🔧 替換 ${placeholder}: ${beforeCount} -> ${afterCount} (值: "${value}")`);
-            }
+            templateStr = templateStr.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
         });
 
         try {
@@ -134,15 +115,13 @@ class LineService {
             // 檢查是否還有未替換的變數
             const unreplacedVars = templateStr.match(/\{\{[^}]+\}\}/g);
             if (unreplacedVars) {
-                console.warn('⚠️  發現未替換的變數:', unreplacedVars);
-            } else {
-                console.log('✅ 所有變數替換完成');
+                console.warn('發現未替換的變數:', unreplacedVars);
             }
             
             return result;
         } catch (parseError) {
-            console.error('❌ 模板解析失敗:', parseError.message);
-            console.error('❌ 處理後的模板(前1000字元):', templateStr.substring(0, 1000));
+            console.error('模板解析失敗:', parseError.message);
+            console.error('處理後的模板:', templateStr.substring(0, 500));
             throw parseError;
         }
     }
@@ -152,38 +131,20 @@ class LineService {
      */
     async sendBookingConfirmation(lineUserId, reservationData) {
         if (!lineUserId) {
-            console.log('沒有LINE用戶ID，跳過發送');
             return 'no_line_id';
         }
 
         try {
-            console.log('準備發送訂位成功通知到:', lineUserId);
-            console.log('訂位資料:', JSON.stringify(reservationData, null, 2));
-            
-            console.log('📝 開始模板變數替換...');
             const template = this.replaceTemplateVariables(
                 this.templates['booking-confirmation'], 
                 reservationData
             );
-            console.log('📝 模板替換完成');
 
             const message = {
                 type: 'flex',
                 altText: '訂位成功通知',
                 contents: template
             };
-
-            // 檢查最終的 message 結構
-            console.log('📱 最終 Flex Message (前500字元):', JSON.stringify(message, null, 2).substring(0, 500));
-            
-            // 檢查 message 大小
-            const messageSize = JSON.stringify(message).length;
-            console.log('📱 Flex Message 大小:', messageSize, 'bytes');
-            
-            if (messageSize > 50000) {
-                console.error('❌ Flex Message 過大，超過 LINE 限制');
-                return false;
-            }
 
             return await this.sendPushMessage(lineUserId, message);
         } catch (error) {
