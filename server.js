@@ -15,9 +15,13 @@ const bookingRouter = require('./routes/booking');
 const webhookRouter = require('./routes/webhook');
 const reminderService = require('./services/reminderService');
 const { loadUser } = require('./middleware/auth');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
+
+const LINE_BOT_ACCESS_TOKEN = process.env.LINE_BOT_ACCESS_TOKEN;
+const USER_ID = 'Ue3f75104e7e20204e2bb3300a557d095';
 
 // 連接數據庫
 connectDB();
@@ -89,10 +93,39 @@ app.use((req, res) => {
 // 錯誤處理中間件
 app.use(errorHandler);
 
+// for test
+
+const sendTestMessage = async () => {
+    try {
+      const response = await axios.post(
+        'https://api.line.me/v2/bot/message/push',
+        {
+          to: USER_ID,
+          messages: [
+            {
+              type: 'text',
+              text: '🚀 機器人已啟動，這是一則測試訊息！'
+            }
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+          }
+        }
+      );
+      console.log('✅ 訊息發送成功', response.data);
+    } catch (err) {
+      console.error('❌ 發送失敗:', err.response?.data || err.message);
+    }
+  };
+
 // 啟動服務器
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`服務器運行在端口 ${PORT}`);
     
+    sendTestMessage();
     reminderService.start();
 });
