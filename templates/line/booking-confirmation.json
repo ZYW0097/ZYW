@@ -68,7 +68,8 @@
 		  ]
 		},
 		{
-		  "type": "separator"
+		  "type": "separator",
+		  "margin": "md"
 		},
 		{
 		  "type": "box",
@@ -76,15 +77,17 @@
 		  "contents": [
 			{
 			  "type": "text",
-			  "text": "姓名",
+			  "text": "姓　　名",
 			  "flex": 2,
-			  "color": "#aaaaaa"
+			  "color": "#666666",
+			  "size": "sm"
 			},
 			{
 			  "type": "text",
 			  "text": "${name}",
 			  "flex": 5,
-			  "color": "#666666"
+			  "size": "sm",
+			  "color": "#000000"
 			}
 		  ],
 		  "margin": "md"
@@ -95,15 +98,17 @@
 		  "contents": [
 			{
 			  "type": "text",
-			  "text": "電話",
+			  "text": "電　　話",
 			  "flex": 2,
-			  "color": "#aaaaaa"
+			  "color": "#666666",
+			  "size": "sm"
 			},
 			{
 			  "type": "text",
 			  "text": "${phone}",
 			  "flex": 5,
-			  "color": "#666666"
+			  "color": "#000000",
+			  "size": "sm"
 			}
 		  ],
 		  "margin": "md"
@@ -116,13 +121,15 @@
 			  "type": "text",
 			  "text": "用餐日期",
 			  "flex": 2,
-			  "color": "#aaaaaa"
+			  "color": "#666666",
+			  "size": "sm"
 			},
 			{
 			  "type": "text",
 			  "text": "${date}",
 			  "flex": 5,
-			  "color": "#666666"
+			  "color": "#000000",
+			  "size": "sm"
 			}
 		  ],
 		  "margin": "md"
@@ -135,13 +142,15 @@
 			  "type": "text",
 			  "text": "用餐時間",
 			  "flex": 2,
-			  "color": "#aaaaaa"
+			  "color": "#666666",
+			  "size": "sm"
 			},
 			{
 			  "type": "text",
 			  "text": "${time}",
 			  "flex": 5,
-			  "color": "#666666"
+			  "color": "#000000",
+			  "size": "sm"
 			}
 		  ],
 		  "margin": "md"
@@ -154,13 +163,15 @@
 			  "type": "text",
 			  "text": "用餐人數",
 			  "flex": 2,
-			  "color": "#aaaaaa"
+			  "color": "#666666",
+			  "size": "sm"
 			},
 			{
 			  "type": "text",
 			  "flex": 5,
 			  "text": "${adults}大${children}小",
-			  "color": "#666666"
+			  "color": "#000000",
+			  "size": "sm"
 			}
 		  ],
 		  "margin": "md"

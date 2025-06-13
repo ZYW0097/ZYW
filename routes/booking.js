@@ -68,11 +68,9 @@ async function sendBookingNotifications(reservationData, type = 'confirmation') 
         if (lineUserId) {
             try {
                 if (type === 'confirmation') {
-                    const result = await lineService.sendBookingConfirmation(lineUserId, reservationData);
-                    console.log('📱 LINE 確認通知結果:', result);
+                    await lineService.sendBookingConfirmation(lineUserId, reservationData);
                 } else if (type === 'cancellation') {
-                    const result = await lineService.sendBookingCancellation(lineUserId, reservationData);
-                    console.log('📱 LINE 取消通知結果:', result);
+                    await lineService.sendBookingCancellation(lineUserId, reservationData);
                 }
             } catch (lineError) {
                 console.error('📱 LINE 通知發送失敗:', lineError);
@@ -211,9 +209,6 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         // 使用台灣時區的今天日期進行比較
         const taiwanToday = new Date(today.toLocaleString("en-US", {timeZone: "Asia/Taipei"}));
         taiwanToday.setHours(0, 0, 0, 0);
-        
-        console.log('訂位日期:', date, '-> 解析為:', bookingDate);
-        console.log('台灣今天:', taiwanToday);
         
         if (bookingDate < taiwanToday) {
             return res.status(400).json({ 
