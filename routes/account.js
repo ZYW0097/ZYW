@@ -73,6 +73,10 @@ router.get('/line/callback', async (req, res) => {
         // 記錄取得的 LINE ID 以供偵錯
         console.log('✅ LINE Login 取得的用戶 ID:', lineId);
         console.log('📋 完整 profile 資料:', JSON.stringify(profileRes.data, null, 2));
+        
+        // 重要提醒：這是 LINE Login Channel 專用的 ID，與 Messaging API 的 User ID 不同
+        console.warn('⚠️  注意：此 ID 與 LINE Messaging API 的 User ID 不同');
+        console.warn('⚠️  如需與 LINE Bot 整合，請考慮使用 LIFF App 或建立 ID 對應關係');
 
         // 上傳頭像到 Cloudinary
         let avatarCloudUrl = '';
@@ -91,13 +95,32 @@ router.get('/line/callback', async (req, res) => {
         let isNewUser = false;
         
         if (!user) {
-            // 首次登入，創建新用戶
-            user = await User.create({
-                lineId,
-                name,
-                avatar: avatarCloudUrl
+            // 檢查是否有相同名稱的 Messaging API 用戶記錄可以合併
+            const potentialUser = await User.findOne({ 
+                name: name,
+                lineMessagingId: { $exists: true },
+                lineId: { $exists: false }
             });
-            isNewUser = true;
+            
+            if (potentialUser) {
+                // 合併記錄：將 Login ID 加入現有的 Messaging API 記錄
+                console.log('🔗 合併用戶記錄 - Login ID:', lineId, 'Messaging ID:', potentialUser.lineMessagingId);
+                potentialUser.lineId = lineId;
+                potentialUser.name = name; // 更新為 LINE Login 的正式名稱
+                if (avatarCloudUrl) potentialUser.avatar = avatarCloudUrl;
+                await potentialUser.save();
+                user = potentialUser;
+                isNewUser = false; // 技術上不是新用戶，因為已有 Messaging API 記錄
+            } else {
+                // 首次登入，創建新用戶
+                console.log('🆕 創建新的 LINE Login 用戶:', lineId);
+                user = await User.create({
+                    lineId,
+                    name,
+                    avatar: avatarCloudUrl
+                });
+                isNewUser = true;
+            }
         } else if (!user.avatar && avatarCloudUrl) {
             // 更新頭像
             user.avatar = avatarCloudUrl;
@@ -224,13 +247,42 @@ router.get('/points', requireLogin, async (req, res) => {
                 const UserPoints = userDb.model('UserPoints', require('../models/points/userPoints'));
                 
                 // 使用 lean() 提高查詢性能，只查詢必要字段
+                // 優先使用 Messaging ID，如果沒有則使用 Login ID
+                const queryLineId = user.lineMessagingId || user.lineId;
+                
                 const userPoints = await UserPoints.findOne(
                     { 
-                        lineId: user.lineId,
+                        lineId: queryLineId,
                         type: 'user_points'
                     },
                     'ah-points ah-coupon ah-coupon-id' // 只查詢需要的字段
                 ).lean();
+                
+                if (!userPoints && user.lineMessagingId && user.lineId) {
+                    // 如果使用 Messaging ID 沒找到，且兩個 ID 都存在，嘗試用 Login ID 查詢
+                    console.log(`🔄 ${client.slugname}: Messaging ID 無結果，嘗試 Login ID`);
+                    const fallbackPoints = await UserPoints.findOne(
+                        { 
+                            lineId: user.lineId,
+                            type: 'user_points'
+                        },
+                        'ah-points ah-coupon ah-coupon-id'
+                    ).lean();
+                    
+                    if (fallbackPoints) {
+                        console.log(`✅ ${client.slugname}: 使用 Login ID 找到集點記錄`);
+                        return {
+                            storeSlug: client.slugname,
+                            storeName: client.clientname,
+                            storeImage: '/images/dine.jpg',
+                            points: fallbackPoints['ah-points'] || 0,
+                            coupons: fallbackPoints['ah-coupon-id'] 
+                                ? fallbackPoints['ah-coupon-id'].reduce((sum, c) => sum + (c.count || 0), 0)
+                                : fallbackPoints['ah-coupon'] || 0,
+                            cardData: fallbackPoints
+                        };
+                    }
+                }
                 
                 if (userPoints) {
                     // 計算優惠券總數
@@ -589,6 +641,76 @@ router.get('/redirect', async (req, res) => {
     } catch (error) {
         console.error('Redirect error:', error);
         return res.redirect('/');
+    }
+});
+
+// 管理員工具：手動建立 LINE ID 對應關係
+router.post('/admin/link-line-ids', async (req, res) => {
+    try {
+        const { loginId, messagingId, adminKey } = req.body;
+        
+        // 簡單的管理員驗證（建議使用更安全的方式）
+        if (adminKey !== process.env.ADMIN_SECRET_KEY) {
+            return res.status(403).json({ error: '無權限訪問' });
+        }
+        
+        if (!loginId || !messagingId) {
+            return res.status(400).json({ error: '需要提供 loginId 和 messagingId' });
+        }
+        
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        
+        // 查找 Login ID 用戶
+        const loginUser = await User.findOne({ lineId: loginId });
+        if (!loginUser) {
+            return res.status(404).json({ error: '找不到 Login ID 對應的用戶' });
+        }
+        
+        // 查找 Messaging ID 用戶
+        const messagingUser = await User.findOne({ lineMessagingId: messagingId });
+        
+        if (messagingUser && messagingUser._id.toString() !== loginUser._id.toString()) {
+            // 合併兩個用戶記錄
+            console.log('🔗 合併用戶記錄:', loginUser._id, 'with', messagingUser._id);
+            
+            // 將 Messaging ID 加入 Login 用戶
+            loginUser.lineMessagingId = messagingId;
+            await loginUser.save();
+            
+            // 刪除重複的 Messaging 用戶記錄
+            await User.findByIdAndDelete(messagingUser._id);
+            
+            res.json({
+                success: true,
+                message: '用戶記錄已合併',
+                user: {
+                    id: loginUser._id,
+                    name: loginUser.name,
+                    lineId: loginUser.lineId,
+                    lineMessagingId: loginUser.lineMessagingId
+                }
+            });
+        } else {
+            // 只需要更新 Messaging ID
+            loginUser.lineMessagingId = messagingId;
+            await loginUser.save();
+            
+            res.json({
+                success: true,
+                message: 'LINE ID 對應關係已建立',
+                user: {
+                    id: loginUser._id,
+                    name: loginUser.name,
+                    lineId: loginUser.lineId,
+                    lineMessagingId: loginUser.lineMessagingId
+                }
+            });
+        }
+        
+    } catch (error) {
+        console.error('建立 LINE ID 對應關係失敗:', error);
+        res.status(500).json({ error: '操作失敗', details: error.message });
     }
 });
 

@@ -25,7 +25,6 @@ class EmailService {
      */
     async sendEmail(to, templateType, data) {
         if (!this.isConfigured()) {
-            console.log('郵件服務未設定，跳過發送');
             return 'not_configured';
         }
 
@@ -52,7 +51,6 @@ class EmailService {
      * 處理素食需求文字
      */
     getVegetarianText(vegetarian) {
-        console.log('🥬 處理素食需求:', vegetarian, typeof vegetarian);
         if (vegetarian === 'yes' || vegetarian === true || vegetarian === '是') return '是';
         if (vegetarian === 'no' || vegetarian === false || vegetarian === '否') return '否';
         return '否';
@@ -73,7 +71,6 @@ class EmailService {
      * 發送訂位確認郵件
      */
     async sendBookingConfirmation(to, bookingInfo) {
-        console.log('📧 準備發送確認郵件，原始資料:', JSON.stringify(bookingInfo, null, 2));
         
         const emailData = {
             clientname: bookingInfo.storeName || bookingInfo.clientname || 'Restaurant',
@@ -91,8 +88,6 @@ class EmailService {
             note: this.safeString(bookingInfo.note || bookingInfo.notes),
             bookingId: bookingInfo.bookingCode || bookingInfo.customBookingId || bookingInfo.bookingId
         };
-
-        console.log('📧 處理後的郵件資料:', JSON.stringify(emailData, null, 2));
         
         return await this.sendEmail(to, 'booking-confirmation', emailData);
     }
@@ -101,7 +96,6 @@ class EmailService {
      * 發送取消訂位郵件
      */
     async sendBookingCancellation(to, bookingInfo) {
-        console.log('📧 準備發送取消郵件，原始資料:', JSON.stringify(bookingInfo, null, 2));
         
         const emailData = {
             clientname: bookingInfo.storeName || bookingInfo.clientname || 'Restaurant',
@@ -118,7 +112,6 @@ class EmailService {
             cancelTime: new Date().toLocaleString('zh-TW')
         };
 
-        console.log('📧 處理後的取消郵件資料:', JSON.stringify(emailData, null, 2));
         
         return await this.sendEmail(to, 'booking-cancellation', emailData);
     }
@@ -127,7 +120,6 @@ class EmailService {
      * 發送用餐提醒郵件
      */
     async sendBookingReminder(to, reminderInfo) {
-        console.log('📧 準備發送提醒郵件，原始資料:', JSON.stringify(reminderInfo, null, 2));
         
         const emailData = {
             clientname: reminderInfo.storeName || reminderInfo.clientname || 'Restaurant',
@@ -144,8 +136,6 @@ class EmailService {
             confirmUrl: reminderInfo.confirmUrl,
             cancelUrl: reminderInfo.cancelUrl
         };
-
-        console.log('📧 處理後的提醒郵件資料:', JSON.stringify(emailData, null, 2));
         
         return await this.sendEmail(to, 'booking-reminder', emailData);
     }
