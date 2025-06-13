@@ -50,9 +50,7 @@ class ReminderService {
         console.log('提醒服務已停止');
     }
 
-    /**
-     * 檢查是否在提醒時間範圍內（中午12:00-13:00）
-     */
+    // 檢查是否在提醒時間範圍內（中午12:00-13:00）GMT
     isReminderTime() {
         const now = new Date();
         const hour = now.getHours();

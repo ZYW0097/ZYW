@@ -47,7 +47,7 @@ router.get('/line/callback', async (req, res) => {
     if (!code) return res.redirect('/');
 
     try {
-        // 取得 access_token
+        // 取得 access_token 和 id_token
         const tokenRes = await axios.post('https://api.line.me/oauth2/v2.1/token',
             qs.stringify({
                 grant_type: 'authorization_code',
@@ -61,12 +61,18 @@ router.get('/line/callback', async (req, res) => {
             }
         );
         const access_token = tokenRes.data.access_token;
+        const id_token = tokenRes.data.id_token;
 
-        // 取得用戶 profile
-        const profileRes = await axios.get('https://api.line.me/v2/profile', {
+        // 使用 OpenID Connect UserInfo 端點取得正確的用戶 ID
+        // 這個端點會回傳與 Messaging API 相同的用戶 ID
+        const profileRes = await axios.get('https://api.line.me/oauth2/v2.1/userinfo', {
             headers: { Authorization: `Bearer ${access_token}` }
         });
-        const { userId: lineId, displayName: name, pictureUrl: avatarUrl } = profileRes.data;
+        const { sub: lineId, name, picture: avatarUrl } = profileRes.data;
+        
+        // 記錄取得的 LINE ID 以供偵錯
+        console.log('✅ LINE Login 取得的用戶 ID:', lineId);
+        console.log('📋 完整 profile 資料:', JSON.stringify(profileRes.data, null, 2));
 
         // 上傳頭像到 Cloudinary
         let avatarCloudUrl = '';
