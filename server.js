@@ -82,7 +82,35 @@ app.post('/test-webhook', express.json(), (req, res) => {
   
     events.forEach(event => {
       if (event.source && event.source.userId) {
-        console.log('收到使用者 userId:', event.source.userId);
+        console.log('✅ LINE Messaging API 正確的 User ID:', event.source.userId);
+        console.log('📋 完整事件資料:', JSON.stringify(event, null, 2));
+        
+        // 檢查資料庫中是否有對應的用戶
+        const getClientDb = require('./utils/dbManager');
+        const userSchema = require('./models/user');
+        
+        (async () => {
+          try {
+            const adb = getClientDb('main', 'ADB');
+            const User = adb.model('User', userSchema);
+            
+            const user = await User.findOne({ lineId: event.source.userId });
+            if (user) {
+              console.log('🔍 找到對應用戶:', user.name, '- ID:', user._id);
+            } else {
+              console.log('❌ 資料庫中找不到此 LINE ID:', event.source.userId);
+              
+              // 列出所有用戶的 LINE ID 進行比較
+              const allUsers = await User.find({}, 'lineId name').limit(10);
+              console.log('📋 現有用戶的 LINE ID:');
+              allUsers.forEach(u => {
+                console.log(`   ${u.name}: ${u.lineId}`);
+              });
+            }
+          } catch (error) {
+            console.error('查詢用戶時發生錯誤:', error);
+          }
+        })();
       }
   
       // 如果你要回覆訊息（需要 replyToken + webhook）
