@@ -63,53 +63,15 @@ router.get('/line/callback', async (req, res) => {
         const access_token = tokenRes.data.access_token;
         const id_token = tokenRes.data.id_token;
 
-        // 嘗試使用 Social API 獲取真正的 Messaging API 用戶 ID
-        // 這需要 LINE Login Channel 與 LINE Bot Channel 連結到同一個 Provider
-        let lineId, name, avatarUrl;
+        // 使用 OpenID Connect UserInfo API 獲取用戶資料
+        const profileRes = await axios.get('https://api.line.me/oauth2/v2.1/userinfo', {
+            headers: { Authorization: `Bearer ${access_token}` }
+        });
         
-        try {
-            // 方法1: 嘗試使用 Social API 取得 LINE 內部用戶 ID
-            const socialRes = await axios.get('https://api.line.me/friendship/v1/status', {
-                headers: { Authorization: `Bearer ${access_token}` }
-            });
-            
-            console.log('🔍 Social API 回應:', JSON.stringify(socialRes.data, null, 2));
-            
-            // 如果 Social API 成功，表示這個 Channel 有連結到 Messaging API
-            if (socialRes.data && socialRes.data.friendFlag !== undefined) {
-                // 使用標準的 profile API 獲取用戶資料
-                const profileRes = await axios.get('https://api.line.me/v2/profile', {
-                    headers: { Authorization: `Bearer ${access_token}` }
-                });
-                
-                lineId = profileRes.data.userId;
-                name = profileRes.data.displayName;
-                avatarUrl = profileRes.data.pictureUrl;
-                
-                console.log('✅ 使用 Social API 驗證的 LINE ID (與 Bot 兼容):', lineId);
-                console.log('📋 Profile 資料:', JSON.stringify(profileRes.data, null, 2));
-            }
-        } catch (socialError) {
-            console.warn('⚠️  Social API 失敗，Channel 可能未連結 Messaging API:', socialError.message);
-            
-            // 備用方案：使用 OpenID Connect UserInfo
-            try {
-                const profileRes = await axios.get('https://api.line.me/oauth2/v2.1/userinfo', {
-                    headers: { Authorization: `Bearer ${access_token}` }
-                });
-                
-                lineId = profileRes.data.sub;
-                name = profileRes.data.name;
-                avatarUrl = profileRes.data.picture;
-                
-                console.log('⚠️  使用 OpenID UserInfo API 的 ID (可能與 Bot 不兼容):', lineId);
-                console.log('📋 UserInfo 資料:', JSON.stringify(profileRes.data, null, 2));
-                
-            } catch (userinfoError) {
-                console.error('❌ UserInfo API 也失敗:', userinfoError.message);
-                throw new Error('無法獲取用戶資料');
-            }
-        }
+        const { sub: lineId, name, picture: avatarUrl } = profileRes.data;
+        
+        // 簡單的 console log
+        console.log('LINE Login sub (User ID):', lineId);
 
         // 上傳頭像到 Cloudinary
         let avatarCloudUrl = '';

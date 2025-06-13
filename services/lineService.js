@@ -27,11 +27,9 @@ class LineService {
                     // 強制讀取最新的檔案內容
                     delete require.cache[require.resolve(templatePath)];
                     this.templates[templateName] = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
-                    console.log(`✅ 載入模板: ${templateName}`);
                 }
             });
             
-            console.log('📋 已載入的模板:', Object.keys(this.templates));
         } catch (error) {
             console.error('載入LINE模板失敗:', error);
             throw error;
@@ -42,7 +40,6 @@ class LineService {
      * 強制重新載入模板
      */
     reloadTemplates() {
-        console.log('🔄 重新載入 LINE 模板...');
         this.loadTemplates();
         return this.templates;
     }
@@ -82,8 +79,6 @@ class LineService {
                 messages = [message];
             }
 
-            console.log('📤 準備發送的訊息:', JSON.stringify(messages, null, 2));
-
             const requestData = {
                 to: userId,
                 messages: messages
@@ -100,20 +95,7 @@ class LineService {
             return true;
         } catch (error) {
             console.error('LINE訊息發送失敗');
-            console.error('錯誤狀態:', error.response?.status);
-            console.error('錯誤訊息:', error.response?.data?.message || error.message);
-            console.error('完整錯誤回應:', JSON.stringify(error.response?.data, null, 2));
-            console.error('完整錯誤物件:', JSON.stringify({
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                headers: error.response?.headers,
-                data: error.response?.data,
-                message: error.message,
-                stack: error.stack
-            }, null, 2));
-            if (messages) {
-                console.error('發送的訊息內容:', JSON.stringify(messages, null, 2));
-            }
+            console.error(error);
             
             return false;
         }
@@ -225,15 +207,6 @@ class LineService {
             '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
         };
 
-        console.log('📊 原始資料:', {
-            name: data.name,
-            vegetarian: data.vegetarian,
-            special: data.special,
-            note: data.note,
-            adults: data.adults,
-            children: data.children
-        });
-
         // 遞迴替換函數
         const replaceInObject = (obj) => {
             if (Array.isArray(obj)) {
@@ -253,9 +226,6 @@ class LineService {
         };
 
         replaceInObject(result);
-
-        console.log('🔄 模板變數替換完成');
-        console.log('📝 變數映射:', variableMap);
         
         return result;
     }

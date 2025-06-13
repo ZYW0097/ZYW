@@ -36,16 +36,11 @@ async function getClientInfo(storeSlug) {
 // 發送訂位通知的輔助函數
 async function sendBookingNotifications(reservationData, type = 'confirmation') {
     try {
-        console.log('📨 開始發送訂位通知...');
-        console.log('📋 通知類型:', type);
-        console.log('📊 訂位資料:', JSON.stringify(reservationData, null, 2));
         
         // 一定發送郵件通知
         if (type === 'confirmation') {
-            console.log('📧 發送確認郵件...');
             await emailService.sendBookingConfirmation(reservationData.email, reservationData);
         } else if (type === 'cancellation') {
-            console.log('📧 發送取消郵件...');
             await emailService.sendBookingCancellation(reservationData.email, reservationData);
         }
 
@@ -54,7 +49,6 @@ async function sendBookingNotifications(reservationData, type = 'confirmation') 
         
         // 如果沒有 lineUserId，嘗試通過電話號碼查找
         if (!lineUserId && reservationData.phone) {
-            console.log('🔍 通過電話號碼查找 LINE 用戶:', reservationData.phone);
             try {
                 // 使用正確的 User 模型
                 const userSchema = require('../models/user');
@@ -64,9 +58,6 @@ async function sendBookingNotifications(reservationData, type = 'confirmation') 
                 const existingLineUser = await User.findOne({ phone: reservationData.phone }).select('lineId');
                 if (existingLineUser && existingLineUser.lineId) {
                     lineUserId = existingLineUser.lineId;
-                    console.log('✅ 找到綁定的 LINE 用戶:', lineUserId);
-                } else {
-                    console.log('❌ 未找到綁定的 LINE 用戶');
                 }
             } catch (lineUserError) {
                 console.error('查找 LINE 用戶時發生錯誤:', lineUserError);
@@ -75,7 +66,6 @@ async function sendBookingNotifications(reservationData, type = 'confirmation') 
 
         // 發送 LINE 通知
         if (lineUserId) {
-            console.log('📱 準備發送 LINE 通知到:', lineUserId);
             try {
                 if (type === 'confirmation') {
                     const result = await lineService.sendBookingConfirmation(lineUserId, reservationData);
@@ -268,13 +258,6 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             console.warn(`人數不一致: adults(${adults}) + children(${children}) = ${adults + children}, 但guests=${guestNum}`);
         }
         
-        // 記錄前端傳送的完整資料用於除錯
-        console.log('📝 前端傳送的完整表單資料:', {
-            body: req.body,
-            special: req.body.special,
-            note: req.body.note,
-            vegetarian: req.body.vegetarian
-        });
 
         const reservationData = {
             customBookingId,
@@ -296,8 +279,6 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             lineUserId: lineUserId
         };
 
-        console.log('💾 準備存入資料庫的資料:', reservationData);
-        
         // 創建訂位記錄
         const reservation = await Reservation.create(reservationData);
 
