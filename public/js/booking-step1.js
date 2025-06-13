@@ -82,6 +82,17 @@ function updateTimeButtons() {
         ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'] :
         ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
     
+    // 檢查是否是今天
+    const today = new Date();
+    const isToday = selectedDate.getDate() === today.getDate() && 
+                   selectedDate.getMonth() === today.getMonth() && 
+                   selectedDate.getFullYear() === today.getFullYear();
+    
+    // 獲取當前時間（小時和分鐘）
+    const currentHour = today.getHours();
+    const currentMinute = today.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
     timeButtons.innerHTML = '';
     
     timeSlots.forEach(time => {
@@ -89,15 +100,37 @@ function updateTimeButtons() {
         button.className = 'time-button';
         button.textContent = time;
         
-        if (selectedTime === time) {
-            button.classList.add('selected');
+        // 檢查時段是否已過期（只對今天有效）
+        let isTimeDisabled = false;
+        if (isToday) {
+            const [timeHour, timeMinute] = time.split(':').map(Number);
+            const timeInMinutes = timeHour * 60 + timeMinute;
+            
+            // 如果時段已經過了，禁用該時段
+            if (timeInMinutes <= currentTimeInMinutes) {
+                isTimeDisabled = true;
+            }
         }
         
-        button.addEventListener('click', () => {
-            selectedTime = time;
-            updateTimeButtons();
-            checkNextButton();
-        });
+        if (isTimeDisabled) {
+            button.classList.add('disabled');
+            // 如果當前選中的時間被禁用，清除選擇
+            if (selectedTime === time) {
+                selectedTime = null;
+            }
+        } else {
+            // 只有未禁用的時段才能點擊
+            button.addEventListener('click', () => {
+                selectedTime = time;
+                updateTimeButtons();
+                checkNextButton();
+            });
+        }
+        
+        // 如果是選中的時間且未被禁用，添加選中樣式
+        if (selectedTime === time && !isTimeDisabled) {
+            button.classList.add('selected');
+        }
         
         timeButtons.appendChild(button);
     });
