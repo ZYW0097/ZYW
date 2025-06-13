@@ -196,15 +196,22 @@ class LineService {
             '${date}': safeValue(data.date || data.bookingDate),
             '${time}': safeValue(data.time || data.timeSlot),
             '${customerName}': safeValue(data.name || data.customerName),
+            '${name}': safeValue(data.name || data.customerName),
             '${maskedName}': safeValue(data.maskedName || data.name || data.customerName),
             '${phone}': safeValue(data.phone),
             '${maskedPhone}': safeValue(data.maskedPhone || data.phone),
             '${email}': safeValue(data.email),
+            '${gender}': safeValue(data.gender, '先生'),
+            '${adults}': safeValue(data.adults, '1'),
+            '${children}': safeValue(data.children, '0'),
             '${partySize}': partySize,
             '${vegetarianRequirement}': vegetarianText,
             '${specialRequirement}': specialText,
             '${note}': noteText,
-            '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId)
+            '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId),
+            '${customBookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId),
+            '${confirmUrl}': safeValue(data.confirmUrl, ''),
+            '${cancelUrl}': safeValue(data.cancelUrl, '')
         };
 
         // 遞迴替換函數
@@ -270,6 +277,9 @@ class LineService {
         }
 
         try {
+            // 重新載入模板以確保使用最新版本
+            this.reloadTemplates();
+            
             const template = this.replaceTemplateVariables(
                 this.templates['booking-reminder'], 
                 reservationData

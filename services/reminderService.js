@@ -125,7 +125,14 @@ class ReminderService {
     async sendReminder(reservation, client) {
         try {
             const { customBookingId, email, lineUserId, date, time, adults, children, name, gender, phone, vegetarian, special, note } = reservation;
-            const { clientname } = client;
+            const { clientname, slugname } = client;
+
+            // 生成確認和取消的 token 和 URL
+            const timestamp = Date.now();
+            const token = Buffer.from(`${customBookingId}_${slugname}_${timestamp}`).toString('base64');
+            const baseUrl = process.env.BASE_URL || 'https://your-domain.com';
+            const confirmUrl = `${baseUrl}/booking-reminder/confirm/${token}`;
+            const cancelUrl = `${baseUrl}/booking-reminder/cancel/${token}`;
 
             const reminderData = {
                 name,
@@ -141,8 +148,11 @@ class ReminderService {
                 special: special || '',
                 note: note || '',
                 bookingCode: customBookingId,
+                customBookingId: customBookingId,
                 storeName: clientname,
-                clientname
+                clientname,
+                confirmUrl,
+                cancelUrl
             };
 
             let emailResult = false;
@@ -165,6 +175,8 @@ class ReminderService {
                     reminderSentAt: new Date()
                 });
                 console.log(`提醒發送成功 - 訂位 ${customBookingId}`);
+                console.log(`確認連結: ${confirmUrl}`);
+                console.log(`取消連結: ${cancelUrl}`);
             } else {
                 console.log(`提醒發送失敗 - 訂位 ${customBookingId}`);
             }
