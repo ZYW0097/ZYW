@@ -84,7 +84,7 @@
 			},
 			{
 			  "type": "text",
-			  "text": "${name}",
+			  "text": "${name} ${gender}",
 			  "flex": 5,
 			  "size": "sm",
 			  "color": "#000000"
