@@ -109,8 +109,13 @@ class ReminderService {
 
             console.log(`找到 ${reservations.length} 筆 ${clientname} 的訂位需要提醒`);
 
-            for (const reservation of reservations) {
+            for (let i = 0; i < reservations.length; i++) {
+                const reservation = reservations[i];
                 await this.sendReminder(reservation, client);
+                
+                if (i < reservations.length - 1 && reservation.lineUserId) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
             }
 
         } catch (error) {
