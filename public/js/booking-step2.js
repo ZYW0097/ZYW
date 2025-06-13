@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 顯示選擇的日期和時間 (合併顯示)
     const dateTimeText = `${bookingData.date} ${bookingData.time}`;
     document.getElementById('displayDate').textContent = dateTimeText;
+    
+    console.log('Step2 接收到的日期:', bookingData.date);
+    console.log('Step2 接收到的時間:', bookingData.time);
 
     // 顯示選擇的人數 (簡潔格式 XY小)
     const adults = bookingData.adults || 0;
@@ -49,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
             guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數
             storeSlug
         };
+        
+        console.log('提交的訂位資料:', data);
+        console.log('特別注意日期:', data.date);
 
         try {
             const response = await fetch(`/${storeSlug}/api/booking`, {

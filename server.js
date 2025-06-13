@@ -73,24 +73,23 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/test-webhook', express.json(), (req, res) => {
-    const events = req.body.events;
+// line webhook 測試用
+
+// app.post('/test-webhook', express.json(), (req, res) => {
+//     const events = req.body.events;
   
-    if (!events || events.length === 0) {
-      return res.status(200).send('No events');
-    }
+//     if (!events || events.length === 0) {
+//       return res.status(200).send('No events');
+//     }
   
-    events.forEach(event => {
-      if (event.source && event.source.userId) {
-        console.log('Webhook User ID:', event.source.userId);
-      }
+//     events.forEach(event => {
+//       if (event.source && event.source.userId) {
+//         console.log('Webhook User ID:', event.source.userId);
+//       }
+//     });
   
-      // 如果你要回覆訊息（需要 replyToken + webhook）
-      // 也可以在這裡處理
-    });
-  
-    res.status(200).send('OK');
-  });
+//     res.status(200).send('OK');
+//   });
 
 // 路由
 app.use('/auth', authRouter);

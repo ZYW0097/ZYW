@@ -142,8 +142,14 @@ adultsSelect.addEventListener('change', () => {
 nextButton.addEventListener('click', () => {
     if (!selectedDate || !selectedTime || !adultsSelect.value) return;
     
-    // 將選擇的日期和時間格式化
-    const formattedDate = selectedDate.toISOString().split('T')[0];
+    // 修正：使用本地時區格式化日期，避免時區轉換問題
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    console.log('選擇的日期:', selectedDate);
+    console.log('格式化後的日期:', formattedDate);
     
     // 將數據存儲在 sessionStorage 中
     sessionStorage.setItem('bookingData', JSON.stringify({

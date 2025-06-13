@@ -205,11 +205,17 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             });
         }
 
-        // 驗證日期格式和未來日期
-        const bookingDate = new Date(date);
+        // 驗證日期格式和未來日期（使用台灣時區）
+        const bookingDate = new Date(date + 'T00:00:00+08:00'); // 明確指定台灣時區
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (bookingDate < today) {
+        // 使用台灣時區的今天日期進行比較
+        const taiwanToday = new Date(today.toLocaleString("en-US", {timeZone: "Asia/Taipei"}));
+        taiwanToday.setHours(0, 0, 0, 0);
+        
+        console.log('訂位日期:', date, '-> 解析為:', bookingDate);
+        console.log('台灣今天:', taiwanToday);
+        
+        if (bookingDate < taiwanToday) {
             return res.status(400).json({ 
                 success: false, 
                 error: '不能預訂過去的日期' 
