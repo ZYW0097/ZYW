@@ -79,13 +79,15 @@
             "type": "text",
             "text": "姓名",
             "flex": 2,
-            "color": "#666666"
+            "color": "#666666",
+            "size": "sm"
           },
           {
             "type": "text",
             "text": "${name}",
             "flex": 5,
-            "color": "#000000"
+            "color": "#000000",
+            "size": "sm"
           }
         ],
         "margin": "md"
@@ -98,13 +100,15 @@
             "type": "text",
             "text": "電話",
             "flex": 2,
-            "color": "#666666"
+            "color": "#666666",
+            "size": "sm"
           },
           {
             "type": "text",
             "text": "${phone}",
             "flex": 5,
-            "color": "#000000"
+            "color": "#000000",
+            "size": "sm"
           }
         ],
         "margin": "md"
@@ -117,13 +121,15 @@
             "type": "text",
             "text": "用餐日期",
             "flex": 2,
-            "color": "#666666"
+            "color": "#666666",
+            "size": "sm"
           },
           {
             "type": "text",
             "text": "${date}",
             "flex": 5,
-            "color": "#000000"
+            "color": "#000000",
+            "size": "sm"
           }
         ],
         "margin": "md"
@@ -136,13 +142,15 @@
             "type": "text",
             "text": "用餐時間",
             "flex": 2,
-            "color": "#666666"
+            "color": "#666666",
+            "size": "sm"
           },
           {
             "type": "text",
             "text": "${time}",
             "flex": 5,
-            "color": "#000000"
+            "color": "#000000",
+            "size": "sm"
           }
         ],
         "margin": "md"
@@ -155,13 +163,15 @@
             "type": "text",
             "text": "用餐人數",
             "flex": 2,
-            "color": "#666666"
+            "color": "#666666",
+            "size": "sm"
           },
           {
             "type": "text",
             "flex": 5,
             "text": "${adults}大${children}小",
-            "color": "#000000"
+            "color": "#000000",
+            "size": "sm"
           }
         ],
         "margin": "md"
