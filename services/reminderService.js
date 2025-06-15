@@ -135,7 +135,7 @@ class ReminderService {
             // 生成確認和取消的 token 和 URL
             const timestamp = Date.now();
             const token = Buffer.from(`${customBookingId}_${slugname}_${timestamp}`).toString('base64');
-            const baseUrl = process.env.BASE_URL || 'https://your-domain.com';
+            const baseUrl = process.env.BASE_URL || 'https://zyw.onrender.com';
             const confirmUrl = `${baseUrl}/booking-reminder/confirm/${token}`;
             const cancelUrl = `${baseUrl}/booking-reminder/cancel/${token}`;
 

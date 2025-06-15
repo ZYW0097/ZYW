@@ -16,7 +16,7 @@ const webhookRouter = require('./routes/webhook');
 const reminderService = require('./services/reminderService');
 const { loadUser } = require('./middleware/auth');
 const axios = require('axios');
-const LineService = require('./services/lineService');
+const lineService = require('./services/lineService');
 require('dotenv').config();
 
 const app = express();
@@ -75,8 +75,6 @@ app.use((req, res, next) => {
 });
 
 // line webhook 測試用
-const lineService = new LineService();
-
 app.post('/test-webhook', express.json(), async (req, res) => {
     const events = req.body.events;
   
