@@ -77,14 +77,14 @@
         "contents": [
           {
             "type": "text",
-            "text": "姓名",
+            "text": "姓\u3000\u3000名",
             "flex": 2,
             "color": "#666666",
             "size": "sm"
           },
           {
             "type": "text",
-            "text": "${name}",
+            "text": "${name} ${gender}",
             "flex": 5,
             "color": "#000000",
             "size": "sm"
@@ -98,7 +98,7 @@
         "contents": [
           {
             "type": "text",
-            "text": "電話",
+            "text": "電\u3000\u3000話",
             "flex": 2,
             "color": "#666666",
             "size": "sm"

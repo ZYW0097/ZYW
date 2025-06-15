@@ -16,6 +16,7 @@ const webhookRouter = require('./routes/webhook');
 const reminderService = require('./services/reminderService');
 const { loadUser } = require('./middleware/auth');
 const axios = require('axios');
+const LineService = require('./services/lineService');
 require('dotenv').config();
 
 const app = express();
@@ -74,22 +75,114 @@ app.use((req, res, next) => {
 });
 
 // line webhook 測試用
+const lineService = new LineService();
 
-// app.post('/test-webhook', express.json(), (req, res) => {
-//     const events = req.body.events;
+app.post('/test-webhook', express.json(), async (req, res) => {
+    const events = req.body.events;
   
-//     if (!events || events.length === 0) {
-//       return res.status(200).send('No events');
-//     }
+    if (!events || events.length === 0) {
+      return res.status(200).send('No events');
+    }
   
-//     events.forEach(event => {
-//       if (event.source && event.source.userId) {
-//         console.log('Webhook User ID:', event.source.userId);
-//       }
-//     });
+    for (const event of events) {
+      console.log('📨 收到 LINE 事件:', event.type);
+      
+      if (event.source && event.source.userId) {
+        console.log('👤 用戶 ID:', event.source.userId);
+      }
+      
+      // 處理文字訊息
+      if (event.type === 'message' && event.message.type === 'text') {
+        const userId = event.source.userId;
+        const userMessage = event.message.text.toLowerCase();
+        
+        console.log('💬 用戶訊息:', event.message.text);
+        
+        try {
+          // 根據用戶輸入進行不同的測試
+          if (userMessage.includes('test') || userMessage.includes('測試')) {
+            // 測試訂位確認訊息
+            const testData = {
+              name: 'test',
+              gender: '先生',
+              phone: '0912345678',
+              date: '2024-01-15',
+              time: '18:00',
+              adults: '2',
+              children: '0',
+              storeName: 'test',
+              customBookingId: 'TEST123'
+            };
+            
+            console.log('🧪 發送測試訂位確認訊息...');
+            await lineService.sendBookingConfirmation(userId, testData);
+            
+          } else if (userMessage.includes('reminder') || userMessage.includes('提醒')) {
+            // 測試訂位提醒訊息
+            const testData = {
+              name: 'test',
+              gender: '先生',
+              phone: '0912345678',
+              date: '2024-01-16',
+              time: '19:00',
+              adults: '1',
+              children: '1',
+              storeName: 'test',
+              customBookingId: 'REMIND123',
+              confirmUrl: 'https://zyw.onrender.com/',
+              cancelUrl: 'https://zyw.onrender.com/'
+            };
+            
+            console.log('🔔 發送測試訂位提醒訊息...');
+            await lineService.sendBookingReminder(userId, testData);
+            
+          } else if (userMessage.includes('cancel') || userMessage.includes('取消')) {
+            // 測試訂位取消訊息
+            const testData = {
+              name: 'test',
+              gender: '小姐',
+              phone: '0987654321',
+              date: '2024-01-14',
+              time: '12:00',
+              adults: '3',
+              children: '0',
+              storeName: 'test',
+              customBookingId: 'CANCEL123'
+            };
+            
+            console.log('❌ 發送測試訂位取消訊息...');
+            await lineService.sendBookingCancellation(userId, testData);
+            
+          } else {
+            // 發送使用說明
+            const helpMessage = `🤖 LINE Bot 測試說明：
+
+輸入以下關鍵字進行測試：
+• "test" 或 "測試" - 測試訂位確認訊息
+• "reminder" 或 "提醒" - 測試訂位提醒訊息  
+• "cancel" 或 "取消" - 測試訂位取消訊息
+
+所有測試訊息都會使用 "test" 作為文字內容，連結使用 https://zyw.onrender.com/`;
+            
+            console.log('📖 發送使用說明...');
+            await lineService.sendPushMessage(userId, helpMessage);
+          }
+          
+        } catch (error) {
+          console.error('❌ 處理訊息時發生錯誤:', error);
+          
+          // 發送錯誤訊息給用戶
+          try {
+            await lineService.sendPushMessage(userId, '抱歉，處理您的訊息時發生錯誤，請稍後再試。');
+          } catch (sendError) {
+            console.error('❌ 發送錯誤訊息失敗:', sendError);
+          }
+        }
+      }
+    }
   
-//     res.status(200).send('OK');
-//   });
+    res.status(200).send('OK');
+  });
 
 // 路由
 app.use('/auth', authRouter);

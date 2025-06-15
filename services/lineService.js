@@ -123,8 +123,13 @@ class LineService {
                 // 檢查並移除有問題的 URI
                 if (obj.action && obj.action.uri) {
                     const uri = obj.action.uri;
-                    // 如果 URI 包含中文或無效格式，移除整個 action
-                    if (uri.includes('您的網站') || uri.includes('${') || !/^https?:\/\//.test(uri)) {
+                    // 如果 URI 包含中文、模板變數或無效格式，移除整個 action
+                    if (uri.includes('您的網站') || 
+                        uri.includes('${') || 
+                        uri.includes('linecorp.com') ||
+                        uri === 'INVALID_URL' ||
+                        !/^https?:\/\//.test(uri) ||
+                        uri.trim() === '') {
                         console.warn('⚠️ 移除無效的 URI:', uri);
                         const label = obj.action.label;
                         delete obj.action;
@@ -210,8 +215,9 @@ class LineService {
             '${note}': noteText,
             '${bookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId),
             '${customBookingId}': safeValue(data.bookingCode || data.customBookingId || data.bookingId),
-            '${confirmUrl}': safeValue(data.confirmUrl, ''),
-            '${cancelUrl}': safeValue(data.cancelUrl, '')
+            // 對於 URL，如果為空則使用預設的無效 URL，稍後會被清理函數移除
+            '${confirmUrl}': data.confirmUrl && data.confirmUrl.trim() ? data.confirmUrl : 'INVALID_URL',
+            '${cancelUrl}': data.cancelUrl && data.cancelUrl.trim() ? data.cancelUrl : 'INVALID_URL'
         };
 
         // 遞迴替換函數
