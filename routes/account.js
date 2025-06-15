@@ -70,8 +70,6 @@ router.get('/line/callback', async (req, res) => {
         
         const { sub: lineId, name, picture: avatarUrl } = profileRes.data;
         
-        // 簡單的 console log
-        console.log('LINE Login sub (User ID):', lineId);
 
         // 上傳頭像到 Cloudinary
         let avatarCloudUrl = '';

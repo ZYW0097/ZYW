@@ -181,9 +181,6 @@ nextButton.addEventListener('click', () => {
     const day = String(selectedDate.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     
-    console.log('選擇的日期:', selectedDate);
-    console.log('格式化後的日期:', formattedDate);
-    
     // 將數據存儲在 sessionStorage 中
     sessionStorage.setItem('bookingData', JSON.stringify({
         date: formattedDate,
