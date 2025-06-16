@@ -98,20 +98,15 @@ router.post('/api/setup', upload.fields([
             });
         }
 
-        console.log(`🚀 開始創建商家系統: ${slugname}`);
-
         // 步驟 1: 創建客戶基本資料
-        console.log('📝 步驟 1: 創建基本資料');
         const client = await Client.create({
             clientname,
             slugname,
             restaurantImage: restaurantImageUrl,
             cardBackgroundImage: cardBackgroundImageUrl
         });
-        console.log('✅ 基本資料創建完成');
 
         // 步驟 2: 創建並初始化資料庫連接
-        console.log('🔄 步驟 2: 建立資料庫連接');
         const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
         const cardDB = mongoose.connection.useDb(`${slugname}CDB`);
         const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
@@ -122,16 +117,11 @@ router.post('/api/setup', upload.fields([
             cardDB.collection('init').insertOne({ created: new Date(), type: 'CDB' }),
             bookingDB.collection('init').insertOne({ created: new Date(), type: 'BDB' })
         ]);
-        console.log('✅ 用戶資料庫 (ADB) 建立完成');
-        console.log('✅ 集點卡資料庫 (CDB) 建立完成');
-        console.log('✅ 訂位資料庫 (BDB) 建立完成');
 
         // 步驟 3: 等待資料庫完全初始化
-        console.log('⏳ 等待資料庫完全初始化...');
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // 步驟 4: 配置系統設定
-        console.log('⚙️ 步驟 4: 配置系統設定');
         
         // 在 clientCDB 中創建集點卡設定
         if (pointsSystem === 'true' || pointsSystem === true) {
@@ -146,7 +136,6 @@ router.post('/api/setup', upload.fields([
                     state: 'enable',
                     s_reward: 0
                 });
-                console.log('✅ 集點卡功能設定完成');
             } catch (error) {
                 console.error('❌ 集點卡設定失敗:', error);
             }
@@ -163,7 +152,6 @@ router.post('/api/setup', upload.fields([
                 class: 'main_settings',
                 state: (bookingSystem === 'true' || bookingSystem === true) ? 'enable' : 'disabled'
             });
-            console.log('✅ 訂位功能設定完成');
         } catch (error) {
             console.error('❌ 訂位設定失敗:', error);
         }
@@ -180,7 +168,6 @@ router.post('/api/setup', upload.fields([
                 
                 const timeSettingsData = parsedTimeSlots.map(time => ({ time, available: true }));
                 await TimeSettings.insertMany(timeSettingsData);
-                console.log(`✅ 時段設定完成 (${parsedTimeSlots.length} 個時段)`);
             } catch (error) {
                 console.error('❌ 時段設定失敗:', error);
             }
@@ -198,13 +185,11 @@ router.post('/api/setup', upload.fields([
                     isActive: true 
                 }));
                 await BookingRules.insertMany(bookingRulesData);
-                console.log(`✅ 用餐規則設定完成 (${parsedDiningRules.length} 條規則)`);
             } catch (error) {
                 console.error('❌ 用餐規則設定失敗:', error);
             }
         }
 
-        console.log('🎉 商家系統創建完成');
         res.json({ success: true, client });
     } catch (error) {
         console.error('Error:', error);
@@ -422,8 +407,6 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
         const { storeSlug } = req.params;
         const { pointsSystem, bookingSystem } = req.body;
 
-        console.log(`📝 更新功能設定 - ${storeSlug}:`, { pointsSystem, bookingSystem });
-
         // 更新 clientCDB 中的集點卡設定
         try {
             const cardDB = getClientDb(storeSlug, 'CDB');
@@ -446,7 +429,6 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
                 },
                 { upsert: true, new: true }
             );
-            console.log('✅ 集點卡設定更新成功:', pointsResult.state);
         } catch (cdbError) {
             console.error('❌ 集點卡設定更新失敗:', cdbError);
         }
@@ -472,7 +454,6 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
                 },
                 { upsert: true, new: true }
             );
-            console.log('✅ 訂位設定更新成功:', bookingResult.state);
         } catch (bdbError) {
             console.error('❌ 訂位設定更新失敗:', bdbError);
         }
@@ -519,15 +500,12 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         const { storeSlug } = req.params;
         const { timeSlots } = req.body;
 
-        console.log(`📅 更新時段設定 - ${storeSlug}:`, timeSlots);
-
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
 
         // 刪除舊的時段設定
         await TimeSettings.deleteMany({});
-        console.log('🗑️ 已清除舊的時段設定');
         
         // 插入新的時段設定
         if (timeSlots && timeSlots.length > 0) {
@@ -552,11 +530,9 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
 
             // 排序時段
             const sortedTimeSlots = sortTimeSlots([...timeSlots]);
-            console.log('📋 排序後的時段:', sortedTimeSlots);
             
             const timeSettingsData = sortedTimeSlots.map(time => ({ time, available: true }));
             await TimeSettings.insertMany(timeSettingsData);
-            console.log(`✅ 已新增 ${sortedTimeSlots.length} 個時段（已排序）`);
         }
 
         res.json({ success: true, message: '時段設定已更新' });
@@ -571,15 +547,12 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
         const { storeSlug } = req.params;
         const { diningRules } = req.body;
 
-        console.log(`📋 更新用餐規則 - ${storeSlug}:`, diningRules);
-
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const bookingRulesSchema = require('../models/BookingRules');
         const BookingRules = bookingDB.model('BookingRules', bookingRulesSchema);
 
         // 刪除舊的用餐規則
         await BookingRules.deleteMany({});
-        console.log('🗑️ 已清除舊的用餐規則');
         
         // 插入新的用餐規則
         if (diningRules && diningRules.length > 0) {
@@ -589,7 +562,6 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
                 isActive: true 
             }));
             await BookingRules.insertMany(bookingRulesData);
-            console.log(`✅ 已新增 ${diningRules.length} 條規則`);
         }
 
         res.json({ success: true, message: '用餐規則已更新' });
