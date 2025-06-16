@@ -81,8 +81,230 @@ function previewImg(input, idx) {
     }
 }
 
+// 動態增減時段
+function addTimeSlot() {
+    const timeSlotsList = document.getElementById('timeSlots-list');
+    const div = document.createElement('div');
+    div.className = 'timeSlot-item';
+    div.innerHTML = `
+        <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
+        <span class="add-btn" onclick="addTimeSlot()">➕</span>
+        <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
+    `;
+    timeSlotsList.appendChild(div);
+    updateTimeSlotButtons();
+}
+
+function removeTimeSlot(btn) {
+    btn.parentElement.remove();
+    updateTimeSlotButtons();
+}
+
+function updateTimeSlotButtons() {
+    const items = document.querySelectorAll('#timeSlots-list .timeSlot-item');
+    items.forEach((item, idx) => {
+        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
+        if (items.length === 1) {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = 'none';
+        } else {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = '';
+        }
+    });
+}
+
+// 動態增減用餐規則
+function addDiningRule() {
+    const diningRulesList = document.getElementById('diningRules-list');
+    const div = document.createElement('div');
+    div.className = 'rule-item';
+    div.innerHTML = `
+        <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+        <span class="add-btn" onclick="addDiningRule()">➕</span>
+        <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
+    `;
+    diningRulesList.appendChild(div);
+    updateDiningRuleButtons();
+}
+
+function removeDiningRule(btn) {
+    btn.parentElement.remove();
+    updateDiningRuleButtons();
+}
+
+function updateDiningRuleButtons() {
+    const items = document.querySelectorAll('#diningRules-list .rule-item');
+    items.forEach((item, idx) => {
+        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
+        if (items.length === 1) {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = 'none';
+        } else {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = '';
+        }
+    });
+}
+
+// 一般圖片預覽
+function previewImage(input, previewId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    if (file && /\.(png|jpe?g|svg)$/i.test(file.name)) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = '';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+    }
+}
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
-    updateRuleButtons();
-    updateRewardButtons();
+    if (document.getElementById('rules-list')) {
+        updateRuleButtons();
+    }
+    if (document.getElementById('rewards-list')) {
+        updateRewardButtons();
+    }
+    if (document.getElementById('timeSlots-list')) {
+        updateTimeSlotButtons();
+    }
+    if (document.getElementById('diningRules-list')) {
+        updateDiningRuleButtons();
+    }
+
+    // 功能啟用表單處理
+    const featuresForm = document.getElementById('featuresForm');
+    if (featuresForm) {
+        featuresForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                pointsSystem: document.querySelector('input[name="pointsSystem"]').checked,
+                bookingSystem: document.querySelector('input[name="bookingSystem"]').checked
+            };
+
+            try {
+                const response = await fetch(`/${storeSlug}/api/settings/features`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('功能設定已更新');
+                    window.location.reload();
+                } else {
+                    alert('更新失敗，請重試');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('發生錯誤，請重試');
+            }
+        });
+    }
+
+    // 圖片更新表單處理
+    const imagesForm = document.getElementById('imagesForm');
+    if (imagesForm) {
+        imagesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const restaurantImage = document.querySelector('input[name="restaurantImage"]').files[0];
+            const cardBackgroundImage = document.querySelector('input[name="cardBackgroundImage"]').files[0];
+            
+            if (restaurantImage) formData.append('restaurantImage', restaurantImage);
+            if (cardBackgroundImage) formData.append('cardBackgroundImage', cardBackgroundImage);
+
+            try {
+                const response = await fetch(`/${storeSlug}/api/settings/images`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('圖片已更新');
+                    window.location.reload();
+                } else {
+                    alert('更新失敗，請重試');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('發生錯誤，請重試');
+            }
+        });
+    }
+
+    // 時段設定表單處理
+    const timeSlotsForm = document.getElementById('timeSlotsForm');
+    if (timeSlotsForm) {
+        timeSlotsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const timeSlots = [];
+            document.querySelectorAll('input[name="timeSlots[]"]').forEach(input => {
+                if (input.value.trim()) timeSlots.push(input.value.trim());
+            });
+
+            try {
+                const response = await fetch(`/${storeSlug}/api/settings/timeSlots`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ timeSlots })
+                });
+
+                if (response.ok) {
+                    alert('時段設定已更新');
+                } else {
+                    alert('更新失敗，請重試');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('發生錯誤，請重試');
+            }
+        });
+    }
+
+    // 用餐規則表單處理
+    const diningRulesForm = document.getElementById('diningRulesForm');
+    if (diningRulesForm) {
+        diningRulesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const diningRules = [];
+            document.querySelectorAll('input[name="diningRules[]"]').forEach(input => {
+                if (input.value.trim()) diningRules.push(input.value.trim());
+            });
+
+            try {
+                const response = await fetch(`/${storeSlug}/api/settings/diningRules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ diningRules })
+                });
+
+                if (response.ok) {
+                    alert('用餐規則已更新');
+                } else {
+                    alert('更新失敗，請重試');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('發生錯誤，請重試');
+            }
+        });
+    }
 });

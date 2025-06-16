@@ -1,6 +1,6 @@
 <div class="setup-container">
     <h1 class="setup-title">系統設置</h1>
-    <form id="setupForm" class="setup-form">
+    <form id="setupForm" class="setup-form" enctype="multipart/form-data">
         <div class="form-group">
             <label for="clientname">客戶名稱</label>
             <input type="text" id="clientname" name="clientname" required placeholder="請輸入客戶名稱">
@@ -10,25 +10,56 @@
             <label for="slugname">網站名稱 (英文或數字)</label>
             <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入網站名稱">
         </div>
-        
-        <div class="form-group">
-            <label for="cardpagetext">集點卡頁面文字</label>
-            <input type="text" id="cardpagetext" name="cardpagetext" required placeholder="請輸入集點卡頁面文字">
+
+        <!-- 圖片上傳區塊 -->
+        <div class="form-section">
+            <h3>圖片設定</h3>
+            <div class="form-group">
+                <label for="restaurantImage">餐廳圖片 (用於訂位頁面)</label>
+                <input type="file" id="restaurantImage" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
+                <img id="restaurant-preview" class="image-preview" style="display:none;">
+            </div>
+            
+            <div class="form-group">
+                <label for="cardBackgroundImage">集點卡背景圖</label>
+                <input type="file" id="cardBackgroundImage" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
+                <img id="card-preview" class="image-preview" style="display:none;">
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label for="accountpagetext">帳號頁面文字</label>
-            <input type="text" id="accountpagetext" name="accountpagetext" required placeholder="請輸入帳號頁面文字">
+
+        <!-- 訂位時段設定 -->
+        <div class="form-section">
+            <h3>訂位時段設定</h3>
+            <div id="timeSlots-list">
+                <div class="timeSlot-item">
+                    <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
+                    <span class="add-btn" onclick="addTimeSlot()">➕</span>
+                </div>
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label for="bookingpagetext">訂位頁面文字</label>
-            <input type="text" id="bookingpagetext" name="bookingpagetext" required placeholder="請輸入訂位頁面文字">
+
+        <!-- 用餐規則設定 -->
+        <div class="form-section">
+            <h3>用餐規則設定</h3>
+            <div id="diningRules-list">
+                <div class="rule-item">
+                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+                    <span class="add-btn" onclick="addDiningRule()">➕</span>
+                </div>
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label for="backstagepagetext">後台頁面文字</label>
-            <input type="text" id="backstagepagetext" name="backstagepagetext" required placeholder="請輸入後台頁面文字">
+
+        <!-- 功能啟用設定 -->
+        <div class="form-section">
+            <h3>功能啟用</h3>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="pointsSystem" value="true"> 啟用集點卡系統
+                </label>
+                <label>
+                    <input type="checkbox" name="bookingSystem" value="true"> 啟用訂位系統
+                </label>
+            </div>
         </div>
         
         <button type="submit" class="setup-button">創建系統</button>
@@ -62,12 +93,25 @@
     gap: 0.5rem;
 }
 
+.form-section {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.form-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
 .form-group label {
     font-weight: 500;
     color: var(--text-color);
 }
 
-.form-group input {
+.form-group input, .form-group textarea {
     padding: 0.8rem;
     border: 2px solid #eee;
     border-radius: 10px;
@@ -78,6 +122,49 @@
 .form-group input:focus {
     border-color: var(--primary-color);
     outline: none;
+}
+
+.timeSlot-item, .rule-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.timeSlot-item input, .rule-item input {
+    flex: 1;
+}
+
+.add-btn, .remove-btn {
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    user-select: none;
+}
+
+.add-btn:hover, .remove-btn:hover {
+    opacity: 0.7;
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 150px;
+    margin-top: 0.5rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
 }
 
 .setup-button {
@@ -99,25 +186,132 @@
 </style>
 
 <script>
+// 動態增減時段
+function addTimeSlot() {
+    const timeSlotsList = document.getElementById('timeSlots-list');
+    const div = document.createElement('div');
+    div.className = 'timeSlot-item';
+    div.innerHTML = `
+        <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
+        <span class="add-btn" onclick="addTimeSlot()">➕</span>
+        <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
+    `;
+    timeSlotsList.appendChild(div);
+    updateTimeSlotButtons();
+}
+
+function removeTimeSlot(btn) {
+    btn.parentElement.remove();
+    updateTimeSlotButtons();
+}
+
+function updateTimeSlotButtons() {
+    const items = document.querySelectorAll('#timeSlots-list .timeSlot-item');
+    items.forEach((item, idx) => {
+        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
+        if (items.length === 1) {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = 'none';
+        } else {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = '';
+        }
+    });
+}
+
+// 動態增減用餐規則
+function addDiningRule() {
+    const diningRulesList = document.getElementById('diningRules-list');
+    const div = document.createElement('div');
+    div.className = 'rule-item';
+    div.innerHTML = `
+        <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+        <span class="add-btn" onclick="addDiningRule()">➕</span>
+        <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
+    `;
+    diningRulesList.appendChild(div);
+    updateDiningRuleButtons();
+}
+
+function removeDiningRule(btn) {
+    btn.parentElement.remove();
+    updateDiningRuleButtons();
+}
+
+function updateDiningRuleButtons() {
+    const items = document.querySelectorAll('#diningRules-list .rule-item');
+    items.forEach((item, idx) => {
+        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
+        if (items.length === 1) {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = 'none';
+        } else {
+            const removeBtn = item.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = '';
+        }
+    });
+}
+
+// 圖片預覽
+function previewImage(input, previewId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    if (file && /\.(png|jpe?g|svg)$/i.test(file.name)) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = '';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+    }
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+    updateTimeSlotButtons();
+    updateDiningRuleButtons();
+});
+
 document.getElementById('setupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const formData = {
-        clientname: document.getElementById('clientname').value,
-        slugname: document.getElementById('slugname').value,
-        cardpagetext: document.getElementById('cardpagetext').value,
-        accountpagetext: document.getElementById('accountpagetext').value,
-        bookingpagetext: document.getElementById('bookingpagetext').value,
-        backstagepagetext: document.getElementById('backstagepagetext').value
-    };
+    const formData = new FormData();
+    
+    // 基本資料
+    formData.append('clientname', document.getElementById('clientname').value);
+    formData.append('slugname', document.getElementById('slugname').value);
+    
+    // 圖片檔案
+    const restaurantImage = document.getElementById('restaurantImage').files[0];
+    const cardBackgroundImage = document.getElementById('cardBackgroundImage').files[0];
+    if (restaurantImage) formData.append('restaurantImage', restaurantImage);
+    if (cardBackgroundImage) formData.append('cardBackgroundImage', cardBackgroundImage);
+    
+    // 時段
+    const timeSlots = [];
+    document.querySelectorAll('input[name="timeSlots[]"]').forEach(input => {
+        if (input.value.trim()) timeSlots.push(input.value.trim());
+    });
+    formData.append('timeSlots', JSON.stringify(timeSlots));
+    
+    // 用餐規則
+    const diningRules = [];
+    document.querySelectorAll('input[name="diningRules[]"]').forEach(input => {
+        if (input.value.trim()) diningRules.push(input.value.trim());
+    });
+    formData.append('diningRules', JSON.stringify(diningRules));
+    
+    // 功能啟用
+    formData.append('pointsSystem', document.querySelector('input[name="pointsSystem"]').checked);
+    formData.append('bookingSystem', document.querySelector('input[name="bookingSystem"]').checked);
 
     try {
         const response = await fetch('/api/setup', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            body: formData
         });
 
         if (response.ok) {

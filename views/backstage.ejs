@@ -1,38 +1,152 @@
 <div class="page-container">
     <h1>後台管理</h1>
-    <p class="custom-text"><%= backstagepagetext %></p>
+    <p class="custom-text">歡迎使用商家後台管理系統</p>
+    
+    <!-- 系統資訊 -->
+    <div class="info-section">
+        <h3>系統資訊</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">建立時間:</span>
+                <span class="info-value"><%= new Date(createdAt).toLocaleString('zh-TW') %></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">最後更新:</span>
+                <span class="info-value"><%= new Date(updatedAt).toLocaleString('zh-TW') %></span>
+            </div>
+        </div>
+    </div>
 
-    <!-- 集點卡建立表單開始 -->
-    <form id="cardForm" action="/<%= storeSlug %>/points/create" method="POST" enctype="multipart/form-data">
-        <!-- 規則區塊 -->
-        <div class="form-section">
-            <h2>集點卡規則</h2>
-            <div id="rules-list">
+    <!-- 功能啟用設定 -->
+    <div class="settings-section">
+        <h3>功能啟用設定</h3>
+        <form id="featuresForm" class="features-form">
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="pointsSystem" <%= customSettings.features.pointsSystem ? 'checked' : '' %>> 啟用集點卡系統
+                </label>
+                <label>
+                    <input type="checkbox" name="bookingSystem" <%= customSettings.features.bookingSystem ? 'checked' : '' %>> 啟用訂位系統
+                </label>
+            </div>
+            <button type="submit" class="save-btn">儲存功能設定</button>
+        </form>
+    </div>
+
+    <!-- 圖片設定 -->
+    <div class="settings-section">
+        <h3>圖片設定</h3>
+        <form id="imagesForm" class="images-form" enctype="multipart/form-data">
+            <div class="image-group">
+                <div class="image-item">
+                    <label>餐廳圖片 (訂位頁面使用)</label>
+                    <img class="current-image" src="<%= customSettings.restaurantImage %>" alt="當前餐廳圖片">
+                    <input type="file" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
+                    <img id="restaurant-preview" class="image-preview" style="display:none;">
+                </div>
+                <div class="image-item">
+                    <label>集點卡背景圖</label>
+                    <img class="current-image" src="<%= customSettings.cardBackgroundImage %>" alt="當前背景圖">
+                    <input type="file" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
+                    <img id="card-preview" class="image-preview" style="display:none;">
+                </div>
+            </div>
+            <button type="submit" class="save-btn">更新圖片</button>
+        </form>
+    </div>
+
+    <!-- 訂位時段設定 -->
+    <div class="settings-section">
+        <h3>訂位時段設定</h3>
+        <form id="timeSlotsForm" class="time-slots-form">
+            <div id="timeSlots-list">
+                <% customSettings.timeSlots.forEach((slot, index) => { %>
+                <div class="timeSlot-item">
+                    <input type="text" name="timeSlots[]" value="<%= slot.time %>" required>
+                    <% if (index === customSettings.timeSlots.length - 1) { %>
+                        <span class="add-btn" onclick="addTimeSlot()">➕</span>
+                    <% } %>
+                    <% if (customSettings.timeSlots.length > 1) { %>
+                        <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
+                    <% } %>
+                </div>
+                <% }) %>
+                <% if (customSettings.timeSlots.length === 0) { %>
+                <div class="timeSlot-item">
+                    <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
+                    <span class="add-btn" onclick="addTimeSlot()">➕</span>
+                </div>
+                <% } %>
+            </div>
+            <button type="submit" class="save-btn">儲存時段設定</button>
+        </form>
+    </div>
+
+    <!-- 用餐規則設定 -->
+    <div class="settings-section">
+        <h3>用餐規則設定</h3>
+        <form id="diningRulesForm" class="dining-rules-form">
+            <div id="diningRules-list">
+                <% customSettings.diningRules.forEach((rule, index) => { %>
                 <div class="rule-item">
-                    <input type="text" name="rules[]" placeholder="請輸入規則" required>
-                    <span class="add-btn" onclick="addRule()">➕</span>
+                    <input type="text" name="diningRules[]" value="<%= rule.text %>" required>
+                    <% if (index === customSettings.diningRules.length - 1) { %>
+                        <span class="add-btn" onclick="addDiningRule()">➕</span>
+                    <% } %>
+                    <% if (customSettings.diningRules.length > 1) { %>
+                        <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
+                    <% } %>
+                </div>
+                <% }) %>
+                <% if (customSettings.diningRules.length === 0) { %>
+                <div class="rule-item">
+                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+                    <span class="add-btn" onclick="addDiningRule()">➕</span>
+                </div>
+                <% } %>
+            </div>
+            <button type="submit" class="save-btn">儲存規則設定</button>
+        </form>
+    </div>
+
+    <!-- 集點卡建立表單 (只有在啟用集點卡時才顯示) -->
+    <% if (customSettings.features.pointsSystem) { %>
+    <div class="settings-section">
+        <h3>集點卡管理</h3>
+        <form id="cardForm" action="/<%= storeSlug %>/points/create" method="POST" enctype="multipart/form-data">
+            <!-- 規則區塊 -->
+            <div class="form-section">
+                <h4>集點卡規則</h4>
+                <div id="rules-list">
+                    <div class="rule-item">
+                        <input type="text" name="rules[]" placeholder="請輸入規則" required>
+                        <span class="add-btn" onclick="addRule()">➕</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 獎勵區塊 -->
-        <div class="form-section">
-            <h2>集點卡獎勵</h2>
-            <div id="rewards-list">
-                <div class="reward-item">
-                    <input type="text" name="rewards[0][name]" placeholder="獎勵名稱" required>
-                    <input type="number" name="rewards[0][points]" placeholder="所需點數" min="1" required>
-                    <input type="file" name="rewards[0][img]" accept=".png,.jpg,.jpeg,.svg" onchange="previewImg(this, 0)" required>
-                    <img id="img-preview-0" class="reward-img-preview" style="display:none;">
-                    <span class="add-btn" onclick="addReward()">➕</span>
+            <!-- 獎勵區塊 -->
+            <div class="form-section">
+                <h4>集點卡獎勵</h4>
+                <div id="rewards-list">
+                    <div class="reward-item">
+                        <input type="text" name="rewards[0][name]" placeholder="獎勵名稱" required>
+                        <input type="number" name="rewards[0][points]" placeholder="所需點數" min="1" required>
+                        <input type="file" name="rewards[0][img]" accept=".png,.jpg,.jpeg,.svg" onchange="previewImg(this, 0)" required>
+                        <img id="img-preview-0" class="reward-img-preview" style="display:none;">
+                        <span class="add-btn" onclick="addReward()">➕</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button type="submit">建立集點卡</button>
-    </form>
-    <!-- 集點卡建立表單結束 -->
+            <button type="submit" class="save-btn">建立集點卡</button>
+        </form>
+    </div>
+    <% } %>
 </div>
 
 <link rel="stylesheet" href="/css/backstage.css">
+<script>
+    const storeSlug = '<%= storeSlug %>';
+</script>
 <script src="/js/backstage.js"></script>

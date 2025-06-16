@@ -11,21 +11,13 @@ const clientSchema = new mongoose.Schema({
         unique: true,
         match: /^[a-zA-Z0-9]+$/
     },
-    cardpagetext: {
+    restaurantImage: {
         type: String,
-        required: true
+        default: '/images/dine.jpg'
     },
-    accountpagetext: {
+    cardBackgroundImage: {
         type: String,
-        required: true
-    },
-    bookingpagetext: {
-        type: String,
-        required: true
-    },
-    backstagepagetext: {
-        type: String,
-        required: true
+        default: '/images/dine.jpg'
     }
 }, {
     timestamps: true

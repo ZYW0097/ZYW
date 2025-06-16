@@ -13,6 +13,7 @@ const nextButton = document.querySelector('.next-button');
 let currentDate = new Date();
 let selectedDate = null;
 let selectedTime = null;
+let customTimeSlots = []; // 存儲自訂時段
 
 // 生成日曆
 function generateCalendar() {
@@ -73,13 +74,36 @@ function selectDate(day) {
     checkNextButton();
 }
 
+// 載入自訂時段
+async function loadCustomTimeSlots() {
+    try {
+        const response = await fetch(`/${storeSlug}/api/timeSlots`);
+        const data = await response.json();
+        
+        if (data.timeSlots && data.timeSlots.length > 0) {
+            customTimeSlots = data.timeSlots.map(slot => slot.time);
+        } else {
+            // 如果沒有自訂時段，使用預設時段
+            customTimeSlots = ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+        }
+        
+        // 如果有選中的日期，更新時段按鈕
+        if (selectedDate) {
+            updateTimeButtons();
+        }
+    } catch (error) {
+        console.error('Error loading time slots:', error);
+        // 使用預設時段
+        customTimeSlots = ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+    }
+}
+
 // 更新時段按鈕
 function updateTimeButtons() {
     if (!selectedDate) return;
     
-    const isWeekend = selectedDate.getDay() === 0 || selectedDate.getDay() === 6;
-    const timeSlots = isWeekend ? 
-        ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'] :
+    // 使用自訂時段或預設時段
+    const timeSlots = customTimeSlots.length > 0 ? customTimeSlots : 
         ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
     
     // 檢查是否是今天
@@ -194,6 +218,12 @@ nextButton.addEventListener('click', () => {
 });
 
 // 初始化
-generateCalendar();
-updateChildrenOptions();
-checkNextButton(); 
+async function init() {
+    await loadCustomTimeSlots();
+    generateCalendar();
+    updateChildrenOptions();
+    checkNextButton();
+}
+
+// 啟動初始化
+init(); 

@@ -27,9 +27,32 @@ function validateBookingSession(req, bookingId, storeSlug) {
 // 獲取客戶資訊的輔助函數
 async function getClientInfo(storeSlug) {
     const client = await Client.findOne({ slugname: storeSlug });
+    
+    // 獲取時段設定
+    let timeSlots = [];
+    let diningRules = [];
+    
+    try {
+        const bookingDB = getClientDb(storeSlug, 'BDB');
+        
+        // 獲取時段設定
+        const timeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
+        timeSlots = await TimeSettings.find({ available: true }).sort({ createdAt: 1 });
+        
+        // 獲取訂位規則
+        const bookingRulesSchema = require('../models/BookingRules');
+        const BookingRules = bookingDB.model('BookingRules', bookingRulesSchema);
+        diningRules = await BookingRules.find({ isActive: true }).sort({ order: 1 });
+    } catch (error) {
+        console.error('Error fetching booking settings:', error);
+    }
+    
     return {
         clientname: client ? client.clientname : '餐廳名稱',
-        bookingpagetext: client ? client.bookingpagetext : '歡迎使用訂位系統'
+        restaurantImage: client ? client.restaurantImage : '/images/dine.jpg',
+        timeSlots,
+        diningRules
     };
 }
 

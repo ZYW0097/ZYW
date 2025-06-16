@@ -3,7 +3,7 @@
         <!-- 左側摘要信息容器 -->
         <div class="booking-summary-card">
             <div class="restaurant-image">
-                <img src="/images/dine.jpg" alt="餐廳圖片">
+                <img src="<%= restaurantImage %>" alt="餐廳圖片">
             </div>
             <div class="booking-details">
                 <div class="detail-item">
@@ -82,10 +82,16 @@
                 <div class="dining-rules">
                     <h3>⭐用餐規則</h3>
                     <ol>
-                        <li>假日用餐時間為90分鐘（入座後開始計時）</li>
-                        <li>訂位保留10分鐘，10分鐘未到將自動取消。線上訂位超過3次以上（含）自動加入黑名單，如有特殊原因請致電 03 558 7360 或其它方式聯絡我們</li>
-                        <li>請填寫正確的電話號碼以方便聯絡，以及正確的電子郵件接受訂位資訊（含訂位代碼）</li>
-                        <li>若當日有重複的訂位，只會採用最新的一組訂位</li>
+                        <% if (diningRules && diningRules.length > 0) { %>
+                            <% diningRules.forEach(rule => { %>
+                                <li><%= rule.text %></li>
+                            <% }) %>
+                        <% } else { %>
+                            <li>假日用餐時間為90分鐘（入座後開始計時）</li>
+                            <li>訂位保留10分鐘，10分鐘未到將自動取消。線上訂位超過3次以上（含）自動加入黑名單，如有特殊原因請致電 03 558 7360 或其它方式聯絡我們</li>
+                            <li>請填寫正確的電話號碼以方便聯絡，以及正確的電子郵件接受訂位資訊（含訂位代碼）</li>
+                            <li>若當日有重複的訂位，只會採用最新的一組訂位</li>
+                        <% } %>
                     </ol>
                     
                     <div class="agreement-box">

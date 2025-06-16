@@ -29,7 +29,7 @@
     <div class="card-bg">
       <div class="card-header">
         <div class="card-header-img">
-          <img src="/images/dine.jpg" alt="背景圖">
+          <img src="<%= customSettings && customSettings.cardBackgroundImage ? customSettings.cardBackgroundImage : '/images/dine.jpg' %>" alt="背景圖">
         </div>
         <div class="card-header-title"><%= storeName %></div>
         <div class="user-summary">
