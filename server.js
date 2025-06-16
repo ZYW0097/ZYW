@@ -67,7 +67,12 @@ app.use((req, res, next) => {
     
     // 如果路徑符合 /:storeSlug/... 格式，提取storeSlug
     if (pathParts.length > 1 && pathParts[1] && 
-        !['auth', 'account', 'api', 'setup', 'loading'].includes(pathParts[1])) {
+        !['auth', 'account', 'setup', 'loading', 'dev', 'webhook'].includes(pathParts[1])) {
+        storeSlug = pathParts[1];
+    }
+    
+    // 對於 API 路徑，從第一個路徑段提取 storeSlug
+    if (pathParts.length > 3 && pathParts[2] === 'api') {
         storeSlug = pathParts[1];
     }
     

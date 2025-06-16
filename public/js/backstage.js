@@ -185,10 +185,16 @@ document.addEventListener('DOMContentLoaded', function() {
         featuresForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const pointsCheckbox = document.querySelector('input[name="pointsSystem"]');
+            const bookingCheckbox = document.querySelector('input[name="bookingSystem"]');
+            
             const formData = {
-                pointsSystem: document.querySelector('input[name="pointsSystem"]').checked,
-                bookingSystem: document.querySelector('input[name="bookingSystem"]').checked
+                pointsSystem: pointsCheckbox ? pointsCheckbox.checked : false,
+                bookingSystem: bookingCheckbox ? bookingCheckbox.checked : true
             };
+
+            console.log('📝 提交功能設定:', formData);
+            console.log('📍 當前商家:', storeSlug);
 
             try {
                 const response = await fetch(`/${storeSlug}/api/settings/features`, {
@@ -199,15 +205,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(formData)
                 });
 
-                if (response.ok) {
-                    alert('功能設定已更新');
+                const result = await response.json();
+                console.log('📨 伺服器回應:', result);
+
+                if (response.ok && result.success) {
+                    alert(result.message || '功能設定已更新');
                     window.location.reload();
                 } else {
-                    alert('更新失敗，請重試');
+                    console.error('❌ 更新失敗:', result);
+                    alert(result.error || '更新失敗，請重試');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('發生錯誤，請重試');
+                console.error('❌ 網路錯誤:', error);
+                alert('發生網路錯誤，請檢查連線後重試');
             }
         });
     }
@@ -231,15 +241,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: formData
                 });
 
-                if (response.ok) {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     alert('圖片已更新');
                     window.location.reload();
                 } else {
-                    alert('更新失敗，請重試');
+                    alert(result.error || '更新失敗，請重試');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('發生錯誤，請重試');
+                console.error('❌ 圖片上傳錯誤:', error);
+                alert('發生網路錯誤，請重試');
             }
         });
     }
@@ -264,14 +276,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({ timeSlots })
                 });
 
-                if (response.ok) {
-                    alert('時段設定已更新');
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(result.message || '時段設定已更新');
                 } else {
-                    alert('更新失敗，請重試');
+                    alert(result.error || '更新失敗，請重試');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('發生錯誤，請重試');
+                console.error('❌ 時段設定錯誤:', error);
+                alert('發生網路錯誤，請重試');
             }
         });
     }
@@ -296,14 +310,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({ diningRules })
                 });
 
-                if (response.ok) {
-                    alert('用餐規則已更新');
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(result.message || '用餐規則已更新');
                 } else {
-                    alert('更新失敗，請重試');
+                    alert(result.error || '更新失敗，請重試');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('發生錯誤，請重試');
+                console.error('❌ 用餐規則錯誤:', error);
+                alert('發生網路錯誤，請重試');
             }
         });
     }

@@ -408,45 +408,64 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
         const { storeSlug } = req.params;
         const { pointsSystem, bookingSystem } = req.body;
 
+        console.log(`📝 更新功能設定 - ${storeSlug}:`, { pointsSystem, bookingSystem });
+
         // 更新 clientCDB 中的集點卡設定
-        const cardDB = getClientDb(storeSlug, 'CDB');
-        const pointsSettingsSchema = require('../models/points/settings');
-        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
-        
-        await PointsSettings.findOneAndUpdate(
-            { 
-                slug: storeSlug, 
-                type: 'points_settings', 
-                class: 'main_settings' 
-            },
-            { 
-                state: pointsSystem ? 'enable' : 'disabled',
-                updatedAt: new Date()
-            },
-            { upsert: true, new: true }
-        );
+        try {
+            const cardDB = getClientDb(storeSlug, 'CDB');
+            const pointsSettingsSchema = require('../models/points/settings');
+            const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+            
+            const pointsResult = await PointsSettings.findOneAndUpdate(
+                { 
+                    slug: storeSlug, 
+                    type: 'points_settings', 
+                    class: 'main_settings' 
+                },
+                { 
+                    slug: storeSlug,
+                    type: 'points_settings',
+                    class: 'main_settings',
+                    state: pointsSystem ? 'enable' : 'disabled',
+                    s_reward: 0,
+                    updatedAt: new Date()
+                },
+                { upsert: true, new: true }
+            );
+            console.log('✅ 集點卡設定更新成功:', pointsResult.state);
+        } catch (cdbError) {
+            console.error('❌ 集點卡設定更新失敗:', cdbError);
+        }
 
         // 更新 clientBDB 中的訂位設定
-        const bookingDB = getClientDb(storeSlug, 'BDB');
-        const bookingSettingsSchema = require('../models/BookingSettings');
-        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
-        
-        await BookingSettings.findOneAndUpdate(
-            { 
-                slug: storeSlug, 
-                type: 'booking_settings', 
-                class: 'main_settings' 
-            },
-            { 
-                state: bookingSystem ? 'enable' : 'disabled',
-                updatedAt: new Date()
-            },
-            { upsert: true, new: true }
-        );
+        try {
+            const bookingDB = getClientDb(storeSlug, 'BDB');
+            const bookingSettingsSchema = require('../models/BookingSettings');
+            const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+            
+            const bookingResult = await BookingSettings.findOneAndUpdate(
+                { 
+                    slug: storeSlug, 
+                    type: 'booking_settings', 
+                    class: 'main_settings' 
+                },
+                { 
+                    slug: storeSlug,
+                    type: 'booking_settings',
+                    class: 'main_settings',
+                    state: bookingSystem ? 'enable' : 'disabled',
+                    updatedAt: new Date()
+                },
+                { upsert: true, new: true }
+            );
+            console.log('✅ 訂位設定更新成功:', bookingResult.state);
+        } catch (bdbError) {
+            console.error('❌ 訂位設定更新失敗:', bdbError);
+        }
 
-        res.json({ success: true });
+        res.json({ success: true, message: '功能設定已更新' });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ 功能設定更新錯誤:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -486,22 +505,26 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         const { storeSlug } = req.params;
         const { timeSlots } = req.body;
 
+        console.log(`📅 更新時段設定 - ${storeSlug}:`, timeSlots);
+
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
 
         // 刪除舊的時段設定
         await TimeSettings.deleteMany({});
+        console.log('🗑️ 已清除舊的時段設定');
         
         // 插入新的時段設定
         if (timeSlots && timeSlots.length > 0) {
             const timeSettingsData = timeSlots.map(time => ({ time, available: true }));
             await TimeSettings.insertMany(timeSettingsData);
+            console.log(`✅ 已新增 ${timeSlots.length} 個時段`);
         }
 
-        res.json({ success: true });
+        res.json({ success: true, message: '時段設定已更新' });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ 時段設定更新錯誤:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -511,12 +534,15 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
         const { storeSlug } = req.params;
         const { diningRules } = req.body;
 
+        console.log(`📋 更新用餐規則 - ${storeSlug}:`, diningRules);
+
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const bookingRulesSchema = require('../models/BookingRules');
         const BookingRules = bookingDB.model('BookingRules', bookingRulesSchema);
 
         // 刪除舊的用餐規則
         await BookingRules.deleteMany({});
+        console.log('🗑️ 已清除舊的用餐規則');
         
         // 插入新的用餐規則
         if (diningRules && diningRules.length > 0) {
@@ -526,11 +552,12 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
                 isActive: true 
             }));
             await BookingRules.insertMany(bookingRulesData);
+            console.log(`✅ 已新增 ${diningRules.length} 條規則`);
         }
 
-        res.json({ success: true });
+        res.json({ success: true, message: '用餐規則已更新' });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ 用餐規則更新錯誤:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
