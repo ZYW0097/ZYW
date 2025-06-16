@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>開發者工具 - 資料庫管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dev-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .dev-header {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .dev-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .dev-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .dev-content {
+            padding: 40px;
+        }
+
+        .section {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 65, 108, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 167, 38, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 165, 245, 0.3);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            margin: 0;
+        }
+
+        .log-section {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .log-header {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .log-content {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dev-header h1 {
+                font-size: 2rem;
+            }
+            
+            .dev-content {
+                padding: 20px;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-success { background-color: #28a745; }
+        .status-error { background-color: #dc3545; }
+        .status-warning { background-color: #ffc107; }
+        .status-info { background-color: #17a2b8; }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dev-container">
+        <div class="dev-header">
+            <h1>🛠️ 開發者工具</h1>
+            <p>資料庫管理與清理工具</p>
+            <div style="margin-top: 15px;">
+                <a href="/dev/logout" style="background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-size: 0.9rem;">
+                    🔓 登出
+                </a>
+            </div>
+        </div>
+
+        <div class="dev-content">
+            <!-- 單一商家資料庫刪除 -->
+            <div class="section">
+                <h2>🗑️ 刪除特定商家資料庫</h2>
+                <div class="warning-box">
+                    <h3>⚠️ 注意事項</h3>
+                    <p>此操作將永久刪除指定商家的所有資料庫（ADB、CDB、BDB），包括用戶資料、集點卡資料和訂位資料。此操作無法復原！</p>
+                </div>
+                
+                <form id="deleteSingleForm">
+                    <div class="form-group">
+                        <label for="slugname">商家 Slug 名稱</label>
+                        <input type="text" id="slugname" name="slugname" placeholder="例如：teststore" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">🗑️ 刪除指定商家資料庫</button>
+                </form>
+            </div>
+
+            <div class="grid">
+                <!-- 批量清理 -->
+                <div class="section">
+                    <h2>🧹 批量清理資料庫</h2>
+                    <div class="warning-box">
+                        <h3>💀 危險操作</h3>
+                        <p>將刪除所有商家的 ADB、CDB、BDB，只保留 mainADB 和 test 的 Client 記錄</p>
+                    </div>
+                    
+                    <button id="cleanAllBtn" class="btn btn-warning">🧹 清理所有商家資料庫</button>
+                </div>
+
+                <!-- 資料庫狀態查詢 -->
+                <div class="section">
+                    <h2>📊 資料庫狀態查詢</h2>
+                    <p style="margin-bottom: 20px;">查看當前系統中的所有資料庫</p>
+                    
+                    <button id="listDbsBtn" class="btn btn-info">📋 列出所有資料庫</button>
+                    <button id="listClientsBtn" class="btn btn-info">👥 列出所有客戶</button>
+                </div>
+            </div>
+
+            <!-- 載入指示器 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>正在處理中...</p>
+            </div>
+
+            <!-- 操作日誌 -->
+            <div class="log-section">
+                <div class="log-header">📜 操作日誌</div>
+                <div class="log-content" id="logContent">等待操作...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 日誌記錄函數
+        function addLog(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const timestamp = new Date().toLocaleString('zh-TW');
+            const statusClass = `status-${type}`;
+            
+            const logEntry = `[${timestamp}] `;
+            logContent.innerHTML += `<span class="status-indicator ${statusClass}"></span>${logEntry}${message}\n`;
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        // 顯示/隱藏載入指示器
+        function showLoading(show = true) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // 發送請求的通用函數
+        async function sendRequest(url, data = null) {
+            showLoading(true);
+            try {
+                const options = {
+                    method: data ? 'POST' : 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addLog(result.message || '操作成功', 'success');
+                    if (result.details) {
+                        addLog(result.details, 'info');
+                    }
+                } else {
+                    addLog(result.error || '操作失敗', 'error');
+                }
+                
+                return result;
+            } catch (error) {
+                addLog(`請求失敗: ${error.message}`, 'error');
+                return null;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 刪除單一商家資料庫
+        document.getElementById('deleteSingleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const slugname = document.getElementById('slugname').value.trim();
+            if (!slugname) {
+                addLog('請輸入商家 Slug 名稱', 'warning');
+                return;
+            }
+            
+            if (!confirm(`確定要刪除商家 "${slugname}" 的所有資料庫嗎？此操作無法復原！`)) {
+                addLog('操作已取消', 'warning');
+                return;
+            }
+            
+            addLog(`開始刪除商家 "${slugname}" 的資料庫...`, 'info');
+            await sendRequest('/dev/api/delete-single', { slugname });
+            
+            // 清空輸入框
+            document.getElementById('slugname').value = '';
+        });
+
+        // 清理所有資料庫
+        document.getElementById('cleanAllBtn').addEventListener('click', async () => {
+            if (!confirm('確定要清理所有商家資料庫嗎？這將刪除除了 mainADB 和 test Client 之外的所有資料！')) {
+                addLog('操作已取消', 'warning');
+                return;
+            }
+            
+            if (!confirm('最後確認：此操作將永久刪除大量資料，確定繼續嗎？')) {
+                addLog('操作已取消', 'warning');
+                return;
+            }
+            
+            addLog('開始批量清理資料庫...', 'info');
+            await sendRequest('/dev/api/clean-all');
+        });
+
+        // 列出所有資料庫
+        document.getElementById('listDbsBtn').addEventListener('click', async () => {
+            addLog('正在查詢所有資料庫...', 'info');
+            const result = await sendRequest('/dev/api/list-databases');
+            
+            if (result && result.databases) {
+                addLog(`找到 ${result.databases.length} 個資料庫:`, 'info');
+                result.databases.forEach(db => {
+                    addLog(`  - ${db}`, 'info');
+                });
+            }
+        });
+
+        // 列出所有客戶
+        document.getElementById('listClientsBtn').addEventListener('click', async () => {
+            addLog('正在查詢所有客戶...', 'info');
+            const result = await sendRequest('/dev/api/list-clients');
+            
+            if (result && result.clients) {
+                addLog(`找到 ${result.clients.length} 個客戶:`, 'info');
+                result.clients.forEach(client => {
+                    addLog(`  - ${client.slugname} (${client.clientname})`, 'info');
+                });
+            }
+        });
+
+        // 頁面載入完成
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('開發者工具已載入', 'success');
+            addLog('請謹慎使用資料庫操作功能', 'warning');
+        });
+    </script>
+</body>
+</html> 

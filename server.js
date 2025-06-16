@@ -13,6 +13,7 @@ const pointsRoutes = require('./routes/points/index');
 const bookingReminderRouter = require('./routes/booking-reminder');
 const bookingRouter = require('./routes/booking');
 const webhookRouter = require('./routes/webhook');
+const devRouter = require('./routes/dev');
 const reminderService = require('./services/reminderService');
 const { loadUser } = require('./middleware/auth');
 const axios = require('axios');
@@ -189,6 +190,7 @@ app.use('/booking-reminder', bookingReminderRouter);
 app.use('/', bookingRouter);
 app.use('/webhook', webhookRouter);
 app.use('/', pointsRoutes); 
+app.use('/', devRouter);
 app.use('/', indexRouter);  
 
 // 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)

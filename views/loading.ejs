@@ -2,7 +2,59 @@
     <div class="loading-content">
         <div class="loading-spinner"></div>
         <h2>系統設置中</h2>
-        <p>請稍候，我們正在為您創建專屬系統...</p>
+        <p id="loading-message">正在初始化系統...</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0%</div>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step" id="step-client">
+                <div class="step-icon">📝</div>
+                <div class="step-text">創建基本資料</div>
+                <div class="step-status" id="status-client">⏳</div>
+            </div>
+            
+            <div class="step" id="step-adb">
+                <div class="step-icon">👤</div>
+                <div class="step-text">建立用戶資料庫 (ADB)</div>
+                <div class="step-status" id="status-adb">⏳</div>
+            </div>
+            
+            <div class="step" id="step-cdb">
+                <div class="step-icon">🎯</div>
+                <div class="step-text">建立集點卡資料庫 (CDB)</div>
+                <div class="step-status" id="status-cdb">⏳</div>
+            </div>
+            
+            <div class="step" id="step-bdb">
+                <div class="step-icon">📅</div>
+                <div class="step-text">建立訂位資料庫 (BDB)</div>
+                <div class="step-status" id="status-bdb">⏳</div>
+            </div>
+            
+            <div class="step" id="step-settings">
+                <div class="step-icon">⚙️</div>
+                <div class="step-text">配置系統設定</div>
+                <div class="step-status" id="status-settings">⏳</div>
+            </div>
+            
+            <div class="step" id="step-complete">
+                <div class="step-icon">🎉</div>
+                <div class="step-text">系統建立完成</div>
+                <div class="step-status" id="status-complete">⏳</div>
+            </div>
+        </div>
+        
+        <!-- 錯誤處理按鈕 -->
+        <div class="error-actions" id="error-actions" style="display: none;">
+            <p class="error-text">系統建立過程中發生錯誤</p>
+            <button class="retry-btn" id="retry-btn">🔄 重新嘗試</button>
+            <button class="back-btn" id="back-btn">← 返回設置頁面</button>
+        </div>
     </div>
 </div>
 

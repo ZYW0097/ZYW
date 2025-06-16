@@ -89,81 +89,198 @@ router.post('/api/setup', upload.fields([
             cardBackgroundImageUrl = req.files.cardBackgroundImage[0].path;
         }
 
-        // 創建客戶基本資料
+        // 檢查 slugname 是否已存在
+        const existingClient = await Client.findOne({ slugname });
+        if (existingClient) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `商家識別碼 "${slugname}" 已存在，請使用其他名稱` 
+            });
+        }
+
+        console.log(`🚀 開始創建商家系統: ${slugname}`);
+
+        // 步驟 1: 創建客戶基本資料
+        console.log('📝 步驟 1: 創建基本資料');
         const client = await Client.create({
             clientname,
             slugname,
             restaurantImage: restaurantImageUrl,
             cardBackgroundImage: cardBackgroundImageUrl
         });
+        console.log('✅ 基本資料創建完成');
 
-        // 儲存功能啟用狀態到對應的客戶資料庫
-        
-        // 在 clientCDB 中創建集點卡設定
-        if (pointsSystem) {
-            const pointsSettingsSchema = require('../models/points/settings');
-            const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
-            
-            await PointsSettings.create({
-                slug: slugname,
-                type: 'points_settings',
-                class: 'main_settings',
-                state: 'enable',
-                s_reward: 0
-            });
-        }
-        
-        // 在 clientBDB 中創建訂位設定（預設開啟）
-        const bookingSettingsSchema = require('../models/BookingSettings');
-        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
-        
-        await BookingSettings.create({
-            slug: slugname,
-            type: 'booking_settings',
-            class: 'main_settings',
-            state: bookingSystem ? 'enable' : 'disabled'
-        });
-
-        // 創建客戶特定的數據庫
-        const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
+        // 步驟 2: 創建並初始化資料庫連接
+        console.log('🔄 步驟 2: 建立資料庫連接');
         const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
         const cardDB = mongoose.connection.useDb(`${slugname}CDB`);
+        const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
+        
+        // 初始化資料庫（確保資料庫被創建）
+        await Promise.all([
+            accountDB.collection('init').insertOne({ created: new Date(), type: 'ADB' }),
+            cardDB.collection('init').insertOne({ created: new Date(), type: 'CDB' }),
+            bookingDB.collection('init').insertOne({ created: new Date(), type: 'BDB' })
+        ]);
+        console.log('✅ 用戶資料庫 (ADB) 建立完成');
+        console.log('✅ 集點卡資料庫 (CDB) 建立完成');
+        console.log('✅ 訂位資料庫 (BDB) 建立完成');
+
+        // 步驟 3: 等待資料庫完全初始化
+        console.log('⏳ 等待資料庫完全初始化...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // 步驟 4: 配置系統設定
+        console.log('⚙️ 步驟 4: 配置系統設定');
+        
+        // 在 clientCDB 中創建集點卡設定
+        if (pointsSystem === 'true' || pointsSystem === true) {
+            try {
+                const pointsSettingsSchema = require('../models/points/settings');
+                const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+                
+                await PointsSettings.create({
+                    slug: slugname,
+                    type: 'points_settings',
+                    class: 'main_settings',
+                    state: 'enable',
+                    s_reward: 0
+                });
+                console.log('✅ 集點卡功能設定完成');
+            } catch (error) {
+                console.error('❌ 集點卡設定失敗:', error);
+            }
+        }
+        
+        // 在 clientBDB 中創建訂位設定
+        try {
+            const bookingSettingsSchema = require('../models/BookingSettings');
+            const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+            
+            await BookingSettings.create({
+                slug: slugname,
+                type: 'booking_settings',
+                class: 'main_settings',
+                state: (bookingSystem === 'true' || bookingSystem === true) ? 'enable' : 'disabled'
+            });
+            console.log('✅ 訂位功能設定完成');
+        } catch (error) {
+            console.error('❌ 訂位設定失敗:', error);
+        }
 
         // 處理時段和規則資料
         const parsedTimeSlots = timeSlots ? JSON.parse(timeSlots) : [];
         const parsedDiningRules = diningRules ? JSON.parse(diningRules) : [];
 
-        // 在clientBDB中創建時段設定
+        // 在 clientBDB 中創建時段設定
         if (parsedTimeSlots.length > 0) {
-            const timeSettingsSchema = require('../models/TimeSettings');
-            const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
-            
-            const timeSettingsData = parsedTimeSlots.map(time => ({ time, available: true }));
-            await TimeSettings.insertMany(timeSettingsData);
+            try {
+                const timeSettingsSchema = require('../models/TimeSettings');
+                const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
+                
+                const timeSettingsData = parsedTimeSlots.map(time => ({ time, available: true }));
+                await TimeSettings.insertMany(timeSettingsData);
+                console.log(`✅ 時段設定完成 (${parsedTimeSlots.length} 個時段)`);
+            } catch (error) {
+                console.error('❌ 時段設定失敗:', error);
+            }
         }
 
-        // 在clientBDB中創建訂位規則
+        // 在 clientBDB 中創建訂位規則
         if (parsedDiningRules.length > 0) {
-            const bookingRulesSchema = require('../models/BookingRules');
-            const BookingRules = bookingDB.model('BookingRules', bookingRulesSchema);
-            
-            const bookingRulesData = parsedDiningRules.map((text, index) => ({ 
-                text, 
-                order: index,
-                isActive: true 
-            }));
-            await BookingRules.insertMany(bookingRulesData);
+            try {
+                const bookingRulesSchema = require('../models/BookingRules');
+                const BookingRules = bookingDB.model('BookingRules', bookingRulesSchema);
+                
+                const bookingRulesData = parsedDiningRules.map((text, index) => ({ 
+                    text, 
+                    order: index,
+                    isActive: true 
+                }));
+                await BookingRules.insertMany(bookingRulesData);
+                console.log(`✅ 用餐規則設定完成 (${parsedDiningRules.length} 條規則)`);
+            } catch (error) {
+                console.error('❌ 用餐規則設定失敗:', error);
+            }
         }
 
-        // 建立一個空的 collection 以確保資料庫會被建立
-        await bookingDB.collection('init').insertOne({ created: new Date() });
-        await accountDB.collection('init').insertOne({ created: new Date() });
-        await cardDB.collection('init').insertOne({ created: new Date() });
-        
+        console.log('🎉 商家系統創建完成');
         res.json({ success: true, client });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 檢查客戶是否存在的API
+router.get('/api/check-client/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const client = await Client.findOne({ slugname: slug });
+        
+        if (client) {
+            res.json({ exists: true, client });
+        } else {
+            res.status(404).json({ exists: false });
+        }
+    } catch (error) {
+        res.status(500).json({ exists: false, error: error.message });
+    }
+});
+
+// 檢查資料庫是否存在的API
+router.get('/api/check-database/:dbName', async (req, res) => {
+    try {
+        const { dbName } = req.params;
+        const admin = mongoose.connection.db.admin();
+        const dbs = await admin.listDatabases();
+        const dbExists = dbs.databases.some(db => db.name === dbName);
+        
+        if (dbExists) {
+            res.json({ exists: true, database: dbName });
+        } else {
+            res.status(404).json({ exists: false, database: dbName });
+        }
+    } catch (error) {
+        res.status(500).json({ exists: false, error: error.message });
+    }
+});
+
+// 檢查設定是否配置完成的API
+router.get('/api/check-settings/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        
+        // 檢查訂位設定
+        const bookingDB = getClientDb(slug, 'BDB');
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+        const bookingSettings = await BookingSettings.findOne({ 
+            slug, 
+            type: 'booking_settings' 
+        });
+        
+        let pointsSettings = null;
+        try {
+            // 檢查集點卡設定（可能不存在）
+            const cardDB = getClientDb(slug, 'CDB');
+            const pointsSettingsSchema = require('../models/points/settings');
+            const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+            pointsSettings = await PointsSettings.findOne({ 
+                slug, 
+                type: 'points_settings' 
+            });
+        } catch (error) {
+            // 集點卡設定可能不存在，這是正常的
+        }
+        
+        res.json({ 
+            configured: true, 
+            bookingSettings: !!bookingSettings,
+            pointsSettings: !!pointsSettings
+        });
+    } catch (error) {
+        res.status(404).json({ configured: false, error: error.message });
     }
 });
 
