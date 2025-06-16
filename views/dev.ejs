@@ -416,7 +416,7 @@
             }
             
             addLog('開始批量清理資料庫...', 'info');
-            await sendRequest('/dev/api/clean-all');
+            await sendRequest('/dev/api/clean-all', {});  // 傳入空物件確保使用POST方法
         });
 
         // 列出所有資料庫

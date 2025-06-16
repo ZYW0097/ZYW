@@ -61,13 +61,18 @@ app.use(loadUser);
 
 // 設置全局變數
 app.use((req, res, next) => {
+    // 跳過開發者工具路徑
+    if (req.path.startsWith('/dev')) {
+        return next();
+    }
+    
     // 從URL路徑中提取storeSlug
     const pathParts = req.path.split('/');
     let storeSlug = '';
     
     // 如果路徑符合 /:storeSlug/... 格式，提取storeSlug
     if (pathParts.length > 1 && pathParts[1] && 
-        !['auth', 'account', 'setup', 'loading', 'dev', 'webhook'].includes(pathParts[1])) {
+        !['auth', 'account', 'setup', 'loading', 'webhook'].includes(pathParts[1])) {
         storeSlug = pathParts[1];
     }
     

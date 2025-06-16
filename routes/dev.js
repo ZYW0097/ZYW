@@ -4,6 +4,12 @@ const mongoose = require('mongoose');
 const getClientDb = require('../utils/dbManager');
 const Client = require('../models/Client');
 
+// 添加請求日誌中間件
+router.use((req, res, next) => {
+    console.log(`🔧 Dev路由: ${req.method} ${req.path} - ${req.originalUrl}`);
+    next();
+});
+
 // 檢查是否已通過密碼驗證
 const checkDevAuth = (req, res, next) => {
     // 檢查認證狀態
@@ -13,6 +19,7 @@ const checkDevAuth = (req, res, next) => {
     
     console.log('🔒 Dev 認證檢查失敗:', {
         path: req.path,
+        method: req.method,
         sessionExists: !!req.session,
         authenticated: req.session ? req.session.devAuthenticated : false
     });
@@ -20,9 +27,10 @@ const checkDevAuth = (req, res, next) => {
     // 如果是 API 請求，返回 JSON 錯誤
     if (req.path.includes('/api/')) {
         console.log('❌ API 請求未認證，返回 JSON 錯誤');
+        res.setHeader('Content-Type', 'application/json');
         return res.status(401).json({
             success: false,
-            error: '請先進行身份驗證',
+            error: '認證已過期，請重新登入',
             redirect: '/dev/login'
         });
     }
@@ -211,6 +219,12 @@ router.post('/api/delete-single', checkDevAuth, async (req, res) => {
 
 // 清理所有商家資料庫，只保留 mainADB 和 test 的 Client
 router.post('/api/clean-all', checkDevAuth, async (req, res) => {
+    console.log('🔧 進入 clean-all 端點');
+    console.log('🔧 請求方法:', req.method);
+    console.log('🔧 請求路徑:', req.path);
+    console.log('🔧 原始URL:', req.originalUrl);
+    console.log('🔧 認證狀態:', req.session?.devAuthenticated);
+    
     try {
         console.log('🧹 開始批量清理資料庫...');
         res.setHeader('Content-Type', 'application/json');
@@ -332,6 +346,17 @@ router.post('/api/clean-all', checkDevAuth, async (req, res) => {
             error: `批量清理失敗: ${error.message}`
         });
     }
+});
+
+// 測試端點（不需要認證）
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Dev路由測試成功',
+        path: req.path,
+        originalUrl: req.originalUrl,
+        timestamp: new Date().toISOString()
+    });
 });
 
 // 健康檢查
