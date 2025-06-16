@@ -325,21 +325,56 @@
                     options.body = JSON.stringify(data);
                 }
                 
+                console.log(`📡 發送請求到: ${url}`);
                 const response = await fetch(url, options);
+                
+                // 檢查回應是否為 JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    addLog(`伺服器回應格式錯誤 (${response.status}): 期待JSON但收到${contentType}`, 'error');
+                    if (response.status === 401) {
+                        addLog('認證失敗，請重新登入', 'warning');
+                        setTimeout(() => {
+                            window.location.href = '/dev/login';
+                        }, 2000);
+                    }
+                    return null;
+                }
+                
                 const result = await response.json();
+                console.log(`📨 收到回應:`, result);
                 
                 if (response.ok) {
                     addLog(result.message || '操作成功', 'success');
                     if (result.details) {
-                        addLog(result.details, 'info');
+                        addLog(JSON.stringify(result.details, null, 2), 'info');
                     }
                 } else {
                     addLog(result.error || '操作失敗', 'error');
+                    
+                    // 處理認證失敗
+                    if (response.status === 401 && result.redirect) {
+                        addLog('認證失敗，2秒後將重定向到登入頁面', 'warning');
+                        setTimeout(() => {
+                            window.location.href = result.redirect;
+                        }, 2000);
+                    }
                 }
                 
                 return result;
             } catch (error) {
+                console.error('❌ 請求錯誤:', error);
                 addLog(`請求失敗: ${error.message}`, 'error');
+                
+                // 如果是JSON解析錯誤，可能收到了HTML頁面
+                if (error.message.includes('Unexpected token')) {
+                    addLog('可能收到了HTML而非JSON回應，請檢查認證狀態', 'warning');
+                    addLog('將嘗試重新登入...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/dev/login';
+                    }, 2000);
+                }
+                
                 return null;
             } finally {
                 showLoading(false);

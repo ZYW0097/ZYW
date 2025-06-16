@@ -6,19 +6,29 @@ const Client = require('../models/Client');
 
 // 檢查是否已通過密碼驗證
 const checkDevAuth = (req, res, next) => {
+    // 檢查認證狀態
     if (req.session && req.session.devAuthenticated) {
         return next();
     }
     
+    console.log('🔒 Dev 認證檢查失敗:', {
+        path: req.path,
+        sessionExists: !!req.session,
+        authenticated: req.session ? req.session.devAuthenticated : false
+    });
+    
     // 如果是 API 請求，返回 JSON 錯誤
-    if (req.path.startsWith('/dev/api/')) {
+    if (req.path.includes('/api/')) {
+        console.log('❌ API 請求未認證，返回 JSON 錯誤');
         return res.status(401).json({
             success: false,
-            error: '請先進行身份驗證'
+            error: '請先進行身份驗證',
+            redirect: '/dev/login'
         });
     }
     
     // 否則重定向到登入頁面
+    console.log('🔄 重定向到登入頁面');
     res.redirect('/dev/login');
 };
 
@@ -62,10 +72,14 @@ router.get('/dev', checkDevAuth, (req, res) => {
 // 列出所有資料庫
 router.get('/dev/api/list-databases', checkDevAuth, async (req, res) => {
     try {
+        console.log('📋 開始查詢資料庫列表...');
+        res.setHeader('Content-Type', 'application/json');
+        
         const admin = mongoose.connection.db.admin();
         const dbs = await admin.listDatabases();
         
         const databases = dbs.databases.map(db => db.name);
+        console.log(`✅ 找到 ${databases.length} 個資料庫`);
         
         res.json({
             success: true,
@@ -73,7 +87,8 @@ router.get('/dev/api/list-databases', checkDevAuth, async (req, res) => {
             databases: databases.sort()
         });
     } catch (error) {
-        console.error('Error listing databases:', error);
+        console.error('❌ 查詢資料庫列表錯誤:', error);
+        res.setHeader('Content-Type', 'application/json');
         res.status(500).json({
             success: false,
             error: '無法獲取資料庫列表'
@@ -84,8 +99,13 @@ router.get('/dev/api/list-databases', checkDevAuth, async (req, res) => {
 // 列出所有客戶
 router.get('/dev/api/list-clients', checkDevAuth, async (req, res) => {
     try {
+        console.log('👥 開始查詢客戶列表...');
+        res.setHeader('Content-Type', 'application/json');
+        
         const clients = await Client.find({}, 'slugname clientname createdAt')
             .sort({ createdAt: -1 });
+        
+        console.log(`✅ 找到 ${clients.length} 個客戶`);
         
         res.json({
             success: true,
@@ -93,7 +113,8 @@ router.get('/dev/api/list-clients', checkDevAuth, async (req, res) => {
             clients: clients
         });
     } catch (error) {
-        console.error('Error listing clients:', error);
+        console.error('❌ 查詢客戶列表錯誤:', error);
+        res.setHeader('Content-Type', 'application/json');
         res.status(500).json({
             success: false,
             error: '無法獲取客戶列表'

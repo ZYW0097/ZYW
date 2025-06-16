@@ -19,12 +19,18 @@ function removeRule(btn) {
 function updateRuleButtons() {
     const items = document.querySelectorAll('#rules-list .rule-item');
     items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            item.querySelector('.remove-btn').style.display = '';
+        const addBtn = item.querySelector('.add-btn');
+        if (addBtn) {
+            addBtn.style.display = (idx === items.length - 1) ? '' : 'none';
+        }
+        
+        const removeBtn = item.querySelector('.remove-btn');
+        if (removeBtn) {
+            if (items.length === 1) {
+                removeBtn.style.display = 'none';
+            } else {
+                removeBtn.style.display = '';
+            }
         }
     });
 }
@@ -54,12 +60,18 @@ function removeReward(btn) {
 function updateRewardButtons() {
     const items = document.querySelectorAll('#rewards-list .reward-item');
     items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            item.querySelector('.remove-btn').style.display = '';
+        const addBtn = item.querySelector('.add-btn');
+        if (addBtn) {
+            addBtn.style.display = (idx === items.length - 1) ? '' : 'none';
+        }
+        
+        const removeBtn = item.querySelector('.remove-btn');
+        if (removeBtn) {
+            if (items.length === 1) {
+                removeBtn.style.display = 'none';
+            } else {
+                removeBtn.style.display = '';
+            }
         }
     });
 }
@@ -103,13 +115,18 @@ function removeTimeSlot(btn) {
 function updateTimeSlotButtons() {
     const items = document.querySelectorAll('#timeSlots-list .timeSlot-item');
     items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = '';
+        const addBtn = item.querySelector('.add-btn');
+        if (addBtn) {
+            addBtn.style.display = (idx === items.length - 1) ? '' : 'none';
+        }
+        
+        const removeBtn = item.querySelector('.remove-btn');
+        if (removeBtn) {
+            if (items.length === 1) {
+                removeBtn.style.display = 'none';
+            } else {
+                removeBtn.style.display = '';
+            }
         }
     });
 }
@@ -136,13 +153,18 @@ function removeDiningRule(btn) {
 function updateDiningRuleButtons() {
     const items = document.querySelectorAll('#diningRules-list .rule-item');
     items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = '';
+        const addBtn = item.querySelector('.add-btn');
+        if (addBtn) {
+            addBtn.style.display = (idx === items.length - 1) ? '' : 'none';
+        }
+        
+        const removeBtn = item.querySelector('.remove-btn');
+        if (removeBtn) {
+            if (items.length === 1) {
+                removeBtn.style.display = 'none';
+            } else {
+                removeBtn.style.display = '';
+            }
         }
     });
 }
