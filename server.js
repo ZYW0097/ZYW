@@ -192,10 +192,10 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/account', accountRouter);
 app.use('/booking-reminder', bookingReminderRouter);
-app.use('/', bookingRouter);
 app.use('/webhook', webhookRouter);
+app.use('/dev', devRouter);  // dev路由要在其他通用路由之前
+app.use('/', bookingRouter);
 app.use('/', pointsRoutes); 
-app.use('/', devRouter);
 app.use('/', indexRouter);  
 
 // 404 錯誤處理 (必須在所有路由之後，errorHandler 之前)

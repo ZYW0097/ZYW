@@ -608,9 +608,23 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
         
-        const timeSlots = await TimeSettings.find({ available: true }).sort({ createdAt: 1 });
+        const rawTimeSlots = await TimeSettings.find({ available: true }).sort({ createdAt: 1 });
         
-        res.json({ timeSlots });
+        // 按時間排序時段
+        const sortedTimeSlots = rawTimeSlots.sort((a, b) => {
+            const getTimeValue = (timeStr) => {
+                const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
+                if (match) {
+                    const hours = parseInt(match[1]);
+                    const minutes = parseInt(match[2]);
+                    return hours * 60 + minutes;
+                }
+                return 0;
+            };
+            return getTimeValue(a.time) - getTimeValue(b.time);
+        });
+        
+        res.json({ timeSlots: sortedTimeSlots });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -619,14 +633,5 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
 
 // 點數系統路由
 router.use('/', pointsRoutes);
-
-// 404 錯誤處理
-router.use((req, res) => {
-    res.status(404).render('error', {
-        message: '找不到該頁面'
-    });
-});
-
-
 
 module.exports = router; 

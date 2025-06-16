@@ -33,12 +33,12 @@ const checkDevAuth = (req, res, next) => {
 };
 
 // 開發者登入頁面
-router.get('/dev/login', (req, res) => {
+router.get('/login', (req, res) => {
     res.render('dev-login', { error: null });
 });
 
 // 處理登入
-router.post('/dev/login', (req, res) => {
+router.post('/login', (req, res) => {
     const { password } = req.body;
     const correctPassword = process.env.DEV_PASSWORD;
     
@@ -59,18 +59,18 @@ router.post('/dev/login', (req, res) => {
 });
 
 // 登出
-router.get('/dev/logout', (req, res) => {
+router.get('/logout', (req, res) => {
     req.session.devAuthenticated = false;
     res.redirect('/dev/login');
 });
 
 // 開發者頁面路由
-router.get('/dev', checkDevAuth, (req, res) => {
+router.get('/', checkDevAuth, (req, res) => {
     res.render('dev');
 });
 
 // 列出所有資料庫
-router.get('/dev/api/list-databases', checkDevAuth, async (req, res) => {
+router.get('/api/list-databases', checkDevAuth, async (req, res) => {
     try {
         console.log('📋 開始查詢資料庫列表...');
         res.setHeader('Content-Type', 'application/json');
@@ -97,7 +97,7 @@ router.get('/dev/api/list-databases', checkDevAuth, async (req, res) => {
 });
 
 // 列出所有客戶
-router.get('/dev/api/list-clients', checkDevAuth, async (req, res) => {
+router.get('/api/list-clients', checkDevAuth, async (req, res) => {
     try {
         console.log('👥 開始查詢客戶列表...');
         res.setHeader('Content-Type', 'application/json');
@@ -123,7 +123,7 @@ router.get('/dev/api/list-clients', checkDevAuth, async (req, res) => {
 });
 
 // 刪除特定商家的所有資料庫
-router.post('/dev/api/delete-single', checkDevAuth, async (req, res) => {
+router.post('/api/delete-single', checkDevAuth, async (req, res) => {
     try {
         console.log('🗑️ 開始刪除單一商家資料...');
         res.setHeader('Content-Type', 'application/json');
@@ -210,7 +210,7 @@ router.post('/dev/api/delete-single', checkDevAuth, async (req, res) => {
 });
 
 // 清理所有商家資料庫，只保留 mainADB 和 test 的 Client
-router.post('/dev/api/clean-all', checkDevAuth, async (req, res) => {
+router.post('/api/clean-all', checkDevAuth, async (req, res) => {
     try {
         console.log('🧹 開始批量清理資料庫...');
         res.setHeader('Content-Type', 'application/json');
@@ -335,7 +335,7 @@ router.post('/dev/api/clean-all', checkDevAuth, async (req, res) => {
 });
 
 // 健康檢查
-router.get('/dev/api/health', checkDevAuth, (req, res) => {
+router.get('/api/health', checkDevAuth, (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json({
         success: true,
