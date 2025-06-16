@@ -3,6 +3,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    padding-top: 100px; /* 避免被header遮擋 */
     font-family: 'Arial', sans-serif;
 }
 
@@ -291,6 +292,7 @@
 @media (max-width: 768px) {
     .page-container {
         padding: 1rem;
+        padding-top: 80px; /* 手機版避免被header遮擋 */
     }
     
     .info-grid {

@@ -21,6 +21,7 @@
         .dev-container {
             max-width: 1200px;
             margin: 0 auto;
+            margin-top: 100px; /* 避免被header遮擋 */
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -189,6 +190,12 @@
             
             .dev-content {
                 padding: 20px;
+            }
+            
+            .dev-container {
+                margin-top: 80px; /* 手機版稍微減少top margin */
+                margin-left: 10px;
+                margin-right: 10px;
             }
         }
 
