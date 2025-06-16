@@ -2,7 +2,7 @@
     <div class="booking-layout">
         <!-- 左側：當前餐廳所有訂位 -->
         <div class="booking-form-container">
-            <h2><%= clientname %> 所有尚未到期的訂位</h2>
+            <h2><%= clientname || '餐廳' %> 所有尚未到期的訂位</h2>
             <p class="section-subtitle">以下是您在這家餐廳的有效訂位</p>
             
             <!-- 搜尋結果 -->
@@ -73,6 +73,6 @@
 <link rel="stylesheet" href="/css/booking-cancel.css">
 <script>
     const storeSlug = '<%= storeSlug %>';
-    const clientname = '<%= clientname %>';
+    const clientname = '<%= clientname || "餐廳" %>';
 </script>
 <script src="/js/booking-cancel.js"></script> 

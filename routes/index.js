@@ -97,8 +97,32 @@ router.post('/api/setup', upload.fields([
             cardBackgroundImage: cardBackgroundImageUrl
         });
 
-        // 儲存功能啟用狀態（如果需要的話，可以加到Client模型或其他地方）
-        // 目前暫時不儲存，因為不需要pagetext和CustomSettings
+        // 儲存功能啟用狀態到對應的客戶資料庫
+        
+        // 在 clientCDB 中創建集點卡設定
+        if (pointsSystem) {
+            const pointsSettingsSchema = require('../models/points/settings');
+            const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+            
+            await PointsSettings.create({
+                slug: slugname,
+                type: 'points_settings',
+                class: 'main_settings',
+                state: 'enable',
+                s_reward: 0
+            });
+        }
+        
+        // 在 clientBDB 中創建訂位設定（預設開啟）
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+        
+        await BookingSettings.create({
+            slug: slugname,
+            type: 'booking_settings',
+            class: 'main_settings',
+            state: bookingSystem ? 'enable' : 'disabled'
+        });
 
         // 創建客戶特定的數據庫
         const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
@@ -187,8 +211,39 @@ router.get('/:storeSlug/:page', async (req, res) => {
         let points = 0;
         let timeSlots = [];
         let diningRules = [];
+        let featureSettings = { pointsSystem: false, bookingSystem: true };
         
         if (page === 'backstage') {
+            // 獲取功能設定
+            try {
+                // 從 clientCDB 獲取集點卡設定
+                const cardDB = getClientDb(storeSlug, 'CDB');
+                const pointsSettingsSchema = require('../models/points/settings');
+                const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+                const pointsSettings = await PointsSettings.findOne({ 
+                    slug: storeSlug, 
+                    type: 'points_settings', 
+                    class: 'main_settings' 
+                });
+                
+                // 從 clientBDB 獲取訂位設定
+                const bookingDB = getClientDb(storeSlug, 'BDB');
+                const bookingSettingsSchema = require('../models/BookingSettings');
+                const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+                const bookingSettings = await BookingSettings.findOne({ 
+                    slug: storeSlug, 
+                    type: 'booking_settings', 
+                    class: 'main_settings' 
+                });
+                
+                featureSettings = {
+                    pointsSystem: pointsSettings ? pointsSettings.state === 'enable' : false,
+                    bookingSystem: bookingSettings ? bookingSettings.state === 'enable' : true // 預設開啟
+                };
+            } catch (error) {
+                console.error('Error fetching feature settings:', error);
+            }
+
             // 獲取點數數據
             if (req.user) {
                 const userDb = getClientDb(storeSlug, 'ADB');
@@ -218,10 +273,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 diningRules,
                 restaurantImage: client.restaurantImage,
                 cardBackgroundImage: client.cardBackgroundImage,
-                features: {
-                    pointsSystem: false, // 暫時預設為false，可以根據需要調整
-                    bookingSystem: true  // 暫時預設為true
-                }
+                features: featureSettings
             },
             points,
             createdAt: client.createdAt,
@@ -233,10 +285,48 @@ router.get('/:storeSlug/:page', async (req, res) => {
     }
 });
 
-// 功能啟用API（可以根據需要存到其他地方或移除）
+// 功能啟用API
 router.post('/:storeSlug/api/settings/features', async (req, res) => {
     try {
-        // 暫時只回傳成功，因為不需要存儲這些設定
+        const { storeSlug } = req.params;
+        const { pointsSystem, bookingSystem } = req.body;
+
+        // 更新 clientCDB 中的集點卡設定
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const pointsSettingsSchema = require('../models/points/settings');
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        await PointsSettings.findOneAndUpdate(
+            { 
+                slug: storeSlug, 
+                type: 'points_settings', 
+                class: 'main_settings' 
+            },
+            { 
+                state: pointsSystem ? 'enable' : 'disabled',
+                updatedAt: new Date()
+            },
+            { upsert: true, new: true }
+        );
+
+        // 更新 clientBDB 中的訂位設定
+        const bookingDB = getClientDb(storeSlug, 'BDB');
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+        
+        await BookingSettings.findOneAndUpdate(
+            { 
+                slug: storeSlug, 
+                type: 'booking_settings', 
+                class: 'main_settings' 
+            },
+            { 
+                state: bookingSystem ? 'enable' : 'disabled',
+                updatedAt: new Date()
+            },
+            { upsert: true, new: true }
+        );
+
         res.json({ success: true });
     } catch (error) {
         console.error('Error:', error);

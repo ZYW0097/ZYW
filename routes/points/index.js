@@ -64,6 +64,10 @@ router.get('/:storeSlug/card', async (req, res) => {
             .find({ slug: storeSlug, type: 'points_settings', class: 'rule_settings' })
             .sort({ article: 1 });
 
+        // 獲取Client資訊以取得圖片
+        const Client = require('../../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
+
         res.render('card', {
             storeName,
             settings,
@@ -71,6 +75,9 @@ router.get('/:storeSlug/card', async (req, res) => {
             userPoints,
             storeSlug,
             rules,
+            customSettings: {
+                cardBackgroundImage: client ? client.cardBackgroundImage : '/images/dine.jpg'
+            },
             req: req  
         });
     } catch (error) {

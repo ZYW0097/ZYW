@@ -8,11 +8,11 @@
         <div class="info-grid">
             <div class="info-item">
                 <span class="info-label">建立時間:</span>
-                <span class="info-value"><%= new Date(createdAt).toLocaleString('zh-TW') %></span>
+                <span class="info-value"><%= createdAt ? new Date(createdAt).toLocaleString('zh-TW') : '未知' %></span>
             </div>
             <div class="info-item">
                 <span class="info-label">最後更新:</span>
-                <span class="info-value"><%= new Date(updatedAt).toLocaleString('zh-TW') %></span>
+                <span class="info-value"><%= updatedAt ? new Date(updatedAt).toLocaleString('zh-TW') : '未知' %></span>
             </div>
         </div>
     </div>
@@ -23,10 +23,10 @@
         <form id="featuresForm" class="features-form">
             <div class="checkbox-group">
                 <label>
-                    <input type="checkbox" name="pointsSystem" <%= customSettings.features.pointsSystem ? 'checked' : '' %>> 啟用集點卡系統
+                    <input type="checkbox" name="pointsSystem" <%= (customSettings && customSettings.features && customSettings.features.pointsSystem) ? 'checked' : '' %>> 啟用集點卡系統
                 </label>
                 <label>
-                    <input type="checkbox" name="bookingSystem" <%= customSettings.features.bookingSystem ? 'checked' : '' %>> 啟用訂位系統
+                    <input type="checkbox" name="bookingSystem" <%= (customSettings && customSettings.features && customSettings.features.bookingSystem) ? 'checked' : '' %>> 啟用訂位系統
                 </label>
             </div>
             <button type="submit" class="save-btn">儲存功能設定</button>
@@ -40,13 +40,13 @@
             <div class="image-group">
                 <div class="image-item">
                     <label>餐廳圖片 (訂位頁面使用)</label>
-                    <img class="current-image" src="<%= customSettings.restaurantImage %>" alt="當前餐廳圖片">
+                    <img class="current-image" src="<%= (customSettings && customSettings.restaurantImage) ? customSettings.restaurantImage : '/images/dine.jpg' %>" alt="當前餐廳圖片">
                     <input type="file" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
                     <img id="restaurant-preview" class="image-preview" style="display:none;">
                 </div>
                 <div class="image-item">
                     <label>集點卡背景圖</label>
-                    <img class="current-image" src="<%= customSettings.cardBackgroundImage %>" alt="當前背景圖">
+                    <img class="current-image" src="<%= (customSettings && customSettings.cardBackgroundImage) ? customSettings.cardBackgroundImage : '/images/dine.jpg' %>" alt="當前背景圖">
                     <input type="file" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
                     <img id="card-preview" class="image-preview" style="display:none;">
                 </div>
@@ -60,18 +60,19 @@
         <h3>訂位時段設定</h3>
         <form id="timeSlotsForm" class="time-slots-form">
             <div id="timeSlots-list">
-                <% customSettings.timeSlots.forEach((slot, index) => { %>
-                <div class="timeSlot-item">
-                    <input type="text" name="timeSlots[]" value="<%= slot.time %>" required>
-                    <% if (index === customSettings.timeSlots.length - 1) { %>
-                        <span class="add-btn" onclick="addTimeSlot()">➕</span>
-                    <% } %>
-                    <% if (customSettings.timeSlots.length > 1) { %>
-                        <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
-                    <% } %>
-                </div>
-                <% }) %>
-                <% if (customSettings.timeSlots.length === 0) { %>
+                <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
+                    <% customSettings.timeSlots.forEach((slot, index) => { %>
+                    <div class="timeSlot-item">
+                        <input type="text" name="timeSlots[]" value="<%= slot.time %>" required>
+                        <% if (index === customSettings.timeSlots.length - 1) { %>
+                            <span class="add-btn" onclick="addTimeSlot()">➕</span>
+                        <% } %>
+                        <% if (customSettings.timeSlots.length > 1) { %>
+                            <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                <% } else { %>
                 <div class="timeSlot-item">
                     <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
                     <span class="add-btn" onclick="addTimeSlot()">➕</span>
@@ -87,18 +88,19 @@
         <h3>用餐規則設定</h3>
         <form id="diningRulesForm" class="dining-rules-form">
             <div id="diningRules-list">
-                <% customSettings.diningRules.forEach((rule, index) => { %>
-                <div class="rule-item">
-                    <input type="text" name="diningRules[]" value="<%= rule.text %>" required>
-                    <% if (index === customSettings.diningRules.length - 1) { %>
-                        <span class="add-btn" onclick="addDiningRule()">➕</span>
-                    <% } %>
-                    <% if (customSettings.diningRules.length > 1) { %>
-                        <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
-                    <% } %>
-                </div>
-                <% }) %>
-                <% if (customSettings.diningRules.length === 0) { %>
+                <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
+                    <% customSettings.diningRules.forEach((rule, index) => { %>
+                    <div class="rule-item">
+                        <input type="text" name="diningRules[]" value="<%= rule.text %>" required>
+                        <% if (index === customSettings.diningRules.length - 1) { %>
+                            <span class="add-btn" onclick="addDiningRule()">➕</span>
+                        <% } %>
+                        <% if (customSettings.diningRules.length > 1) { %>
+                            <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                <% } else { %>
                 <div class="rule-item">
                     <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
                     <span class="add-btn" onclick="addDiningRule()">➕</span>
@@ -110,7 +112,7 @@
     </div>
 
     <!-- 集點卡建立表單 (只有在啟用集點卡時才顯示) -->
-    <% if (customSettings.features.pointsSystem) { %>
+    <% if (customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
     <div class="settings-section">
         <h3>集點卡管理</h3>
         <form id="cardForm" action="/<%= storeSlug %>/points/create" method="POST" enctype="multipart/form-data">

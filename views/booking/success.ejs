@@ -11,14 +11,14 @@
             <h1 class="success-title" id="successTitle">訂位成功</h1>
             
             <!-- 餐廳名稱 -->
-            <div class="restaurant-name-display"><%= clientname %></div>
+            <div class="restaurant-name-display"><%= clientname || '餐廳名稱' %></div>
             
             <p class="success-message">感謝您的訂位，我們已收到您的訂位請求。</p>
             
             <!-- 訂位編號 -->
             <div class="booking-id-section">
                 <div class="booking-id-label">訂位編號</div>
-                <div class="booking-id"><%= bookingId %></div>
+                <div class="booking-id"><%= bookingId || '未知編號' %></div>
             </div>
 
             <!-- 詳細資訊 -->
@@ -26,19 +26,19 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">聯絡人</div>
-                        <div class="info-value"><%= bookingInfo.name %> <%= bookingInfo.gender %></div>
+                        <div class="info-value"><%= (bookingInfo && bookingInfo.name) || '未知' %> <%= (bookingInfo && bookingInfo.gender) || '' %></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">用餐人數</div>
-                        <div class="info-value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</div>
+                        <div class="info-value"><%= (bookingInfo && bookingInfo.adults) || 0 %>大 <%= (bookingInfo && bookingInfo.children) || 0 %>小</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">用餐日期</div>
-                        <div class="info-value"><%= bookingInfo.date %></div>
+                        <div class="info-value"><%= (bookingInfo && bookingInfo.date) || '未知日期' %></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">用餐時段</div>
-                        <div class="info-value"><%= bookingInfo.time %></div>
+                        <div class="info-value"><%= (bookingInfo && bookingInfo.time) || '未知時間' %></div>
                     </div>
                 </div>
             </div>

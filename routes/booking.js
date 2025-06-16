@@ -24,6 +24,26 @@ function validateBookingSession(req, bookingId, storeSlug) {
            Date.now() - req.session.lastBooking.timestamp <= 60000; // 1分鐘過期
 }
 
+// 檢查訂位功能是否啟用的輔助函數
+async function checkBookingEnabled(storeSlug) {
+    try {
+        const bookingDB = getClientDb(storeSlug, 'BDB');
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+        const bookingSettings = await BookingSettings.findOne({ 
+            slug: storeSlug, 
+            type: 'booking_settings', 
+            class: 'main_settings' 
+        });
+        
+        // 如果沒有設定，預設為啟用；如果有設定，則檢查 state
+        return !bookingSettings || bookingSettings.state === 'enable';
+    } catch (error) {
+        console.error('Error checking booking settings:', error);
+        return true; // 如果檢查出錯，預設允許訂位
+    }
+}
+
 // 獲取客戶資訊的輔助函數
 async function getClientInfo(storeSlug) {
     const client = await Client.findOne({ slugname: storeSlug });
@@ -123,6 +143,29 @@ router.get('/:storeSlug/booking', (req, res) => {
 router.get('/:storeSlug/booking/step1', async (req, res) => {
     try {
         const { storeSlug } = req.params;
+        
+        // 檢查訂位功能是否啟用
+        try {
+            const bookingDB = getClientDb(storeSlug, 'BDB');
+            const bookingSettingsSchema = require('../models/BookingSettings');
+            const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+            const bookingSettings = await BookingSettings.findOne({ 
+                slug: storeSlug, 
+                type: 'booking_settings', 
+                class: 'main_settings' 
+            });
+            
+            // 如果設定存在且為 disabled，則返回錯誤
+            if (bookingSettings && bookingSettings.state === 'disabled') {
+                return res.status(403).render('error', { 
+                    message: '此商家暫時關閉訂位功能' 
+                });
+            }
+        } catch (settingsError) {
+            console.error('Error checking booking settings:', settingsError);
+            // 如果檢查設定時出錯，繼續執行（預設允許訂位）
+        }
+        
         const clientInfo = await getClientInfo(storeSlug);
         
         // 設置session中的storeSlug
@@ -142,6 +185,27 @@ router.get('/:storeSlug/booking/step1', async (req, res) => {
 router.get('/:storeSlug/booking/step2', async (req, res) => {
     try {
         const { storeSlug } = req.params;
+        
+        // 檢查訂位功能是否啟用
+        try {
+            const bookingDB = getClientDb(storeSlug, 'BDB');
+            const bookingSettingsSchema = require('../models/BookingSettings');
+            const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+            const bookingSettings = await BookingSettings.findOne({ 
+                slug: storeSlug, 
+                type: 'booking_settings', 
+                class: 'main_settings' 
+            });
+            
+            if (bookingSettings && bookingSettings.state === 'disabled') {
+                return res.status(403).render('error', { 
+                    message: '此商家暫時關閉訂位功能' 
+                });
+            }
+        } catch (settingsError) {
+            console.error('Error checking booking settings:', settingsError);
+        }
+        
         const clientInfo = await getClientInfo(storeSlug);
         
         // 設置session中的storeSlug
@@ -215,6 +279,27 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         if (!storeSlug) storeSlug = req.params.storeSlug || req.body.storeSlug || req.query.storeSlug;
         if (!storeSlug) {
             return res.status(400).json({ success: false, error: 'storeSlug required' });
+        }
+
+        // 檢查訂位功能是否啟用
+        try {
+            const bookingDB = getClientDb(storeSlug, 'BDB');
+            const bookingSettingsSchema = require('../models/BookingSettings');
+            const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+            const bookingSettings = await BookingSettings.findOne({ 
+                slug: storeSlug, 
+                type: 'booking_settings', 
+                class: 'main_settings' 
+            });
+            
+            if (bookingSettings && bookingSettings.state === 'disabled') {
+                return res.status(403).json({ 
+                    success: false, 
+                    error: '此商家暫時關閉訂位功能' 
+                });
+            }
+        } catch (settingsError) {
+            console.error('Error checking booking settings:', settingsError);
         }
 
         // 驗證必要欄位（後端驗證，不依賴前端）
