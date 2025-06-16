@@ -125,6 +125,9 @@ router.get('/dev/api/list-clients', checkDevAuth, async (req, res) => {
 // 刪除特定商家的所有資料庫
 router.post('/dev/api/delete-single', checkDevAuth, async (req, res) => {
     try {
+        console.log('🗑️ 開始刪除單一商家資料...');
+        res.setHeader('Content-Type', 'application/json');
+        
         const { slugname } = req.body;
         
         if (!slugname) {
@@ -197,7 +200,8 @@ router.post('/dev/api/delete-single', checkDevAuth, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error in delete-single:', error);
+        console.error('❌ 刪除單一商家錯誤:', error);
+        res.setHeader('Content-Type', 'application/json');
         res.status(500).json({
             success: false,
             error: `刪除操作失敗: ${error.message}`
@@ -209,6 +213,7 @@ router.post('/dev/api/delete-single', checkDevAuth, async (req, res) => {
 router.post('/dev/api/clean-all', checkDevAuth, async (req, res) => {
     try {
         console.log('🧹 開始批量清理資料庫...');
+        res.setHeader('Content-Type', 'application/json');
         
         const deletedDbs = [];
         const errors = [];
@@ -320,7 +325,8 @@ router.post('/dev/api/clean-all', checkDevAuth, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error in clean-all:', error);
+        console.error('❌ 批量清理錯誤:', error);
+        res.setHeader('Content-Type', 'application/json');
         res.status(500).json({
             success: false,
             error: `批量清理失敗: ${error.message}`
@@ -330,6 +336,7 @@ router.post('/dev/api/clean-all', checkDevAuth, async (req, res) => {
 
 // 健康檢查
 router.get('/dev/api/health', checkDevAuth, (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     res.json({
         success: true,
         message: '開發者 API 運行正常',

@@ -373,7 +373,21 @@ router.get('/:storeSlug/:page', async (req, res) => {
             const bookingDB = getClientDb(storeSlug, 'BDB');
             const timeSettingsSchema = require('../models/TimeSettings');
             const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
-            timeSlots = await TimeSettings.find({}).sort({ createdAt: 1 });
+            const rawTimeSlots = await TimeSettings.find({}).sort({ createdAt: 1 });
+            
+            // 按時間排序時段
+            timeSlots = rawTimeSlots.sort((a, b) => {
+                const getTimeValue = (timeStr) => {
+                    const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
+                    if (match) {
+                        const hours = parseInt(match[1]);
+                        const minutes = parseInt(match[2]);
+                        return hours * 60 + minutes;
+                    }
+                    return 0;
+                };
+                return getTimeValue(a.time) - getTimeValue(b.time);
+            });
             
             // 獲取訂位規則
             const bookingRulesSchema = require('../models/BookingRules');
@@ -517,9 +531,32 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         
         // 插入新的時段設定
         if (timeSlots && timeSlots.length > 0) {
-            const timeSettingsData = timeSlots.map(time => ({ time, available: true }));
+            // 時間排序函數
+            const sortTimeSlots = (slots) => {
+                return slots.sort((a, b) => {
+                    // 提取時間部分進行比較
+                    const getTimeValue = (timeStr) => {
+                        // 支援格式：HH:MM, HH:MM-HH:MM, HH:MM~HH:MM
+                        const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
+                        if (match) {
+                            const hours = parseInt(match[1]);
+                            const minutes = parseInt(match[2]);
+                            return hours * 60 + minutes;
+                        }
+                        return 0;
+                    };
+                    
+                    return getTimeValue(a) - getTimeValue(b);
+                });
+            };
+
+            // 排序時段
+            const sortedTimeSlots = sortTimeSlots([...timeSlots]);
+            console.log('📋 排序後的時段:', sortedTimeSlots);
+            
+            const timeSettingsData = sortedTimeSlots.map(time => ({ time, available: true }));
             await TimeSettings.insertMany(timeSettingsData);
-            console.log(`✅ 已新增 ${timeSlots.length} 個時段`);
+            console.log(`✅ 已新增 ${sortedTimeSlots.length} 個時段（已排序）`);
         }
 
         res.json({ success: true, message: '時段設定已更新' });

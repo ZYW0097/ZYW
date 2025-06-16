@@ -232,7 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok && result.success) {
                     alert(result.message || '功能設定已更新');
-                    window.location.reload();
+                    // 使用 replace 避免 URL 變長
+                    window.location.replace(window.location.pathname);
                 } else {
                     console.error('❌ 更新失敗:', result);
                     alert(result.error || '更新失敗，請重試');
@@ -267,7 +268,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok && result.success) {
                     alert('圖片已更新');
-                    window.location.reload();
+                    // 使用 replace 避免 URL 變長
+                    window.location.replace(window.location.pathname);
                 } else {
                     alert(result.error || '更新失敗，請重試');
                 }
