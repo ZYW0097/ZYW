@@ -106,7 +106,7 @@ class LoadingManager {
     async checkSystemStatus() {
         try {
             // 向後端API請求系統狀態
-            const response = await fetch(`/api/client/${this.slugname}`, {
+            const response = await fetch(`/api/check-client/${this.slugname}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -119,7 +119,7 @@ class LoadingManager {
 
             const data = await response.json();
             
-            if (data.success && data.client) {
+            if (data.exists && data.client) {
                 this.showSuccess(data.client);
             } else {
                 this.showError(data.error || '找不到指定的系統');

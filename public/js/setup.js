@@ -33,18 +33,35 @@ class SetupManager {
     }
 
     handleStepNavClick(targetStep) {
-        if (targetStep < this.currentStep) {
-            // 計算實際步驟對應
-            if (targetStep === 1) this.currentStep = 1;
-            else if (targetStep === 2) this.currentStep = 2;
-            else if (targetStep === 3) {
-                if (this.selectedFeatures.booking) this.currentStep = 3;
-                else if (this.selectedFeatures.points) this.currentStep = 4;
+        if (targetStep <= this.getCurrentMaxStep()) {
+            const steps = this.getVisibleSteps();
+            if (targetStep <= steps.length) {
+                this.currentStep = steps[targetStep - 1].current;
+                this.updateStepDisplay();
             }
-            else if (targetStep === 4) this.currentStep = 5;
-            
-            this.updateStepDisplay();
         }
+    }
+
+    getCurrentMaxStep() {
+        // 計算用戶已完成的最大步驟
+        let maxStep = 1;
+        
+        // 如果基本資料已填寫
+        const clientname = document.getElementById('clientname')?.value;
+        const slugname = document.getElementById('slugname')?.value;
+        if (clientname && slugname) {
+            maxStep = Math.max(maxStep, 2);
+        }
+        
+        // 如果功能已選擇
+        if (this.selectedFeatures.booking || this.selectedFeatures.points) {
+            maxStep = Math.max(maxStep, 3);
+            if (this.selectedFeatures.booking && this.selectedFeatures.points) {
+                maxStep = Math.max(maxStep, 4);
+            }
+        }
+        
+        return Math.min(maxStep, this.currentStep);
     }
 
     changeStep(direction) {
@@ -162,23 +179,39 @@ class SetupManager {
         // 根據選擇的功能決定顯示哪些步驟
         const steps = this.getVisibleSteps();
         
+        // 隱藏多餘的步驟導航元素
         stepNavs.forEach((nav, index) => {
             if (index >= steps.length) {
                 nav.classList.add('hidden');
-                return;
+            } else {
+                nav.classList.remove('hidden');
             }
-            
-            const step = steps[index];
-            const circle = nav.querySelector('.step-circle');
-            
-            if (circle) {
-                circle.textContent = step.number;
+        });
+        
+        // 同時隱藏多餘的分隔線
+        const stepLines = document.querySelectorAll('.step-line');
+        stepLines.forEach((line, index) => {
+            if (index >= steps.length - 1) {
+                line.style.display = 'none';
+            } else {
+                line.style.display = 'block';
             }
-            
-            if (step.current < this.currentStep) {
-                nav.classList.add('completed');
-            } else if (step.current === this.currentStep) {
-                nav.classList.add('active');
+        });
+        
+        // 更新顯示的步驟
+        steps.forEach((step, index) => {
+            const nav = stepNavs[index];
+            if (nav) {
+                const circle = nav.querySelector('.step-circle');
+                if (circle) {
+                    circle.textContent = step.number;
+                }
+                
+                if (step.current < this.currentStep) {
+                    nav.classList.add('completed');
+                } else if (step.current === this.currentStep) {
+                    nav.classList.add('active');
+                }
             }
         });
     }
