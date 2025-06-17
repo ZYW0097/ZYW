@@ -416,24 +416,25 @@ body {
 }
 
 .btn {
-    padding: 1rem 2rem;
-    border: 2px solid #000;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+    padding: 1rem 2rem !important;
+    border: 2px solid #000 !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    outline: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    box-shadow: none !important;
 }
 
 .btn::before {
@@ -465,24 +466,43 @@ body {
 }
 
 .btn-secondary:hover {
-    background: #000;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    background: #000 !important;
+    color: white !important;
+    border-color: #000 !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    background: #000 !important;
+    color: white !important;
+    border-color: #000 !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
 }
 
 .btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1) !important;
+}
+
+.btn:focus:not(:hover) {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1) !important;
 }
 
 .btn-primary:focus {
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+    background: #000 !important;
+    color: white !important;
+    border-color: #000 !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.2) !important;
+}
+
+.btn-secondary:focus {
+    background: white !important;
+    color: #000 !important;
+    border-color: #000 !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1) !important;
 }
 
 .btn:disabled {
@@ -492,6 +512,43 @@ body {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+/* Bootstrap 覆蓋 */
+button.btn,
+.btn.btn,
+button.btn:hover,
+.btn.btn:hover,
+button.btn:focus,
+.btn.btn:focus,
+button.btn:active,
+.btn.btn:active {
+    border: 2px solid #000 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+button.btn-primary,
+.btn.btn-primary {
+    background: #000 !important;
+    color: white !important;
+    border-color: #000 !important;
+}
+
+button.btn-secondary,
+.btn.btn-secondary {
+    background: white !important;
+    color: #000 !important;
+    border-color: #000 !important;
+}
+
+button.btn:focus,
+.btn.btn:focus {
+    background: inherit !important;
+    color: inherit !important;
+    border-color: #000 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1) !important;
 }
 
 /* 錯誤訊息 */
