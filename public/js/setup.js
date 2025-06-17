@@ -8,12 +8,14 @@ class SetupManager {
     }
 
     init() {
+        // 初始化時確保功能選擇狀態正確
+        this.selectedFeatures = { booking: true, points: false };
+        this.updateFeatureSelection();
         this.updateStepDisplay();
         this.setupFeatureSelection();
         this.setupPasswordValidation();
         this.updateUrlPreview();
         this.setupEventListeners();
-        this.updateStepNavigation(); // 初始化步驟導航
     }
 
     setupEventListeners() {
@@ -217,27 +219,35 @@ class SetupManager {
     }
 
     getVisibleSteps() {
+        // 如果還在步驟1或剛進入步驟2但未選擇功能，顯示預設步驟
+        if (this.currentStep <= 2 && !this.selectedFeatures.booking && !this.selectedFeatures.points) {
+            return [
+                { number: '1', current: 1 }, // 基本資料
+                { number: '2', current: 2 }, // 功能選擇
+                { number: '3', current: 5 }, // 密碼設定
+                { number: '4', current: 6 }  // 完成
+            ];
+        }
+
+        // 步驟2以後，根據功能選擇顯示步驟
         const steps = [
             { number: '1', current: 1 }, // 基本資料
             { number: '2', current: 2 }  // 功能選擇
         ];
 
-        // 根據功能選擇決定後續步驟
         if (this.selectedFeatures.booking && this.selectedFeatures.points) {
+            // 兩個都選擇：1 > 2 > 2-1 > 2-2 > 3 > 4
             steps.push({ number: '2-1', current: 3 }); // 訂位設定
             steps.push({ number: '2-2', current: 4 }); // 集點卡設定
             steps.push({ number: '3', current: 5 }); // 密碼設定
             steps.push({ number: '4', current: 6 }); // 完成
-        } else if (this.selectedFeatures.booking) {
-            steps.push({ number: '2-1', current: 3 }); // 訂位設定
-            steps.push({ number: '3', current: 5 }); // 密碼設定
-            steps.push({ number: '4', current: 6 }); // 完成
-        } else if (this.selectedFeatures.points) {
-            steps.push({ number: '2-1', current: 4 }); // 集點卡設定
+        } else if (this.selectedFeatures.booking || this.selectedFeatures.points) {
+            // 只選擇一個：1 > 2 > 2-1 > 3 > 4
+            steps.push({ number: '2-1', current: this.selectedFeatures.booking ? 3 : 4 }); // 設定步驟
             steps.push({ number: '3', current: 5 }); // 密碼設定
             steps.push({ number: '4', current: 6 }); // 完成
         } else {
-            // 沒有選擇任何功能時仍顯示後續步驟
+            // 在步驟2但沒選功能時，顯示預設步驟
             steps.push({ number: '3', current: 5 }); // 密碼設定
             steps.push({ number: '4', current: 6 }); // 完成
         }
