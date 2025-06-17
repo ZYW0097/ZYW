@@ -13,6 +13,7 @@ class SetupManager {
         this.setupPasswordValidation();
         this.updateUrlPreview();
         this.setupEventListeners();
+        this.updateStepNavigation(); // 初始化步驟導航
     }
 
     setupEventListeners() {
@@ -41,7 +42,6 @@ class SetupManager {
                 else if (this.selectedFeatures.points) this.currentStep = 4;
             }
             else if (targetStep === 4) this.currentStep = 5;
-            else if (targetStep === 5) this.currentStep = 6;
             
             this.updateStepDisplay();
         }
@@ -153,25 +153,56 @@ class SetupManager {
 
     updateStepNavigation() {
         const stepNavs = document.querySelectorAll('.step-item');
-        const stepMapping = {
-            1: 0, // 基本資料 -> 導航第1步
-            2: 1, // 功能選擇 -> 導航第2步
-            3: 2, // 訂位設定 -> 導航第2A步
-            4: 2, // 集點卡設定 -> 導航第2A步 (共用)
-            5: 3, // 密碼設定 -> 導航第3步
-            6: 4  // 完成 -> 導航第4步
-        };
+        
+        // 重置所有步驟
+        stepNavs.forEach(nav => {
+            nav.classList.remove('active', 'completed', 'hidden');
+        });
 
+        // 根據選擇的功能決定顯示哪些步驟
+        const steps = this.getVisibleSteps();
+        
         stepNavs.forEach((nav, index) => {
-            nav.classList.remove('active', 'completed');
-            const currentNavStep = stepMapping[this.currentStep];
+            if (index >= steps.length) {
+                nav.classList.add('hidden');
+                return;
+            }
             
-            if (index < currentNavStep) {
+            const step = steps[index];
+            const circle = nav.querySelector('.step-circle');
+            
+            if (circle) {
+                circle.textContent = step.number;
+            }
+            
+            if (step.current < this.currentStep) {
                 nav.classList.add('completed');
-            } else if (index === currentNavStep) {
+            } else if (step.current === this.currentStep) {
                 nav.classList.add('active');
             }
         });
+    }
+
+    getVisibleSteps() {
+        const steps = [
+            { number: '1', current: 1 }, // 基本資料
+            { number: '2', current: 2 }  // 功能選擇
+        ];
+
+        // 根據功能選擇決定後續步驟
+        if (this.selectedFeatures.booking && this.selectedFeatures.points) {
+            steps.push({ number: '2-1', current: 3 }); // 訂位設定
+            steps.push({ number: '2-2', current: 4 }); // 集點卡設定
+        } else if (this.selectedFeatures.booking) {
+            steps.push({ number: '2-1', current: 3 }); // 訂位設定
+        } else if (this.selectedFeatures.points) {
+            steps.push({ number: '2-1', current: 4 }); // 集點卡設定
+        }
+
+        steps.push({ number: '3', current: 5 }); // 密碼設定
+        steps.push({ number: '4', current: 6 }); // 完成
+
+        return steps;
     }
 
     updateButtons() {
@@ -248,6 +279,7 @@ class SetupManager {
                 }
 
                 this.updateFeatureSelection();
+                this.updateStepNavigation(); // 更新步驟導航
             });
         });
     }
@@ -290,8 +322,24 @@ class SetupManager {
     }
 
     validatePasswordStrength(password) {
-        // 可以添加實時密碼強度顯示邏輯
-        console.log('Password strength check:', password.length);
+        const requirements = document.querySelectorAll('.password-requirements li');
+        if (requirements.length === 0) return;
+
+        const checks = [
+            password.length >= 8,
+            /[A-Z]/.test(password),
+            /[a-z]/.test(password),
+            /\d/.test(password),
+            /[!@#$%^&*]/.test(password)
+        ];
+
+        requirements.forEach((req, index) => {
+            if (checks[index]) {
+                req.classList.add('valid');
+            } else {
+                req.classList.remove('valid');
+            }
+        });
     }
 
     updateUrlPreview() {

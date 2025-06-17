@@ -184,8 +184,22 @@ router.post('/api/setup', upload.fields([
 
                 // 處理集點卡獎勵設定
                 if (rewardNames && rewardPoints) {
-                    const parsedRewardNames = typeof rewardNames === 'string' ? JSON.parse(rewardNames) : rewardNames;
-                    const parsedRewardPoints = typeof rewardPoints === 'string' ? JSON.parse(rewardPoints) : rewardPoints;
+                                let parsedRewardNames = [];
+            let parsedRewardPoints = [];
+            
+            try {
+                parsedRewardNames = (typeof rewardNames === 'string' && rewardNames.trim()) ? JSON.parse(rewardNames) : (rewardNames || []);
+            } catch (error) {
+                console.error('Reward names JSON parse error:', error, 'Raw data:', rewardNames);
+                parsedRewardNames = [];
+            }
+            
+            try {
+                parsedRewardPoints = (typeof rewardPoints === 'string' && rewardPoints.trim()) ? JSON.parse(rewardPoints) : (rewardPoints || []);
+            } catch (error) {
+                console.error('Reward points JSON parse error:', error, 'Raw data:', rewardPoints);
+                parsedRewardPoints = [];
+            }
                     
                     if (parsedRewardNames.length > 0 && parsedRewardPoints.length > 0) {
                         // 處理獎勵圖片
@@ -220,7 +234,13 @@ router.post('/api/setup', upload.fields([
 
                 // 處理集點卡規則
                 if (pointRules) {
-                    const parsedPointRules = typeof pointRules === 'string' ? JSON.parse(pointRules) : pointRules;
+                    let parsedPointRules = [];
+            try {
+                parsedPointRules = (typeof pointRules === 'string' && pointRules.trim()) ? JSON.parse(pointRules) : (pointRules || []);
+            } catch (error) {
+                console.error('Point rules JSON parse error:', error, 'Raw data:', pointRules);
+                parsedPointRules = [];
+            }
                     
                     if (parsedPointRules.length > 0) {
                         const rulesData = parsedPointRules.map((text, index) => ({
@@ -262,8 +282,22 @@ router.post('/api/setup', upload.fields([
         }
 
         // 處理時段和規則資料
-        const parsedTimeSlots = timeSlots ? JSON.parse(timeSlots) : [];
-        const parsedDiningRules = diningRules ? JSON.parse(diningRules) : [];
+        let parsedTimeSlots = [];
+        let parsedDiningRules = [];
+        
+        try {
+            parsedTimeSlots = timeSlots && timeSlots.trim() ? JSON.parse(timeSlots) : [];
+        } catch (error) {
+            console.error('Time slots JSON parse error:', error, 'Raw data:', timeSlots);
+            parsedTimeSlots = [];
+        }
+        
+        try {
+            parsedDiningRules = diningRules && diningRules.trim() ? JSON.parse(diningRules) : [];
+        } catch (error) {
+            console.error('Dining rules JSON parse error:', error, 'Raw data:', diningRules);
+            parsedDiningRules = [];
+        }
 
         // 在 clientBDB 中創建時段設定
         if (parsedTimeSlots.length > 0) {

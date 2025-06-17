@@ -8,7 +8,7 @@ body {
 .setup-wrapper {
     min-height: 100vh;
     padding-top: 75px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    background: #ffffff;
 }
 
 .setup-container {
@@ -24,6 +24,7 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
 }
 
 .steps-nav {
@@ -40,30 +41,36 @@ body {
     transition: all 0.3s ease;
 }
 
+.step-item.hidden {
+    display: none;
+}
+
 .step-circle {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
+    background: white;
+    color: #999;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 2px solid #e9ecef;
+    font-size: 0.9rem;
 }
 
 .step-item.active .step-circle {
-    background: #333;
+    background: #000;
     color: white;
-    border-color: #333;
+    border-color: #000;
+    transform: scale(1.05);
 }
 
 .step-item.completed .step-circle {
-    background: #28a745;
+    background: #000;
     color: white;
-    border-color: #28a745;
+    border-color: #000;
 }
 
 .step-line {
@@ -75,12 +82,12 @@ body {
 }
 
 .step-item.completed + .step-line {
-    background: #28a745;
+    background: #000;
 }
 
 .step-title {
     text-align: center;
-    color: #333;
+    color: #000;
     font-size: 1.2rem;
     font-weight: 600;
     margin-top: 1rem;
@@ -93,6 +100,7 @@ body {
     padding: 3rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     min-height: 500px;
+    border: 1px solid #e9ecef;
 }
 
 .form-step {
@@ -104,7 +112,7 @@ body {
 }
 
 .step-content h2 {
-    color: #333;
+    color: #000;
     margin-bottom: 0.5rem;
     font-size: 1.8rem;
     font-weight: 700;
@@ -124,7 +132,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: #000;
     font-weight: 600;
     font-size: 1rem;
 }
@@ -150,8 +158,9 @@ body {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #333;
+    border-color: #000;
     background: white;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
 }
 
 .form-group input[type="file"] {
@@ -165,7 +174,7 @@ body {
 }
 
 .form-group input[type="file"]:hover {
-    border-color: #333;
+    border-color: #000;
     background: white;
 }
 
@@ -183,6 +192,12 @@ body {
     border: 2px dashed #e9ecef;
     border-radius: 10px;
     background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.preview-item:hover {
+    border-color: #000;
+    background: white;
 }
 
 .preview-image {
@@ -224,27 +239,30 @@ body {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #f8f9fa;
-}
-
-.feature-card:hover {
-    border-color: #333;
     background: white;
 }
 
+.feature-card:hover {
+    border-color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
 .feature-card.selected {
-    border-color: #333;
-    background: #333;
+    border-color: #000;
+    background: #000;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .feature-card.default {
-    border-color: #28a745;
-    background: #d4edda;
+    border-color: #000;
+    background: #f8f9fa;
 }
 
 .feature-card.default.selected {
-    background: #28a745;
+    background: #000;
     color: white;
 }
 
@@ -287,10 +305,15 @@ body {
     cursor: pointer;
     font-size: 1rem;
     transition: all 0.3s ease;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .add-btn {
-    background: #28a745;
+    background: #000;
     color: white;
 }
 
@@ -311,6 +334,7 @@ body {
     border: 1px solid #e9ecef;
     border-radius: 10px;
     margin-bottom: 1rem;
+    background: #f8f9fa;
 }
 
 .reward-item input {
@@ -328,12 +352,12 @@ body {
     border-radius: 10px;
     padding: 1rem;
     margin-top: 1rem;
-    border-left: 4px solid #333;
+    border-left: 4px solid #000;
 }
 
 .password-requirements h4 {
     margin: 0 0 0.5rem 0;
-    color: #333;
+    color: #000;
     font-size: 1rem;
 }
 
@@ -341,6 +365,26 @@ body {
     margin: 0;
     padding-left: 1.2rem;
     color: #666;
+    list-style: none;
+}
+
+.password-requirements li {
+    margin-bottom: 0.25rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.password-requirements li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.password-requirements li.valid::before {
+    content: '✓';
+    color: #28a745;
 }
 
 .backend-url {
@@ -350,7 +394,7 @@ body {
     padding: 1rem;
     margin-top: 1rem;
     text-align: center;
-    color: #333;
+    color: #000;
     font-family: monospace;
     font-size: 1.1rem;
     word-break: break-all;
@@ -364,7 +408,7 @@ body {
 
 .completion-icon {
     font-size: 4rem;
-    color: #28a745;
+    color: #000;
     margin-bottom: 1rem;
 }
 
@@ -392,13 +436,15 @@ body {
 }
 
 .btn-secondary {
-    background: #6c757d;
-    color: white;
+    background: white;
+    color: #000;
+    border: 2px solid #000;
 }
 
 .btn-primary {
-    background: #333;
+    background: #000;
     color: white;
+    border: 2px solid #000;
 }
 
 .btn:hover {
@@ -406,9 +452,15 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
+.btn-secondary:hover {
+    background: #000;
+    color: white;
+}
+
 .btn:disabled {
     background: #e9ecef;
     color: #6c757d;
+    border-color: #e9ecef;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -477,7 +529,7 @@ body {
     .step-circle {
         width: 35px;
         height: 35px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 
     .step-title {
