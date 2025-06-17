@@ -270,17 +270,21 @@ class SetupManager {
         const hasPoints = this.selectedFeatures.points;
 
         if (hasBooking && hasPoints) {
-            // 兩個都選擇：1 > 2 > 2-1 > 2-2 > 3 > 4
+            // 兩個都選擇：1 > 2 > 2-1 > 2-2 > 3 > 4 (6個步驟)
             steps.push({ number: '2-1', current: 3 }); // 訂位設定
             steps.push({ number: '2-2', current: 4 }); // 集點卡設定
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
         } else if (hasBooking || hasPoints) {
-            // 只選擇一個：1 > 2 > 2-1 > 3 > 4
+            // 只選擇一個：1 > 2 > 2-1 > 3 > 4 (5個步驟)
             steps.push({ number: '2-1', current: hasBooking ? 3 : 4 }); // 設定步驟
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
+        } else {
+            // 在步驟2但沒選功能時：1 > 2 > 3 > 4 (4個步驟)
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
         }
-        
-        // 最後總是添加密碼和完成步驟
-        steps.push({ number: '3', current: 5 }); // 密碼設定
-        steps.push({ number: '4', current: 6 }); // 完成
 
         console.log('Generated steps:', steps);
         return steps;
