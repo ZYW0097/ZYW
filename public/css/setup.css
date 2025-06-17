@@ -7,8 +7,8 @@ body {
 
 .setup-wrapper {
     min-height: 100vh;
-    padding-top: 75px;
-    background: #ffffff;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem 0;
 }
 
 .setup-container {
@@ -615,7 +615,7 @@ button.btn:focus,
 
 @media (max-width: 480px) {
     .setup-wrapper {
-        padding-top: 75px;
+        padding: 1rem 0;
     }
 
     .step-circle {

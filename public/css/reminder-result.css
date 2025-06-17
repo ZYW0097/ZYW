@@ -1,0 +1,247 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #333;
+}
+
+.reminder-result-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.reminder-result-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    padding: 3rem;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid #e9ecef;
+}
+
+.result-icon {
+    margin-bottom: 2rem;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+    margin: 0 auto;
+}
+
+.success-icon {
+    background: #000;
+}
+
+.cancel-icon {
+    background: #6c757d;
+}
+
+.error-icon {
+    background: #dc3545;
+}
+
+.result-message h2 {
+    color: #000;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.booking-summary {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: left;
+    border: 1px solid #e9ecef;
+}
+
+.booking-summary h3 {
+    color: #000;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.info-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 600;
+    color: #000;
+}
+
+.value {
+    color: #333;
+    font-weight: 500;
+}
+
+.booking-id {
+    background: #000;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-confirmed {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-cancelled {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.result-actions {
+    margin-top: 2rem;
+}
+
+.note {
+    color: #666;
+    line-height: 1.6;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: 2px solid #000;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.btn-primary {
+    background: #000;
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: #000;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.btn-primary:hover {
+    background: #000;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #000;
+    color: white;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .reminder-result-wrapper {
+        padding: 1rem;
+    }
+    
+    .reminder-result-container {
+        padding: 2rem;
+    }
+    
+    .icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .result-message h2 {
+        font-size: 1.5rem;
+    }
+
+    .booking-summary {
+        padding: 1.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .reminder-result-container {
+        padding: 1.5rem;
+    }
+    
+    .icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .result-message h2 {
+        font-size: 1.3rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        text-align: left;
+    }
+
+    .value {
+        width: 100%;
+    }
+} 

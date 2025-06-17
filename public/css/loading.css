@@ -8,9 +8,9 @@ body {
 
 .loading-wrapper {
     min-height: 100vh;
-    padding-top: 75px;
-    background: #ffffff;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     position: relative;
+    padding: 2rem 0;
 }
 
 .loading-container {
@@ -531,7 +531,7 @@ body {
 
 @media (max-width: 480px) {
     .loading-wrapper {
-        padding-top: 75px;
+        padding: 1rem 0;
     }
 
     .loading-content,

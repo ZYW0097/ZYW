@@ -1,213 +1,78 @@
-<div class="reminder-result-container">
-    <div class="result-card">
-        <div class="result-icon">
-            <% if (success) { %>
-                <% if (type === 'confirm') { %>
-                    <div class="icon success-icon">✓</div>
-                <% } else { %>
-                    <div class="icon cancel-icon">✗</div>
-                <% } %>
-            <% } else { %>
-                <div class="icon error-icon">!</div>
-            <% } %>
-        </div>
-        
-        <div class="result-message">
-            <h2><%= message %></h2>
-        </div>
-        
-        <% if (success && bookingInfo) { %>
-            <div class="booking-summary">
-                <h3>訂位資訊</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="label">訂位編號：</span>
-                        <span class="value booking-id"><%= bookingInfo.customBookingId %></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">用餐日期：</span>
-                        <span class="value"><%= bookingInfo.date %></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">用餐時間：</span>
-                        <span class="value"><%= bookingInfo.time %></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">用餐人數：</span>
-                        <span class="value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</span>
-                    </div>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂位確認 - DINE✦</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/reminder-result.css">
+</head>
+<body>
+    <div class="reminder-result-wrapper">
+        <div class="reminder-result-container">
+            <div class="result-icon">
+                <% if (success) { %>
                     <% if (type === 'confirm') { %>
-                        <div class="info-item">
-                            <span class="label">狀態：</span>
-                            <span class="value status-confirmed">已確認</span>
-                        </div>
-                    <% } else if (type === 'cancel') { %>
-                        <div class="info-item">
-                            <span class="label">狀態：</span>
-                            <span class="value status-cancelled">已取消</span>
-                        </div>
+                        <div class="icon success-icon">✓</div>
+                    <% } else { %>
+                        <div class="icon cancel-icon">✗</div>
                     <% } %>
-                </div>
+                <% } else { %>
+                    <div class="icon error-icon">!</div>
+                <% } %>
             </div>
-        <% } %>
-        
-        <div class="result-actions">
-            <% if (type === 'confirm' && success) { %>
-                <p class="note">我們期待您的光臨！如有任何需要協助的地方，請隨時聯絡我們。</p>
-            <% } else if (type === 'cancel' && success) { %>
-                <p class="note">感謝您提前告知。歡迎您日後再次預訂我們的餐廳。</p>
+            
+            <div class="result-message">
+                <h2><%= message %></h2>
+            </div>
+            
+            <% if (success && bookingInfo) { %>
+                <div class="booking-summary">
+                    <h3>訂位資訊</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">訂位編號：</span>
+                            <span class="value booking-id"><%= bookingInfo.customBookingId %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">用餐日期：</span>
+                            <span class="value"><%= bookingInfo.date %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">用餐時間：</span>
+                            <span class="value"><%= bookingInfo.time %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">用餐人數：</span>
+                            <span class="value"><%= bookingInfo.adults %>大 <%= bookingInfo.children %>小</span>
+                        </div>
+                        <% if (type === 'confirm') { %>
+                            <div class="info-item">
+                                <span class="label">狀態：</span>
+                                <span class="value status-confirmed">已確認</span>
+                            </div>
+                        <% } else if (type === 'cancel') { %>
+                            <div class="info-item">
+                                <span class="label">狀態：</span>
+                                <span class="value status-cancelled">已取消</span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
             <% } %>
+            
+            <div class="result-actions">
+                <% if (type === 'confirm' && success) { %>
+                    <p class="note">我們期待您的光臨！如有任何需要協助的地方，請隨時聯絡我們。</p>
+                <% } else if (type === 'cancel' && success) { %>
+                    <p class="note">感謝您提前告知。歡迎您日後再次預訂我們的餐廳。</p>
+                <% } else if (!success) { %>
+                    <div class="action-buttons">
+                        <a href="/" class="btn btn-secondary">返回首頁</a>
+                        <a href="javascript:history.back()" class="btn btn-primary">重新嘗試</a>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </div>
-</div>
-
-<style>
-.reminder-result-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 2rem;
-}
-
-.result-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    padding: 3rem;
-    text-align: center;
-    max-width: 500px;
-    width: 100%;
-}
-
-.result-icon {
-    margin-bottom: 2rem;
-}
-
-.icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: white;
-}
-
-.success-icon {
-    background: #28a745;
-}
-
-.cancel-icon {
-    background: #dc3545;
-}
-
-.error-icon {
-    background: #ffc107;
-    color: #333;
-}
-
-.result-message h2 {
-    color: #333;
-    margin-bottom: 2rem;
-    font-size: 1.5rem;
-    line-height: 1.4;
-}
-
-.booking-summary {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 2rem;
-    margin: 2rem 0;
-    text-align: left;
-}
-
-.booking-summary h3 {
-    color: #333;
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.info-grid {
-    display: grid;
-    gap: 1rem;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.label {
-    font-weight: 600;
-    color: #555;
-}
-
-.value {
-    color: #333;
-}
-
-.booking-id {
-    background: #333;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-}
-
-.status-confirmed {
-    color: #28a745;
-    font-weight: bold;
-}
-
-.status-cancelled {
-    color: #dc3545;
-    font-weight: bold;
-}
-
-.result-actions {
-    margin-top: 2rem;
-}
-
-.note {
-    color: #666;
-    line-height: 1.6;
-    font-style: italic;
-}
-
-@media (max-width: 768px) {
-    .reminder-result-container {
-        padding: 1rem;
-    }
-    
-    .result-card {
-        padding: 2rem;
-    }
-    
-    .icon {
-        width: 60px;
-        height: 60px;
-        font-size: 2rem;
-    }
-    
-    .result-message h2 {
-        font-size: 1.3rem;
-    }
-    
-    .booking-summary {
-        padding: 1.5rem;
-    }
-}
-</style> 
+</body>
+</html> 
