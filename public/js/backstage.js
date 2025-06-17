@@ -344,3 +344,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// 臨時函數：修復時段數據
+window.fixTimeSlots = async function() {
+    if (!confirm('確定要修復時段數據嗎？這將清理格式錯誤的時段。')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/fix-timeslots/${storeSlug}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(result.message);
+            // 重新載入頁面以顯示修復後的數據
+            window.location.reload();
+        } else {
+            alert(result.error || '修復失敗，請重試');
+        }
+    } catch (error) {
+        console.error('❌ 修復錯誤:', error);
+        alert('發生網路錯誤，請重試');
+    }
+};

@@ -98,6 +98,9 @@ class SetupManager {
                     this.currentStep = 4; // 直接到步驟4 (集點卡設定)
                 } else if (this.selectedFeatures.booking && this.selectedFeatures.points) {
                     this.currentStep = 3; // 先到訂位設定
+                } else {
+                    // 如果沒有選擇任何功能，直接跳到密碼設定
+                    this.currentStep = 5;
                 }
             } else if (this.currentStep === 3 && this.selectedFeatures.booking && this.selectedFeatures.points) {
                 this.currentStep = 4; // 從訂位設定到集點卡設定
@@ -119,6 +122,9 @@ class SetupManager {
                     this.currentStep = 3; // 回到訂位設定
                 } else if (this.selectedFeatures.points) {
                     this.currentStep = 4; // 回到集點卡設定
+                } else {
+                    // 如果沒有選擇任何功能，直接回到功能選擇
+                    this.currentStep = 2;
                 }
             } else if (this.currentStep === 4 && this.selectedFeatures.booking && this.selectedFeatures.points) {
                 this.currentStep = 3; // 從集點卡回到訂位
@@ -136,6 +142,8 @@ class SetupManager {
     }
 
     updateStepDisplay() {
+        console.log('updateStepDisplay called, currentStep:', this.currentStep);
+        
         // 隱藏所有步驟
         document.querySelectorAll('.form-step').forEach(step => {
             step.classList.remove('active');
@@ -172,13 +180,23 @@ class SetupManager {
                 break;
         }
 
+        console.log('Showing step:', stepToShow, 'Title:', stepTitle);
+
         if (stepToShow) {
             const stepElement = document.getElementById(stepToShow);
-            if (stepElement) stepElement.classList.add('active');
+            if (stepElement) {
+                stepElement.classList.add('active');
+                console.log('Successfully activated step element:', stepToShow);
+            } else {
+                console.error('Step element not found:', stepToShow);
+            }
         }
 
         const titleElement = document.getElementById('step-title');
-        if (titleElement) titleElement.textContent = stepTitle;
+        if (titleElement) {
+            titleElement.textContent = stepTitle;
+            console.log('Updated step title to:', stepTitle);
+        }
 
         // 更新步驟導航
         this.updateStepNavigation();
@@ -304,9 +322,16 @@ class SetupManager {
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
         
-        // 計算實際的最後一步
-        const visibleSteps = this.getVisibleSteps();
-        const lastStep = Math.max(...visibleSteps);
+        // 計算實際的最後一步 - 步驟6是完成頁面
+        const lastStep = 6;
+
+        console.log('updateButtons called:', {
+            currentStep: this.currentStep,
+            lastStep: lastStep,
+            prevBtn: !!prevBtn,
+            nextBtn: !!nextBtn,
+            submitBtn: !!submitBtn
+        });
 
         if (prevBtn) {
             prevBtn.style.display = this.currentStep > 1 ? 'inline-flex' : 'none';
@@ -314,14 +339,16 @@ class SetupManager {
 
         if (nextBtn && submitBtn) {
             if (this.currentStep === lastStep) {
-                // 在最後一步，隱藏下一步按鈕，顯示建立系統按鈕
+                // 在最後一步（完成頁面），隱藏下一步按鈕，顯示建立系統按鈕
                 nextBtn.style.display = 'none';
                 submitBtn.style.display = 'inline-flex';
+                console.log('Showing submit button (step 6)');
             } else {
                 // 在其他步驟，顯示下一步按鈕，隱藏建立系統按鈕
                 nextBtn.style.display = 'inline-flex';
                 nextBtn.textContent = '下一步 →';
                 submitBtn.style.display = 'none';
+                console.log('Showing next button (step ' + this.currentStep + ')');
             }
         }
     }

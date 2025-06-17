@@ -303,18 +303,25 @@ router.post('/api/setup', upload.fields([
         let parsedTimeSlots = [];
         let parsedDiningRules = [];
         
+        console.log('Raw timeSlots received:', timeSlots, 'Type:', typeof timeSlots);
+        
         try {
             if (Array.isArray(timeSlots)) {
                 parsedTimeSlots = timeSlots;
+                console.log('timeSlots is array:', parsedTimeSlots);
             } else if (typeof timeSlots === 'string' && timeSlots.trim()) {
                 parsedTimeSlots = JSON.parse(timeSlots);
+                console.log('timeSlots parsed from string:', parsedTimeSlots);
             } else {
                 parsedTimeSlots = [];
+                console.log('timeSlots defaulted to empty array');
             }
         } catch (error) {
             console.error('Time slots JSON parse error:', error, 'Raw data:', timeSlots);
             parsedTimeSlots = Array.isArray(timeSlots) ? timeSlots : [];
         }
+        
+        console.log('Final parsedTimeSlots:', parsedTimeSlots);
         
         try {
             if (Array.isArray(diningRules)) {
@@ -335,7 +342,11 @@ router.post('/api/setup', upload.fields([
                 const timeSettingsSchema = require('../models/TimeSettings');
                 const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
                 
-                const timeSettingsData = parsedTimeSlots.map(time => ({ time, available: true }));
+                const timeSettingsData = parsedTimeSlots.map(time => {
+                    console.log('Creating time setting for:', time, 'Type:', typeof time);
+                    return { time, available: true };
+                });
+                console.log('timeSettingsData to insert:', timeSettingsData);
                 await TimeSettings.insertMany(timeSettingsData);
             } catch (error) {
                 console.error('❌ 時段設定失敗:', error);
@@ -669,6 +680,8 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         const { storeSlug } = req.params;
         const { timeSlots } = req.body;
 
+        console.log('Update timeSlots received:', timeSlots, 'Type:', typeof timeSlots);
+
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
@@ -699,8 +712,13 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
 
             // 排序時段
             const sortedTimeSlots = sortTimeSlots([...timeSlots]);
+            console.log('Sorted timeSlots:', sortedTimeSlots);
             
-            const timeSettingsData = sortedTimeSlots.map(time => ({ time, available: true }));
+            const timeSettingsData = sortedTimeSlots.map(time => {
+                console.log('Creating update time setting for:', time, 'Type:', typeof time);
+                return { time, available: true };
+            });
+            console.log('Update timeSettingsData to insert:', timeSettingsData);
             await TimeSettings.insertMany(timeSettingsData);
         }
 
@@ -768,6 +786,61 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
         res.json({ timeSlots: sortedTimeSlots });
     } catch (error) {
         console.error('Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 臨時端點：清理錯誤的時段數據
+router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        const bookingDB = getClientDb(storeSlug, 'BDB');
+        const timeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
+        
+        // 獲取所有時段數據
+        const allTimeSlots = await TimeSettings.find({});
+        console.log('Found timeSlots to fix:', allTimeSlots);
+        
+        let fixedCount = 0;
+        
+        for (const slot of allTimeSlots) {
+            let cleanTime = slot.time;
+            
+            // 檢查是否是錯誤的格式
+            if (typeof cleanTime === 'string' && (cleanTime.startsWith('[') || cleanTime.startsWith('"'))) {
+                try {
+                    // 嘗試解析錯誤的JSON格式
+                    const parsed = JSON.parse(cleanTime);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        cleanTime = parsed[0]; // 取第一個元素
+                    } else if (typeof parsed === 'string') {
+                        cleanTime = parsed;
+                    }
+                    
+                    // 進一步清理，移除引號
+                    cleanTime = cleanTime.replace(/^["']|["']$/g, '');
+                    
+                    // 驗證時間格式
+                    if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(cleanTime)) {
+                        await TimeSettings.findByIdAndUpdate(slot._id, { time: cleanTime });
+                        console.log(`Fixed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
+                        fixedCount++;
+                    }
+                } catch (error) {
+                    console.log(`Could not parse slot ${slot._id}: ${slot.time}`);
+                }
+            }
+        }
+        
+        res.json({ 
+            success: true, 
+            message: `修復了 ${fixedCount} 個時段數據`,
+            fixedCount 
+        });
+    } catch (error) {
+        console.error('❌ 時段數據修復失敗:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
