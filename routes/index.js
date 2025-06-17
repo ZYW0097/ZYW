@@ -316,12 +316,34 @@ router.post('/api/setup', upload.fields([
                 parsedTimeSlots = [];
                 console.log('timeSlots defaulted to empty array');
             }
+            
+            // 額外清理：確保每個時段都是正確的字符串格式
+            parsedTimeSlots = parsedTimeSlots.map(time => {
+                let cleanTime = time;
+                
+                // 如果是數組，取第一個元素
+                if (Array.isArray(cleanTime)) {
+                    cleanTime = cleanTime[0];
+                }
+                
+                // 確保是字符串並清理
+                cleanTime = cleanTime.toString().trim();
+                
+                // 移除可能的引號
+                cleanTime = cleanTime.replace(/^["']|["']$/g, '');
+                
+                return cleanTime;
+            }).filter(time => {
+                // 只保留有效的時間格式
+                return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
+            });
+            
+            console.log('Cleaned timeSlots:', parsedTimeSlots);
+            
         } catch (error) {
             console.error('Time slots JSON parse error:', error, 'Raw data:', timeSlots);
             parsedTimeSlots = Array.isArray(timeSlots) ? timeSlots : [];
         }
-        
-        console.log('Final parsedTimeSlots:', parsedTimeSlots);
         
         try {
             if (Array.isArray(diningRules)) {
@@ -691,6 +713,29 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         
         // 插入新的時段設定
         if (timeSlots && timeSlots.length > 0) {
+            // 清理和驗證時段數據
+            const cleanedTimeSlots = timeSlots.map(time => {
+                let cleanTime = time;
+                
+                // 如果是數組，取第一個元素
+                if (Array.isArray(cleanTime)) {
+                    cleanTime = cleanTime[0];
+                }
+                
+                // 確保是字符串並清理
+                cleanTime = cleanTime.toString().trim();
+                
+                // 移除可能的引號和JSON格式
+                cleanTime = cleanTime.replace(/^["'\[]|["'\]]$/g, '');
+                
+                return cleanTime;
+            }).filter(time => {
+                // 只保留有效的時間格式
+                return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
+            });
+            
+            console.log('Cleaned timeSlots for update:', cleanedTimeSlots);
+            
             // 時間排序函數
             const sortTimeSlots = (slots) => {
                 return slots.sort((a, b) => {
@@ -711,7 +756,7 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
             };
 
             // 排序時段
-            const sortedTimeSlots = sortTimeSlots([...timeSlots]);
+            const sortedTimeSlots = sortTimeSlots([...cleanedTimeSlots]);
             console.log('Sorted timeSlots:', sortedTimeSlots);
             
             const timeSettingsData = sortedTimeSlots.map(time => {
@@ -801,46 +846,91 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
         
         // 獲取所有時段數據
         const allTimeSlots = await TimeSettings.find({});
-        console.log('Found timeSlots to fix:', allTimeSlots);
+        console.log('Found timeSlots to fix:', allTimeSlots.map(s => ({ id: s._id, time: s.time })));
         
         let fixedCount = 0;
+        let invalidCount = 0;
         
         for (const slot of allTimeSlots) {
             let cleanTime = slot.time;
+            console.log('Processing slot:', slot._id, 'Original time:', cleanTime, 'Type:', typeof cleanTime);
             
-            // 檢查是否是錯誤的格式
-            if (typeof cleanTime === 'string' && (cleanTime.startsWith('[') || cleanTime.startsWith('"'))) {
+            // 如果time字段本身就是對象或數組，直接處理
+            if (Array.isArray(cleanTime)) {
+                if (cleanTime.length > 0) {
+                    cleanTime = cleanTime[0].toString();
+                } else {
+                    console.log(`Empty array for slot ${slot._id}, deleting...`);
+                    await TimeSettings.findByIdAndDelete(slot._id);
+                    invalidCount++;
+                    continue;
+                }
+            }
+            
+            // 確保是字符串
+            cleanTime = cleanTime.toString();
+            
+            // 檢查是否是錯誤的JSON格式字符串
+            if (cleanTime.startsWith('[') || cleanTime.startsWith('"') || cleanTime.includes('","')) {
                 try {
                     // 嘗試解析錯誤的JSON格式
-                    const parsed = JSON.parse(cleanTime);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        cleanTime = parsed[0]; // 取第一個元素
-                    } else if (typeof parsed === 'string') {
-                        cleanTime = parsed;
+                    let parsed = cleanTime;
+                    
+                    // 如果是數組格式的字符串，如 ["23:00","10:00"]
+                    if (cleanTime.startsWith('[') && cleanTime.endsWith(']')) {
+                        parsed = JSON.parse(cleanTime);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            cleanTime = parsed[0].toString(); // 取第一個元素
+                        }
+                    }
+                    // 如果是被引號包圍的字符串，如 "23:00"
+                    else if (cleanTime.startsWith('"') && cleanTime.endsWith('"')) {
+                        cleanTime = cleanTime.slice(1, -1); // 移除首尾引號
                     }
                     
-                    // 進一步清理，移除引號
-                    cleanTime = cleanTime.replace(/^["']|["']$/g, '');
-                    
-                    // 驗證時間格式
-                    if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(cleanTime)) {
-                        await TimeSettings.findByIdAndUpdate(slot._id, { time: cleanTime });
-                        console.log(`Fixed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
-                        fixedCount++;
-                    }
+                    console.log(`Parsed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
                 } catch (error) {
-                    console.log(`Could not parse slot ${slot._id}: ${slot.time}`);
+                    console.log(`Could not parse slot ${slot._id}: ${cleanTime}, trying manual cleanup...`);
+                    
+                    // 手動清理格式
+                    cleanTime = cleanTime
+                        .replace(/^\["|"\]$/g, '') // 移除 [" 和 "]
+                        .replace(/^\["|\"\]$/g, '') // 移除 [" 和 "]
+                        .replace(/^"|"$/g, '') // 移除首尾引號
+                        .replace(/","/g, '') // 移除 "," 分隔符，只保留第一個時段
+                        .split('","')[0] // 如果有多個時段用 "," 分隔，只取第一個
+                        .split(',')[0] // 如果有多個時段用 , 分隔，只取第一個
+                        .trim();
                 }
+            }
+            
+            // 驗證清理後的時間格式
+            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (timeRegex.test(cleanTime)) {
+                // 只有在時間確實有變化時才更新
+                if (cleanTime !== slot.time) {
+                    await TimeSettings.findByIdAndUpdate(slot._id, { time: cleanTime });
+                    console.log(`✅ Fixed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
+                    fixedCount++;
+                } else {
+                    console.log(`✓ Slot ${slot._id} already correct: "${cleanTime}"`);
+                }
+            } else {
+                console.log(`❌ Invalid time format for slot ${slot._id}: "${cleanTime}", deleting...`);
+                await TimeSettings.findByIdAndDelete(slot._id);
+                invalidCount++;
             }
         }
         
+        console.log(`Fix completed: ${fixedCount} fixed, ${invalidCount} deleted`);
         res.json({ 
             success: true, 
-            message: `修復了 ${fixedCount} 個時段數據`,
-            fixedCount 
+            message: `時段修復完成：修復了 ${fixedCount} 個時段，刪除了 ${invalidCount} 個無效時段`,
+            fixedCount,
+            invalidCount
         });
     } catch (error) {
-        console.error('❌ 時段數據修復失敗:', error);
+        console.error('❌ 修復時段數據失敗:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
