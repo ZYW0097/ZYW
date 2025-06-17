@@ -188,17 +188,29 @@ router.post('/api/setup', upload.fields([
             let parsedRewardPoints = [];
             
             try {
-                parsedRewardNames = (typeof rewardNames === 'string' && rewardNames.trim()) ? JSON.parse(rewardNames) : (rewardNames || []);
+                if (Array.isArray(rewardNames)) {
+                    parsedRewardNames = rewardNames;
+                } else if (typeof rewardNames === 'string' && rewardNames.trim()) {
+                    parsedRewardNames = JSON.parse(rewardNames);
+                } else {
+                    parsedRewardNames = [];
+                }
             } catch (error) {
                 console.error('Reward names JSON parse error:', error, 'Raw data:', rewardNames);
-                parsedRewardNames = [];
+                parsedRewardNames = Array.isArray(rewardNames) ? rewardNames : [];
             }
             
             try {
-                parsedRewardPoints = (typeof rewardPoints === 'string' && rewardPoints.trim()) ? JSON.parse(rewardPoints) : (rewardPoints || []);
+                if (Array.isArray(rewardPoints)) {
+                    parsedRewardPoints = rewardPoints;
+                } else if (typeof rewardPoints === 'string' && rewardPoints.trim()) {
+                    parsedRewardPoints = JSON.parse(rewardPoints);
+                } else {
+                    parsedRewardPoints = [];
+                }
             } catch (error) {
                 console.error('Reward points JSON parse error:', error, 'Raw data:', rewardPoints);
-                parsedRewardPoints = [];
+                parsedRewardPoints = Array.isArray(rewardPoints) ? rewardPoints : [];
             }
                     
                     if (parsedRewardNames.length > 0 && parsedRewardPoints.length > 0) {
@@ -236,10 +248,16 @@ router.post('/api/setup', upload.fields([
                 if (pointRules) {
                     let parsedPointRules = [];
             try {
-                parsedPointRules = (typeof pointRules === 'string' && pointRules.trim()) ? JSON.parse(pointRules) : (pointRules || []);
+                if (Array.isArray(pointRules)) {
+                    parsedPointRules = pointRules;
+                } else if (typeof pointRules === 'string' && pointRules.trim()) {
+                    parsedPointRules = JSON.parse(pointRules);
+                } else {
+                    parsedPointRules = [];
+                }
             } catch (error) {
                 console.error('Point rules JSON parse error:', error, 'Raw data:', pointRules);
-                parsedPointRules = [];
+                parsedPointRules = Array.isArray(pointRules) ? pointRules : [];
             }
                     
                     if (parsedPointRules.length > 0) {
@@ -286,17 +304,29 @@ router.post('/api/setup', upload.fields([
         let parsedDiningRules = [];
         
         try {
-            parsedTimeSlots = timeSlots && timeSlots.trim() ? JSON.parse(timeSlots) : [];
+            if (Array.isArray(timeSlots)) {
+                parsedTimeSlots = timeSlots;
+            } else if (typeof timeSlots === 'string' && timeSlots.trim()) {
+                parsedTimeSlots = JSON.parse(timeSlots);
+            } else {
+                parsedTimeSlots = [];
+            }
         } catch (error) {
             console.error('Time slots JSON parse error:', error, 'Raw data:', timeSlots);
-            parsedTimeSlots = [];
+            parsedTimeSlots = Array.isArray(timeSlots) ? timeSlots : [];
         }
         
         try {
-            parsedDiningRules = diningRules && diningRules.trim() ? JSON.parse(diningRules) : [];
+            if (Array.isArray(diningRules)) {
+                parsedDiningRules = diningRules;
+            } else if (typeof diningRules === 'string' && diningRules.trim()) {
+                parsedDiningRules = JSON.parse(diningRules);
+            } else {
+                parsedDiningRules = [];
+            }
         } catch (error) {
             console.error('Dining rules JSON parse error:', error, 'Raw data:', diningRules);
-            parsedDiningRules = [];
+            parsedDiningRules = Array.isArray(diningRules) ? diningRules : [];
         }
 
         // 在 clientBDB 中創建時段設定

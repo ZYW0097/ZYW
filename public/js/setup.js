@@ -193,14 +193,21 @@ class SetupManager {
         if (this.selectedFeatures.booking && this.selectedFeatures.points) {
             steps.push({ number: '2-1', current: 3 }); // 訂位設定
             steps.push({ number: '2-2', current: 4 }); // 集點卡設定
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
         } else if (this.selectedFeatures.booking) {
             steps.push({ number: '2-1', current: 3 }); // 訂位設定
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
         } else if (this.selectedFeatures.points) {
             steps.push({ number: '2-1', current: 4 }); // 集點卡設定
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
+        } else {
+            // 沒有選擇任何功能時仍顯示後續步驟
+            steps.push({ number: '3', current: 5 }); // 密碼設定
+            steps.push({ number: '4', current: 6 }); // 完成
         }
-
-        steps.push({ number: '3', current: 5 }); // 密碼設定
-        steps.push({ number: '4', current: 6 }); // 完成
 
         return steps;
     }
@@ -273,6 +280,7 @@ class SetupManager {
                 const feature = card.dataset.feature;
                 
                 if (feature === 'booking') {
+                    // 訂位系統永遠保持可選狀態，不會變成灰色
                     this.selectedFeatures.booking = !this.selectedFeatures.booking;
                 } else if (feature === 'points') {
                     this.selectedFeatures.points = !this.selectedFeatures.points;
