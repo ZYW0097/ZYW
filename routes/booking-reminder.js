@@ -24,7 +24,8 @@ router.get('/confirm/:token', async (req, res) => {
                 success: false,
                 message: '確認連結已過期',
                 type: 'confirm',
-                bookingInfo: null
+                bookingInfo: null,
+                layout: false
             });
         }
         
@@ -39,7 +40,8 @@ router.get('/confirm/:token', async (req, res) => {
                 success: false,
                 message: '找不到訂位記錄',
                 type: 'confirm',
-                bookingInfo: null
+                bookingInfo: null,
+                layout: false
             });
         }
         
@@ -48,7 +50,8 @@ router.get('/confirm/:token', async (req, res) => {
                 success: false,
                 message: '此訂位已經被取消',
                 type: 'confirm',
-                bookingInfo: null
+                bookingInfo: null,
+                layout: false
             });
         }
         
@@ -58,7 +61,8 @@ router.get('/confirm/:token', async (req, res) => {
                 success: true,
                 message: '您已經確認過此訂位',
                 bookingInfo: reservation,
-                type: 'confirm'
+                type: 'confirm',
+                layout: false
             });
         }
         
@@ -75,7 +79,8 @@ router.get('/confirm/:token', async (req, res) => {
             success: true,
             message: '感謝您的確認！我們期待您的光臨',
             bookingInfo: reservation,
-            type: 'confirm'
+            type: 'confirm',
+            layout: false
         });
         
     } catch (error) {
@@ -84,7 +89,8 @@ router.get('/confirm/:token', async (req, res) => {
             success: false,
             message: '確認過程發生錯誤，請稍後再試',
             type: 'confirm',
-            bookingInfo: null
+            bookingInfo: null,
+            layout: false
         });
     }
 });
@@ -107,7 +113,8 @@ router.get('/cancel/:token', async (req, res) => {
                 success: false,
                 message: '取消連結已過期',
                 type: 'cancel',
-                bookingInfo: null
+                bookingInfo: null,
+                layout: false
             });
         }
         
@@ -122,7 +129,8 @@ router.get('/cancel/:token', async (req, res) => {
                 success: false,
                 message: '找不到訂位記錄',
                 type: 'cancel',
-                bookingInfo: null
+                bookingInfo: null,
+                layout: false
             });
         }
         
@@ -131,7 +139,8 @@ router.get('/cancel/:token', async (req, res) => {
                 success: true,
                 message: '此訂位已經被取消',
                 type: 'cancel',
-                bookingInfo: reservation
+                bookingInfo: reservation,
+                layout: false
             });
         }
         
@@ -188,7 +197,8 @@ router.get('/cancel/:token', async (req, res) => {
             success: true,
             message: '訂位已成功取消，我們已發送確認郵件給您',
             bookingInfo: updatedReservation,
-            type: 'cancel'
+            type: 'cancel',
+            layout: false
         });
         
     } catch (error) {
@@ -197,7 +207,8 @@ router.get('/cancel/:token', async (req, res) => {
             success: false,
             message: '取消過程發生錯誤，請稍後再試',
             type: 'cancel',
-            bookingInfo: null
+            bookingInfo: null,
+            layout: false
         });
     }
 });

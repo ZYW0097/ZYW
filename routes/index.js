@@ -52,12 +52,12 @@ router.get('/', (req, res) => {
 
 // 設置頁面
 router.get('/setup', (req, res) => {
-    res.render('setup');
+    res.render('setup', { layout: false });
 });
 
 // 載入頁面
 router.get('/loading', (req, res) => {
-    res.render('loading', { slugname: req.query.slugname });
+    res.render('loading', { slugname: req.query.slugname, layout: false });
 });
 
 
