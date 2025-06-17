@@ -10,16 +10,6 @@ main {
     transform: translateY(-5px);
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
 .hero-section {
     min-height: 100vh;
     display: flex;
@@ -49,25 +39,6 @@ main {
     font-size: 1.5rem;
     color: #666;
     margin-bottom: 2rem;
-}
-
-.cta-button {
-    display: inline-block;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    background: var(--primary-color);
-    border-radius: 30px;
-    text-decoration: none;
-    transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
-}
-
-.cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
-    background: var(--secondary-color);
 }
 
 @keyframes fadeIn {

@@ -8,14 +8,22 @@ class SetupManager {
     }
 
     init() {
-        // 初始化時確保功能選擇狀態正確
+        console.log('SetupManager initialized');
+        
+        // 初始化時確保功能選擇狀態正確 - 預設訂位系統開啟
         this.selectedFeatures = { booking: true, points: false };
-        this.updateFeatureSelection();
-        this.updateStepDisplay();
+        
+        // 按順序初始化
         this.setupFeatureSelection();
-        this.setupPasswordValidation();
+        this.setupPasswordValidation(); 
         this.updateUrlPreview();
         this.setupEventListeners();
+        
+        // 最後更新顯示狀態
+        this.updateFeatureSelection();
+        this.updateStepDisplay();
+        
+        console.log('Initial state:', this.selectedFeatures);
     }
 
     setupEventListeners() {
@@ -171,32 +179,43 @@ class SetupManager {
     }
 
     updateStepNavigation() {
+        console.log('updateStepNavigation called');
+        
         const stepNavs = document.querySelectorAll('.step-item');
+        const stepLines = document.querySelectorAll('.step-line');
+        
+        console.log('Found step navs:', stepNavs.length);
+        console.log('Found step lines:', stepLines.length);
         
         // 重置所有步驟
-        stepNavs.forEach(nav => {
+        stepNavs.forEach((nav, index) => {
             nav.classList.remove('active', 'completed', 'hidden');
+            console.log(`Reset step nav ${index}`);
         });
 
         // 根據選擇的功能決定顯示哪些步驟
         const steps = this.getVisibleSteps();
+        console.log('Steps to display:', steps.length);
         
         // 隱藏多餘的步驟導航元素
         stepNavs.forEach((nav, index) => {
             if (index >= steps.length) {
                 nav.classList.add('hidden');
+                console.log(`Hiding step nav ${index}`);
             } else {
                 nav.classList.remove('hidden');
+                console.log(`Showing step nav ${index}`);
             }
         });
         
         // 同時隱藏多餘的分隔線
-        const stepLines = document.querySelectorAll('.step-line');
         stepLines.forEach((line, index) => {
             if (index >= steps.length - 1) {
                 line.style.display = 'none';
+                console.log(`Hiding step line ${index}`);
             } else {
                 line.style.display = 'block';
+                console.log(`Showing step line ${index}`);
             }
         });
         
@@ -207,20 +226,31 @@ class SetupManager {
                 const circle = nav.querySelector('.step-circle');
                 if (circle) {
                     circle.textContent = step.number;
+                    console.log(`Set step ${index} number to ${step.number}`);
                 }
                 
                 if (step.current < this.currentStep) {
                     nav.classList.add('completed');
+                    console.log(`Step ${index} marked as completed`);
                 } else if (step.current === this.currentStep) {
                     nav.classList.add('active');
+                    console.log(`Step ${index} marked as active`);
                 }
             }
         });
+        
+        console.log('updateStepNavigation completed');
     }
 
     getVisibleSteps() {
-        // 如果還在步驟1或剛進入步驟2但未選擇功能，顯示預設步驟
-        if (this.currentStep <= 2 && !this.selectedFeatures.booking && !this.selectedFeatures.points) {
+        console.log('getVisibleSteps called:', {
+            currentStep: this.currentStep,
+            booking: this.selectedFeatures.booking,
+            points: this.selectedFeatures.points
+        });
+
+        // 步驟一：未進入步驟二或尚未選擇功能 -> 1 > 2 > 3 > 4
+        if (this.currentStep === 1) {
             return [
                 { number: '1', current: 1 }, // 基本資料
                 { number: '2', current: 2 }, // 功能選擇
@@ -229,29 +259,30 @@ class SetupManager {
             ];
         }
 
-        // 步驟2以後，根據功能選擇顯示步驟
+        // 步驟二以後：根據功能選擇決定步驟顯示
         const steps = [
             { number: '1', current: 1 }, // 基本資料
             { number: '2', current: 2 }  // 功能選擇
         ];
 
-        if (this.selectedFeatures.booking && this.selectedFeatures.points) {
+        // 判斷功能選擇
+        const hasBooking = this.selectedFeatures.booking;
+        const hasPoints = this.selectedFeatures.points;
+
+        if (hasBooking && hasPoints) {
             // 兩個都選擇：1 > 2 > 2-1 > 2-2 > 3 > 4
             steps.push({ number: '2-1', current: 3 }); // 訂位設定
             steps.push({ number: '2-2', current: 4 }); // 集點卡設定
-            steps.push({ number: '3', current: 5 }); // 密碼設定
-            steps.push({ number: '4', current: 6 }); // 完成
-        } else if (this.selectedFeatures.booking || this.selectedFeatures.points) {
+        } else if (hasBooking || hasPoints) {
             // 只選擇一個：1 > 2 > 2-1 > 3 > 4
-            steps.push({ number: '2-1', current: this.selectedFeatures.booking ? 3 : 4 }); // 設定步驟
-            steps.push({ number: '3', current: 5 }); // 密碼設定
-            steps.push({ number: '4', current: 6 }); // 完成
-        } else {
-            // 在步驟2但沒選功能時，顯示預設步驟
-            steps.push({ number: '3', current: 5 }); // 密碼設定
-            steps.push({ number: '4', current: 6 }); // 完成
+            steps.push({ number: '2-1', current: hasBooking ? 3 : 4 }); // 設定步驟
         }
+        
+        // 最後總是添加密碼和完成步驟
+        steps.push({ number: '3', current: 5 }); // 密碼設定
+        steps.push({ number: '4', current: 6 }); // 完成
 
+        console.log('Generated steps:', steps);
         return steps;
     }
 
@@ -336,6 +367,8 @@ class SetupManager {
     }
 
     updateFeatureSelection() {
+        console.log('updateFeatureSelection called:', this.selectedFeatures);
+        
         const bookingCard = document.getElementById('booking-card');
         const pointsCard = document.getElementById('points-card');
 
@@ -351,6 +384,9 @@ class SetupManager {
         
         if (bookingInput) bookingInput.value = this.selectedFeatures.booking;
         if (pointsInput) pointsInput.value = this.selectedFeatures.points;
+        
+        // 立即更新步驟導航
+        this.updateStepNavigation();
     }
 
     setupPasswordValidation() {
