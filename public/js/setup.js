@@ -13,14 +13,16 @@ class SetupManager {
         // 初始化時確保功能選擇狀態正確 - 預設訂位系統開啟
         this.selectedFeatures = { booking: true, points: false };
         
-        // 按順序初始化
+        // 按順序初始化基本功能
         this.setupFeatureSelection();
         this.setupPasswordValidation(); 
         this.updateUrlPreview();
         this.setupEventListeners();
         
-        // 最後更新顯示狀態
-        this.updateFeatureSelection();
+        // 初始化UI狀態（僅更新功能選擇的視覺狀態，不調用按鈕更新）
+        this.updateFeatureSelectionUI();
+        
+        // 最後更新整體顯示狀態（包括步驟導航和按鈕）
         this.updateStepDisplay();
         
         console.log('Initial state:', this.selectedFeatures);
@@ -330,27 +332,47 @@ class SetupManager {
             lastStep: lastStep,
             prevBtn: !!prevBtn,
             nextBtn: !!nextBtn,
-            submitBtn: !!submitBtn
+            submitBtn: !!submitBtn,
+            prevBtnDisplay: prevBtn ? prevBtn.style.display : 'N/A',
+            nextBtnDisplay: nextBtn ? nextBtn.style.display : 'N/A',
+            submitBtnDisplay: submitBtn ? submitBtn.style.display : 'N/A'
         });
 
         if (prevBtn) {
-            prevBtn.style.display = this.currentStep > 1 ? 'inline-flex' : 'none';
+            if (this.currentStep > 1) {
+                prevBtn.style.setProperty('display', 'inline-flex', 'important');
+            } else {
+                prevBtn.style.setProperty('display', 'none', 'important');
+            }
         }
 
         if (nextBtn && submitBtn) {
             if (this.currentStep === lastStep) {
                 // 在最後一步（完成頁面），隱藏下一步按鈕，顯示建立系統按鈕
-                nextBtn.style.display = 'none';
-                submitBtn.style.display = 'inline-flex';
+                nextBtn.style.setProperty('display', 'none', 'important');
+                submitBtn.style.setProperty('display', 'inline-flex', 'important');
                 console.log('Showing submit button (step 6)');
             } else {
                 // 在其他步驟，顯示下一步按鈕，隱藏建立系統按鈕
-                nextBtn.style.display = 'inline-flex';
+                nextBtn.style.setProperty('display', 'inline-flex', 'important');
                 nextBtn.textContent = '下一步 →';
-                submitBtn.style.display = 'none';
+                submitBtn.style.setProperty('display', 'none', 'important');
                 console.log('Showing next button (step ' + this.currentStep + ')');
             }
         }
+
+        // 強制刷新，確保狀態正確
+        setTimeout(() => {
+            console.log('After updateButtons - final state:', {
+                currentStep: this.currentStep,
+                prevBtnDisplay: prevBtn ? window.getComputedStyle(prevBtn).display : 'N/A',
+                nextBtnDisplay: nextBtn ? window.getComputedStyle(nextBtn).display : 'N/A',
+                submitBtnDisplay: submitBtn ? window.getComputedStyle(submitBtn).display : 'N/A',
+                prevBtnStyleDisplay: prevBtn ? prevBtn.style.display : 'N/A',
+                nextBtnStyleDisplay: nextBtn ? nextBtn.style.display : 'N/A',
+                submitBtnStyleDisplay: submitBtn ? submitBtn.style.display : 'N/A'
+            });
+        }, 100);
     }
 
     validateCurrentStep() {
@@ -409,13 +431,23 @@ class SetupManager {
                 }
 
                 this.updateFeatureSelection();
-                this.updateStepNavigation(); // 更新步驟導航
+                // 功能選擇變更後，確保按鈕狀態正確
+                this.updateButtons();
             });
         });
     }
 
     updateFeatureSelection() {
         console.log('updateFeatureSelection called:', this.selectedFeatures);
+        
+        this.updateFeatureSelectionUI();
+        
+        // 立即更新步驟導航
+        this.updateStepNavigation();
+    }
+
+    updateFeatureSelectionUI() {
+        console.log('updateFeatureSelectionUI called:', this.selectedFeatures);
         
         const bookingCard = document.getElementById('booking-card');
         const pointsCard = document.getElementById('points-card');
@@ -432,9 +464,6 @@ class SetupManager {
         
         if (bookingInput) bookingInput.value = this.selectedFeatures.booking;
         if (pointsInput) pointsInput.value = this.selectedFeatures.points;
-        
-        // 立即更新步驟導航
-        this.updateStepNavigation();
     }
 
     setupPasswordValidation() {
@@ -746,4 +775,46 @@ function previousStep() {
     if (setupManager) {
         setupManager.changeStep(-1);
     }
-} 
+}
+
+// 全域調試函數
+window.debugSetup = function() {
+    if (!window.setupManager) {
+        console.log('SetupManager not initialized');
+        return;
+    }
+    
+    const manager = window.setupManager;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    console.log('=== Setup Debug Information ===');
+    console.log('Current step:', manager.currentStep);
+    console.log('Selected features:', manager.selectedFeatures);
+    console.log('Visible steps:', manager.getVisibleSteps());
+    
+    console.log('Button elements:', {
+        prevBtn: !!prevBtn,
+        nextBtn: !!nextBtn,
+        submitBtn: !!submitBtn
+    });
+    
+    console.log('Button computed styles:', {
+        prevBtn: prevBtn ? window.getComputedStyle(prevBtn).display : 'N/A',
+        nextBtn: nextBtn ? window.getComputedStyle(nextBtn).display : 'N/A',
+        submitBtn: submitBtn ? window.getComputedStyle(submitBtn).display : 'N/A'
+    });
+    
+    console.log('Button inline styles:', {
+        prevBtn: prevBtn ? prevBtn.style.display : 'N/A',
+        nextBtn: nextBtn ? nextBtn.style.display : 'N/A',
+        submitBtn: submitBtn ? submitBtn.style.display : 'N/A'
+    });
+    
+    console.log('Active form step:', document.querySelector('.form-step.active')?.id || 'None');
+    
+    // 手動觸發更新
+    console.log('Manually triggering updateButtons...');
+    manager.updateButtons();
+}; 
