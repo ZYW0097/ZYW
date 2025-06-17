@@ -32,6 +32,15 @@ class SetupManager {
             item.addEventListener('click', () => this.handleStepNavClick(index + 1));
         });
 
+        // 建立系統按鈕事件
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.submitForm();
+            });
+        }
+
         // 表單提交事件
         const form = document.getElementById('setupForm');
         if (form) {
@@ -293,18 +302,26 @@ class SetupManager {
     updateButtons() {
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // 計算實際的最後一步
+        const visibleSteps = this.getVisibleSteps();
+        const lastStep = Math.max(...visibleSteps);
 
         if (prevBtn) {
             prevBtn.style.display = this.currentStep > 1 ? 'inline-flex' : 'none';
         }
 
-        if (nextBtn) {
-            if (this.currentStep === 6) {
-                nextBtn.textContent = '創建系統';
-                nextBtn.onclick = () => this.submitForm();
+        if (nextBtn && submitBtn) {
+            if (this.currentStep === lastStep) {
+                // 在最後一步，隱藏下一步按鈕，顯示建立系統按鈕
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
             } else {
+                // 在其他步驟，顯示下一步按鈕，隱藏建立系統按鈕
+                nextBtn.style.display = 'inline-flex';
                 nextBtn.textContent = '下一步 →';
-                nextBtn.onclick = () => this.changeStep(1);
+                submitBtn.style.display = 'none';
             }
         }
     }
@@ -687,5 +704,18 @@ function addPointRule() {
 function removeItem(btn) {
     if (setupManager) {
         setupManager.removeItem(btn);
+    }
+}
+
+// 為EJS模板中的按鈕提供函數
+function nextStep() {
+    if (setupManager) {
+        setupManager.changeStep(1);
+    }
+}
+
+function previousStep() {
+    if (setupManager) {
+        setupManager.changeStep(-1);
     }
 } 
