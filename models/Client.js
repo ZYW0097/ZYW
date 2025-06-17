@@ -18,6 +18,22 @@ const clientSchema = new mongoose.Schema({
     cardBackgroundImage: {
         type: String,
         default: '/images/dine.jpg'
+    },
+    restaurantAddress: {
+        type: String,
+        default: ''
+    },
+    adminPassword: {
+        type: String,
+        default: ''
+    },
+    tutorialImage1: {
+        type: String,
+        default: ''
+    },
+    tutorialImage2: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

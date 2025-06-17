@@ -65,21 +65,50 @@ router.get('/loading', (req, res) => {
 // API路由 - 創建客戶
 router.post('/api/setup', upload.fields([
     { name: 'restaurantImage', maxCount: 1 },
-    { name: 'cardBackgroundImage', maxCount: 1 }
+    { name: 'cardBackgroundImage', maxCount: 1 },
+    { name: 'tutorialImage1', maxCount: 1 },
+    { name: 'tutorialImage2', maxCount: 1 },
+    { name: 'rewardImages[]', maxCount: 10 }
 ]), async (req, res) => {
     try {
         const {
             clientname,
             slugname,
+            restaurantAddress,
+            adminPassword,
             timeSlots,
             diningRules,
             pointsSystem,
-            bookingSystem
+            bookingSystem,
+            rewardNames,
+            rewardPoints,
+            pointRules
         } = req.body;
+
+        // 驗證必填欄位
+        if (!clientname || !slugname) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '客戶名稱和系統識別碼為必填欄位' 
+            });
+        }
+
+        // 驗證密碼格式（如果有提供）
+        if (adminPassword) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            if (!passwordRegex.test(adminPassword)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: '密碼必須包含大小寫字母、數字和特殊字元，且至少8個字元' 
+                });
+            }
+        }
 
         // 處理圖片上傳
         let restaurantImageUrl = '/images/dine.jpg';
         let cardBackgroundImageUrl = '/images/dine.jpg';
+        let tutorialImage1Url = null;
+        let tutorialImage2Url = null;
         
         if (req.files && req.files.restaurantImage) {
             restaurantImageUrl = req.files.restaurantImage[0].path;
@@ -87,6 +116,14 @@ router.post('/api/setup', upload.fields([
         
         if (req.files && req.files.cardBackgroundImage) {
             cardBackgroundImageUrl = req.files.cardBackgroundImage[0].path;
+        }
+
+        if (req.files && req.files.tutorialImage1) {
+            tutorialImage1Url = req.files.tutorialImage1[0].path;
+        }
+
+        if (req.files && req.files.tutorialImage2) {
+            tutorialImage2Url = req.files.tutorialImage2[0].path;
         }
 
         // 檢查 slugname 是否已存在
@@ -99,12 +136,20 @@ router.post('/api/setup', upload.fields([
         }
 
         // 步驟 1: 創建客戶基本資料
-        const client = await Client.create({
+        const clientData = {
             clientname,
             slugname,
             restaurantImage: restaurantImageUrl,
             cardBackgroundImage: cardBackgroundImageUrl
-        });
+        };
+
+        // 添加可選欄位
+        if (restaurantAddress) clientData.restaurantAddress = restaurantAddress;
+        if (adminPassword) clientData.adminPassword = adminPassword;
+        if (tutorialImage1Url) clientData.tutorialImage1 = tutorialImage1Url;
+        if (tutorialImage2Url) clientData.tutorialImage2 = tutorialImage2Url;
+
+        const client = await Client.create(clientData);
 
         // 步驟 2: 創建並初始化資料庫連接
         const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
@@ -136,6 +181,66 @@ router.post('/api/setup', upload.fields([
                     state: 'enable',
                     s_reward: 0
                 });
+
+                // 處理集點卡獎勵設定
+                if (rewardNames && rewardPoints) {
+                    const parsedRewardNames = typeof rewardNames === 'string' ? JSON.parse(rewardNames) : rewardNames;
+                    const parsedRewardPoints = typeof rewardPoints === 'string' ? JSON.parse(rewardPoints) : rewardPoints;
+                    
+                    if (parsedRewardNames.length > 0 && parsedRewardPoints.length > 0) {
+                        // 處理獎勵圖片
+                        const rewardImages = [];
+                        if (req.files && req.files['rewardImages[]']) {
+                            req.files['rewardImages[]'].forEach(file => {
+                                rewardImages.push(file.path);
+                            });
+                        }
+
+                        // 創建獎勵資料
+                        const rewardsData = parsedRewardNames.map((name, index) => ({
+                            name: name,
+                            points: parsedRewardPoints[index] || 0,
+                            image: rewardImages[index] || '/images/default-reward.jpg',
+                            isActive: true,
+                            order: index
+                        }));
+
+                        // 這裡需要根據您的獎勵模型來保存
+                        // 假設您有一個 Rewards 模型
+                        try {
+                            // const RewardsSchema = require('../models/points/rewards');
+                            // const Rewards = cardDB.model('Rewards', RewardsSchema);
+                            // await Rewards.insertMany(rewardsData);
+                            console.log('獎勵資料準備完成:', rewardsData);
+                        } catch (error) {
+                            console.error('❌ 獎勵設定失敗:', error);
+                        }
+                    }
+                }
+
+                // 處理集點卡規則
+                if (pointRules) {
+                    const parsedPointRules = typeof pointRules === 'string' ? JSON.parse(pointRules) : pointRules;
+                    
+                    if (parsedPointRules.length > 0) {
+                        const rulesData = parsedPointRules.map((text, index) => ({
+                            text: text,
+                            order: index,
+                            isActive: true
+                        }));
+
+                        // 這裡需要根據您的規則模型來保存
+                        // 假設您有一個 PointRules 模型
+                        try {
+                            // const PointRulesSchema = require('../models/points/rules');
+                            // const PointRules = cardDB.model('PointRules', PointRulesSchema);
+                            // await PointRules.insertMany(rulesData);
+                            console.log('集點卡規則準備完成:', rulesData);
+                        } catch (error) {
+                            console.error('❌ 集點卡規則設定失敗:', error);
+                        }
+                    }
+                }
             } catch (error) {
                 console.error('❌ 集點卡設定失敗:', error);
             }

@@ -21,7 +21,6 @@ class SystemSetup {
     }
     
     init() {
-        console.log('🚀 開始系統建立流程:', this.slug);
         this.setupErrorHandlers();
         this.startSetupProcess();
     }
@@ -121,7 +120,6 @@ class SystemSetup {
         const step = this.steps[stepIndex];
         if (!step) return false;
         
-        console.log(`📝 執行步驟 ${stepIndex + 1}/${this.totalSteps}: ${step.name}`);
         
         // 設置當前步驟為處理中
         this.setStepStatus(step.id, 'processing');
@@ -138,7 +136,6 @@ class SystemSetup {
             
             if (success) {
                 this.setStepStatus(step.id, 'completed');
-                console.log(`✅ 步驟完成: ${step.name}`);
                 return true;
             } else {
                 throw new Error(`步驟失敗: ${step.name}`);
@@ -183,11 +180,9 @@ class SystemSetup {
             const response = await fetch(`/api/check-client/${this.slug}`);
             const data = await response.json();
             
-            if (response.ok && data.exists) {
-                console.log('✅ 客戶資料檢查通過');
+            if (response.ok && data.exists) { 
                 return true;
             } else {
-                console.log('⏳ 等待客戶資料創建完成...');
                 // 重試機制：等待一段時間後再檢查
                 await this.sleep(1000);
                 return await this.checkClientCreated();
@@ -209,10 +204,8 @@ class SystemSetup {
                 const data = await response.json();
                 
                 if (response.ok && data.exists) {
-                    console.log(`✅ 資料庫 ${dbName} 檢查通過`);
                     return true;
                 } else {
-                    console.log(`⏳ 等待資料庫 ${dbName} 創建完成... (嘗試 ${retries + 1}/${maxRetries})`);
                     await this.sleep(1500);
                     retries++;
                 }
@@ -233,10 +226,8 @@ class SystemSetup {
             const data = await response.json();
             
             if (response.ok && data.configured) {
-                console.log('✅ 系統設定檢查通過');
                 return true;
             } else {
-                console.log('⏳ 等待系統設定配置完成...');
                 await this.sleep(2000);
                 return await this.checkSettingsConfigured();
             }
@@ -247,7 +238,6 @@ class SystemSetup {
     }
     
     async startSetupProcess() {
-        console.log('🔄 開始系統建立流程...');
         
         // 逐步執行每個步驟
         for (let i = 0; i < this.steps.length; i++) {
@@ -269,8 +259,6 @@ class SystemSetup {
         // 所有步驟完成
         this.updateProgress(this.totalSteps);
         this.updateMessage('系統建立完成，即將跳轉到您的專屬頁面...');
-        
-        console.log('🎉 系統建立完成！');
         
         // 等待一下然後跳轉
         setTimeout(() => {

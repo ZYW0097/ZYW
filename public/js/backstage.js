@@ -215,9 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 bookingSystem: bookingCheckbox ? bookingCheckbox.checked : true
             };
 
-            console.log('📝 提交功能設定:', formData);
-            console.log('📍 當前商家:', storeSlug);
-
             try {
                 const response = await fetch(`/${storeSlug}/api/settings/features`, {
                     method: 'POST',
@@ -228,7 +225,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const result = await response.json();
-                console.log('📨 伺服器回應:', result);
 
                 if (response.ok && result.success) {
                     alert(result.message || '功能設定已更新');
