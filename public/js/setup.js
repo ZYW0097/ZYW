@@ -452,11 +452,12 @@ class SetupManager {
 
     updateUrlPreview() {
         const slugField = document.getElementById('slugname');
-        const urlSpan = document.getElementById('urlSlugname');
+        const urlSpan = document.getElementById('backendUrlPreview');
         
         if (slugField && urlSpan) {
             slugField.addEventListener('input', (e) => {
-                urlSpan.textContent = e.target.value || '您的系統識別碼';
+                const slugValue = e.target.value || '{slugname}';
+                urlSpan.textContent = `https://zyw.onrender.com/${slugValue}/backstage-login`;
             });
         }
     }
