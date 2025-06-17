@@ -1,367 +1,233 @@
-<div class="setup-container">
-    <h1 class="setup-title">系統設置</h1>
-    
-    <!-- 錯誤訊息顯示區域 -->
-    <div id="errorMessage" class="error-message" style="display: none;"></div>
-    
-    <form id="setupForm" class="setup-form" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="clientname">客戶名稱</label>
-            <input type="text" id="clientname" name="clientname" required placeholder="請輸入客戶名稱">
-        </div>
-        
-        <div class="form-group">
-            <label for="slugname">網站名稱 (英文或數字)</label>
-            <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入網站名稱">
-        </div>
+<!-- 引用外部CSS文件 -->
+<link rel="stylesheet" href="/css/setup.css">
 
-        <!-- 圖片上傳區塊 -->
-        <div class="form-section">
-            <h3>圖片設定</h3>
-            <div class="form-group">
-                <label for="restaurantImage">餐廳圖片 (用於訂位頁面)</label>
-                <input type="file" id="restaurantImage" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
-                <img id="restaurant-preview" class="image-preview" style="display:none;">
-            </div>
-            
-            <div class="form-group">
-                <label for="cardBackgroundImage">集點卡背景圖</label>
-                <input type="file" id="cardBackgroundImage" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
-                <img id="card-preview" class="image-preview" style="display:none;">
-            </div>
-        </div>
-
-        <!-- 訂位時段設定 -->
-        <div class="form-section">
-            <h3>訂位時段設定</h3>
-            <div id="timeSlots-list">
-                <div class="timeSlot-item">
-                    <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
-                    <span class="add-btn" onclick="addTimeSlot()">➕</span>
+<div class="setup-wrapper">
+    <div class="setup-container">
+        <!-- 步驟導航 -->
+        <div class="steps-header">
+            <div class="steps-nav">
+                <div class="step-item active" id="step-nav-1">
+                    <div class="step-circle">1</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-item" id="step-nav-2">
+                    <div class="step-circle">2</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-item" id="step-nav-2a">
+                    <div class="step-circle">2A</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-item" id="step-nav-3">
+                    <div class="step-circle">3</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-item" id="step-nav-4">
+                    <div class="step-circle">4</div>
                 </div>
             </div>
+            <div class="step-title" id="step-title">基本資料設定</div>
         </div>
 
-        <!-- 用餐規則設定 -->
-        <div class="form-section">
-            <h3>用餐規則設定</h3>
-            <div id="diningRules-list">
-                <div class="rule-item">
-                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
-                    <span class="add-btn" onclick="addDiningRule()">➕</span>
+        <!-- 錯誤訊息 -->
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- 表單 -->
+        <form id="setupForm" class="form-container" enctype="multipart/form-data">
+            <!-- 步驟 1: 基本資料 -->
+            <div class="form-step active" id="step-1">
+                <div class="step-content">
+                    <h2>基本資料設定</h2>
+                    <p>請輸入您的餐廳基本資訊和教學預覽圖片</p>
+
+                    <div class="form-group">
+                        <label for="clientname">客戶名稱 <span class="required">*</span></label>
+                        <input type="text" id="clientname" name="clientname" required placeholder="請輸入客戶名稱">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slugname">系統識別碼 (僅限英文或數字) <span class="required">*</span></label>
+                        <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入系統識別碼">
+                    </div>
+
+                    <div class="form-group">
+                        <label>教學預覽圖片 (建議尺寸: 400x300px)</label>
+                        <div class="image-preview-container">
+                            <div class="preview-item">
+                                <input type="file" id="tutorialImage1" name="tutorialImage1" accept=".png,.jpg,.jpeg" onchange="previewTutorialImage(this, 'tutorial-preview-1')">
+                                <div class="preview-placeholder" id="tutorial-placeholder-1">📷</div>
+                                <img id="tutorial-preview-1" class="preview-image">
+                                <div class="preview-text">教學圖片 1</div>
+                            </div>
+                            <div class="preview-item">
+                                <input type="file" id="tutorialImage2" name="tutorialImage2" accept=".png,.jpg,.jpeg" onchange="previewTutorialImage(this, 'tutorial-preview-2')">
+                                <div class="preview-placeholder" id="tutorial-placeholder-2">📷</div>
+                                <img id="tutorial-preview-2" class="preview-image">
+                                <div class="preview-text">教學圖片 2</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 功能啟用設定 -->
-        <div class="form-section">
-            <h3>功能啟用</h3>
-            <div class="checkbox-group">
-                <label>
-                    <input type="checkbox" name="pointsSystem" value="true"> 啟用集點卡系統
-                </label>
-                <label>
-                    <input type="checkbox" name="bookingSystem" value="true"> 啟用訂位系統
-                </label>
+            <!-- 步驟 2: 功能選擇 -->
+            <div class="form-step" id="step-2">
+                <div class="step-content">
+                    <h2>功能選擇</h2>
+                    <p>請選擇要啟用的系統功能 (至少選擇一個)</p>
+
+                    <div class="feature-options">
+                        <div class="feature-card default selected" id="booking-card" data-feature="booking">
+                            <span class="feature-icon">📅</span>
+                            <div class="feature-title">訂位系統</div>
+                            <div class="feature-desc">客戶可線上預約餐廳座位 (預設開啟)</div>
+                        </div>
+                        <div class="feature-card" id="points-card" data-feature="points">
+                            <span class="feature-icon">🎯</span>
+                            <div class="feature-title">集點卡系統</div>
+                            <div class="feature-desc">客戶可累積消費點數換取優惠</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="bookingSystem" id="bookingSystem" value="true">
+                    <input type="hidden" name="pointsSystem" id="pointsSystem" value="false">
+                </div>
             </div>
-        </div>
-        
-        <button type="submit" class="setup-button">創建系統</button>
-    </form>
+
+            <!-- 步驟 2A: 訂位系統設定 -->
+            <div class="form-step" id="step-2a">
+                <div class="step-content">
+                    <h2>訂位系統設定</h2>
+                    <p>設定訂位系統的基本資訊和規則</p>
+
+                    <div class="form-group">
+                        <label for="restaurantImage">餐廳圖片 <span class="required">*</span></label>
+                        <input type="file" id="restaurantImage" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
+                        <img id="restaurant-preview" class="preview-image" style="display:none; margin-top: 1rem; max-height: 200px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="restaurantAddress">餐廳地址 <span class="required">*</span></label>
+                        <input type="text" id="restaurantAddress" name="restaurantAddress" required placeholder="請輸入餐廳完整地址">
+                    </div>
+
+                    <div class="form-group">
+                        <label>訂位時段 (24小時制，單一時間) <span class="required">*</span></label>
+                        <div class="dynamic-list" id="timeSlots-list">
+                            <div class="list-item">
+                                <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$">
+                                <button type="button" class="list-btn add-btn" onclick="addTimeSlot()">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>訂位規則 <span class="required">*</span></label>
+                        <div class="dynamic-list" id="diningRules-list">
+                            <div class="list-item">
+                                <input type="text" name="diningRules[]" placeholder="請輸入訂位規則" required>
+                                <button type="button" class="list-btn add-btn" onclick="addDiningRule()">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步驟 2B: 集點卡系統設定 -->
+            <div class="form-step" id="step-2b">
+                <div class="step-content">
+                    <h2>集點卡系統設定</h2>
+                    <p>設定集點卡的外觀和獎勵機制</p>
+
+                    <div class="form-group">
+                        <label for="cardBackgroundImage">集點卡背景圖 <span class="required">*</span></label>
+                        <input type="file" id="cardBackgroundImage" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
+                        <img id="card-preview" class="preview-image" style="display:none; margin-top: 1rem; max-height: 200px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>集點卡獎勵設定 (至少設定一組) <span class="required">*</span></label>
+                        <div class="dynamic-list" id="rewards-list">
+                            <div class="list-item reward-item">
+                                <input type="text" name="rewardNames[]" placeholder="獎勵名稱" required>
+                                <input type="number" name="rewardPoints[]" placeholder="所需點數" required min="1">
+                                <input type="file" name="rewardImages[]" accept=".png,.jpg,.jpeg">
+                                <div class="reward-buttons">
+                                    <button type="button" class="list-btn add-btn" onclick="addReward()">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>集點卡規則 (至少設定一條) <span class="required">*</span></label>
+                        <div class="dynamic-list" id="pointRules-list">
+                            <div class="list-item">
+                                <input type="text" name="pointRules[]" placeholder="請輸入集點卡規則" required>
+                                <button type="button" class="list-btn add-btn" onclick="addPointRule()">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步驟 3: 後台密碼設定 -->
+            <div class="form-step" id="step-3">
+                <div class="step-content">
+                    <h2>後台密碼設定</h2>
+                    <p>設定管理後台的登入密碼</p>
+
+                    <div class="form-group">
+                        <label for="adminPassword">管理員密碼 <span class="required">*</span></label>
+                        <input type="password" id="adminPassword" name="adminPassword" required>
+                        <div class="password-requirements">
+                            <h4>密碼要求：</h4>
+                            <ul>
+                                <li>至少8個字元</li>
+                                <li>包含大寫字母</li>
+                                <li>包含小寫字母</li>
+                                <li>包含數字</li>
+                                <li>包含一個特殊字元 (!@#$%^&*)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">確認密碼 <span class="required">*</span></label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+
+                    <div class="backend-url" id="backendUrl">
+                        後台管理網址將為：<br>
+                        <strong>https://zyw.onrender.com/<span id="urlSlugname">您的系統識別碼</span>/backstage-login</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步驟 4: 完成設定 -->
+            <div class="form-step" id="step-4">
+                <div class="step-content">
+                    <div class="completion-content">
+                        <div class="completion-icon">🎉</div>
+                        <h2>設定完成!</h2>
+                        <p>您的餐廳管理系統已經準備就緒，點擊下方按鈕開始建立系統。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 按鈕群組 -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                    ← 上一步
+                </button>
+                <div></div>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                    下一步 →
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<style>
-.setup-container {
-    max-width: 800px;
-    margin: 100px auto;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.setup-title {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--text-color);
-}
-
-.setup-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-section {
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-}
-
-.form-section h3 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-}
-
-.form-group label {
-    font-weight: 500;
-    color: var(--text-color);
-}
-
-.form-group input, .form-group textarea {
-    padding: 0.8rem;
-    border: 2px solid #eee;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-.form-group input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-}
-
-.timeSlot-item, .rule-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.timeSlot-item input, .rule-item input {
-    flex: 1;
-}
-
-.add-btn, .remove-btn {
-    cursor: pointer;
-    padding: 0.5rem;
-    font-size: 1.2rem;
-    user-select: none;
-}
-
-.add-btn:hover, .remove-btn:hover {
-    opacity: 0.7;
-}
-
-.image-preview {
-    max-width: 200px;
-    max-height: 150px;
-    margin-top: 0.5rem;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-.checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-}
-
-.setup-button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.setup-button:hover {
-    background: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.error-message {
-    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-    color: #c62828;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border-left: 4px solid #f44336;
-    font-weight: 500;
-}
-
-.setup-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-}
-</style>
-
-<script>
-// 動態增減時段
-function addTimeSlot() {
-    const timeSlotsList = document.getElementById('timeSlots-list');
-    const div = document.createElement('div');
-    div.className = 'timeSlot-item';
-    div.innerHTML = `
-        <input type="text" name="timeSlots[]" placeholder="例如: 12:00-13:00" required>
-        <span class="add-btn" onclick="addTimeSlot()">➕</span>
-        <span class="remove-btn" onclick="removeTimeSlot(this)">🗑️</span>
-    `;
-    timeSlotsList.appendChild(div);
-    updateTimeSlotButtons();
-}
-
-function removeTimeSlot(btn) {
-    btn.parentElement.remove();
-    updateTimeSlotButtons();
-}
-
-function updateTimeSlotButtons() {
-    const items = document.querySelectorAll('#timeSlots-list .timeSlot-item');
-    items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = '';
-        }
-    });
-}
-
-// 動態增減用餐規則
-function addDiningRule() {
-    const diningRulesList = document.getElementById('diningRules-list');
-    const div = document.createElement('div');
-    div.className = 'rule-item';
-    div.innerHTML = `
-        <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
-        <span class="add-btn" onclick="addDiningRule()">➕</span>
-        <span class="remove-btn" onclick="removeDiningRule(this)">🗑️</span>
-    `;
-    diningRulesList.appendChild(div);
-    updateDiningRuleButtons();
-}
-
-function removeDiningRule(btn) {
-    btn.parentElement.remove();
-    updateDiningRuleButtons();
-}
-
-function updateDiningRuleButtons() {
-    const items = document.querySelectorAll('#diningRules-list .rule-item');
-    items.forEach((item, idx) => {
-        item.querySelector('.add-btn').style.display = (idx === items.length - 1) ? '' : 'none';
-        if (items.length === 1) {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            const removeBtn = item.querySelector('.remove-btn');
-            if (removeBtn) removeBtn.style.display = '';
-        }
-    });
-}
-
-// 圖片預覽
-function previewImage(input, previewId) {
-    const file = input.files[0];
-    const preview = document.getElementById(previewId);
-    if (file && /\.(png|jpe?g|svg)$/i.test(file.name)) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            preview.src = e.target.result;
-            preview.style.display = '';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.src = '';
-        preview.style.display = 'none';
-    }
-}
-
-// 初始化
-document.addEventListener('DOMContentLoaded', function() {
-    updateTimeSlotButtons();
-    updateDiningRuleButtons();
-});
-
-document.getElementById('setupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    
-    // 基本資料
-    formData.append('clientname', document.getElementById('clientname').value);
-    formData.append('slugname', document.getElementById('slugname').value);
-    
-    // 圖片檔案
-    const restaurantImage = document.getElementById('restaurantImage').files[0];
-    const cardBackgroundImage = document.getElementById('cardBackgroundImage').files[0];
-    if (restaurantImage) formData.append('restaurantImage', restaurantImage);
-    if (cardBackgroundImage) formData.append('cardBackgroundImage', cardBackgroundImage);
-    
-    // 時段
-    const timeSlots = [];
-    document.querySelectorAll('input[name="timeSlots[]"]').forEach(input => {
-        if (input.value.trim()) timeSlots.push(input.value.trim());
-    });
-    formData.append('timeSlots', JSON.stringify(timeSlots));
-    
-    // 用餐規則
-    const diningRules = [];
-    document.querySelectorAll('input[name="diningRules[]"]').forEach(input => {
-        if (input.value.trim()) diningRules.push(input.value.trim());
-    });
-    formData.append('diningRules', JSON.stringify(diningRules));
-    
-    // 功能啟用
-    formData.append('pointsSystem', document.querySelector('input[name="pointsSystem"]').checked);
-    formData.append('bookingSystem', document.querySelector('input[name="bookingSystem"]').checked);
-
-    // 隱藏錯誤訊息
-    const errorDiv = document.getElementById('errorMessage');
-    errorDiv.style.display = 'none';
-    
-    // 禁用提交按鈕
-    const submitBtn = document.querySelector('.setup-button');
-    submitBtn.disabled = true;
-    submitBtn.textContent = '創建中...';
-
-    try {
-        const response = await fetch('/api/setup', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            window.location.href = '/loading?slugname=' + encodeURIComponent(data.client.slugname);    
-        } else {
-            // 顯示錯誤訊息
-            errorDiv.textContent = data.error || '設置失敗，請重試';
-            errorDiv.style.display = 'block';
-            errorDiv.scrollIntoView({ behavior: 'smooth' });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        errorDiv.textContent = '網路錯誤，請檢查連線後重試';
-        errorDiv.style.display = 'block';
-        errorDiv.scrollIntoView({ behavior: 'smooth' });
-    } finally {
-        // 重新啟用提交按鈕
-        submitBtn.disabled = false;
-        submitBtn.textContent = '創建系統';
-    }
-});
-</script> 
+<!-- 引用外部JavaScript文件 -->
+<script src="/js/setup.js"></script> 

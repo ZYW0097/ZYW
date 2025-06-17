@@ -5,783 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>系統建立中 - DINE✦</title>
     <link rel="stylesheet" href="/css/style.css">
-    <style>
-        body {
-            background: #ffffff;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    <link rel="stylesheet" href="/css/loading.css">
 
-        .loading-wrapper {
-            min-height: 100vh;
-            padding-top: 75px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .loading-container {
-            max-width: 800px;
-            width: 100%;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .loading-header {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem 2rem 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        .loading-icon {
-            width: 80px;
-            height: 80px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #333;
-            border-radius: 50%;
-            margin: 0 auto 2rem;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-title {
-            color: #333;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .loading-subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        .progress-section {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        .progress-container {
-            margin-bottom: 2rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #f0f0f0;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #333 0%, #666 100%);
-            border-radius: 20px;
-            transition: width 0.8s ease;
-            width: 0%;
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-text {
-            font-size: 1.1rem;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .steps-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        .steps-title {
-            color: #333;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            padding: 1.2rem 1.5rem;
-            margin-bottom: 1rem;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-            transition: all 0.4s ease;
-            position: relative;
-        }
-
-        .step.processing {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-color: #2196f3;
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
-        }
-
-        .step.completed {
-            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-            border-color: #4caf50;
-            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
-        }
-
-        .step.error {
-            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-            border-color: #f44336;
-            box-shadow: 0 2px 10px rgba(244, 67, 54, 0.2);
-        }
-
-        .step-icon {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-right: 1rem;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .step.processing .step-icon {
-            background: #2196f3;
-            color: white;
-            animation: pulse 1.5s infinite;
-        }
-
-        .step.completed .step-icon {
-            background: #4caf50;
-            color: white;
-        }
-
-        .step.error .step-icon {
-            background: #f44336;
-            color: white;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .step-content {
-            flex: 1;
-            text-align: left;
-        }
-
-        .step-text {
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .step-desc {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .step-status {
-            font-size: 1.5rem;
-            margin-left: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .step.processing .step-status {
-            animation: spin 2s linear infinite;
-        }
-
-        /* 錯誤處理 */
-        .error-section {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            border-left: 4px solid #f44336;
-            display: none;
-        }
-
-        .error-icon {
-            font-size: 3rem;
-            color: #f44336;
-            margin-bottom: 1rem;
-        }
-
-        .error-title {
-            color: #333;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .error-text {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .error-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 0.8rem 2rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .retry-btn {
-            background: #4caf50;
-            color: white;
-        }
-
-        .back-btn {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .success-section {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem 2rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            border-left: 4px solid #4caf50;
-            display: none;
-            text-align: center;
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            color: #4caf50;
-            margin-bottom: 1rem;
-        }
-
-        .success-title {
-            color: #333;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .success-text {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .success-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .success-btn {
-            background: #333;
-            color: white;
-        }
-
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .loading-container {
-                padding: 1rem;
-            }
-
-            .loading-header {
-                padding: 2rem 1.5rem 1.5rem;
-            }
-
-            .loading-title {
-                font-size: 1.5rem;
-            }
-
-            .progress-section, .steps-container {
-                padding: 1.5rem;
-            }
-
-            .step {
-                padding: 1rem;
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
-            }
-
-            .step-icon {
-                margin-right: 0;
-                margin-bottom: 0.5rem;
-            }
-
-            .step-status {
-                margin-left: 0;
-                margin-top: 0.5rem;
-            }
-
-            .error-actions, .success-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .loading-wrapper {
-                padding-top: 75px;
-            }
-
-            .loading-icon {
-                width: 60px;
-                height: 60px;
-            }
-
-            .loading-title {
-                font-size: 1.3rem;
-            }
-
-            .step-text {
-                font-size: 1rem;
-            }
-
-            .step-desc {
-                font-size: 0.8rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="loading-wrapper">
         <div class="loading-container">
-            <!-- 載入標題 -->
-            <div class="loading-header">
-                <div class="loading-icon"></div>
-                <h1 class="loading-title">系統建立中</h1>
-                <p class="loading-subtitle" id="loading-message">正在初始化您的餐廳管理系統...</p>
-            </div>
-
-            <!-- 進度條 -->
-            <div class="progress-section">
+            <!-- 載入狀態 -->
+            <div class="loading-content" id="loadingContent">
+                <div class="loading-icon">
+                    <div class="loading-spinner"></div>
+                </div>
+                
+                <h1 class="loading-title">正在建立您的系統</h1>
+                <p class="loading-subtitle">請稍候，我們正在為您配置專屬的餐廳管理系統...</p>
+                
+                <!-- 進度條 -->
                 <div class="progress-container">
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
+                        <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <div class="progress-text" id="progress-text">0%</div>
+                    <div class="progress-text" id="progressText">0% 完成</div>
+                </div>
+                
+                <!-- 步驟顯示 -->
+                <div class="steps-display">
+                    <div class="step-item" id="step-1">
+                        <div class="step-number">1</div>
+                        <div class="step-info">
+                            <div class="step-title">建立資料庫記錄</div>
+                            <div class="step-description">正在為您的餐廳建立專屬的資料庫...</div>
+                        </div>
+                    </div>
+                    <div class="step-item" id="step-2">
+                        <div class="step-number">2</div>
+                        <div class="step-info">
+                            <div class="step-title">處理圖片資源</div>
+                            <div class="step-description">正在上傳和優化您的餐廳圖片...</div>
+                        </div>
+                    </div>
+                    <div class="step-item" id="step-3">
+                        <div class="step-number">3</div>
+                        <div class="step-info">
+                            <div class="step-title">配置系統功能</div>
+                            <div class="step-description">正在設定訂位和集點卡功能...</div>
+                        </div>
+                    </div>
+                    <div class="step-item" id="step-4">
+                        <div class="step-number">4</div>
+                        <div class="step-info">
+                            <div class="step-title">生成管理界面</div>
+                            <div class="step-description">正在建立您的專屬管理後台...</div>
+                        </div>
+                    </div>
+                    <div class="step-item" id="step-5">
+                        <div class="step-number">5</div>
+                        <div class="step-info">
+                            <div class="step-title">系統初始化完成</div>
+                            <div class="step-description">正在進行最後的系統檢查和初始化...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 步驟列表 -->
-            <div class="steps-container">
-                <h3 class="steps-title">建立進度</h3>
-                
-                <div class="step" id="step-client">
-                    <div class="step-icon">📝</div>
-                    <div class="step-content">
-                        <div class="step-text">創建基本資料</div>
-                        <div class="step-desc">建立客戶檔案和基本設定</div>
-                    </div>
-                    <div class="step-status" id="status-client">⏳</div>
+            <!-- 成功頁面 -->
+            <div class="success-content" id="successContent">
+                <div class="success-icon">
+                    <span class="checkmark">✓</span>
                 </div>
                 
-                <div class="step" id="step-adb">
-                    <div class="step-icon">👤</div>
-                    <div class="step-content">
-                        <div class="step-text">建立用戶資料庫</div>
-                        <div class="step-desc">初始化會員系統資料庫</div>
+                <h1 class="success-title">系統建立成功！</h1>
+                <p class="success-message">恭喜！您的餐廳管理系統已經成功建立並準備就緒。</p>
+                
+                <!-- 系統資訊 -->
+                <div class="system-info">
+                    <div class="info-row">
+                        <div class="info-label">餐廳名稱</div>
+                        <div class="info-value" id="clientName">-</div>
                     </div>
-                    <div class="step-status" id="status-adb">⏳</div>
+                    <div class="info-row">
+                        <div class="info-label">系統識別碼</div>
+                        <div class="info-value" id="slugName">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">前台網址</div>
+                        <div class="info-value" id="frontendUrl">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">後台管理</div>
+                        <div class="info-value" id="backendUrl">-</div>
+                    </div>
                 </div>
                 
-                <div class="step" id="step-cdb">
-                    <div class="step-icon">🎯</div>
-                    <div class="step-content">
-                        <div class="step-text">建立集點卡資料庫</div>
-                        <div class="step-desc">設定集點卡系統和獎勵機制</div>
-                    </div>
-                    <div class="step-status" id="status-cdb">⏳</div>
-                </div>
-                
-                <div class="step" id="step-bdb">
-                    <div class="step-icon">📅</div>
-                    <div class="step-content">
-                        <div class="step-text">建立訂位資料庫</div>
-                        <div class="step-desc">配置訂位系統和時段管理</div>
-                    </div>
-                    <div class="step-status" id="status-bdb">⏳</div>
-                </div>
-                
-                <div class="step" id="step-settings">
-                    <div class="step-icon">⚙️</div>
-                    <div class="step-content">
-                        <div class="step-text">配置系統設定</div>
-                        <div class="step-desc">完成最終設定和優化</div>
-                    </div>
-                    <div class="step-status" id="status-settings">⏳</div>
-                </div>
-                
-                <div class="step" id="step-complete">
-                    <div class="step-icon">🎉</div>
-                    <div class="step-content">
-                        <div class="step-text">系統建立完成</div>
-                        <div class="step-desc">您的餐廳管理系統已準備就緒</div>
-                    </div>
-                    <div class="step-status" id="status-complete">⏳</div>
-                </div>
-            </div>
-
-            <!-- 錯誤處理 -->
-            <div class="error-section" id="error-section">
-                <div class="error-icon">⚠️</div>
-                <h3 class="error-title">系統建立失敗</h3>
-                <p class="error-text">在建立過程中發生錯誤，請嘗試重新建立或返回設定頁面檢查資料。</p>
-                <div class="error-actions">
-                    <button class="btn retry-btn" id="retry-btn">
-                        🔄 重新嘗試
-                    </button>
-                    <a href="/setup" class="btn back-btn">
-                        ← 返回設定頁面
+                <!-- 行動按鈕 -->
+                <div class="action-buttons">
+                    <a href="#" class="btn btn-secondary" id="visitRestaurantBtn">
+                        🏪 查看餐廳頁面
+                    </a>
+                    <a href="#" class="btn btn-primary" id="visitBackstageBtn">
+                        ⚙️ 進入管理後台
                     </a>
                 </div>
             </div>
 
-            <!-- 成功完成 -->
-            <div class="success-section" id="success-section">
-                <div class="success-icon">🎉</div>
-                <h2 class="success-title">系統建立成功!</h2>
-                <p class="success-text">您的餐廳管理系統已經建立完成，現在可以開始使用所有功能。</p>
-                <div class="success-actions">
-                    <a href="#" class="btn success-btn" id="visit-restaurant">
-                        🏪 前往餐廳頁面
-                    </a>
-                    <a href="#" class="btn success-btn" id="visit-backstage">
-                        ⚙️ 前往管理後台
-                    </a>
+            <!-- 錯誤頁面 -->
+            <div class="error-content" id="errorContent">
+                <div class="error-icon">⚠</div>
+                
+                <h1 class="error-title">系統建立失敗</h1>
+                <p class="error-message">很抱歉，在建立系統的過程中發生了錯誤。</p>
+                
+                <div class="error-details" id="errorDetails">
+                    錯誤詳情將在這裡顯示...
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="/setup" class="btn btn-secondary">返回設定頁面</a>
+                    <a href="#" class="btn btn-primary" onclick="location.reload()">重新載入</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        window.slug = "<%= slugname || '' %>";
-    </script>
-    <script>
-        let currentProgress = 0;
-        let isCompleted = false;
-        let hasError = false;
-
-        // 載入訊息配置
-        const loadingMessages = [
-            "正在初始化您的餐廳管理系統...",
-            "正在建立基本資料...",
-            "正在配置用戶資料庫...",
-            "正在設定集點卡系統...",
-            "正在建立訂位系統...",
-            "正在完成最終設定...",
-            "系統建立完成!"
-        ];
-
-        // 步驟配置
-        const steps = [
-            { id: 'step-client', status: 'status-client', name: 'client' },
-            { id: 'step-adb', status: 'status-adb', name: 'adb' },
-            { id: 'step-cdb', status: 'status-cdb', name: 'cdb' },
-            { id: 'step-bdb', status: 'status-bdb', name: 'bdb' },
-            { id: 'step-settings', status: 'status-settings', name: 'settings' },
-            { id: 'step-complete', status: 'status-complete', name: 'complete' }
-        ];
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.slug) {
-                startSystemCreation();
-            } else {
-                showError('缺少必要參數');
-            }
-
-            // 綁定重試按鈕
-            document.getElementById('retry-btn').addEventListener('click', function() {
-                location.reload();
-            });
-
-            // 設定成功頁面連結
-            updateSuccessLinks();
-        });
-
-        // 開始系統建立
-        function startSystemCreation() {
-            updateProgress(5, 0);
-            setTimeout(() => checkClient(), 1000);
-        }
-
-        // 檢查客戶資料
-        async function checkClient() {
-            try {
-                updateStepStatus('client', 'processing');
-                updateProgress(15, 1);
-
-                const response = await fetch(`/api/check-client/${window.slug}`);
-                const data = await response.json();
-
-                if (data.exists) {
-                    updateStepStatus('client', 'completed');
-                    updateProgress(25, 1);
-                    setTimeout(() => checkADB(), 1000);
-                } else {
-                    throw new Error('客戶資料不存在');
-                }
-            } catch (error) {
-                console.error('檢查客戶資料失敗:', error);
-                updateStepStatus('client', 'error');
-                showError('客戶資料檢查失敗');
-            }
-        }
-
-        // 檢查用戶資料庫
-        async function checkADB() {
-            try {
-                updateStepStatus('adb', 'processing');
-                updateProgress(35, 2);
-
-                const response = await fetch(`/api/check-database/${window.slug}ADB`);
-                const data = await response.json();
-
-                if (data.exists) {
-                    updateStepStatus('adb', 'completed');
-                    updateProgress(45, 2);
-                    setTimeout(() => checkCDB(), 1000);
-                } else {
-                    throw new Error('用戶資料庫不存在');
-                }
-            } catch (error) {
-                console.error('檢查用戶資料庫失敗:', error);
-                updateStepStatus('adb', 'error');
-                showError('用戶資料庫檢查失敗');
-            }
-        }
-
-        // 檢查集點卡資料庫
-        async function checkCDB() {
-            try {
-                updateStepStatus('cdb', 'processing');
-                updateProgress(55, 3);
-
-                const response = await fetch(`/api/check-database/${window.slug}CDB`);
-                const data = await response.json();
-
-                if (data.exists) {
-                    updateStepStatus('cdb', 'completed');
-                    updateProgress(65, 3);
-                    setTimeout(() => checkBDB(), 1000);
-                } else {
-                    throw new Error('集點卡資料庫不存在');
-                }
-            } catch (error) {
-                console.error('檢查集點卡資料庫失敗:', error);
-                updateStepStatus('cdb', 'error');
-                showError('集點卡資料庫檢查失敗');
-            }
-        }
-
-        // 檢查訂位資料庫
-        async function checkBDB() {
-            try {
-                updateStepStatus('bdb', 'processing');
-                updateProgress(75, 4);
-
-                const response = await fetch(`/api/check-database/${window.slug}BDB`);
-                const data = await response.json();
-
-                if (data.exists) {
-                    updateStepStatus('bdb', 'completed');
-                    updateProgress(85, 4);
-                    setTimeout(() => checkSettings(), 1000);
-                } else {
-                    throw new Error('訂位資料庫不存在');
-                }
-            } catch (error) {
-                console.error('檢查訂位資料庫失敗:', error);
-                updateStepStatus('bdb', 'error');
-                showError('訂位資料庫檢查失敗');
-            }
-        }
-
-        // 檢查系統設定
-        async function checkSettings() {
-            try {
-                updateStepStatus('settings', 'processing');
-                updateProgress(90, 5);
-
-                const response = await fetch(`/api/check-settings/${window.slug}`);
-                const data = await response.json();
-
-                if (data.configured) {
-                    updateStepStatus('settings', 'completed');
-                    updateProgress(95, 5);
-                    setTimeout(() => completeSetup(), 1000);
-                } else {
-                    throw new Error('系統設定不完整');
-                }
-            } catch (error) {
-                console.error('檢查系統設定失敗:', error);
-                updateStepStatus('settings', 'error');
-                showError('系統設定檢查失敗');
-            }
-        }
-
-        // 完成設定
-        function completeSetup() {
-            updateStepStatus('complete', 'processing');
-            updateProgress(100, 6);
-
-            setTimeout(() => {
-                updateStepStatus('complete', 'completed');
-                isCompleted = true;
-                showSuccess();
-            }, 1500);
-        }
-
-        // 更新進度
-        function updateProgress(percentage, messageIndex) {
-            currentProgress = percentage;
-            
-            const progressFill = document.getElementById('progress-fill');
-            const progressText = document.getElementById('progress-text');
-            const loadingMessage = document.getElementById('loading-message');
-
-            progressFill.style.width = percentage + '%';
-            progressText.textContent = percentage + '%';
-            
-            if (messageIndex < loadingMessages.length) {
-                loadingMessage.textContent = loadingMessages[messageIndex];
-            }
-        }
-
-        // 更新步驟狀態
-        function updateStepStatus(stepName, status) {
-            const step = steps.find(s => s.name === stepName);
-            if (!step) return;
-
-            const stepElement = document.getElementById(step.id);
-            const statusElement = document.getElementById(step.status);
-
-            // 移除所有狀態類別
-            stepElement.classList.remove('processing', 'completed', 'error');
-
-            // 添加新狀態
-            stepElement.classList.add(status);
-
-            // 更新狀態圖示
-            switch (status) {
-                case 'processing':
-                    statusElement.textContent = '⚙️';
-                    break;
-                case 'completed':
-                    statusElement.textContent = '✅';
-                    break;
-                case 'error':
-                    statusElement.textContent = '❌';
-                    break;
-                default:
-                    statusElement.textContent = '⏳';
-            }
-        }
-
-        // 顯示錯誤
-        function showError(message) {
-            hasError = true;
-            const errorSection = document.getElementById('error-section');
-            const errorText = errorSection.querySelector('.error-text');
-            
-            if (message) {
-                errorText.textContent = message;
-            }
-            
-            errorSection.style.display = 'block';
-            errorSection.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // 顯示成功
-        function showSuccess() {
-            const successSection = document.getElementById('success-section');
-            successSection.style.display = 'block';
-            successSection.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // 更新成功頁面連結
-        function updateSuccessLinks() {
-            const visitRestaurant = document.getElementById('visit-restaurant');
-            const visitBackstage = document.getElementById('visit-backstage');
-
-            if (window.slug) {
-                visitRestaurant.href = `/${window.slug}`;
-                visitBackstage.href = `/${window.slug}/backstage-login`;
-            }
-        }
-
-        // 監聽頁面離開事件
-        window.addEventListener('beforeunload', function(e) {
-            if (!isCompleted && !hasError) {
-                e.preventDefault();
-                e.returnValue = '系統正在建立中，確定要離開嗎？';
-                return e.returnValue;
-            }
-        });
-    </script>
+    <!-- 引用外部JavaScript文件 -->
+    <script src="/js/loading.js"></script>
 </body>
 </html> 
