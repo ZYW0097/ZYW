@@ -8,7 +8,6 @@ class SetupManager {
     }
 
     init() {
-        console.log('SetupManager initialized');
         
         // 初始化時確保功能選擇狀態正確 - 預設訂位系統開啟
         this.selectedFeatures = { booking: true, points: false };
@@ -35,7 +34,6 @@ class SetupManager {
             setupDragAndDrop();
         }, 600);
         
-        console.log('Initial state:', this.selectedFeatures);
     }
 
     setupEventListeners() {
@@ -227,8 +225,7 @@ class SetupManager {
         this.updateStepDisplay();
     }
 
-    updateStepDisplay() {
-        console.log('updateStepDisplay called, currentStep:', this.currentStep);
+    updateStepDisplay() {   
         
         // 隱藏所有步驟
         document.querySelectorAll('.form-step').forEach(step => {
@@ -266,13 +263,10 @@ class SetupManager {
                 break;
         }
 
-        console.log('Showing step:', stepToShow, 'Title:', stepTitle);
-
         if (stepToShow) {
             const stepElement = document.getElementById(stepToShow);
             if (stepElement) {
                 stepElement.classList.add('active');
-                console.log('Successfully activated step element:', stepToShow);
             } else {
                 console.error('Step element not found:', stepToShow);
             }
@@ -281,7 +275,6 @@ class SetupManager {
         const titleElement = document.getElementById('step-title');
         if (titleElement) {
             titleElement.textContent = stepTitle;
-            console.log('Updated step title to:', stepTitle);
         }
 
         // 更新步驟導航
@@ -292,32 +285,25 @@ class SetupManager {
     }
 
     updateStepNavigation() {
-        console.log('updateStepNavigation called');
         
         const stepNavs = document.querySelectorAll('.step-item');
         const stepLines = document.querySelectorAll('.step-line');
         
-        console.log('Found step navs:', stepNavs.length);
-        console.log('Found step lines:', stepLines.length);
         
         // 重置所有步驟
         stepNavs.forEach((nav, index) => {
             nav.classList.remove('active', 'completed', 'hidden');
-            console.log(`Reset step nav ${index}`);
         });
 
         // 根據選擇的功能決定顯示哪些步驟
         const steps = this.getVisibleSteps();
-        console.log('Steps to display:', steps.length);
         
         // 隱藏多餘的步驟導航元素
         stepNavs.forEach((nav, index) => {
             if (index >= steps.length) {
                 nav.classList.add('hidden');
-                console.log(`Hiding step nav ${index}`);
             } else {
                 nav.classList.remove('hidden');
-                console.log(`Showing step nav ${index}`);
             }
         });
         
@@ -325,10 +311,8 @@ class SetupManager {
         stepLines.forEach((line, index) => {
             if (index >= steps.length - 1) {
                 line.style.display = 'none';
-                console.log(`Hiding step line ${index}`);
             } else {
                 line.style.display = 'block';
-                console.log(`Showing step line ${index}`);
             }
         });
         
@@ -339,28 +323,20 @@ class SetupManager {
                 const circle = nav.querySelector('.step-circle');
                 if (circle) {
                     circle.textContent = step.number;
-                    console.log(`Set step ${index} number to ${step.number}`);
                 }
                 
                 if (step.current < this.currentStep) {
                     nav.classList.add('completed');
-                    console.log(`Step ${index} marked as completed`);
                 } else if (step.current === this.currentStep) {
                     nav.classList.add('active');
-                    console.log(`Step ${index} marked as active`);
                 }
             }
         });
         
-        console.log('updateStepNavigation completed');
     }
 
     getVisibleSteps() {
-        console.log('getVisibleSteps called:', {
-            currentStep: this.currentStep,
-            booking: this.selectedFeatures.booking,
-            points: this.selectedFeatures.points
-        });
+
 
         // 步驟一：未進入步驟二或尚未選擇功能 -> 1 > 2 > 3 > 4
         if (this.currentStep === 1) {
@@ -399,7 +375,6 @@ class SetupManager {
             steps.push({ number: '4', current: 6 }); // 完成
         }
 
-        console.log('Generated steps:', steps);
         return steps;
     }
 
@@ -411,16 +386,7 @@ class SetupManager {
         // 計算實際的最後一步 - 步驟6是完成頁面
         const lastStep = 6;
 
-        console.log('updateButtons called:', {
-            currentStep: this.currentStep,
-            lastStep: lastStep,
-            prevBtn: !!prevBtn,
-            nextBtn: !!nextBtn,
-            submitBtn: !!submitBtn,
-            prevBtnDisplay: prevBtn ? prevBtn.style.display : 'N/A',
-            nextBtnDisplay: nextBtn ? nextBtn.style.display : 'N/A',
-            submitBtnDisplay: submitBtn ? submitBtn.style.display : 'N/A'
-        });
+
 
         if (prevBtn) {
             if (this.currentStep > 1) {
@@ -439,7 +405,6 @@ class SetupManager {
                 // 檢查是否可以提交
                 const canSubmit = this.canProceedToNextStep();
                 this.setButtonState(submitBtn, canSubmit);
-                console.log('Showing submit button (step 6), canSubmit:', canSubmit);
             } else {
                 // 在其他步驟，顯示下一步按鈕，隱藏建立系統按鈕
                 nextBtn.style.setProperty('display', 'inline-flex', 'important');
@@ -449,21 +414,12 @@ class SetupManager {
                 // 檢查是否可以進入下一步
                 const canProceed = this.canProceedToNextStep();
                 this.setButtonState(nextBtn, canProceed);
-                console.log('Showing next button (step ' + this.currentStep + '), canProceed:', canProceed);
             }
         }
 
         // 強制刷新，確保狀態正確
         setTimeout(() => {
-            console.log('After updateButtons - final state:', {
-                currentStep: this.currentStep,
-                prevBtnDisplay: prevBtn ? window.getComputedStyle(prevBtn).display : 'N/A',
-                nextBtnDisplay: nextBtn ? window.getComputedStyle(nextBtn).display : 'N/A',
-                submitBtnDisplay: submitBtn ? window.getComputedStyle(submitBtn).display : 'N/A',
-                prevBtnStyleDisplay: prevBtn ? prevBtn.style.display : 'N/A',
-                nextBtnStyleDisplay: nextBtn ? nextBtn.style.display : 'N/A',
-                submitBtnStyleDisplay: submitBtn ? submitBtn.style.display : 'N/A'
-            });
+
         }, 100);
     }
 
@@ -524,6 +480,11 @@ class SetupManager {
 
         // 檢查客戶名稱驗證狀態
         if (clientnameValidation?.classList.contains('error')) {
+            return false;
+        }
+
+        // 確保客戶名稱已經檢查過且可用
+        if (clientnameInput.value && (!clientnameValidation || !clientnameValidation.classList.contains('success'))) {
             return false;
         }
 
@@ -680,6 +641,14 @@ class SetupManager {
                 return false;
             }
             
+            // 確保客戶名稱已經檢查過且可用
+            const clientnameInput = document.getElementById('clientname');
+            if (clientnameInput && clientnameInput.value && 
+                (!clientnameValidation || !clientnameValidation.classList.contains('success'))) {
+                this.showError('請等待客戶名稱檢查完成');
+                return false;
+            }
+            
             if (slugnameValidation && slugnameValidation.classList.contains('error')) {
                 this.showError('請修正動態標識的問題');
                 return false;
@@ -742,7 +711,6 @@ class SetupManager {
     }
 
     updateFeatureSelection() {
-        console.log('updateFeatureSelection called:', this.selectedFeatures);
         
         this.updateFeatureSelectionUI();
         
@@ -751,7 +719,6 @@ class SetupManager {
     }
 
     updateFeatureSelectionUI() {
-        console.log('updateFeatureSelectionUI called:', this.selectedFeatures);
         
         const bookingCard = document.getElementById('booking-card');
         const pointsCard = document.getElementById('points-card');
@@ -861,9 +828,21 @@ class SetupManager {
                 return;
             }
 
-            // 驗證通過
-            validationDiv.textContent = '✓ 客戶名稱可用';
-            validationDiv.className = 'validation-message success';
+            // 顯示檢查中狀態
+            validationDiv.textContent = '檢查中...';
+            validationDiv.className = 'validation-message checking';
+
+            // 檢查客戶名稱是否重複
+            const response = await fetch(`/api/check-clientname/${encodeURIComponent(clientname.trim())}`);
+            const data = await response.json();
+            
+            if (data.exists) {
+                validationDiv.textContent = '❌ 此客戶名稱已被使用，請選擇其他名稱';
+                validationDiv.className = 'validation-message error';
+            } else {
+                validationDiv.textContent = '✓ 客戶名稱可用';
+                validationDiv.className = 'validation-message success';
+            }
         } catch (error) {
             console.error('檢查客戶名稱時發生錯誤:', error);
             validationDiv.textContent = '檢查客戶名稱時發生錯誤';
@@ -1083,6 +1062,15 @@ class SetupManager {
     async submitForm() {
         if (!this.validateCurrentStep()) return;
 
+        // 禁用提交按鈕防止重複點擊
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '建立中...';
+            submitBtn.style.cursor = 'not-allowed';
+            submitBtn.style.opacity = '0.6';
+        }
+
         const formData = new FormData(document.getElementById('setupForm'));
         
         try {
@@ -1134,6 +1122,15 @@ class SetupManager {
         } catch (error) {
             console.error('Error:', error);
             this.showError('網路錯誤，請稍後再試');
+        } finally {
+            // 恢復提交按鈕狀態（如果發生錯誤）
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn && submitBtn.disabled) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '建立系統';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.style.opacity = '1';
+            }
         }
     }
 }
@@ -1292,7 +1289,6 @@ function setupDragAndDrop() {
 // 全域調試函數
 window.debugSetup = function() {
     if (!window.setupManager) {
-        console.log('SetupManager not initialized');
         return;
     }
     
@@ -1300,33 +1296,8 @@ window.debugSetup = function() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
-    
-    console.log('=== Setup Debug Information ===');
-    console.log('Current step:', manager.currentStep);
-    console.log('Selected features:', manager.selectedFeatures);
-    console.log('Visible steps:', manager.getVisibleSteps());
-    
-    console.log('Button elements:', {
-        prevBtn: !!prevBtn,
-        nextBtn: !!nextBtn,
-        submitBtn: !!submitBtn
-    });
-    
-    console.log('Button computed styles:', {
-        prevBtn: prevBtn ? window.getComputedStyle(prevBtn).display : 'N/A',
-        nextBtn: nextBtn ? window.getComputedStyle(nextBtn).display : 'N/A',
-        submitBtn: submitBtn ? window.getComputedStyle(submitBtn).display : 'N/A'
-    });
-    
-    console.log('Button inline styles:', {
-        prevBtn: prevBtn ? prevBtn.style.display : 'N/A',
-        nextBtn: nextBtn ? nextBtn.style.display : 'N/A',
-        submitBtn: submitBtn ? submitBtn.style.display : 'N/A'
-    });
-    
-    console.log('Active form step:', document.querySelector('.form-step.active')?.id || 'None');
-    
+
+        
     // 手動觸發更新
-    console.log('Manually triggering updateButtons...');
     manager.updateButtons();
 }; 

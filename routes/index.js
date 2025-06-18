@@ -240,20 +240,18 @@ router.post('/api/setup', upload.fields([
 
                         // 創建獎勵資料
                         const rewardsData = parsedRewardNames.map((name, index) => ({
+                            type: 'points_reward',
                             name: name,
-                            points: parsedRewardPoints[index] || 0,
-                            image: rewardImages[index] || '/images/default-reward.jpg',
-                            isActive: true,
-                            order: index
+                            points: parseInt(parsedRewardPoints[index]) || 0,
+                            img: rewardImages[index] || '/images/default-reward.jpg',
+                            slug: slugname
                         }));
 
-                        // 這裡需要根據您的獎勵模型來保存
-                        // 假設您有一個 Rewards 模型
+                        // 儲存獎勵資料
                         try {
-                            // const RewardsSchema = require('../models/points/rewards');
-                            // const Rewards = cardDB.model('Rewards', RewardsSchema);
-                            // await Rewards.insertMany(rewardsData);
-                            console.log('獎勵資料準備完成:', rewardsData);
+                            const RewardsSchema = require('../models/points/rewards');
+                            const Rewards = cardDB.model('PointsRewards', RewardsSchema);
+                            await Rewards.insertMany(rewardsData);
                         } catch (error) {
                             console.error('❌ 獎勵設定失敗:', error);
                         }
@@ -278,18 +276,18 @@ router.post('/api/setup', upload.fields([
                     
                     if (parsedPointRules.length > 0) {
                         const rulesData = parsedPointRules.map((text, index) => ({
+                            type: 'points_settings',
+                            class: 'rule_settings',
+                            article: index + 1,
                             text: text,
-                            order: index,
-                            isActive: true
+                            slug: slugname
                         }));
 
-                        // 這裡需要根據您的規則模型來保存
-                        // 假設您有一個 PointRules 模型
+                        // 儲存規則資料
                         try {
-                            // const PointRulesSchema = require('../models/points/rules');
-                            // const PointRules = cardDB.model('PointRules', PointRulesSchema);
-                            // await PointRules.insertMany(rulesData);
-                            console.log('集點卡規則準備完成:', rulesData);
+                            const PointRulesSchema = require('../models/points/rules');
+                            const PointRules = cardDB.model('PointsRules', PointRulesSchema);
+                            await PointRules.insertMany(rulesData);
                         } catch (error) {
                             console.error('❌ 集點卡規則設定失敗:', error);
                         }
@@ -319,18 +317,14 @@ router.post('/api/setup', upload.fields([
         let parsedTimeSlots = [];
         let parsedDiningRules = [];
         
-        console.log('Raw timeSlots received:', timeSlots, 'Type:', typeof timeSlots);
         
         try {
             if (Array.isArray(timeSlots)) {
                 parsedTimeSlots = timeSlots;
-                console.log('timeSlots is array:', parsedTimeSlots);
             } else if (typeof timeSlots === 'string' && timeSlots.trim()) {
                 parsedTimeSlots = JSON.parse(timeSlots);
-                console.log('timeSlots parsed from string:', parsedTimeSlots);
             } else {
                 parsedTimeSlots = [];
-                console.log('timeSlots defaulted to empty array');
             }
             
             // 額外清理：確保每個時段都是正確的字符串格式
@@ -354,7 +348,6 @@ router.post('/api/setup', upload.fields([
                 return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
             });
             
-            console.log('Cleaned timeSlots:', parsedTimeSlots);
             
         } catch (error) {
             console.error('Time slots JSON parse error:', error, 'Raw data:', timeSlots);
@@ -381,10 +374,8 @@ router.post('/api/setup', upload.fields([
                 const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
                 
                 const timeSettingsData = parsedTimeSlots.map(time => {
-                    console.log('Creating time setting for:', time, 'Type:', typeof time);
                     return { time, available: true };
                 });
-                console.log('timeSettingsData to insert:', timeSettingsData);
                 await TimeSettings.insertMany(timeSettingsData);
             } catch (error) {
                 console.error('❌ 時段設定失敗:', error);
@@ -415,7 +406,7 @@ router.post('/api/setup', upload.fields([
     }
 });
 
-// 檢查客戶是否存在的API
+// 檢查客戶是否存在的API (通過slugname)
 router.get('/api/check-client/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
@@ -425,6 +416,22 @@ router.get('/api/check-client/:slug', async (req, res) => {
             res.json({ exists: true, client });
         } else {
             res.status(404).json({ exists: false });
+        }
+    } catch (error) {
+        res.status(500).json({ exists: false, error: error.message });
+    }
+});
+
+// 檢查客戶名稱是否重複的API
+router.get('/api/check-clientname/:name', async (req, res) => {
+    try {
+        const { name } = req.params;
+        const client = await Client.findOne({ clientname: name });
+        
+        if (client) {
+            res.json({ exists: true, message: '客戶名稱已被使用' });
+        } else {
+            res.json({ exists: false, message: '客戶名稱可用' });
         }
     } catch (error) {
         res.status(500).json({ exists: false, error: error.message });
@@ -749,8 +756,6 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
         const { storeSlug } = req.params;
         const { timeSlots } = req.body;
 
-        console.log('Update timeSlots received:', timeSlots, 'Type:', typeof timeSlots);
-
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
@@ -781,8 +786,6 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
                 return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
             });
             
-            console.log('Cleaned timeSlots for update:', cleanedTimeSlots);
-            
             // 時間排序函數
             const sortTimeSlots = (slots) => {
                 return slots.sort((a, b) => {
@@ -804,13 +807,10 @@ router.post('/:storeSlug/api/settings/timeSlots', async (req, res) => {
 
             // 排序時段
             const sortedTimeSlots = sortTimeSlots([...cleanedTimeSlots]);
-            console.log('Sorted timeSlots:', sortedTimeSlots);
             
             const timeSettingsData = sortedTimeSlots.map(time => {
-                console.log('Creating update time setting for:', time, 'Type:', typeof time);
                 return { time, available: true };
             });
-            console.log('Update timeSettingsData to insert:', timeSettingsData);
             await TimeSettings.insertMany(timeSettingsData);
         }
 
@@ -893,21 +893,18 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
         
         // 獲取所有時段數據
         const allTimeSlots = await TimeSettings.find({});
-        console.log('Found timeSlots to fix:', allTimeSlots.map(s => ({ id: s._id, time: s.time })));
         
         let fixedCount = 0;
         let invalidCount = 0;
         
         for (const slot of allTimeSlots) {
             let cleanTime = slot.time;
-            console.log('Processing slot:', slot._id, 'Original time:', cleanTime, 'Type:', typeof cleanTime);
             
             // 如果time字段本身就是對象或數組，直接處理
             if (Array.isArray(cleanTime)) {
                 if (cleanTime.length > 0) {
                     cleanTime = cleanTime[0].toString();
                 } else {
-                    console.log(`Empty array for slot ${slot._id}, deleting...`);
                     await TimeSettings.findByIdAndDelete(slot._id);
                     invalidCount++;
                     continue;
@@ -935,9 +932,7 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
                         cleanTime = cleanTime.slice(1, -1); // 移除首尾引號
                     }
                     
-                    console.log(`Parsed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
                 } catch (error) {
-                    console.log(`Could not parse slot ${slot._id}: ${cleanTime}, trying manual cleanup...`);
                     
                     // 手動清理格式
                     cleanTime = cleanTime
@@ -957,7 +952,7 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
                 // 只有在時間確實有變化時才更新
                 if (cleanTime !== slot.time) {
                     await TimeSettings.findByIdAndUpdate(slot._id, { time: cleanTime });
-                    console.log(`✅ Fixed slot ${slot._id}: "${slot.time}" -> "${cleanTime}"`);
+
                     fixedCount++;
                 } else {
                     console.log(`✓ Slot ${slot._id} already correct: "${cleanTime}"`);
