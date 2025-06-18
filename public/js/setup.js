@@ -30,6 +30,11 @@ class SetupManager {
             this.updateButtons();
         }, 500);
         
+        // 設定拖拽支援
+        setTimeout(() => {
+            setupDragAndDrop();
+        }, 600);
+        
         console.log('Initial state:', this.selectedFeatures);
     }
 
@@ -994,12 +999,29 @@ class SetupManager {
         const list = document.getElementById('rewards-list');
         if (!list) return;
 
+        const rewardIndex = list.children.length;
         const div = document.createElement('div');
         div.className = 'list-item reward-item';
         div.innerHTML = `
-            <input type="text" name="rewardNames[]" placeholder="獎勵名稱" required>
-            <input type="number" name="rewardPoints[]" placeholder="所需點數" required min="1">
-            <input type="file" name="rewardImages[]" accept=".png,.jpg,.jpeg">
+            <div class="reward-item-header">
+                <span>🎁 獎勵項目</span>
+            </div>
+            
+            <input type="text" name="rewardNames[]" class="reward-name-input" placeholder="輸入獎勵名稱" required>
+            <input type="number" name="rewardPoints[]" class="reward-points-input" placeholder="點數" required min="1">
+            
+            <div class="reward-image-upload">
+                <input type="file" name="rewardImages[]" accept=".png,.jpg,.jpeg" id="rewardImage-${rewardIndex}" onchange="handleFileUpload(this)" style="display: none;">
+                <div class="file-upload-area" onclick="document.getElementById('rewardImage-${rewardIndex}').click()">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">
+                        <div class="file-upload-text-main">選擇獎勵圖片</div>
+                        <div class="file-upload-text-sub">支援 PNG、JPG、JPEG 格式</div>
+                    </div>
+                </div>
+                <div class="file-name-display" id="fileName-${rewardIndex}"></div>
+            </div>
+            
             <div class="reward-buttons">
                 <button type="button" class="list-btn add-btn" onclick="setupManager.addReward()">+</button>
                 <button type="button" class="list-btn remove-btn" onclick="setupManager.removeItem(this)">-</button>
@@ -1184,6 +1206,87 @@ function previousStep() {
     if (setupManager) {
         setupManager.changeStep(-1);
     }
+}
+
+// 文件上傳處理函數
+function handleFileUpload(input) {
+    const file = input.files[0];
+    const uploadArea = input.parentNode.querySelector('.file-upload-area');
+    const fileNameDisplay = input.parentNode.querySelector('.file-name-display');
+    
+    if (file) {
+        // 更新上傳區域外觀
+        uploadArea.classList.add('has-file');
+        uploadArea.querySelector('.file-upload-icon').textContent = '✅';
+        uploadArea.querySelector('.file-upload-text-main').textContent = '文件已選擇';
+        uploadArea.querySelector('.file-upload-text-sub').textContent = `點擊更換文件`;
+        
+        // 顯示文件名
+        if (fileNameDisplay) {
+            fileNameDisplay.textContent = file.name;
+            fileNameDisplay.classList.add('show');
+        }
+    } else {
+        // 重置上傳區域外觀
+        uploadArea.classList.remove('has-file');
+        
+        // 根據不同的上傳類型設定不同的圖標和文字
+        if (input.id === 'cardBackgroundImage') {
+            uploadArea.querySelector('.file-upload-icon').textContent = '🎨';
+            uploadArea.querySelector('.file-upload-text-main').textContent = '選擇集點卡背景圖片';
+            uploadArea.querySelector('.file-upload-text-sub').textContent = '建議尺寸：650x400px，支援 PNG、JPG、JPEG、SVG 格式';
+        } else if (input.id === 'restaurantImage') {
+            uploadArea.querySelector('.file-upload-icon').textContent = '🏪';
+            uploadArea.querySelector('.file-upload-text-main').textContent = '選擇餐廳圖片';
+            uploadArea.querySelector('.file-upload-text-sub').textContent = '建議尺寸：800x600px，支援 PNG、JPG、JPEG、SVG 格式';
+        } else {
+            uploadArea.querySelector('.file-upload-icon').textContent = '📁';
+            uploadArea.querySelector('.file-upload-text-main').textContent = '選擇獎勵圖片';
+            uploadArea.querySelector('.file-upload-text-sub').textContent = '支援 PNG、JPG、JPEG 格式';
+        }
+        
+        // 隱藏文件名顯示
+        if (fileNameDisplay) {
+            fileNameDisplay.classList.remove('show');
+        }
+    }
+    
+    // 觸發驗證檢查
+    if (setupManager) {
+        setupManager.updateButtonState();
+    }
+}
+
+// 添加拖拽支援
+function setupDragAndDrop() {
+    const uploadAreas = document.querySelectorAll('.file-upload-area');
+    
+    uploadAreas.forEach(area => {
+        area.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            area.classList.add('dragover');
+        });
+        
+        area.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+        });
+        
+        area.addEventListener('drop', (e) => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                // 找到對應的隱藏輸入框
+                const fileInput = area.parentNode.querySelector('input[type="file"]');
+                if (fileInput) {
+                    fileInput.files = files;
+                    handleFileUpload(fileInput);
+                }
+            }
+        });
+    });
 }
 
 // 全域調試函數

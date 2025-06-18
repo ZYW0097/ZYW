@@ -105,8 +105,15 @@
 
                         <div class="form-group">
                             <label for="restaurantImage">餐廳圖片 <span class="required">*</span></label>
-                            <input type="file" id="restaurantImage" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'restaurant-preview')">
-                            <img id="restaurant-preview" class="preview-image" style="display:none; margin-top: 1rem; max-height: 200px;">
+                            <input type="file" id="restaurantImage" name="restaurantImage" accept=".png,.jpg,.jpeg,.svg" style="display: none;" onchange="handleFileUpload(this)">
+                            <div class="file-upload-area" onclick="document.getElementById('restaurantImage').click()">
+                                <div class="file-upload-icon">🏪</div>
+                                <div class="file-upload-text">
+                                    <div class="file-upload-text-main">選擇餐廳圖片</div>
+                                    <div class="file-upload-text-sub">建議尺寸：800x600px，支援 PNG、JPG、JPEG、SVG 格式</div>
+                                </div>
+                            </div>
+                            <div class="file-name-display" id="fileName-restaurant"></div>
                         </div>
 
                         <div class="form-group">
@@ -144,17 +151,40 @@
 
                         <div class="form-group">
                             <label for="cardBackgroundImage">集點卡背景圖 <span class="required">*</span></label>
-                            <input type="file" id="cardBackgroundImage" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" onchange="previewImage(this, 'card-preview')">
-                            <img id="card-preview" class="preview-image" style="display:none; margin-top: 1rem; max-height: 200px;">
+                            <input type="file" id="cardBackgroundImage" name="cardBackgroundImage" accept=".png,.jpg,.jpeg,.svg" style="display: none;" onchange="handleFileUpload(this)">
+                            <div class="file-upload-area" onclick="document.getElementById('cardBackgroundImage').click()">
+                                <div class="file-upload-icon">🎨</div>
+                                <div class="file-upload-text">
+                                    <div class="file-upload-text-main">選擇集點卡背景圖片</div>
+                                    <div class="file-upload-text-sub">建議尺寸：650x400px，支援 PNG、JPG、JPEG、SVG 格式</div>
+                                </div>
+                            </div>
+                            <div class="file-name-display" id="fileName-cardBackground"></div>
                         </div>
 
                         <div class="form-group">
                             <label>集點卡獎勵設定 (至少設定一組) <span class="required">*</span></label>
                             <div class="dynamic-list" id="rewards-list">
                                 <div class="list-item reward-item">
-                                    <input type="text" name="rewardNames[]" placeholder="獎勵名稱" required>
-                                    <input type="number" name="rewardPoints[]" placeholder="所需點數" required min="1">
-                                    <input type="file" name="rewardImages[]" accept=".png,.jpg,.jpeg">
+                                    <div class="reward-item-header">
+                                        <span>🎁 獎勵項目</span>
+                                    </div>
+                                    
+                                    <input type="text" name="rewardNames[]" class="reward-name-input" placeholder="輸入獎勵名稱" required>
+                                    <input type="number" name="rewardPoints[]" class="reward-points-input" placeholder="點數" required min="1">
+                                    
+                                    <div class="reward-image-upload">
+                                        <input type="file" name="rewardImages[]" accept=".png,.jpg,.jpeg" id="rewardImage-0" onchange="handleFileUpload(this)">
+                                        <div class="file-upload-area" onclick="document.getElementById('rewardImage-0').click()">
+                                            <div class="file-upload-icon">📁</div>
+                                            <div class="file-upload-text">
+                                                <div class="file-upload-text-main">選擇獎勵圖片</div>
+                                                <div class="file-upload-text-sub">支援 PNG、JPG、JPEG 格式</div>
+                                            </div>
+                                        </div>
+                                        <div class="file-name-display" id="fileName-0"></div>
+                                    </div>
+                                    
                                     <div class="reward-buttons">
                                         <button type="button" class="list-btn add-btn" onclick="addReward()">+</button>
                                     </div>
