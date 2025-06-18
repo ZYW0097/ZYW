@@ -578,13 +578,30 @@ body {
     box-shadow: 0 0 0 3px rgba(0,0,0,0.1) !important;
 }
 
-.btn:disabled {
-    background: #e9ecef;
-    color: #6c757d;
-    border-color: #e9ecef;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.btn:disabled,
+.btn.btn-disabled {
+    background: #e9ecef !important;
+    color: #6c757d !important;
+    border-color: #e9ecef !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+}
+
+.btn:disabled::before,
+.btn.btn-disabled::before {
+    display: none !important;
+}
+
+.btn:disabled:hover,
+.btn.btn-disabled:hover {
+    background: #e9ecef !important;
+    color: #6c757d !important;
+    border-color: #e9ecef !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Bootstrap 覆蓋 */

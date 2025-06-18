@@ -25,6 +25,11 @@ class SetupManager {
         // 最後更新整體顯示狀態（包括步驟導航和按鈕）
         this.updateStepDisplay();
         
+        // 初始化按鈕狀態
+        setTimeout(() => {
+            this.updateButtons();
+        }, 500);
+        
         console.log('Initial state:', this.selectedFeatures);
     }
 
@@ -60,6 +65,7 @@ class SetupManager {
                 clearTimeout(clientnameTimeout);
                 clientnameTimeout = setTimeout(() => {
                     this.checkClientnameAvailability(e.target.value);
+                    this.updateButtons(); // 更新按鈕狀態
                 }, 500);
             });
         }
@@ -72,7 +78,55 @@ class SetupManager {
                 clearTimeout(slugnameTimeout);
                 slugnameTimeout = setTimeout(() => {
                     this.checkSlugname(e.target.value);
+                    this.updateButtons(); // 更新按鈕狀態
                 }, 500);
+            });
+        }
+
+        // 為所有輸入欄位添加事件監聽器以實時更新按鈕狀態
+        this.setupRealTimeValidation();
+    }
+
+    setupRealTimeValidation() {
+        // 為所有輸入欄位添加實時驗證
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            ['input', 'change', 'blur'].forEach(eventType => {
+                input.addEventListener(eventType, () => {
+                    // 延遲一點更新按鈕狀態，確保驗證完成
+                    setTimeout(() => {
+                        this.updateButtons();
+                    }, 100);
+                });
+            });
+        });
+
+        // 為檔案輸入添加特殊處理
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                setTimeout(() => {
+                    this.updateButtons();
+                }, 100);
+            });
+        });
+
+        // 為密碼欄位添加特殊處理
+        const passwordField = document.getElementById('adminPassword');
+        const confirmPasswordField = document.getElementById('confirmPassword');
+        if (passwordField) {
+            passwordField.addEventListener('input', () => {
+                this.validatePasswordStrength(passwordField.value);
+                setTimeout(() => {
+                    this.updateButtons();
+                }, 100);
+            });
+        }
+        if (confirmPasswordField) {
+            confirmPasswordField.addEventListener('input', () => {
+                setTimeout(() => {
+                    this.updateButtons();
+                }, 100);
             });
         }
     }
@@ -112,6 +166,7 @@ class SetupManager {
     changeStep(direction) {
         if (direction === 1) {
             if (!this.validateCurrentStep()) return;
+            if (!this.canProceedToNextStep()) return;
         }
 
         // 計算下一步驟
@@ -375,13 +430,21 @@ class SetupManager {
                 // 在最後一步（完成頁面），隱藏下一步按鈕，顯示建立系統按鈕
                 nextBtn.style.setProperty('display', 'none', 'important');
                 submitBtn.style.setProperty('display', 'inline-flex', 'important');
-                console.log('Showing submit button (step 6)');
+                
+                // 檢查是否可以提交
+                const canSubmit = this.canProceedToNextStep();
+                this.setButtonState(submitBtn, canSubmit);
+                console.log('Showing submit button (step 6), canSubmit:', canSubmit);
             } else {
                 // 在其他步驟，顯示下一步按鈕，隱藏建立系統按鈕
                 nextBtn.style.setProperty('display', 'inline-flex', 'important');
                 nextBtn.textContent = '下一步 →';
                 submitBtn.style.setProperty('display', 'none', 'important');
-                console.log('Showing next button (step ' + this.currentStep + ')');
+                
+                // 檢查是否可以進入下一步
+                const canProceed = this.canProceedToNextStep();
+                this.setButtonState(nextBtn, canProceed);
+                console.log('Showing next button (step ' + this.currentStep + '), canProceed:', canProceed);
             }
         }
 
@@ -397,6 +460,184 @@ class SetupManager {
                 submitBtnStyleDisplay: submitBtn ? submitBtn.style.display : 'N/A'
             });
         }, 100);
+    }
+
+    setButtonState(button, enabled) {
+        if (button) {
+            button.disabled = !enabled;
+            button.style.cursor = enabled ? 'pointer' : 'not-allowed';
+            
+            if (enabled) {
+                button.classList.remove('btn-disabled');
+            } else {
+                button.classList.add('btn-disabled');
+            }
+        }
+    }
+
+    canProceedToNextStep() {
+        // 檢查當前步驟是否可以進入下一步
+        switch(this.currentStep) {
+            case 1:
+                return this.validateStep1();
+            case 2:
+                return this.validateStep2();
+            case 3:
+                return this.validateStep3();
+            case 4:
+                return this.validateStep4();
+            case 5:
+                return this.validateStep5();
+            case 6:
+                return true; // 完成頁面總是可以提交
+            default:
+                return false;
+        }
+    }
+
+    validateStep1() {
+        // 檢查步驟1：基本資料
+        const clientnameInput = document.getElementById('clientname');
+        const slugnameInput = document.getElementById('slugname');
+        const clientnameValidation = document.getElementById('clientname-validation');
+        const slugnameValidation = document.getElementById('slugname-validation');
+
+        // 檢查必填欄位
+        if (!clientnameInput?.value?.trim() || !slugnameInput?.value?.trim()) {
+            return false;
+        }
+
+        // 檢查客戶名稱驗證狀態
+        if (clientnameValidation?.classList.contains('error')) {
+            return false;
+        }
+
+        // 檢查動態標識驗證狀態
+        if (slugnameValidation?.classList.contains('error')) {
+            return false;
+        }
+
+        // 確保動態標識已經檢查過且可用
+        if (slugnameInput.value && (!slugnameValidation || !slugnameValidation.classList.contains('success'))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    validateStep2() {
+        // 檢查步驟2：功能選擇
+        return this.selectedFeatures.booking || this.selectedFeatures.points;
+    }
+
+    validateStep3() {
+        // 檢查步驟3：訂位系統設定（僅在啟用訂位系統時）
+        if (!this.selectedFeatures.booking) {
+            return true; // 如果沒有啟用訂位系統，跳過驗證
+        }
+
+        const restaurantImage = document.getElementById('restaurantImage');
+        const restaurantAddress = document.getElementById('restaurantAddress');
+        const timeSlots = document.querySelectorAll('input[name="timeSlots[]"]');
+        const diningRules = document.querySelectorAll('input[name="diningRules[]"]');
+
+        // 檢查必填欄位
+        if (!restaurantImage?.files?.length) {
+            return false;
+        }
+
+        if (!restaurantAddress?.value?.trim()) {
+            return false;
+        }
+
+        // 檢查至少有一個時段
+        let hasValidTimeSlot = false;
+        timeSlots.forEach(slot => {
+            if (slot.value.trim()) {
+                hasValidTimeSlot = true;
+            }
+        });
+        if (!hasValidTimeSlot) {
+            return false;
+        }
+
+        // 檢查至少有一個規則
+        let hasValidRule = false;
+        diningRules.forEach(rule => {
+            if (rule.value.trim()) {
+                hasValidRule = true;
+            }
+        });
+        if (!hasValidRule) {
+            return false;
+        }
+
+        return true;
+    }
+
+    validateStep4() {
+        // 檢查步驟4：集點卡系統設定（僅在啟用集點卡系統時）
+        if (!this.selectedFeatures.points) {
+            return true; // 如果沒有啟用集點卡系統，跳過驗證
+        }
+
+        const cardBackgroundImage = document.getElementById('cardBackgroundImage');
+        const rewardNames = document.querySelectorAll('input[name="rewardNames[]"]');
+        const rewardPoints = document.querySelectorAll('input[name="rewardPoints[]"]');
+        const pointRules = document.querySelectorAll('input[name="pointRules[]"]');
+
+        // 檢查必填欄位
+        if (!cardBackgroundImage?.files?.length) {
+            return false;
+        }
+
+        // 檢查至少有一個獎勵
+        let hasValidReward = false;
+        for (let i = 0; i < rewardNames.length; i++) {
+            if (rewardNames[i]?.value?.trim() && rewardPoints[i]?.value?.trim()) {
+                hasValidReward = true;
+                break;
+            }
+        }
+        if (!hasValidReward) {
+            return false;
+        }
+
+        // 檢查至少有一個規則
+        let hasValidPointRule = false;
+        pointRules.forEach(rule => {
+            if (rule.value.trim()) {
+                hasValidPointRule = true;
+            }
+        });
+        if (!hasValidPointRule) {
+            return false;
+        }
+
+        return true;
+    }
+
+    validateStep5() {
+        // 檢查步驟5：後台密碼設定
+        const adminPassword = document.getElementById('adminPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+
+        // 檢查必填欄位
+        if (!adminPassword?.value?.trim() || !confirmPassword?.value?.trim()) {
+            return false;
+        }
+
+        // 檢查密碼格式
+        if (!this.validatePassword(adminPassword.value)) {
+            return false;
+        }
+
+        // 檢查密碼確認
+        if (adminPassword.value !== confirmPassword.value) {
+            return false;
+        }
+
+        return true;
     }
 
     validateCurrentStep() {
@@ -590,6 +831,11 @@ class SetupManager {
             validationDiv.textContent = '檢查客戶名稱時發生錯誤';
             validationDiv.className = 'validation-message error';
         }
+        
+        // 更新按鈕狀態
+        setTimeout(() => {
+            this.updateButtons();
+        }, 100);
     }
 
     async checkSlugname(slugname) {
@@ -634,6 +880,11 @@ class SetupManager {
             validationDiv.textContent = '檢查動態標識時發生錯誤';
             validationDiv.className = 'validation-message error';
         }
+        
+        // 更新按鈕狀態
+        setTimeout(() => {
+            this.updateButtons();
+        }, 100);
     }
 
     // 圖片預覽功能
