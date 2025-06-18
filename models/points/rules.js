@@ -19,7 +19,7 @@ const pointsRulesSchema = new mongoose.Schema({
     text: {
         type: String,
         required: true,
-        maxlength: 30
+        maxlength: 100
     },
     updatedAt: {
         type: Date,

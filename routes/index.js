@@ -290,9 +290,18 @@ router.post('/api/setup', upload.fields([
                             parsedPointRules = [];
                         }
                         
-                        // 過濾空字符串和無效值
+                        // 過濾空字符串和無效值，處理可能的陣列嵌套問題
                         parsedPointRules = parsedPointRules
-                            .filter(rule => rule && typeof rule === 'string' && rule.trim().length > 0)
+                            .filter(rule => rule !== null && rule !== undefined)
+                            .map(rule => {
+                                // 如果規則本身是陣列，取第一個元素
+                                if (Array.isArray(rule)) {
+                                    return rule.length > 0 ? rule[0] : '';
+                                }
+                                // 確保轉換為字符串
+                                return String(rule);
+                            })
+                            .filter(rule => rule && rule.trim().length > 0)
                             .map(rule => rule.trim());
                     } catch (error) {
                         console.error('Point rules JSON parse error:', error, 'Raw data:', pointRules);
@@ -300,13 +309,16 @@ router.post('/api/setup', upload.fields([
                     }
                     
                     if (parsedPointRules.length > 0) {
-                        const rulesData = parsedPointRules.map((text, index) => ({
-                            type: 'points_settings',
-                            class: 'rule_settings',
-                            article: index + 1,
-                            text: text,
-                            slug: slugname
-                        }));
+                        const rulesData = parsedPointRules.map((text, index) => {
+                            console.log(`規則 ${index + 1}:`, text, '類型:', typeof text);
+                            return {
+                                type: 'points_settings',
+                                class: 'rule_settings',
+                                article: index + 1,
+                                text: String(text), // 確保是字符串
+                                slug: slugname
+                            };
+                        });
 
                         // 儲存規則資料
                         try {
