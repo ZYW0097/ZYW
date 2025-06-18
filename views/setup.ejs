@@ -4,12 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>系統設定 - DINE✦</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 全局樣式 -->
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <!-- 頁面專用CSS -->
     <link rel="stylesheet" href="/css/setup.css">
 </head>
 <body>
@@ -59,28 +54,28 @@
                         <div class="form-group">
                             <label for="clientname">客戶名稱 <span class="required">*</span></label>
                             <input type="text" id="clientname" name="clientname" required placeholder="請輸入客戶名稱">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="slugname">系統識別碼 (僅限英文或數字) <span class="required">*</span></label>
-                            <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入系統識別碼">
+                            <div class="validation-message" id="clientname-validation"></div>
                         </div>
 
                         <div class="form-group">
                             <label>教學預覽圖片 (建議尺寸: 400x300px)</label>
-                            <div class="image-preview-container">
-                                <div class="preview-item">
-                                    <input type="file" id="tutorialImage1" name="tutorialImage1" accept=".png,.jpg,.jpeg" onchange="previewTutorialImage(this, 'tutorial-preview-1')">
-                                    <div class="preview-placeholder" id="tutorial-placeholder-1">📷</div>
-                                    <img id="tutorial-preview-1" class="preview-image">
-                                    <div class="preview-text">教學圖片 1</div>
-                                </div>
-                                <div class="preview-item">
-                                    <input type="file" id="tutorialImage2" name="tutorialImage2" accept=".png,.jpg,.jpeg" onchange="previewTutorialImage(this, 'tutorial-preview-2')">
-                                    <div class="preview-placeholder" id="tutorial-placeholder-2">📷</div>
-                                    <img id="tutorial-preview-2" class="preview-image">
-                                    <div class="preview-text">教學圖片 2</div>
-                                </div>
+                            <div class="tutorial-image-container">
+                                <img id="tutorial-image-1" src="/images/dine.jpg" alt="教學圖片 1" class="tutorial-image">
+                                <div class="tutorial-image-caption">教學圖片 1 - 請自行上傳您的教學圖片</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="slugname">動態標識 (僅限英文或數字) <span class="required">*</span></label>
+                            <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" placeholder="請輸入系統識別碼">
+                            <div class="validation-message" id="slugname-validation"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>教學預覽圖片 (建議尺寸: 400x300px)</label>
+                            <div class="tutorial-image-container">
+                                <img id="tutorial-image-2" src="/images/dine.jpg" alt="教學圖片 2" class="tutorial-image">
+                                <div class="tutorial-image-caption">教學圖片 2 - 請自行上傳您的教學圖片</div>
                             </div>
                         </div>
                     </div>
@@ -245,9 +240,7 @@
         </div>
     </div>
 
-    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- 引用外部JavaScript文件 -->
     <script src="/js/setup.js"></script>
 </body>
 </html> 

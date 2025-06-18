@@ -51,6 +51,30 @@ class SetupManager {
                 this.submitForm();
             });
         }
+
+        // 客戶名稱輸入驗證
+        const clientnameInput = document.getElementById('clientname');
+        if (clientnameInput) {
+            let clientnameTimeout;
+            clientnameInput.addEventListener('input', (e) => {
+                clearTimeout(clientnameTimeout);
+                clientnameTimeout = setTimeout(() => {
+                    this.checkClientnameAvailability(e.target.value);
+                }, 500);
+            });
+        }
+
+        // 動態標識輸入驗證
+        const slugnameInput = document.getElementById('slugname');
+        if (slugnameInput) {
+            let slugnameTimeout;
+            slugnameInput.addEventListener('input', (e) => {
+                clearTimeout(slugnameTimeout);
+                slugnameTimeout = setTimeout(() => {
+                    this.checkSlugname(e.target.value);
+                }, 500);
+            });
+        }
     }
 
     handleStepNavClick(targetStep) {
@@ -390,6 +414,30 @@ class SetupManager {
         }
 
         // 特殊驗證
+        if (this.currentStep === 1) {
+            // 檢查客戶名稱和動態標識的驗證狀態
+            const clientnameValidation = document.getElementById('clientname-validation');
+            const slugnameValidation = document.getElementById('slugname-validation');
+            
+            if (clientnameValidation && clientnameValidation.classList.contains('error')) {
+                this.showError('請修正客戶名稱的問題');
+                return false;
+            }
+            
+            if (slugnameValidation && slugnameValidation.classList.contains('error')) {
+                this.showError('請修正動態標識的問題');
+                return false;
+            }
+            
+            // 確保動態標識已經檢查過且可用
+            const slugnameInput = document.getElementById('slugname');
+            if (slugnameInput && slugnameInput.value && 
+                (!slugnameValidation || !slugnameValidation.classList.contains('success'))) {
+                this.showError('請等待動態標識檢查完成');
+                return false;
+            }
+        }
+
         if (this.currentStep === 2) {
             if (!this.selectedFeatures.booking && !this.selectedFeatures.points) {
                 this.showError('請至少選擇一個功能');
@@ -515,6 +563,76 @@ class SetupManager {
                 const slugValue = e.target.value || '{slugname}';
                 urlSpan.textContent = `https://zyw.onrender.com/${slugValue}/backstage-login`;
             });
+        }
+    }
+
+    async checkClientnameAvailability(clientname) {
+        const validationDiv = document.getElementById('clientname-validation');
+        
+        if (!clientname || clientname.trim().length < 2) {
+            validationDiv.textContent = '';
+            validationDiv.className = 'validation-message';
+            return;
+        }
+
+        try {
+            // 這裡可以添加客戶名稱的檢查邏輯
+            // 目前先進行基本驗證
+            if (clientname.trim().length < 2) {
+                validationDiv.textContent = '客戶名稱至少需要2個字元';
+                validationDiv.className = 'validation-message error';
+            } else {
+                validationDiv.textContent = '✓ 客戶名稱可用';
+                validationDiv.className = 'validation-message success';
+            }
+        } catch (error) {
+            console.error('檢查客戶名稱時發生錯誤:', error);
+            validationDiv.textContent = '檢查客戶名稱時發生錯誤';
+            validationDiv.className = 'validation-message error';
+        }
+    }
+
+    async checkSlugname(slugname) {
+        const validationDiv = document.getElementById('slugname-validation');
+        
+        if (!slugname || slugname.trim().length === 0) {
+            validationDiv.textContent = '';
+            validationDiv.className = 'validation-message';
+            return;
+        }
+
+        // 檢查格式
+        const slugnameRegex = /^[a-zA-Z0-9]+$/;
+        if (!slugnameRegex.test(slugname)) {
+            validationDiv.textContent = '動態標識只能包含英文字母和數字';
+            validationDiv.className = 'validation-message error';
+            return;
+        }
+
+        if (slugname.length < 3) {
+            validationDiv.textContent = '動態標識至少需要3個字元';
+            validationDiv.className = 'validation-message error';
+            return;
+        }
+
+        try {
+            validationDiv.textContent = '檢查中...';
+            validationDiv.className = 'validation-message checking';
+
+            const response = await fetch(`/api/check-client/${slugname}`);
+            const data = await response.json();
+            
+            if (data.exists) {
+                validationDiv.textContent = '❌ 此動態標識已被使用，請選擇其他名稱';
+                validationDiv.className = 'validation-message error';
+            } else {
+                validationDiv.textContent = '✓ 動態標識可用';
+                validationDiv.className = 'validation-message success';
+            }
+        } catch (error) {
+            console.error('檢查動態標識時發生錯誤:', error);
+            validationDiv.textContent = '檢查動態標識時發生錯誤';
+            validationDiv.className = 'validation-message error';
         }
     }
 

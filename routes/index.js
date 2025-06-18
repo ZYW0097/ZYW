@@ -66,8 +66,6 @@ router.get('/loading', (req, res) => {
 router.post('/api/setup', upload.fields([
     { name: 'restaurantImage', maxCount: 1 },
     { name: 'cardBackgroundImage', maxCount: 1 },
-    { name: 'tutorialImage1', maxCount: 1 },
-    { name: 'tutorialImage2', maxCount: 1 },
     { name: 'rewardImages[]', maxCount: 10 }
 ]), async (req, res) => {
     try {
@@ -107,8 +105,6 @@ router.post('/api/setup', upload.fields([
         // 處理圖片上傳
         let restaurantImageUrl = '/images/dine.jpg';
         let cardBackgroundImageUrl = '/images/dine.jpg';
-        let tutorialImage1Url = null;
-        let tutorialImage2Url = null;
         
         if (req.files && req.files.restaurantImage) {
             restaurantImageUrl = req.files.restaurantImage[0].path;
@@ -116,14 +112,6 @@ router.post('/api/setup', upload.fields([
         
         if (req.files && req.files.cardBackgroundImage) {
             cardBackgroundImageUrl = req.files.cardBackgroundImage[0].path;
-        }
-
-        if (req.files && req.files.tutorialImage1) {
-            tutorialImage1Url = req.files.tutorialImage1[0].path;
-        }
-
-        if (req.files && req.files.tutorialImage2) {
-            tutorialImage2Url = req.files.tutorialImage2[0].path;
         }
 
         // 檢查 slugname 是否已存在
@@ -146,8 +134,6 @@ router.post('/api/setup', upload.fields([
         // 添加可選欄位
         if (restaurantAddress) clientData.restaurantAddress = restaurantAddress;
         if (adminPassword) clientData.adminPassword = adminPassword;
-        if (tutorialImage1Url) clientData.tutorialImage1 = tutorialImage1Url;
-        if (tutorialImage2Url) clientData.tutorialImage2 = tutorialImage2Url;
 
         const client = await Client.create(clientData);
 
