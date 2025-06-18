@@ -218,7 +218,61 @@ body {
     color: #6c757d;
 }
 
-/* 教學圖片容器 */
+/* 網址預覽容器 */
+.url-preview-container {
+    margin: 1rem 0;
+}
+
+.url-preview-box {
+    width: 100%;
+    height: 65px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.url-preview-box:hover {
+    border-color: #000;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.url-preview-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000;
+    background: rgba(255,255,255,0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.url-preview-box:hover .url-preview-text {
+    background: rgba(255,255,255,1);
+    border-color: rgba(0,0,0,0.2);
+    transform: scale(1.02);
+}
+
+.url-preview-caption {
+    margin-top: 0.5rem;
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* 教學圖片容器（保留備用） */
 .tutorial-image-container {
     text-align: center;
     margin: 1rem 0;
@@ -690,6 +744,20 @@ button.btn:focus,
 
     .image-preview-container {
         grid-template-columns: 1fr;
+    }
+
+    .url-preview-box {
+        height: 55px;
+    }
+
+    .url-preview-text {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+        letter-spacing: 0.3px;
+    }
+
+    .url-preview-caption {
+        font-size: 0.8rem;
     }
 
     .tutorial-image-container {

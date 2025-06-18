@@ -798,12 +798,27 @@ class SetupManager {
     updateUrlPreview() {
         const slugField = document.getElementById('slugname');
         const urlSpan = document.getElementById('backendUrlPreview');
+        const restaurantUrlPreview = document.getElementById('restaurant-url-preview');
         
-        if (slugField && urlSpan) {
-            slugField.addEventListener('input', (e) => {
-                const slugValue = e.target.value || '{slugname}';
-                urlSpan.textContent = `https://zyw.onrender.com/${slugValue}/backstage-login`;
-            });
+        if (slugField) {
+            const updateUrls = (e) => {
+                const slugValue = e.target.value || 'slug';
+                
+                // 更新後台管理網址
+                if (urlSpan) {
+                    urlSpan.textContent = `https://zyw.onrender.com/${slugValue}/backstage-login`;
+                }
+                
+                // 更新餐廳前台網址
+                if (restaurantUrlPreview) {
+                    restaurantUrlPreview.textContent = `https://zyw.onrender.com/${slugValue}`;
+                }
+            };
+            
+            slugField.addEventListener('input', updateUrls);
+            
+            // 初始化顯示
+            updateUrls({ target: { value: slugField.value || '' } });
         }
     }
 
