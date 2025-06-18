@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="setup-wrapper">
-        <div class="setup-container">
+<div class="setup-container">
             <!-- 步驟導航 -->
             <div class="steps-header">
                 <div class="steps-nav">
@@ -51,13 +51,13 @@
                         <h2>基本資料設定</h2>
                         <p>請輸入您的餐廳基本資訊和教學預覽圖片</p>
 
-                        <div class="form-group">
+        <div class="form-group">
                             <label for="clientname">客戶名稱 (最多30字) <span class="required">*</span></label>
                             <input type="text" id="clientname" name="clientname" required maxlength="30" placeholder="請輸入客戶名稱">
                             <div class="validation-message" id="clientname-validation"></div>
-                        </div>
-
-                        <div class="form-group">
+        </div>
+        
+        <div class="form-group">
                             <label for="slugname">動態標識 (僅限英文或數字，最多30字) <span class="required">*</span></label>
                             <input type="text" id="slugname" name="slugname" required pattern="[a-zA-Z0-9]+" maxlength="30" placeholder="請輸入系統識別碼">
                             <div class="validation-message" id="slugname-validation"></div>
@@ -114,22 +114,22 @@
                                 </div>
                             </div>
                             <div class="file-name-display" id="fileName-restaurant"></div>
-                        </div>
+        </div>
 
-                        <div class="form-group">
+            <div class="form-group">
                             <label for="restaurantAddress">餐廳地址 <span class="required">*</span></label>
                             <input type="text" id="restaurantAddress" name="restaurantAddress" required placeholder="請輸入餐廳完整地址">
-                        </div>
-
-                        <div class="form-group">
+            </div>
+            
+            <div class="form-group">
                             <label>訂位時段 (24小時制，單一時間) <span class="required">*</span></label>
                             <div class="dynamic-list" id="timeSlots-list">
                                 <div class="list-item">
                                     <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$">
                                     <button type="button" class="list-btn add-btn" onclick="addTimeSlot()">+</button>
                                 </div>
-                            </div>
-                        </div>
+            </div>
+        </div>
 
                         <div class="form-group">
                             <label>訂位規則 <span class="required">*</span></label>
@@ -184,9 +184,9 @@
                                     <div class="reward-buttons">
                                         <button type="button" class="list-btn add-btn" onclick="addReward()">+</button>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div>
 
                         <div class="form-group">
                             <label>集點卡規則 (至少設定一條) <span class="required">*</span></label>
@@ -196,9 +196,9 @@
                                     <button type="button" class="list-btn add-btn" onclick="addPointRule()">+</button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                 </div>
+            </div>
+        </div>
 
                 <!-- 步驟 3: 後台密碼設定 -->
                 <div class="form-step" id="step-3">
@@ -218,13 +218,13 @@
                                     <li>包含數字</li>
                                     <li>包含一個特殊字元 (!@#$%^&*)</li>
                                 </ul>
-                            </div>
-                        </div>
-
+            </div>
+        </div>
+        
                         <div class="form-group">
                             <label for="confirmPassword">確認密碼 <span class="required">*</span></label>
                             <input type="password" id="confirmPassword" required>
-                        </div>
+</div>
 
                         <div class="backend-url">
                             <strong>後台管理網址：</strong><br>

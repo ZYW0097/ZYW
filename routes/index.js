@@ -270,7 +270,6 @@ router.post('/api/setup', upload.fields([
                                 const RewardsSchema = require('../models/points/rewards');
                                 const Rewards = cardDB.model('PointsRewards', RewardsSchema);
                                 await Rewards.insertMany(rewardsData);
-                                console.log('✅ 獎勵資料儲存成功，數量:', rewardsData.length);
                             } catch (error) {
                                 console.error('❌ 獎勵設定失敗:', error);
                             }
@@ -309,23 +308,19 @@ router.post('/api/setup', upload.fields([
                     }
                     
                     if (parsedPointRules.length > 0) {
-                        const rulesData = parsedPointRules.map((text, index) => {
-                            console.log(`規則 ${index + 1}:`, text, '類型:', typeof text);
-                            return {
-                                type: 'points_settings',
-                                class: 'rule_settings',
-                                article: index + 1,
-                                text: String(text), // 確保是字符串
-                                slug: slugname
-                            };
-                        });
+                        const rulesData = parsedPointRules.map((text, index) => ({
+                            type: 'points_settings',
+                            class: 'rule_settings',
+                            article: index + 1,
+                            text: String(text).trim(), // 確保是字符串並去除空格
+                            slug: slugname
+                        }));
 
                         // 儲存規則資料
                         try {
                             const PointRulesSchema = require('../models/points/rules');
                             const PointRules = cardDB.model('PointsRules', PointRulesSchema);
                             await PointRules.insertMany(rulesData);
-                            console.log('✅ 集點卡規則儲存成功，數量:', rulesData.length);
                         } catch (error) {
                             console.error('❌ 集點卡規則設定失敗:', error);
                         }

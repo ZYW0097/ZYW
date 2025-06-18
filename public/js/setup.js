@@ -1071,8 +1071,29 @@ class SetupManager {
             submitBtn.style.opacity = '0.6';
         }
 
-        const formData = new FormData(document.getElementById('setupForm'));
+        const formData = new FormData();
         
+        // 手動收集所有必要的數據，避免重複
+        const form = document.getElementById('setupForm');
+        
+        // 收集基本欄位
+        const basicFields = ['clientname', 'slugname', 'restaurantAddress', 'adminPassword', 'bookingSystem', 'pointsSystem'];
+        basicFields.forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && field.value) {
+                formData.append(fieldName, field.value);
+            }
+        });
+
+        // 收集檔案
+        const fileFields = ['restaurantImage', 'cardBackgroundImage'];
+        fileFields.forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && field.files && field.files.length > 0) {
+                formData.append(fieldName, field.files[0]);
+            }
+        });
+
         try {
             // 收集時段數據
             const timeSlots = Array.from(document.querySelectorAll('input[name="timeSlots[]"]'))
@@ -1104,6 +1125,14 @@ class SetupManager {
                     formData.append('rewardNames', JSON.stringify(rewardNames));
                     formData.append('rewardPoints', JSON.stringify(rewardPoints));
                     formData.append('pointRules', JSON.stringify(pointRules));
+
+                    // 收集獎勵圖片
+                    const rewardImageInputs = pointsStep.querySelectorAll('input[name="rewardImages[]"]');
+                    rewardImageInputs.forEach((input, index) => {
+                        if (input.files && input.files.length > 0) {
+                            formData.append('rewardImages[]', input.files[0]);
+                        }
+                    });
                 }
             }
 

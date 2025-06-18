@@ -3,7 +3,7 @@ class LoadingManager {
         this.slugname = null;
         this.init();
     }
-
+    
     init() {
         // 從URL獲取參數
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,7 +29,7 @@ class LoadingManager {
             this.showError('系統載入失敗，請稍後再試');
         }
     }
-
+    
     async simulateLoading() {
         const steps = [
             { id: 'step-1', duration: 1000, progress: 20, message: '建立資料庫記錄' },
@@ -56,7 +56,7 @@ class LoadingManager {
             const currentStep = document.getElementById(step.id);
             if (currentStep) {
                 currentStep.classList.add('active');
-            }
+        }
             
             // 更新進度條
             await this.animateProgress(step.progress, step.duration);
@@ -74,12 +74,12 @@ class LoadingManager {
             if (stepNumber) stepNumber.textContent = '';
         }
     }
-
+    
     animateProgress(targetProgress, duration) {
         return new Promise(resolve => {
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
-            
+        
             if (!progressFill || !progressText) {
                 resolve();
                 return;
@@ -102,7 +102,7 @@ class LoadingManager {
             }, 50);
         });
     }
-
+    
     async checkSystemStatus() {
         try {
             // 向後端API請求系統狀態
@@ -166,21 +166,21 @@ class LoadingManager {
             const element = document.getElementById(id);
             if (element) {
                 element.textContent = value;
-            }
+        }
         });
     }
 
     setupActionButtons(slugname) {
         const visitRestaurantBtn = document.getElementById('visitRestaurantBtn');
         const visitBackstageBtn = document.getElementById('visitBackstageBtn');
-        
+            
         if (visitRestaurantBtn) {
             visitRestaurantBtn.href = `/${slugname}`;
         }
         
         if (visitBackstageBtn) {
             visitBackstageBtn.href = `/${slugname}/backstage-login`;
-        }
+            }
     }
 
     showError(message) {
@@ -200,7 +200,7 @@ class LoadingManager {
         const errorContent = document.getElementById('errorContent');
         if (errorContent) {
             errorContent.classList.add('show');
-        }
+                }
     }
 
     addParticleEffect() {
@@ -238,8 +238,8 @@ class LoadingManager {
                     100% {
                         opacity: 0;
                         transform: translate(${(i % 2 === 0 ? 1 : -1) * (50 + i * 15)}px, ${(i % 3 === 0 ? 1 : -1) * (40 + i * 10)}px) scale(0);
-                    }
-                }
+            }
+        }
             `;
             
             // 將動畫樣式添加到頁面

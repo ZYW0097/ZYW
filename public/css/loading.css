@@ -479,7 +479,7 @@ body {
     .loading-container {
         padding: 1rem;
     }
-
+    
     .loading-content,
     .success-content,
     .error-content {
@@ -502,12 +502,12 @@ body {
         width: 90px;
         height: 90px;
     }
-
+    
     .success-icon .checkmark,
     .error-icon {
         font-size: 2.5rem;
     }
-
+    
     .action-buttons {
         grid-template-columns: 1fr;
         gap: 0.75rem;
@@ -523,7 +523,7 @@ body {
         text-align: left;
         width: 100%;
     }
-
+    
     .steps-display {
         margin: 2rem 0;
     }
@@ -557,7 +557,7 @@ body {
 
     .system-info {
         padding: 1.5rem;
-    }
+}
 }
 
 /* 背景動畫效果 */
