@@ -1088,19 +1088,23 @@ class SetupManager {
 
             // 收集集點卡獎勵數據
             if (this.selectedFeatures.points) {
-                const rewardNames = Array.from(document.querySelectorAll('input[name="rewardNames[]"]'))
-                    .map(input => input.value.trim())
-                    .filter(value => value);
-                const rewardPoints = Array.from(document.querySelectorAll('input[name="rewardPoints[]"]'))
-                    .map(input => input.value.trim())
-                    .filter(value => value);
-                const pointRules = Array.from(document.querySelectorAll('input[name="pointRules[]"]'))
-                    .map(input => input.value.trim())
-                    .filter(value => value);
-                
-                formData.append('rewardNames', JSON.stringify(rewardNames));
-                formData.append('rewardPoints', JSON.stringify(rewardPoints));
-                formData.append('pointRules', JSON.stringify(pointRules));
+                // 只收集可見的集點卡設定區域內的輸入框
+                const pointsStep = document.getElementById('step-2b');
+                if (pointsStep) {
+                    const rewardNames = Array.from(pointsStep.querySelectorAll('input[name="rewardNames[]"]'))
+                        .map(input => input.value.trim())
+                        .filter(value => value.length > 0);
+                    const rewardPoints = Array.from(pointsStep.querySelectorAll('input[name="rewardPoints[]"]'))
+                        .map(input => input.value.trim())
+                        .filter(value => value.length > 0 && !isNaN(value) && parseInt(value) > 0);
+                    const pointRules = Array.from(pointsStep.querySelectorAll('input[name="pointRules[]"]'))
+                        .map(input => input.value.trim())
+                        .filter(value => value.length > 0);
+                    
+                    formData.append('rewardNames', JSON.stringify(rewardNames));
+                    formData.append('rewardPoints', JSON.stringify(rewardPoints));
+                    formData.append('pointRules', JSON.stringify(pointRules));
+                }
             }
 
             // 提交到後端處理

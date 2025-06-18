@@ -200,36 +200,48 @@ router.post('/api/setup', upload.fields([
 
                 // 處理集點卡獎勵設定
                 if (rewardNames && rewardPoints) {
-                                let parsedRewardNames = [];
-            let parsedRewardPoints = [];
-            
-            try {
-                if (Array.isArray(rewardNames)) {
-                    parsedRewardNames = rewardNames;
-                } else if (typeof rewardNames === 'string' && rewardNames.trim()) {
-                    parsedRewardNames = JSON.parse(rewardNames);
-                } else {
-                    parsedRewardNames = [];
-                }
-            } catch (error) {
-                console.error('Reward names JSON parse error:', error, 'Raw data:', rewardNames);
-                parsedRewardNames = Array.isArray(rewardNames) ? rewardNames : [];
-            }
-            
-            try {
-                if (Array.isArray(rewardPoints)) {
-                    parsedRewardPoints = rewardPoints;
-                } else if (typeof rewardPoints === 'string' && rewardPoints.trim()) {
-                    parsedRewardPoints = JSON.parse(rewardPoints);
-                } else {
-                    parsedRewardPoints = [];
-                }
-            } catch (error) {
-                console.error('Reward points JSON parse error:', error, 'Raw data:', rewardPoints);
-                parsedRewardPoints = Array.isArray(rewardPoints) ? rewardPoints : [];
-            }
+                    let parsedRewardNames = [];
+                    let parsedRewardPoints = [];
                     
-                    if (parsedRewardNames.length > 0 && parsedRewardPoints.length > 0) {
+                    try {
+                        if (Array.isArray(rewardNames)) {
+                            parsedRewardNames = rewardNames;
+                        } else if (typeof rewardNames === 'string' && rewardNames.trim()) {
+                            parsedRewardNames = JSON.parse(rewardNames);
+                        } else {
+                            parsedRewardNames = [];
+                        }
+                        
+                        // 過濾空字符串和無效值
+                        parsedRewardNames = parsedRewardNames
+                            .filter(name => name && typeof name === 'string' && name.trim().length > 0)
+                            .map(name => name.trim());
+                    } catch (error) {
+                        console.error('Reward names JSON parse error:', error, 'Raw data:', rewardNames);
+                        parsedRewardNames = [];
+                    }
+                    
+                    try {
+                        if (Array.isArray(rewardPoints)) {
+                            parsedRewardPoints = rewardPoints;
+                        } else if (typeof rewardPoints === 'string' && rewardPoints.trim()) {
+                            parsedRewardPoints = JSON.parse(rewardPoints);
+                        } else {
+                            parsedRewardPoints = [];
+                        }
+                        
+                        // 過濾無效點數
+                        parsedRewardPoints = parsedRewardPoints
+                            .map(points => parseInt(points))
+                            .filter(points => !isNaN(points) && points > 0);
+                    } catch (error) {
+                        console.error('Reward points JSON parse error:', error, 'Raw data:', rewardPoints);
+                        parsedRewardPoints = [];
+                    }
+                    
+                    // 確保獎勵名稱和點數數量一致
+                    const minLength = Math.min(parsedRewardNames.length, parsedRewardPoints.length);
+                    if (minLength > 0) {
                         // 處理獎勵圖片
                         const rewardImages = [];
                         if (req.files && req.files['rewardImages[]']) {
@@ -238,22 +250,30 @@ router.post('/api/setup', upload.fields([
                             });
                         }
 
-                        // 創建獎勵資料
-                        const rewardsData = parsedRewardNames.map((name, index) => ({
-                            type: 'points_reward',
-                            name: name,
-                            points: parseInt(parsedRewardPoints[index]) || 0,
-                            img: rewardImages[index] || '/images/default-reward.jpg',
-                            slug: slugname
-                        }));
+                        // 創建獎勵資料 - 只取有效的配對數據
+                        const rewardsData = [];
+                        for (let i = 0; i < minLength; i++) {
+                            if (parsedRewardNames[i] && parsedRewardPoints[i]) {
+                                rewardsData.push({
+                                    type: 'points_reward',
+                                    name: parsedRewardNames[i],
+                                    points: parsedRewardPoints[i],
+                                    img: rewardImages[i] || '/images/default-reward.jpg',
+                                    slug: slugname
+                                });
+                            }
+                        }
 
-                        // 儲存獎勵資料
-                        try {
-                            const RewardsSchema = require('../models/points/rewards');
-                            const Rewards = cardDB.model('PointsRewards', RewardsSchema);
-                            await Rewards.insertMany(rewardsData);
-                        } catch (error) {
-                            console.error('❌ 獎勵設定失敗:', error);
+                        // 只有當有有效數據時才儲存獎勵資料
+                        if (rewardsData.length > 0) {
+                            try {
+                                const RewardsSchema = require('../models/points/rewards');
+                                const Rewards = cardDB.model('PointsRewards', RewardsSchema);
+                                await Rewards.insertMany(rewardsData);
+                                console.log('✅ 獎勵資料儲存成功，數量:', rewardsData.length);
+                            } catch (error) {
+                                console.error('❌ 獎勵設定失敗:', error);
+                            }
                         }
                     }
                 }
@@ -261,18 +281,23 @@ router.post('/api/setup', upload.fields([
                 // 處理集點卡規則
                 if (pointRules) {
                     let parsedPointRules = [];
-            try {
-                if (Array.isArray(pointRules)) {
-                    parsedPointRules = pointRules;
-                } else if (typeof pointRules === 'string' && pointRules.trim()) {
-                    parsedPointRules = JSON.parse(pointRules);
-                } else {
-                    parsedPointRules = [];
-                }
-            } catch (error) {
-                console.error('Point rules JSON parse error:', error, 'Raw data:', pointRules);
-                parsedPointRules = Array.isArray(pointRules) ? pointRules : [];
-            }
+                    try {
+                        if (Array.isArray(pointRules)) {
+                            parsedPointRules = pointRules;
+                        } else if (typeof pointRules === 'string' && pointRules.trim()) {
+                            parsedPointRules = JSON.parse(pointRules);
+                        } else {
+                            parsedPointRules = [];
+                        }
+                        
+                        // 過濾空字符串和無效值
+                        parsedPointRules = parsedPointRules
+                            .filter(rule => rule && typeof rule === 'string' && rule.trim().length > 0)
+                            .map(rule => rule.trim());
+                    } catch (error) {
+                        console.error('Point rules JSON parse error:', error, 'Raw data:', pointRules);
+                        parsedPointRules = [];
+                    }
                     
                     if (parsedPointRules.length > 0) {
                         const rulesData = parsedPointRules.map((text, index) => ({
@@ -288,6 +313,7 @@ router.post('/api/setup', upload.fields([
                             const PointRulesSchema = require('../models/points/rules');
                             const PointRules = cardDB.model('PointsRules', PointRulesSchema);
                             await PointRules.insertMany(rulesData);
+                            console.log('✅ 集點卡規則儲存成功，數量:', rulesData.length);
                         } catch (error) {
                             console.error('❌ 集點卡規則設定失敗:', error);
                         }
