@@ -71,6 +71,7 @@ async function getClientInfo(storeSlug) {
     return {
         clientname: client ? client.clientname : '餐廳名稱',
         restaurantImage: client ? client.restaurantImage : '/images/dine.jpg',
+        restaurantAddress: client ? client.restaurantAddress : '餐廳地址',
         timeSlots,
         diningRules
     };

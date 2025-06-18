@@ -17,6 +17,22 @@
         </div>
     </div>
 
+    <!-- 基本資訊設定 -->
+    <div class="settings-section">
+        <h3>基本資訊設定</h3>
+        <form id="basicInfoForm" class="basic-info-form">
+            <div class="form-group">
+                <label for="clientname">餐廳名稱</label>
+                <input type="text" id="clientname" name="clientname" value="<%= (customSettings && customSettings.clientname) ? customSettings.clientname : '' %>" required maxlength="30" placeholder="請輸入餐廳名稱">
+            </div>
+            <div class="form-group">
+                <label for="restaurantAddress">餐廳地址</label>
+                <input type="text" id="restaurantAddress" name="restaurantAddress" value="<%= (customSettings && customSettings.restaurantAddress) ? customSettings.restaurantAddress : '' %>" placeholder="請輸入餐廳完整地址">
+            </div>
+            <button type="submit" class="save-btn">更新基本資訊</button>
+        </form>
+    </div>
+
     <!-- 功能啟用設定 -->
     <div class="settings-section">
         <h3>功能啟用設定</h3>

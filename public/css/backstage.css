@@ -86,10 +86,37 @@
 }
 
 /* 表單樣式 */
-.features-form, .images-form, .time-slots-form, .dining-rules-form {
+.features-form, .images-form, .time-slots-form, .dining-rules-form, .basic-info-form {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+/* 基本資訊表單 */
+.basic-info-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.basic-info-form label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.basic-info-form input[type="text"] {
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.basic-info-form input[type="text"]:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .checkbox-group {

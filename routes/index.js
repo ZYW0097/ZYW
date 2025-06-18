@@ -683,6 +683,37 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
     }
 });
 
+// 更新基本資訊
+router.post('/:storeSlug/api/settings/basicInfo', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { clientname, restaurantAddress } = req.body;
+
+        // 驗證餐廳名稱
+        if (!clientname || clientname.trim().length < 2 || clientname.trim().length > 30) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '餐廳名稱必須在2-30個字元之間' 
+            });
+        }
+
+        const updateData = {
+            clientname: clientname.trim(),
+            restaurantAddress: restaurantAddress ? restaurantAddress.trim() : ''
+        };
+
+        await Client.findOneAndUpdate(
+            { slugname: storeSlug },
+            updateData
+        );
+
+        res.json({ success: true, message: '基本資訊已更新' });
+    } catch (error) {
+        console.error('❌ 基本資訊更新錯誤:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 router.post('/:storeSlug/api/settings/images', upload.fields([
     { name: 'restaurantImage', maxCount: 1 },
     { name: 'cardBackgroundImage', maxCount: 1 }

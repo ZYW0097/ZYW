@@ -201,6 +201,41 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDiningRuleButtons();
     }
 
+    // 基本資訊設定表單處理
+    const basicInfoForm = document.getElementById('basicInfoForm');
+    if (basicInfoForm) {
+        basicInfoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(basicInfoForm);
+            const clientname = formData.get('clientname');
+            const restaurantAddress = formData.get('restaurantAddress');
+
+            try {
+                const response = await fetch(`/${storeSlug}/api/settings/basicInfo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ clientname, restaurantAddress })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert('基本資訊已更新');
+                    // 刷新頁面以顯示更新後的資訊
+                    window.location.reload();
+                } else {
+                    alert(result.error || '更新失敗，請重試');
+                }
+            } catch (error) {
+                console.error('❌ 基本資訊更新錯誤:', error);
+                alert('發生網路錯誤，請重試');
+            }
+        });
+    }
+
     // 功能啟用表單處理
     const featuresForm = document.getElementById('featuresForm');
     if (featuresForm) {
