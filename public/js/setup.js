@@ -507,6 +507,16 @@ class SetupManager {
             return false;
         }
 
+        // 檢查字數限制
+        if (clientnameInput.value.trim().length > 30 || slugnameInput.value.trim().length > 30) {
+            return false;
+        }
+
+        // 檢查最小長度
+        if (clientnameInput.value.trim().length < 2 || slugnameInput.value.trim().length < 3) {
+            return false;
+        }
+
         // 檢查客戶名稱驗證狀態
         if (clientnameValidation?.classList.contains('error')) {
             return false;
@@ -825,22 +835,30 @@ class SetupManager {
     async checkClientnameAvailability(clientname) {
         const validationDiv = document.getElementById('clientname-validation');
         
-        if (!clientname || clientname.trim().length < 2) {
+        if (!clientname || clientname.trim().length === 0) {
             validationDiv.textContent = '';
             validationDiv.className = 'validation-message';
             return;
         }
 
         try {
-            // 這裡可以添加客戶名稱的檢查邏輯
-            // 目前先進行基本驗證
+            // 檢查字數限制
+            if (clientname.trim().length > 30) {
+                validationDiv.textContent = '客戶名稱不能超過30個字元';
+                validationDiv.className = 'validation-message error';
+                return;
+            }
+
+            // 檢查最小長度
             if (clientname.trim().length < 2) {
                 validationDiv.textContent = '客戶名稱至少需要2個字元';
                 validationDiv.className = 'validation-message error';
-            } else {
-                validationDiv.textContent = '✓ 客戶名稱可用';
-                validationDiv.className = 'validation-message success';
+                return;
             }
+
+            // 驗證通過
+            validationDiv.textContent = '✓ 客戶名稱可用';
+            validationDiv.className = 'validation-message success';
         } catch (error) {
             console.error('檢查客戶名稱時發生錯誤:', error);
             validationDiv.textContent = '檢查客戶名稱時發生錯誤';
@@ -859,6 +877,13 @@ class SetupManager {
         if (!slugname || slugname.trim().length === 0) {
             validationDiv.textContent = '';
             validationDiv.className = 'validation-message';
+            return;
+        }
+
+        // 檢查字數限制
+        if (slugname.trim().length > 30) {
+            validationDiv.textContent = '動態標識不能超過30個字元';
+            validationDiv.className = 'validation-message error';
             return;
         }
 

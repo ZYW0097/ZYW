@@ -200,6 +200,7 @@ body {
 /* 驗證訊息樣式 */
 .validation-message {
     margin-top: 0.5rem;
+    margin-bottom: 0;
     font-size: 0.9rem;
     font-weight: 500;
     min-height: 1.2rem;
@@ -220,48 +221,47 @@ body {
 
 /* 網址預覽容器 */
 .url-preview-container {
-    margin: 1rem 0;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+/* 當有驗證訊息時調整間距 */
+.validation-message:not(:empty) + .url-preview-container {
+    margin-top: 0.5rem;
 }
 
 .url-preview-box {
     width: 100%;
     height: 65px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding: 0 12px;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.url-preview-box:hover {
-    border-color: #000;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+.url-lock-icon {
+    font-size: 12px;
+    color: #28a745;
+    margin-right: 8px;
+    display: inline-block;
 }
 
 .url-preview-text {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #000;
-    background: rgba(255,255,255,0.9);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-}
-
-.url-preview-box:hover .url-preview-text {
-    background: rgba(255,255,255,1);
-    border-color: rgba(0,0,0,0.2);
-    transform: scale(1.02);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #1f2328;
+    background: transparent;
+    padding: 0;
+    border: none;
+    letter-spacing: 0;
+    flex: 1;
+    text-align: left;
 }
 
 .url-preview-caption {
@@ -748,12 +748,11 @@ button.btn:focus,
 
     .url-preview-box {
         height: 55px;
+        padding: 0 10px;
     }
 
     .url-preview-text {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.8rem;
-        letter-spacing: 0.3px;
+        font-size: 13px;
     }
 
     .url-preview-caption {

@@ -91,6 +91,36 @@ router.post('/api/setup', upload.fields([
             });
         }
 
+        // 驗證字數限制
+        if (clientname.trim().length > 30) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '客戶名稱不能超過30個字元' 
+            });
+        }
+
+        if (slugname.trim().length > 30) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '動態標識不能超過30個字元' 
+            });
+        }
+
+        // 驗證最小長度
+        if (clientname.trim().length < 2) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '客戶名稱至少需要2個字元' 
+            });
+        }
+
+        if (slugname.trim().length < 3) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '動態標識至少需要3個字元' 
+            });
+        }
+
         // 驗證密碼格式（如果有提供）
         if (adminPassword) {
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
