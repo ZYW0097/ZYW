@@ -2,12 +2,13 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #f8f9fa;
     min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 /* 主要容器 */
@@ -170,11 +171,33 @@ body {
     text-decoration: none;
     font-size: 13px;
     transition: color 0.2s ease;
+    display: inline-block;
+    margin-bottom: 20px;
 }
 
 .backstage-back-link:hover {
     color: #495057;
     text-decoration: underline;
+}
+
+.backstage-login-footer-info {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f3f4;
+}
+
+.backstage-login-footer-info .footer-brand {
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 5px 0;
+    letter-spacing: 0.5px;
+}
+
+.backstage-login-footer-info .footer-copyright {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
 }
 
 /* 載入狀態 */

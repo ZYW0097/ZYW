@@ -13,375 +13,391 @@
         <button class="backstage-mobile-toggle" id="backstage-mobile-toggle">☰</button>
         <div class="backstage-mobile-overlay" id="backstage-mobile-overlay"></div>
 
-        <!-- 側邊欄 -->
-        <div class="backstage-sidebar">
-            <!-- 側邊欄標題 -->
-            <div class="backstage-sidebar-header">
-                <div class="backstage-logo">
-                    <span class="backstage-logo-icon"></span>
-                    <h2>商家控制台</h2>
-                </div>
- 
-            </div>
-            
-            <!-- 導航選單 -->
-            <nav class="backstage-nav">
-                <ul class="backstage-nav-list">
-                    <li class="backstage-nav-item">
-                        <a href="#dashboard" class="backstage-nav-link active" data-page="dashboard">
-                            <span class="nav-text">控制台首頁</span>
-                        </a>
-                    </li>
-                    <li class="backstage-nav-item">
-                        <a href="#basic" class="backstage-nav-link" data-page="basic">
-                            <span class="nav-text">基本設定</span>
-                        </a>
-                    </li>
-                    <li class="backstage-nav-item">
-                        <a href="#booking" class="backstage-nav-link" data-page="booking">
-                            <span class="nav-text">訂位設定</span>
-                        </a>
-                    </li>
-                    <li class="backstage-nav-item">
-                        <a href="#points" class="backstage-nav-link" data-page="points">
-                            <span class="nav-text">集點卡設定</span>
-                        </a>
-                    </li>
-                    <li class="backstage-nav-item">
-                        <a href="#qrcode" class="backstage-nav-link" data-page="qrcode">
-                            <span class="nav-text">點數QR碼</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div class="backstage-sidebar-footer">
-                <a href="/<%= storeSlug %>" class="backstage-footer-link">
-                    <span class="nav-text">查看餐廳</span>
-                </a>
-                <a href="/<%= storeSlug %>/backstage/logout" class="backstage-footer-link logout">
-                    <span class="nav-text">登出</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- 主要內容區域 -->
-        <div class="backstage-main-content">
-            <!-- 控制台首頁 -->
-            <div class="backstage-page active" id="dashboard-page">
-                <div class="backstage-page-header">
-                    <h1>控制台首頁</h1>
-                    <p>歡迎回到商家管理中心</p>
-                </div>
-                
-                <!-- 系統狀態卡片 -->
-                <div class="backstage-dashboard-grid">
-                    <div class="backstage-status-card">
-                        <div class="status-card-icon">📊</div>
-                        <div class="status-card-content">
-                            <h3>系統狀態</h3>
-                            <p class="status-value">正常運行</p>
-                            <span class="status-time">即時監控</span>
-                        </div>
-                    </div>
-                    
-                    <div class="backstage-status-card">
-                        <div class="status-card-icon">📅</div>
-                        <div class="status-card-content">
-                            <h3>建立時間</h3>
-                            <p class="status-value"><%= createdAt ? new Date(createdAt).toLocaleDateString('zh-TW') : '未知' %></p>
-                            <span class="status-time">餐廳成立日期</span>
-                        </div>
-                    </div>
-                    
-                    <div class="backstage-status-card">
-                        <div class="status-card-icon">🔄</div>
-                        <div class="status-card-content">
-                            <h3>最後更新</h3>
-                            <p class="status-value"><%= updatedAt ? new Date(updatedAt).toLocaleDateString('zh-TW') : '未知' %></p>
-                            <span class="status-time">資料更新時間</span>
-                        </div>
-                    </div>
-                    
-                    <div class="backstage-status-card">
-                        <div class="status-card-icon">🔗</div>
-                        <div class="status-card-content">
-                            <h3>餐廳網址</h3>
-                            <p class="status-value">/<%= storeSlug %></p>
-                            <span class="status-time">客戶訪問連結</span>
-                        </div>
+        <!-- 主要內容包裝器 -->
+        <div class="backstage-content-wrapper">
+            <!-- 側邊欄 -->
+            <div class="backstage-sidebar">
+                <!-- 側邊欄標題 -->
+                <div class="backstage-sidebar-header">
+                    <div class="backstage-logo">
+                        <h2>商家控制台</h2>
                     </div>
                 </div>
                 
-                <!-- 快捷操作 -->
-                <div class="backstage-quick-actions">
-                    <h2>快捷操作</h2>
-                    <div class="quick-actions-grid">
-                        <button class="quick-action-btn" onclick="navigateToPage('basic')">
-                            <span class="action-icon">⚙️</span>
-                            <span class="action-text">基本設定</span>
-                        </button>
-                        <button class="quick-action-btn" onclick="navigateToPage('booking')">
-                            <span class="action-icon">📅</span>
-                            <span class="action-text">訂位設定</span>
-                        </button>
-                        <button class="quick-action-btn" onclick="navigateToPage('points')">
-                            <span class="action-icon">🎯</span>
-                            <span class="action-text">集點卡設定</span>
-                        </button>
-                        <button class="quick-action-btn" onclick="navigateToPage('qrcode')">
-                            <span class="action-icon">📱</span>
-                            <span class="action-text">點數QR碼</span>
-                        </button>
-                    </div>
+                <!-- 導航選單 -->
+                <nav class="backstage-nav">
+                    <ul class="backstage-nav-list">
+                        <li class="backstage-nav-item">
+                            <a href="#dashboard" class="backstage-nav-link active" data-page="dashboard">
+                                <span class="nav-text">控制台首頁</span>
+                            </a>
+                        </li>
+                        <li class="backstage-nav-item">
+                            <a href="#basic" class="backstage-nav-link" data-page="basic">
+                                <span class="nav-text">基本設定</span>
+                            </a>
+                        </li>
+                        <li class="backstage-nav-item">
+                            <a href="#booking" class="backstage-nav-link" data-page="booking">
+                                <span class="nav-text">訂位設定</span>
+                            </a>
+                        </li>
+                        <li class="backstage-nav-item">
+                            <a href="#points" class="backstage-nav-link" data-page="points">
+                                <span class="nav-text">集點卡設定</span>
+                            </a>
+                        </li>
+                        <li class="backstage-nav-item">
+                            <a href="#qrcode" class="backstage-nav-link" data-page="qrcode">
+                                <span class="nav-text">點數QR碼</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="backstage-sidebar-footer">
+                    <a href="/<%= storeSlug %>" class="backstage-footer-link">
+                        <span class="nav-text">查看餐廳</span>
+                    </a>
+                    <a href="/<%= storeSlug %>/backstage/logout" class="backstage-footer-link logout">
+                        <span class="nav-text">登出</span>
+                    </a>
                 </div>
             </div>
 
-            <!-- 基本設定頁面 -->
-            <div class="backstage-page" id="basic-page">
-                <div class="backstage-page-header">
-                    <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
-                    <h1>基本設定</h1>
-                    <p>管理餐廳基本資訊和系統設定</p>
-                </div>
-                
-                <div class="backstage-page-content">
-                    <form id="basicInfoForm" class="backstage-form">
-                        <div class="backstage-form-section">
-                            <h3>餐廳資訊</h3>
-                            <div class="backstage-form-row">
-                                <div class="backstage-form-group">
-                                    <label for="clientname">餐廳名稱</label>
-                                    <input type="text" id="clientname" name="clientname" 
-                                           value="<%= clientname || '' %>" 
-                                           required maxlength="30" placeholder="請輸入餐廳名稱">
-                                </div>
-                                <div class="backstage-form-group">
-                                    <label for="restaurantAddress">餐廳地址</label>
-                                    <input type="text" id="restaurantAddress" name="restaurantAddress" 
-                                           value="<%= (customSettings && customSettings.restaurantAddress) ? customSettings.restaurantAddress : '' %>" 
-                                           placeholder="請輸入餐廳完整地址">
-                                </div>
+            <!-- 主要內容區域 -->
+            <div class="backstage-main-content">
+                <!-- 控制台首頁 -->
+                <div class="backstage-page active" id="dashboard-page">
+                    <div class="backstage-page-header">
+                        <h1>控制台首頁</h1>
+                        <p>歡迎回到商家管理中心</p>
+                    </div>
+                    
+                    <!-- 系統狀態卡片 -->
+                    <div class="backstage-dashboard-grid">
+                        <div class="backstage-status-card">
+                            <div class="status-card-icon">📊</div>
+                            <div class="status-card-content">
+                                <h3>系統狀態</h3>
+                                <p class="status-value">正常運行</p>
+                                <span class="status-time">即時監控</span>
                             </div>
                         </div>
                         
-                        <div class="backstage-form-section">
-                            <h3>功能設定</h3>
-                            <div class="backstage-form-row">
-                                <div class="backstage-form-group">
-                                    <label class="backstage-toggle-label">
-                                        <input type="checkbox" id="pointsSystemToggle" 
-                                               <%= (customSettings && customSettings.features && customSettings.features.pointsSystem) ? 'checked' : '' %>>
-                                        <span class="backstage-toggle-slider"></span>
-                                        <span class="backstage-toggle-text">集點卡系統</span>
-                                    </label>
-                                    <small>開啟或關閉集點卡功能</small>
-                                </div>
-                                <div class="backstage-form-group">
-                                    <label class="backstage-toggle-label">
-                                        <input type="checkbox" id="bookingSystemToggle" 
-                                               <%= (customSettings && customSettings.features && customSettings.features.bookingSystem) ? 'checked' : '' %>>
-                                        <span class="backstage-toggle-slider"></span>
-                                        <span class="backstage-toggle-text">訂位系統</span>
-                                    </label>
-                                    <small>開啟或關閉訂位功能</small>
-                                </div>
-                            </div>
-                            <div class="backstage-form-actions">
-                                <button type="button" class="backstage-btn backstage-btn-primary" onclick="updateFeatureSettings()">更新功能設定</button>
+                        <div class="backstage-status-card">
+                            <div class="status-card-icon">📅</div>
+                            <div class="status-card-content">
+                                <h3>建立時間</h3>
+                                <p class="status-value"><%= createdAt ? new Date(createdAt).toLocaleDateString('zh-TW') : '未知' %></p>
+                                <span class="status-time">餐廳成立日期</span>
                             </div>
                         </div>
                         
-                        <div class="backstage-form-section">
-                            <h3>安全設定</h3>
-                            <div class="backstage-form-row">
-                                <div class="backstage-form-group">
-                                    <label for="adminPassword">新管理員密碼</label>
-                                    <input type="password" id="adminPassword" name="adminPassword" 
-                                           placeholder="留空則不更改密碼">
-                                    <small>密碼至少8個字元，包含大小寫字母、數字和特殊字元</small>
-                                </div>
+                        <div class="backstage-status-card">
+                            <div class="status-card-icon">🔄</div>
+                            <div class="status-card-content">
+                                <h3>最後更新</h3>
+                                <p class="status-value"><%= updatedAt ? new Date(updatedAt).toLocaleDateString('zh-TW') : '未知' %></p>
+                                <span class="status-time">資料更新時間</span>
                             </div>
                         </div>
-
-                        <div class="backstage-form-actions">
-                            <button type="submit" class="backstage-btn backstage-btn-primary">儲存設定</button>
-                        </div>
-                    </form>
-
-                    <!-- 危險操作區域 -->
-                    <div class="backstage-danger-zone">
-                        <h3>危險操作</h3>
-                        <p>以下操作將永久刪除所有數據，無法復原</p>
-                        <button type="button" class="backstage-btn backstage-btn-danger" onclick="confirmDeleteStore()">
-                            刪除餐廳
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 訂位設定頁面 -->
-            <div class="backstage-page" id="booking-page">
-                <div class="backstage-page-header">
-                    <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
-                    <h1>訂位設定</h1>
-                    <p>管理餐廳圖片、訂位時段和用餐規則</p>
-                </div>
-                
-                <div class="backstage-page-content">
-                    <!-- 餐廳圖片設定 -->
-                    <div class="backstage-setting-card">
-                        <h3>餐廳圖片</h3>
-                        <form id="restaurantImageForm" class="backstage-form" enctype="multipart/form-data">
-                            <div class="backstage-image-upload">
-                                <div class="backstage-image-preview">
-                                    <img src="<%= (customSettings && customSettings.restaurantImage) ? customSettings.restaurantImage : '/images/dine.jpg' %>" 
-                                         alt="餐廳圖片" id="restaurantImagePreview">
-                                </div>
-                                <div class="backstage-image-controls">
-                                    <input type="file" name="restaurantImage" id="restaurantImageInput" accept=".png,.jpg,.jpeg,.svg" style="display: none;">
-                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="document.getElementById('restaurantImageInput').click()">
-                                        選擇圖片
-                                    </button>
-                                    <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
-                                </div>
+                        
+                        <div class="backstage-status-card">
+                            <div class="status-card-icon">🔗</div>
+                            <div class="status-card-content">
+                                <h3>餐廳網址</h3>
+                                <p class="status-value">/<%= storeSlug %></p>
+                                <span class="status-time">客戶訪問連結</span>
                             </div>
-                        </form>
-                    </div>
-
-                    <!-- 訂位時段設定 -->
-                    <div class="backstage-setting-card">
-                        <h3>訂位時段</h3>
-                        <form id="timeSlotsForm" class="backstage-form">
-                            <div id="timeSlots-list" class="backstage-dynamic-list">
-                                <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
-                                    <% customSettings.timeSlots.forEach((slot, index) => { %>
-                                    <div class="backstage-list-item">
-                                        <input type="text" name="timeSlots[]" value="<%= slot.time %>" required placeholder="例如: 12:00">
-                                        <% if (index === customSettings.timeSlots.length - 1) { %>
-                                            <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                                        <% } %>
-                                        <% if (customSettings.timeSlots.length > 1) { %>
-                                            <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeTimeSlot(this)">×</button>
-                                        <% } %>
-                                    </div>
-                                    <% }) %>
-                                <% } else { %>
-                                <div class="backstage-list-item">
-                                    <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required>
-                                    <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                                </div>
-                                <% } %>
-                            </div>
-                            <div class="backstage-form-actions">
-                                <button type="submit" class="backstage-btn backstage-btn-primary">儲存時段設定</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- 用餐規則設定 -->
-                    <div class="backstage-setting-card">
-                        <h3>用餐規則</h3>
-                        <form id="diningRulesForm" class="backstage-form">
-                            <div id="diningRules-list" class="backstage-dynamic-list">
-                                <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
-                                    <% customSettings.diningRules.forEach((rule, index) => { %>
-                                    <div class="backstage-list-item">
-                                        <input type="text" name="diningRules[]" value="<%= rule.text %>" required placeholder="請輸入用餐規則">
-                                        <% if (index === customSettings.diningRules.length - 1) { %>
-                                            <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
-                                        <% } %>
-                                        <% if (customSettings.diningRules.length > 1) { %>
-                                            <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeDiningRule(this)">×</button>
-                                        <% } %>
-                                    </div>
-                                    <% }) %>
-                                <% } else { %>
-                                <div class="backstage-list-item">
-                                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
-                                    <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
-                                </div>
-                                <% } %>
-                            </div>
-                            <div class="backstage-form-actions">
-                                <button type="submit" class="backstage-btn backstage-btn-primary">儲存規則設定</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 集點卡設定頁面 -->
-            <div class="backstage-page" id="points-page">
-                <div class="backstage-page-header">
-                    <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
-                    <h1>集點卡設定</h1>
-                    <p>管理集點卡背景圖片、規則和獎勵</p>
-                </div>
-                
-                <div class="backstage-page-content">
-                    <% if (customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
-                    <!-- 集點卡背景圖片 -->
-                    <div class="backstage-setting-card">
-                        <h3>集點卡背景圖片</h3>
-                        <form id="cardImageForm" class="backstage-form" enctype="multipart/form-data">
-                            <div class="backstage-image-upload">
-                                <div class="backstage-image-preview">
-                                    <img src="<%= (customSettings && customSettings.cardBackgroundImage) ? customSettings.cardBackgroundImage : '/images/dine.jpg' %>" 
-                                         alt="集點卡背景" id="cardImagePreview">
-                                </div>
-                                <div class="backstage-image-controls">
-                                    <input type="file" name="cardBackgroundImage" id="cardImageInput" accept=".png,.jpg,.jpeg,.svg" style="display: none;">
-                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="document.getElementById('cardImageInput').click()">
-                                        選擇圖片
-                                    </button>
-                                    <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- 集點卡規則和獎勵設定 -->
-                    <div class="backstage-setting-card">
-                        <h3>規則和獎勵設定</h3>
-                        <div class="backstage-info-box">
-                            <p>🚧 集點卡規則和獎勵設定功能正在開發中...</p>
                         </div>
                     </div>
-                    <% } else { %>
-                    <!-- 集點卡功能未開啟 -->
-                    <div class="backstage-setting-card">
-                        <h3>集點卡功能未開啟</h3>
-                        <div class="backstage-info-box">
-                            <p>集點卡功能目前未開啟。請到基本設定中開啟集點卡系統。</p>
-                            <button type="button" class="backstage-btn backstage-btn-primary" onclick="navigateToPage('basic')">
-                                前往開啟集點卡功能
+                    
+                    <!-- 快捷操作 -->
+                    <div class="backstage-quick-actions">
+                        <h2>快捷操作</h2>
+                        <div class="quick-actions-grid">
+                            <button class="quick-action-btn" onclick="navigateToPage('basic')">
+                                <span class="action-icon">⚙️</span>
+                                <span class="action-text">基本設定</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateToPage('booking')">
+                                <span class="action-icon">📅</span>
+                                <span class="action-text">訂位設定</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateToPage('points')">
+                                <span class="action-icon">🎯</span>
+                                <span class="action-text">集點卡設定</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateToPage('qrcode')">
+                                <span class="action-icon">📱</span>
+                                <span class="action-text">點數QR碼</span>
                             </button>
                         </div>
                     </div>
-                    <% } %>
                 </div>
-            </div>
 
-            <!-- 點數QR碼頁面 -->
-            <div class="backstage-page" id="qrcode-page">
-                <div class="backstage-page-header">
-                    <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
-                    <h1>點數QR碼</h1>
-                    <p>管理和生成點數QR碼</p>
+                <!-- 基本設定頁面 -->
+                <div class="backstage-page" id="basic-page">
+                    <div class="backstage-page-header">
+                        <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
+                        <h1>基本設定</h1>
+                        <p>管理餐廳基本資訊和系統設定</p>
+                    </div>
+                    
+                    <div class="backstage-page-content">
+                        <form id="basicInfoForm" class="backstage-form">
+                            <div class="backstage-form-section">
+                                <h3>餐廳資訊</h3>
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label for="clientname">餐廳名稱</label>
+                                        <input type="text" id="clientname" name="clientname" 
+                                               value="<%= clientname || '' %>" 
+                                               required maxlength="30" placeholder="請輸入餐廳名稱">
+                                    </div>
+                                    <div class="backstage-form-group">
+                                        <label for="restaurantAddress">餐廳地址</label>
+                                        <input type="text" id="restaurantAddress" name="restaurantAddress" 
+                                               value="<%= (customSettings && customSettings.restaurantAddress) ? customSettings.restaurantAddress : '' %>" 
+                                               placeholder="請輸入餐廳完整地址">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="backstage-form-section">
+                                <h3>功能設定</h3>
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label class="backstage-toggle-label">
+                                            <input type="checkbox" id="pointsSystemToggle" 
+                                                   <%= (customSettings && customSettings.features && customSettings.features.pointsSystem) ? 'checked' : '' %>>
+                                            <span class="backstage-toggle-slider"></span>
+                                            <span class="backstage-toggle-text">集點卡系統</span>
+                                        </label>
+                                        <small>開啟或關閉集點卡功能</small>
+                                    </div>
+                                    <div class="backstage-form-group">
+                                        <label class="backstage-toggle-label">
+                                            <input type="checkbox" id="bookingSystemToggle" 
+                                                   <%= (customSettings && customSettings.features && customSettings.features.bookingSystem) ? 'checked' : '' %>>
+                                            <span class="backstage-toggle-slider"></span>
+                                            <span class="backstage-toggle-text">訂位系統</span>
+                                        </label>
+                                        <small>開啟或關閉訂位功能</small>
+                                    </div>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="button" class="backstage-btn backstage-btn-primary" onclick="updateFeatureSettings()">更新功能設定</button>
+                                </div>
+                            </div>
+                            
+                            <div class="backstage-form-section">
+                                <h3>安全設定</h3>
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label for="adminPassword">新管理員密碼</label>
+                                        <input type="password" id="adminPassword" name="adminPassword" 
+                                               placeholder="留空則不更改密碼">
+                                        <small>密碼至少8個字元，包含大小寫字母、數字和特殊字元</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="backstage-form-actions">
+                                <button type="submit" class="backstage-btn backstage-btn-primary">儲存設定</button>
+                            </div>
+                        </form>
+
+                        <!-- 危險操作區域 -->
+                        <div class="backstage-danger-zone">
+                            <h3>危險操作</h3>
+                            <p>以下操作將永久刪除所有數據，無法復原</p>
+                            <button type="button" class="backstage-btn backstage-btn-danger" onclick="confirmDeleteStore()">
+                                刪除餐廳
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="backstage-page-content">
-                    <div class="backstage-setting-card">
-                        <h3>QR碼功能</h3>
-                        <div class="backstage-info-box">
-                            <p>🚧 點數QR碼功能正在開發中，敬請期待...</p>
+
+                <!-- 訂位設定頁面 -->
+                <div class="backstage-page" id="booking-page">
+                    <div class="backstage-page-header">
+                        <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
+                        <h1>訂位設定</h1>
+                        <p>管理餐廳圖片、訂位時段和用餐規則</p>
+                    </div>
+                    
+                    <div class="backstage-page-content">
+                        <!-- 餐廳圖片設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>餐廳圖片</h3>
+                            <form id="restaurantImageForm" class="backstage-form" enctype="multipart/form-data">
+                                <div class="backstage-image-upload">
+                                    <div class="backstage-image-preview">
+                                        <img src="<%= (customSettings && customSettings.restaurantImage) ? customSettings.restaurantImage : '/images/dine.jpg' %>" 
+                                             alt="餐廳圖片" id="restaurantImagePreview">
+                                    </div>
+                                    <div class="backstage-image-controls">
+                                        <input type="file" name="restaurantImage" id="restaurantImageInput" accept=".png,.jpg,.jpeg,.svg" style="display: none;">
+                                        <button type="button" class="backstage-btn backstage-btn-outline" onclick="document.getElementById('restaurantImageInput').click()">
+                                            選擇圖片
+                                        </button>
+                                        <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 訂位時段設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>訂位時段</h3>
+                            <form id="timeSlotsForm" class="backstage-form">
+                                <div id="timeSlots-list" class="backstage-dynamic-list">
+                                    <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
+                                        <% customSettings.timeSlots.forEach((slot, index) => { %>
+                                        <div class="backstage-list-item">
+                                            <input type="text" name="timeSlots[]" value="<%= slot.time %>" required placeholder="例如: 12:00">
+                                            <% if (index === customSettings.timeSlots.length - 1) { %>
+                                                <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
+                                            <% } %>
+                                            <% if (customSettings.timeSlots.length > 1) { %>
+                                                <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeTimeSlot(this)">×</button>
+                                            <% } %>
+                                        </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                    <div class="backstage-list-item">
+                                        <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required>
+                                        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存時段設定</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 用餐規則設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>用餐規則</h3>
+                            <form id="diningRulesForm" class="backstage-form">
+                                <div id="diningRules-list" class="backstage-dynamic-list">
+                                    <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
+                                        <% customSettings.diningRules.forEach((rule, index) => { %>
+                                        <div class="backstage-list-item">
+                                            <input type="text" name="diningRules[]" value="<%= rule.text %>" required placeholder="請輸入用餐規則">
+                                            <% if (index === customSettings.diningRules.length - 1) { %>
+                                                <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
+                                            <% } %>
+                                            <% if (customSettings.diningRules.length > 1) { %>
+                                                <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeDiningRule(this)">×</button>
+                                            <% } %>
+                                        </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                    <div class="backstage-list-item">
+                                        <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+                                        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存規則設定</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 集點卡設定頁面 -->
+                <div class="backstage-page" id="points-page">
+                    <div class="backstage-page-header">
+                        <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
+                        <h1>集點卡設定</h1>
+                        <p>管理集點卡背景圖片、規則和獎勵</p>
+                    </div>
+                    
+                    <div class="backstage-page-content">
+                        <% if (customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
+                        <!-- 集點卡背景圖片 -->
+                        <div class="backstage-setting-card">
+                            <h3>集點卡背景圖片</h3>
+                            <form id="cardImageForm" class="backstage-form" enctype="multipart/form-data">
+                                <div class="backstage-image-upload">
+                                    <div class="backstage-image-preview">
+                                        <img src="<%= (customSettings && customSettings.cardBackgroundImage) ? customSettings.cardBackgroundImage : '/images/dine.jpg' %>" 
+                                             alt="集點卡背景" id="cardImagePreview">
+                                    </div>
+                                    <div class="backstage-image-controls">
+                                        <input type="file" name="cardBackgroundImage" id="cardImageInput" accept=".png,.jpg,.jpeg,.svg" style="display: none;">
+                                        <button type="button" class="backstage-btn backstage-btn-outline" onclick="document.getElementById('cardImageInput').click()">
+                                            選擇圖片
+                                        </button>
+                                        <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 集點卡規則和獎勵設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>規則和獎勵設定</h3>
+                            <div class="backstage-info-box">
+                                <p>🚧 集點卡規則和獎勵設定功能正在開發中...</p>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <!-- 集點卡功能未開啟 -->
+                        <div class="backstage-setting-card">
+                            <h3>集點卡功能未開啟</h3>
+                            <div class="backstage-info-box">
+                                <p>集點卡功能目前未開啟。請到基本設定中開啟集點卡系統。</p>
+                                <button type="button" class="backstage-btn backstage-btn-primary" onclick="navigateToPage('basic')">
+                                    前往開啟集點卡功能
+                                </button>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- 點數QR碼頁面 -->
+                <div class="backstage-page" id="qrcode-page">
+                    <div class="backstage-page-header">
+                        <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
+                        <h1>點數QR碼</h1>
+                        <p>管理和生成點數QR碼</p>
+                    </div>
+                    
+                    <div class="backstage-page-content">
+                        <div class="backstage-setting-card">
+                            <h3>QR碼功能</h3>
+                            <div class="backstage-info-box">
+                                <p>🚧 點數QR碼功能正在開發中，敬請期待...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- 後台 Footer -->
+    <footer class="backstage-main-footer">
+        <div class="backstage-main-footer-content">
+            <div class="footer-info">
+                <p class="footer-brand">DINE✦ 商家管理系統</p>
+                <p class="footer-copyright">© 2025 ZYW. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/<%= storeSlug %>" class="footer-link">返回餐廳首頁</a>
+                <a href="/help" class="footer-link">使用說明</a>
+                <a href="/contact" class="footer-link">聯絡我們</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         const storeSlug = '<%= storeSlug %>';
