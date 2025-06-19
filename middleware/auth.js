@@ -86,6 +86,7 @@ const loadUser = async (req, res, next) => {
         // 預設設置為 null
         req.user = null;
         res.locals.user = null;
+        res.locals.isOwner = false;
         
         // 先檢查 session
         if (req.session && req.session.userId) {
@@ -148,12 +149,38 @@ const loadUser = async (req, res, next) => {
             }
         }
         
+        // 檢查 isOwner（僅針對餐廳相關頁面）
+        if (req.user && req.user.lineId) {
+            const pathParts = req.path.split('/');
+            let storeSlug = '';
+            
+            // 從 URL 中提取 storeSlug
+            if (pathParts.length > 1 && pathParts[1] && 
+                !['auth', 'account', 'setup', 'loading', 'webhook', 'dev'].includes(pathParts[1])) {
+                storeSlug = pathParts[1];
+            }
+            
+            if (storeSlug) {
+                try {
+                    const Client = require('../models/Client');
+                    const client = await Client.findOne({ slugname: storeSlug });
+                    
+                    if (client && client.ownerid === req.user.lineId) {
+                        res.locals.isOwner = true;
+                    }
+                } catch (error) {
+                    console.error('Error checking owner status in loadUser:', error);
+                }
+            }
+        }
+        
         next();
     } catch (error) {
         console.error('Load user middleware error:', error);
         // 確保即使出錯也設置預設值
         req.user = null;
         res.locals.user = null;
+        res.locals.isOwner = false;
         next();
     }
 };

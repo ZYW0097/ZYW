@@ -71,56 +71,110 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Desktop版下拉選單功能
-    const desktopDropdown = document.querySelector('#desktop-booking-dropdown');
+    // Desktop版訂位下拉選單功能
+    const desktopBookingDropdown = document.querySelector('#desktop-booking-dropdown');
     const bookingTrigger = document.querySelector('#booking-trigger');
-    const dropdownMenu = document.querySelector('#booking-dropdown-menu');
+    const bookingDropdownMenu = document.querySelector('#booking-dropdown-menu');
     
-    if (desktopDropdown && bookingTrigger && dropdownMenu) {
-        let isDropdownOpen = false;
-        let hoverTimeout;
+    if (desktopBookingDropdown && bookingTrigger && bookingDropdownMenu) {
+        let isBookingDropdownOpen = false;
+        let bookingHoverTimeout;
         
-        function openDropdown() {
-            isDropdownOpen = true;
-            dropdownMenu.classList.add('show');
+        function openBookingDropdown() {
+            isBookingDropdownOpen = true;
+            bookingDropdownMenu.classList.add('show');
         }
         
-        function closeDropdown() {
-            isDropdownOpen = false;
-            dropdownMenu.classList.remove('show');
+        function closeBookingDropdown() {
+            isBookingDropdownOpen = false;
+            bookingDropdownMenu.classList.remove('show');
         }
         
         // 點擊觸發器展開/關閉
         bookingTrigger.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            if (isDropdownOpen) {
-                closeDropdown();
+            if (isBookingDropdownOpen) {
+                closeBookingDropdown();
             } else {
-                openDropdown();
+                openBookingDropdown();
             }
         });
         
         // 鼠標懸停自動展開
-        desktopDropdown.addEventListener('mouseenter', function() {
-            clearTimeout(hoverTimeout);
-            openDropdown();
+        desktopBookingDropdown.addEventListener('mouseenter', function() {
+            clearTimeout(bookingHoverTimeout);
+            openBookingDropdown();
         });
         
         // 鼠標離開自動關閉（有延遲）
-        desktopDropdown.addEventListener('mouseleave', function() {
-            hoverTimeout = setTimeout(closeDropdown, 300);
+        desktopBookingDropdown.addEventListener('mouseleave', function() {
+            bookingHoverTimeout = setTimeout(closeBookingDropdown, 300);
         });
         
         // 點擊其他地方關閉下拉選單
         document.addEventListener('click', function(e) {
-            if (!desktopDropdown.contains(e.target)) {
-                closeDropdown();
+            if (!desktopBookingDropdown.contains(e.target)) {
+                closeBookingDropdown();
             }
         });
         
         // 防止下拉選單內的點擊關閉選單
-        dropdownMenu.addEventListener('click', function(e) {
+        bookingDropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+
+    // Desktop版控制台下拉選單功能
+    const desktopControlDropdown = document.querySelector('#desktop-control-dropdown');
+    const controlTrigger = document.querySelector('#control-trigger');
+    const controlDropdownMenu = document.querySelector('#control-dropdown-menu');
+    
+    if (desktopControlDropdown && controlTrigger && controlDropdownMenu) {
+        let isControlDropdownOpen = false;
+        let controlHoverTimeout;
+        
+        function openControlDropdown() {
+            isControlDropdownOpen = true;
+            controlDropdownMenu.classList.add('show');
+        }
+        
+        function closeControlDropdown() {
+            isControlDropdownOpen = false;
+            controlDropdownMenu.classList.remove('show');
+        }
+        
+        // 點擊觸發器展開/關閉
+        controlTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isControlDropdownOpen) {
+                closeControlDropdown();
+            } else {
+                openControlDropdown();
+            }
+        });
+        
+        // 鼠標懸停自動展開
+        desktopControlDropdown.addEventListener('mouseenter', function() {
+            clearTimeout(controlHoverTimeout);
+            openControlDropdown();
+        });
+        
+        // 鼠標離開自動關閉（有延遲）
+        desktopControlDropdown.addEventListener('mouseleave', function() {
+            controlHoverTimeout = setTimeout(closeControlDropdown, 300);
+        });
+        
+        // 點擊其他地方關閉下拉選單
+        document.addEventListener('click', function(e) {
+            if (!desktopControlDropdown.contains(e.target)) {
+                closeControlDropdown();
+            }
+        });
+        
+        // 防止下拉選單內的點擊關閉選單
+        controlDropdownMenu.addEventListener('click', function(e) {
             e.stopPropagation();
         });
     }

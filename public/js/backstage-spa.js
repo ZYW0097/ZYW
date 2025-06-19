@@ -567,4 +567,43 @@ window.addTimeSlot = addTimeSlot;
 window.removeTimeSlot = removeTimeSlot;
 window.addDiningRule = addDiningRule;
 window.removeDiningRule = removeDiningRule;
-window.confirmDeleteStore = confirmDeleteStore; 
+window.confirmDeleteStore = confirmDeleteStore;
+window.updateFeatureSettings = updateFeatureSettings;
+
+// 更新功能設定
+async function updateFeatureSettings() {
+    const pointsSystem = document.getElementById('pointsSystemToggle').checked;
+    const bookingSystem = document.getElementById('bookingSystemToggle').checked;
+    
+    showLoading();
+    
+    try {
+        const response = await fetch(`/${storeSlug}/api/settings/features`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                pointsSystem,
+                bookingSystem
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('功能設定已更新', 'success');
+            // 重新載入頁面以更新UI
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(result.message || '功能設定更新失敗', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('網路錯誤，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
+} 

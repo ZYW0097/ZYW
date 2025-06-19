@@ -40,7 +40,10 @@
 }
 
 .backstage-logo-icon {
-    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    background: #666;
+    border-radius: 4px;
 }
 
 .backstage-logo h2 {
@@ -105,10 +108,12 @@
 }
 
 .nav-icon {
-    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    background: #666;
+    border-radius: 3px;
     margin-right: 12px;
-    width: 20px;
-    text-align: center;
+    flex-shrink: 0;
 }
 
 .nav-text {
@@ -221,14 +226,11 @@
 }
 
 .status-card-icon {
-    font-size: 36px;
     width: 60px;
     height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
+    background: #f0f0f0;
     border-radius: 12px;
+    border: 2px solid #e0e0e0;
 }
 
 .status-card-content h3 {
@@ -292,7 +294,10 @@
 }
 
 .action-icon {
-    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    background: #666;
+    border-radius: 3px;
 }
 
 .action-text {
@@ -661,4 +666,54 @@
 .backstage-notification.warning {
     background: #ffc107;
     color: #212529;
+}
+
+/* Toggle 開關樣式 */
+.backstage-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: normal !important;
+    margin-bottom: 0 !important;
+}
+
+.backstage-toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.backstage-toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.backstage-toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.backstage-toggle-label input[type="checkbox"]:checked + .backstage-toggle-slider {
+    background-color: #1a1a1a;
+}
+
+.backstage-toggle-label input[type="checkbox"]:checked + .backstage-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.backstage-toggle-text {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
 } 

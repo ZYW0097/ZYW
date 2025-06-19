@@ -19,9 +19,7 @@
                     <div class="dropdown-menu" id="control-dropdown-menu">
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#basic">基本設定</a>
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#booking">訂位設定</a>
-                        <% if (typeof customSettings !== 'undefined' && customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#points">集點卡設定</a>
-                        <% } %>
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">點數QR碼</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout">登出</a>
@@ -84,9 +82,7 @@
             <div class="mobile-dropdown-menu">
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#basic">　基本設定</a>
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#booking">　訂位設定</a>
-                <% if (typeof customSettings !== 'undefined' && customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#points">　集點卡設定</a>
-                <% } %>
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">　點數QR碼</a>
                 <a class="mobile-dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout" style="color: #dc3545;">　登出</a>
             </div>

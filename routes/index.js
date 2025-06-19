@@ -63,7 +63,7 @@ async function requireLogin(req, res, next) {
     if (!req.session.userId) {
         // 儲存目標頁面，登入後跳轉
         req.session.loginRedirect = req.originalUrl;
-        return res.redirect('/auth/login?message=請先登入才能建立餐廳系統');
+        return res.redirect('/account/login'); // 修改為 LINE 登入頁面
     }
     
     try {
@@ -613,24 +613,9 @@ router.get('/:storeSlug/:page', async (req, res) => {
             return res.status(404).render('error', { message: '客戶不存在' });
         }
 
-        // 檢查用戶是否為擁有者（用於顯示控制台選項）
-        let isOwner = false;
-        let currentUser = null;
-        
-        if (req.session.userId) {
-            try {
-                const adb = getClientDb('main', 'ADB');
-                const userSchema = require('../models/user');
-                const User = adb.model('User', userSchema);
-                currentUser = await User.findById(req.session.userId);
-                
-                if (currentUser && currentUser.lineId && client.ownerid === currentUser.lineId) {
-                    isOwner = true;
-                }
-            } catch (error) {
-                console.error('Error checking owner status:', error);
-            }
-        }
+        // 從全局中間件獲取 isOwner 和 user 資訊
+        const isOwner = res.locals.isOwner || false;
+        const currentUser = res.locals.user || null;
 
         // 如果是後台頁面且用戶不是擁有者，跳轉到登入頁面
         if (page === 'backstage' && !isOwner) {
