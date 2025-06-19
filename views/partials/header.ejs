@@ -22,7 +22,11 @@
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#points">集點卡設定</a>
                         <a class="dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">點數QR碼</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout">登出</a>
+                        <% if (typeof isBackstageAuthenticated !== 'undefined' && isBackstageAuthenticated) { %>
+                            <a class="dropdown-item logout-item" href="#" onclick="handleBackstageLogout(event, '<%= storeSlug %>')">登出</a>
+                        <% } else { %>
+                            <a class="dropdown-item" href="/<%= storeSlug %>/backstage-login">登入後台</a>
+                        <% } %>
                     </div>
                 </div>
                 <% } %>
@@ -84,7 +88,11 @@
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#booking">　訂位設定</a>
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#points">　集點卡設定</a>
                 <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">　點數QR碼</a>
-                <a class="mobile-dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout" style="color: #dc3545;">　登出</a>
+                <% if (typeof isBackstageAuthenticated !== 'undefined' && isBackstageAuthenticated) { %>
+                    <a class="mobile-dropdown-item logout-item" href="#" onclick="handleBackstageLogout(event, '<%= storeSlug %>')" style="color: #dc3545;">　登出</a>
+                <% } else { %>
+                    <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage-login">　登入後台</a>
+                <% } %>
             </div>
         </div>
         <% } %>

@@ -179,3 +179,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// 智能後台登出處理
+function handleBackstageLogout(event, storeSlug) {
+    event.preventDefault();
+    
+    // 獲取當前頁面路徑
+    const currentPath = window.location.pathname;
+    const isInBackstage = currentPath.includes('/backstage') && !currentPath.includes('/backstage-login');
+    
+    // 發送 AJAX 登出請求
+    fetch(`/${storeSlug}/backstage/logout`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (isInBackstage) {
+                // 如果在後台頁面，跳轉到登入頁面
+                window.location.href = `/${storeSlug}/backstage-login?message=已成功登出`;
+            } else {
+                // 如果不在後台頁面，保持在當前頁面並重新載入以更新 header
+                window.location.reload();
+            }
+        }
+    })
+    .catch(error => {
+        console.error('登出失敗:', error);
+        // 即使 AJAX 失敗，也嘗試重定向
+        if (isInBackstage) {
+            window.location.href = `/${storeSlug}/backstage-login`;
+        } else {
+            window.location.reload();
+        }
+    });
+}
+
+// 讓函數可以在全域範圍內使用
+window.handleBackstageLogout = handleBackstageLogout;

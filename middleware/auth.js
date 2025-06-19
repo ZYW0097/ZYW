@@ -168,6 +168,15 @@ const loadUser = async (req, res, next) => {
                     if (client && client.ownerid === req.user.lineId) {
                         res.locals.isOwner = true;
                     }
+
+                    // 檢查後台登入狀態
+                    const backstageAuth = req.session.backstageAuth;
+                    const isBackstageAuthenticated = backstageAuth && 
+                                                   backstageAuth.storeSlug === storeSlug &&
+                                                   (Date.now() - new Date(backstageAuth.loginTime).getTime()) < 2 * 60 * 60 * 1000;
+                    
+                    res.locals.isBackstageAuthenticated = isBackstageAuthenticated;
+                    res.locals.currentStoreSlug = storeSlug;
                 } catch (error) {
                     console.error('Error checking owner status in loadUser:', error);
                 }

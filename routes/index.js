@@ -597,6 +597,120 @@ router.get('/:storeSlug', async (req, res) => {
     }
 });
 
+// 後台登入頁面 - 必須在 /:storeSlug/:page 之前
+router.get('/:storeSlug/backstage-login', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 檢查客戶是否存在
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client) {
+            return res.status(404).render('error', { message: '餐廳不存在' });
+        }
+
+        // 檢查是否已經登入後台
+        const backstageAuth = req.session.backstageAuth;
+        const isBackstageAuthenticated = backstageAuth && 
+                                       backstageAuth.storeSlug === storeSlug &&
+                                       (Date.now() - new Date(backstageAuth.loginTime).getTime()) < 2 * 60 * 60 * 1000;
+        
+        if (isBackstageAuthenticated) {
+            // 如果已經登入，直接跳轉到後台
+            return res.redirect(`/${storeSlug}/backstage`);
+        }
+
+        res.render('backstage-login', {
+            storeSlug,
+            clientname: client.clientname,
+            layout: false,
+            message: req.query.message
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).render('error', { message: '系統錯誤' });
+    }
+});
+
+// 後台登入處理
+router.post('/:storeSlug/backstage-login', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { adminPassword, rememberMe } = req.body;
+
+        if (!adminPassword) {
+            return res.status(400).json({
+                success: false,
+                message: '請輸入管理員密碼'
+            });
+        }
+
+        // 查找客戶
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client) {
+            return res.status(404).json({
+                success: false,
+                message: '餐廳不存在'
+            });
+        }
+
+        // 檢查密碼
+        if (!client.adminPassword || client.adminPassword !== adminPassword) {
+            return res.status(401).json({
+                success: false,
+                message: '密碼錯誤'
+            });
+        }
+
+        // 設置 session
+        req.session.backstageAuth = {
+            storeSlug: storeSlug,
+            loginTime: new Date(),
+            authenticated: true
+        };
+
+        // 如果選擇記住登入狀態，設置較長的過期時間
+        if (rememberMe) {
+            req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30天
+        }
+
+        res.json({
+            success: true,
+            redirectUrl: `/${storeSlug}/backstage`
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({
+            success: false,
+            message: '系統錯誤'
+        });
+    }
+});
+
+// 後台登出 - 支援 AJAX 請求和一般請求
+router.get('/:storeSlug/backstage/logout', (req, res) => {
+    const { storeSlug } = req.params;
+    const { redirect } = req.query;
+    
+    // 清除後台認證 session
+    if (req.session.backstageAuth) {
+        delete req.session.backstageAuth;
+    }
+    
+    // 如果是 AJAX 請求或指定不重定向
+    if (req.xhr || req.headers.accept && req.headers.accept.includes('application/json')) {
+        return res.json({ success: true, message: '已成功登出' });
+    }
+    
+    // 如果指定了重定向頁面且不是 backstage
+    if (redirect && redirect !== 'backstage') {
+        return res.redirect(`/${storeSlug}/${redirect}`);
+    }
+    
+    // 預設重定向到登入頁面
+    res.redirect(`/${storeSlug}/backstage-login?message=已成功登出`);
+});
+
 // 客戶特定路由
 router.get('/:storeSlug/:page', async (req, res) => {
     try {
@@ -1083,99 +1197,6 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
         console.error('❌ 修復時段數據失敗:', error);
         res.status(500).json({ success: false, error: error.message });
     }
-});
-
-// 後台登入頁面
-router.get('/:storeSlug/backstage-login', async (req, res) => {
-    try {
-        const { storeSlug } = req.params;
-        
-        // 檢查客戶是否存在
-        const client = await Client.findOne({ slugname: storeSlug });
-        if (!client) {
-            return res.status(404).render('error', { message: '餐廳不存在' });
-        }
-
-        // 移除自動跳轉邏輯，每次都要求密碼驗證
-
-        res.render('backstage-login', {
-            storeSlug,
-            clientname: client.clientname,
-            layout: false,
-            message: req.query.message
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).render('error', { message: '系統錯誤' });
-    }
-});
-
-// 後台登入處理
-router.post('/:storeSlug/backstage-login', async (req, res) => {
-    try {
-        const { storeSlug } = req.params;
-        const { adminPassword, rememberMe } = req.body;
-
-        if (!adminPassword) {
-            return res.status(400).json({
-                success: false,
-                message: '請輸入管理員密碼'
-            });
-        }
-
-        // 查找客戶
-        const client = await Client.findOne({ slugname: storeSlug });
-        if (!client) {
-            return res.status(404).json({
-                success: false,
-                message: '餐廳不存在'
-            });
-        }
-
-        // 檢查密碼
-        if (!client.adminPassword || client.adminPassword !== adminPassword) {
-            return res.status(401).json({
-                success: false,
-                message: '密碼錯誤'
-            });
-        }
-
-        // 設置 session
-        req.session.backstageAuth = {
-            storeSlug: storeSlug,
-            loginTime: new Date(),
-            authenticated: true
-        };
-
-        // 如果選擇記住登入狀態，設置較長的過期時間
-        if (rememberMe) {
-            req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30天
-        }
-
-        res.json({
-            success: true,
-            redirectUrl: `/${storeSlug}/backstage`
-        });
-
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({
-            success: false,
-            message: '系統錯誤'
-        });
-    }
-});
-
-// 後台登出
-router.get('/:storeSlug/backstage/logout', (req, res) => {
-    const { storeSlug } = req.params;
-    
-    // 清除後台認證 session
-    if (req.session.backstageAuth) {
-        delete req.session.backstageAuth;
-    }
-    
-    res.redirect(`/${storeSlug}/backstage-login?message=已成功登出`);
 });
 
 // 點數系統路由
