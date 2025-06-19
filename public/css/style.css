@@ -444,3 +444,19 @@ body {
     background: #f5f5f5;
     color: #222;
 }
+
+/* 控制台下拉選單樣式 */
+.dropdown-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 8px 0;
+}
+
+.logout-item {
+    color: #dc3545 !important;
+}
+
+.logout-item:hover {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+}

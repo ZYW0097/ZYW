@@ -50,10 +50,23 @@ router.get('/', (req, res) => {
     res.render('index', { customNavbar });
 });
 
-// 設置頁面
-router.get('/setup', (req, res) => {
-    res.render('setup', { layout: false });
+// 設置頁面 - 需要登入才能使用
+router.get('/setup', requireLogin, (req, res) => {
+    res.render('setup', { 
+        layout: false,
+        user: req.user 
+    });
 });
+
+// 登入驗證中間件
+function requireLogin(req, res, next) {
+    if (!req.session.userId) {
+        // 儲存目標頁面，登入後跳轉
+        req.session.loginRedirect = req.originalUrl;
+        return res.redirect('/auth/login?message=請先登入才能建立餐廳系統');
+    }
+    next();
+}
 
 // 載入頁面
 router.get('/loading', (req, res) => {
@@ -63,7 +76,7 @@ router.get('/loading', (req, res) => {
 
 
 // API路由 - 創建客戶
-router.post('/api/setup', upload.fields([
+router.post('/api/setup', requireLogin, upload.fields([
     { name: 'restaurantImage', maxCount: 1 },
     { name: 'cardBackgroundImage', maxCount: 1 },
     { name: 'rewardImages[]', maxCount: 10 }
@@ -153,10 +166,25 @@ router.post('/api/setup', upload.fields([
             });
         }
 
+        // 獲取用戶的LINE ID作為ownerid
+        const getClientDb = require('../utils/dbManager');
+        const userSchema = require('../models/user');
+        const adb = getClientDb('main', 'ADB');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user || !user.lineId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: '無法獲取用戶資訊，請重新登入' 
+            });
+        }
+
         // 步驟 1: 創建客戶基本資料
         const clientData = {
             clientname,
             slugname,
+            ownerid: user.lineId,  // 使用LINE ID作為擁有者ID
             restaurantImage: restaurantImageUrl,
             cardBackgroundImage: cardBackgroundImageUrl
         };

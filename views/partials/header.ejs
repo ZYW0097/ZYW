@@ -3,7 +3,6 @@
         <a class="nav-logo" href="/">DINE✦</a>
         <div class="nav-right-group desktop-only">
             <div class="nav-links">
-                <a class="nav-link" href="<%= typeof storeSlug !== 'undefined' && storeSlug ? '/' + storeSlug : '/' %>">餐廳首頁</a>
                 <a class="nav-link" href="/<%= typeof storeSlug !== 'undefined' && storeSlug ? storeSlug : '' %>/card">集點卡&nbsp;</a>
                 <!-- 訂位下拉選單 -->
                 <div class="nav-dropdown" id="desktop-booking-dropdown">
@@ -13,6 +12,22 @@
                         <a class="dropdown-item" href="/<%= typeof storeSlug !== 'undefined' && storeSlug ? storeSlug : '' %>/booking/cancel">取消訂位</a>
                     </div>
                 </div>
+                <!-- 控制台下拉選單 (只有擁有者可見) -->
+                <% if (typeof isOwner !== 'undefined' && isOwner) { %>
+                <div class="nav-dropdown" id="desktop-control-dropdown">
+                    <a class="nav-link dropdown-trigger" href="/<%= storeSlug %>/backstage" id="control-trigger">控制台</a>
+                    <div class="dropdown-menu" id="control-dropdown-menu">
+                        <a class="dropdown-item" href="/<%= storeSlug %>/backstage#basic">基本設定</a>
+                        <a class="dropdown-item" href="/<%= storeSlug %>/backstage#booking">訂位設定</a>
+                        <% if (typeof customSettings !== 'undefined' && customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
+                        <a class="dropdown-item" href="/<%= storeSlug %>/backstage#points">集點卡設定</a>
+                        <% } %>
+                        <a class="dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">點數QR碼</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout">登出</a>
+                    </div>
+                </div>
+                <% } %>
             </div>
             <% if (user) { %>
                 <a class="nav-user" href="/account/profile">
@@ -49,7 +64,6 @@
                 </div>
             </a>
         <% } %>
-        <a class="mobile-link" href="<%= typeof storeSlug !== 'undefined' && storeSlug ? '/' + storeSlug : '/' %>">餐廳首頁</a>
         <a class="mobile-link" href="/<%= typeof storeSlug !== 'undefined' && storeSlug ? storeSlug : '' %>/card">集點卡</a>
         <!-- 行動版訂位下拉 -->
         <div class="mobile-dropdown">
@@ -61,6 +75,23 @@
                 <a class="mobile-dropdown-item" href="/<%= typeof storeSlug !== 'undefined' && storeSlug ? storeSlug : '' %>/booking/cancel">　取消訂位</a>
             </div>
         </div>
+        <!-- 行動版控制台下拉 (只有擁有者可見) -->
+        <% if (typeof isOwner !== 'undefined' && isOwner) { %>
+        <div class="mobile-dropdown">
+            <a class="mobile-link dropdown-trigger-mobile" href="javascript:void(0)">
+                控制台 <span class="mobile-dropdown-arrow">▼</span>
+            </a>
+            <div class="mobile-dropdown-menu">
+                <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#basic">　基本設定</a>
+                <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#booking">　訂位設定</a>
+                <% if (typeof customSettings !== 'undefined' && customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
+                <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#points">　集點卡設定</a>
+                <% } %>
+                <a class="mobile-dropdown-item" href="/<%= storeSlug %>/backstage#qrcode">　點數QR碼</a>
+                <a class="mobile-dropdown-item logout-item" href="/<%= storeSlug %>/backstage/logout" style="color: #dc3545;">　登出</a>
+            </div>
+        </div>
+        <% } %>
         <% if (user) { %>
             <a class="mobile-link" href="/auth/logout" style="color: #f44336; margin-top: 20px;">登出</a>
         <% } %>

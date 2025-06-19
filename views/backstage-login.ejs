@@ -1,0 +1,55 @@
+<div class="backstage-auth-container">
+    <div class="backstage-auth-header">
+        <div class="backstage-logo">
+            <span class="backstage-logo-icon">⚙️</span>
+            <h1 class="backstage-title">商家控制台</h1>
+        </div>
+        <p class="backstage-subtitle">請輸入您的管理員密碼</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="backstage-error-message">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="backstage-success-message">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <form class="backstage-auth-form" action="/<%= storeSlug %>/backstage/login" method="POST" id="backstageForm">
+        <div class="backstage-form-group">
+            <label class="backstage-form-label" for="adminPassword">管理員密碼</label>
+            <input 
+                type="password" 
+                id="adminPassword" 
+                name="adminPassword" 
+                class="backstage-form-input" 
+                placeholder="請輸入管理員密碼"
+                required
+            >
+        </div>
+
+        <div class="backstage-remember-group">
+            <input 
+                type="checkbox" 
+                id="remember" 
+                name="remember" 
+                class="backstage-remember-checkbox"
+            >
+            <label class="backstage-remember-label" for="remember">記住登入狀態（7天）</label>
+        </div>
+
+        <button type="submit" class="backstage-auth-btn" id="loginBtn">
+            登入控制台
+        </button>
+    </form>
+
+    <div class="backstage-footer">
+        <a href="/<%= storeSlug %>" class="backstage-back-link">← 返回餐廳首頁</a>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/css/backstage-login.css"> 

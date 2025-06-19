@@ -11,6 +11,11 @@ const clientSchema = new mongoose.Schema({
         unique: true,
         match: /^[a-zA-Z0-9]+$/
     },
+    ownerid: {
+        type: String,
+        required: true,
+        index: true  // 為擁有者ID添加索引以提高查詢性能
+    },
     restaurantImage: {
         type: String,
         default: '/images/dine.jpg'
