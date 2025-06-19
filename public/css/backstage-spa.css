@@ -546,6 +546,15 @@
     margin-bottom: 15px;
 }
 
+/* 行動版選單按鈕 - 預設隱藏 */
+.backstage-mobile-toggle {
+    display: none;
+}
+
+.backstage-mobile-overlay {
+    display: none;
+}
+
 /* 響應式設計 */
 @media (max-width: 1024px) {
     .backstage-sidebar {
@@ -593,8 +602,9 @@
         flex-direction: column;
     }
 
-    /* 添加漢堡選單按鈕 */
+    /* 顯示漢堡選單按鈕 */
     .backstage-mobile-toggle {
+        display: block;
         position: fixed;
         top: 20px;
         left: 20px;
