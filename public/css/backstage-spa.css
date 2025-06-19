@@ -1,0 +1,664 @@
+/* 商家後台 SPA 樣式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.backstage-spa-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 側邊欄 */
+.backstage-sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.backstage-sidebar-header {
+    padding: 30px 25px;
+    border-bottom: 1px solid #404040;
+}
+
+.backstage-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.backstage-logo-icon {
+    font-size: 24px;
+}
+
+.backstage-logo h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+.backstage-store-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.store-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #e0e0e0;
+}
+
+.store-slug {
+    font-size: 13px;
+    color: #b0b0b0;
+    font-family: 'Courier New', monospace;
+}
+
+/* 導航選單 */
+.backstage-nav {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.backstage-nav-list {
+    list-style: none;
+}
+
+.backstage-nav-item {
+    margin-bottom: 5px;
+}
+
+.backstage-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #cccccc;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.backstage-nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-left-color: #666;
+}
+
+.backstage-nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: white;
+}
+
+.nav-icon {
+    font-size: 18px;
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 側邊欄底部 */
+.backstage-sidebar-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #404040;
+}
+
+.backstage-footer-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.backstage-footer-link:hover {
+    color: white;
+}
+
+.backstage-footer-link.logout {
+    color: #ff6b6b;
+}
+
+.backstage-footer-link.logout:hover {
+    color: #ff5252;
+}
+
+/* 主要內容區域 */
+.backstage-main-content {
+    margin-left: 280px;
+    flex: 1;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+/* 頁面容器 */
+.backstage-page {
+    display: none;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.backstage-page.active {
+    display: block;
+}
+
+/* 頁面標題 */
+.backstage-page-header {
+    margin-bottom: 40px;
+}
+
+.backstage-back-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+}
+
+.backstage-back-btn:hover {
+    color: #333;
+}
+
+.backstage-page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.backstage-page-header p {
+    font-size: 16px;
+    color: #666;
+}
+
+/* 控制台首頁樣式 */
+.backstage-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.backstage-status-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.backstage-status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.status-card-icon {
+    font-size: 36px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.status-card-content h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.status-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 快捷操作 */
+.backstage-quick-actions {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.backstage-quick-actions h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.quick-action-btn:hover {
+    border-color: #333;
+    transform: translateY(-1px);
+}
+
+.action-icon {
+    font-size: 20px;
+}
+
+.action-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 頁面內容 */
+.backstage-page-content {
+    space-y: 30px;
+}
+
+.backstage-setting-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 30px;
+}
+
+.backstage-setting-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+/* 表單樣式 */
+.backstage-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.backstage-form-section {
+    padding: 20px 0;
+}
+
+.backstage-form-section:not(:last-child) {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.backstage-form-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+}
+
+.backstage-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.backstage-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.backstage-form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.backstage-form-group input {
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.backstage-form-group input:focus {
+    outline: none;
+    border-color: #333;
+}
+
+.backstage-form-group small {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.backstage-form-actions {
+    padding-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+/* 按鈕樣式 */
+.backstage-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.backstage-btn-primary {
+    background: #1a1a1a;
+    color: white;
+}
+
+.backstage-btn-primary:hover {
+    background: #333;
+}
+
+.backstage-btn-outline {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.backstage-btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #333;
+}
+
+.backstage-btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.backstage-btn-danger:hover {
+    background: #c82333;
+}
+
+/* 圖片上傳 */
+.backstage-image-upload {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.backstage-image-preview {
+    width: 150px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.backstage-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.backstage-image-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 動態列表 */
+.backstage-dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.backstage-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.backstage-list-item input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.backstage-btn-icon {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.backstage-btn-add {
+    background: #28a745;
+    color: white;
+}
+
+.backstage-btn-add:hover {
+    background: #218838;
+}
+
+.backstage-btn-remove {
+    background: #dc3545;
+    color: white;
+}
+
+.backstage-btn-remove:hover {
+    background: #c82333;
+}
+
+/* 危險操作區域 */
+.backstage-danger-zone {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.backstage-danger-zone h3 {
+    color: #c53030;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.backstage-danger-zone p {
+    color: #702459;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* 資訊提示框 */
+.backstage-info-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.backstage-info-box p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+    .backstage-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .backstage-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .backstage-main-content {
+        margin-left: 0;
+    }
+    
+    .backstage-page {
+        padding: 20px;
+    }
+    
+    .backstage-form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .backstage-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .backstage-image-upload {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .backstage-page-header h1 {
+        font-size: 24px;
+    }
+    
+    .backstage-setting-card {
+        padding: 20px;
+    }
+    
+    .backstage-form-section {
+        padding: 15px 0;
+    }
+    
+    .backstage-list-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .backstage-list-item input {
+        margin-bottom: 5px;
+    }
+}
+
+/* 載入動畫 */
+.backstage-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.backstage-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #333;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 通知樣式 */
+.backstage-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+}
+
+.backstage-notification.show {
+    transform: translateX(0);
+}
+
+.backstage-notification.success {
+    background: #28a745;
+}
+
+.backstage-notification.error {
+    background: #dc3545;
+}
+
+.backstage-notification.warning {
+    background: #ffc107;
+    color: #212529;
+} 

@@ -19,7 +19,7 @@
         </div>
     <% } %>
 
-    <form class="backstage-auth-form" action="/<%= storeSlug %>/backstage/login" method="POST" id="backstageForm">
+    <form class="backstage-auth-form" action="/<%= storeSlug %>/backstage-login" method="POST" id="backstageForm">
         <div class="backstage-form-group">
             <label class="backstage-form-label" for="adminPassword">管理員密碼</label>
             <input 
@@ -35,11 +35,11 @@
         <div class="backstage-remember-group">
             <input 
                 type="checkbox" 
-                id="remember" 
-                name="remember" 
+                id="rememberMe" 
+                name="rememberMe" 
                 class="backstage-remember-checkbox"
             >
-            <label class="backstage-remember-label" for="remember">記住登入狀態（7天）</label>
+            <label class="backstage-remember-label" for="rememberMe">記住登入狀態（30天）</label>
         </div>
 
         <button type="submit" class="backstage-auth-btn" id="loginBtn">
@@ -52,4 +52,96 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="/css/backstage-login.css"> 
+<link rel="stylesheet" href="/css/backstage-login.css">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('backstageForm');
+    const submitBtn = document.getElementById('loginBtn');
+    const passwordInput = document.getElementById('adminPassword');
+    
+    // URL 參數中的訊息處理
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    
+    if (message) {
+        showMessage(message, 'success');
+    }
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        // 顯示載入狀態
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        submitBtn.textContent = '登入中...';
+        
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('登入成功，正在跳轉...', 'success');
+                setTimeout(() => {
+                    window.location.href = result.redirectUrl;
+                }, 1000);
+            } else {
+                showMessage(result.message, 'error');
+                resetButton();
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showMessage('登入失敗，請檢查網路連接', 'error');
+            resetButton();
+        }
+    });
+    
+    function resetButton() {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+        submitBtn.textContent = '登入控制台';
+    }
+    
+    function showMessage(text, type) {
+        // 移除現有訊息
+        const existingMsg = document.querySelector('.backstage-error-message, .backstage-success-message');
+        if (existingMsg) {
+            existingMsg.remove();
+        }
+        
+        // 創建新訊息
+        const messageDiv = document.createElement('div');
+        messageDiv.className = type === 'error' ? 'backstage-error-message' : 'backstage-success-message';
+        messageDiv.textContent = text;
+        
+        // 插入到表單前
+        form.parentNode.insertBefore(messageDiv, form);
+        
+        // 自動隱藏成功訊息
+        if (type === 'success') {
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 3000);
+        }
+    }
+    
+    // Enter 鍵提交
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            form.dispatchEvent(new Event('submit'));
+        }
+    });
+});
+</script> 

@@ -59,13 +59,33 @@ router.get('/setup', requireLogin, (req, res) => {
 });
 
 // 登入驗證中間件
-function requireLogin(req, res, next) {
+async function requireLogin(req, res, next) {
     if (!req.session.userId) {
         // 儲存目標頁面，登入後跳轉
         req.session.loginRedirect = req.originalUrl;
         return res.redirect('/auth/login?message=請先登入才能建立餐廳系統');
     }
-    next();
+    
+    try {
+        // 獲取用戶資訊
+        const adb = getClientDb('main', 'ADB');
+        const userSchema = require('../models/user');
+        const User = adb.model('User', userSchema);
+        const user = await User.findById(req.session.userId);
+        
+        if (!user) {
+            // 如果找不到用戶，清除 session 並重新登入
+            req.session.destroy();
+            req.session.loginRedirect = req.originalUrl;
+            return res.redirect('/auth/login?message=請重新登入');
+        }
+        
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error('RequireLogin error:', error);
+        res.status(500).render('error', { message: '系統錯誤' });
+    }
 }
 
 // 載入頁面
@@ -593,6 +613,30 @@ router.get('/:storeSlug/:page', async (req, res) => {
             return res.status(404).render('error', { message: '客戶不存在' });
         }
 
+        // 檢查用戶是否為擁有者（用於顯示控制台選項）
+        let isOwner = false;
+        let currentUser = null;
+        
+        if (req.session.userId) {
+            try {
+                const adb = getClientDb('main', 'ADB');
+                const userSchema = require('../models/user');
+                const User = adb.model('User', userSchema);
+                currentUser = await User.findById(req.session.userId);
+                
+                if (currentUser && currentUser.lineId && client.ownerid === currentUser.lineId) {
+                    isOwner = true;
+                }
+            } catch (error) {
+                console.error('Error checking owner status:', error);
+            }
+        }
+
+        // 如果是後台頁面且用戶不是擁有者，跳轉到登入頁面
+        if (page === 'backstage' && !isOwner) {
+            return res.redirect(`/${storeSlug}/backstage-login`);
+        }
+
         // 移除自訂設定檢查，不再需要
 
         // 如果是後台頁面，獲取點數相關數據和時段、規則數據
@@ -679,7 +723,9 @@ router.get('/:storeSlug/:page', async (req, res) => {
             },
             points,
             createdAt: client.createdAt,
-            updatedAt: client.updatedAt
+            updatedAt: client.updatedAt,
+            isOwner: isOwner,
+            user: currentUser
         });
     } catch (error) {
         console.error('Error:', error);
@@ -1036,6 +1082,113 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
         console.error('❌ 修復時段數據失敗:', error);
         res.status(500).json({ success: false, error: error.message });
     }
+});
+
+// 後台登入頁面
+router.get('/:storeSlug/backstage-login', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 檢查客戶是否存在
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client) {
+            return res.status(404).render('error', { message: '餐廳不存在' });
+        }
+
+        // 檢查是否已經是擁有者登入
+        if (req.session.userId) {
+            try {
+                const adb = getClientDb('main', 'ADB');
+                const userSchema = require('../models/user');
+                const User = adb.model('User', userSchema);
+                const user = await User.findById(req.session.userId);
+                
+                if (user && user.lineId && client.ownerid === user.lineId) {
+                    // 如果已經是擁有者，直接跳轉到後台
+                    return res.redirect(`/${storeSlug}/backstage`);
+                }
+            } catch (error) {
+                console.error('Error checking owner status:', error);
+            }
+        }
+
+        res.render('backstage-login', {
+            storeSlug,
+            clientname: client.clientname,
+            layout: false,
+            message: req.query.message
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).render('error', { message: '系統錯誤' });
+    }
+});
+
+// 後台登入處理
+router.post('/:storeSlug/backstage-login', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { adminPassword, rememberMe } = req.body;
+
+        if (!adminPassword) {
+            return res.status(400).json({
+                success: false,
+                message: '請輸入管理員密碼'
+            });
+        }
+
+        // 查找客戶
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client) {
+            return res.status(404).json({
+                success: false,
+                message: '餐廳不存在'
+            });
+        }
+
+        // 檢查密碼
+        if (!client.adminPassword || client.adminPassword !== adminPassword) {
+            return res.status(401).json({
+                success: false,
+                message: '密碼錯誤'
+            });
+        }
+
+        // 設置 session
+        req.session.backstageAuth = {
+            storeSlug: storeSlug,
+            loginTime: new Date()
+        };
+
+        // 如果選擇記住登入狀態，設置較長的過期時間
+        if (rememberMe) {
+            req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30天
+        }
+
+        res.json({
+            success: true,
+            redirectUrl: `/${storeSlug}/backstage`
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({
+            success: false,
+            message: '系統錯誤'
+        });
+    }
+});
+
+// 後台登出
+router.get('/:storeSlug/backstage/logout', (req, res) => {
+    const { storeSlug } = req.params;
+    
+    // 清除後台認證 session
+    if (req.session.backstageAuth) {
+        delete req.session.backstageAuth;
+    }
+    
+    res.redirect(`/${storeSlug}/backstage-login?message=已成功登出`);
 });
 
 // 點數系統路由
