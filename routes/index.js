@@ -827,7 +827,10 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 diningRules,
                 restaurantImage: client.restaurantImage,
                 cardBackgroundImage: client.cardBackgroundImage,
-                features: featureSettings
+                features: featureSettings,
+                pointsRules: client.customSettings?.pointsRules || null,
+                rewards: client.customSettings?.rewards || null,
+                restaurantAddress: client.customSettings?.restaurantAddress || ''
             },
             points,
             createdAt: client.createdAt,
@@ -1069,6 +1072,104 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
     } catch (error) {
         console.error('❌ 用餐規則更新錯誤:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 集點規則設定 API
+router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { pointsPerVisit, maxPointsPerDay, pointsExpireDays, enableBonusPoints } = req.body;
+
+        // 驗證數據
+        if (!pointsPerVisit || pointsPerVisit < 1 || pointsPerVisit > 10) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '每次用餐點數必須在1-10之間' 
+            });
+        }
+
+        if (!maxPointsPerDay || maxPointsPerDay < 1 || maxPointsPerDay > 20) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '每日點數上限必須在1-20之間' 
+            });
+        }
+
+        if (!pointsExpireDays || pointsExpireDays < 30 || pointsExpireDays > 1095) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '點數有效期必須在30-1095天之間' 
+            });
+        }
+
+        // 更新客戶設定
+        const updateData = {
+            pointsRules: {
+                pointsPerVisit: parseInt(pointsPerVisit),
+                maxPointsPerDay: parseInt(maxPointsPerDay),
+                pointsExpireDays: parseInt(pointsExpireDays),
+                enableBonusPoints: Boolean(enableBonusPoints)
+            }
+        };
+
+        await Client.findOneAndUpdate(
+            { slugname: storeSlug },
+            { $set: { customSettings: updateData } },
+            { upsert: true }
+        );
+
+        res.json({ success: true, message: '集點規則設定已更新' });
+    } catch (error) {
+        console.error('❌ 集點規則設定更新錯誤:', error);
+        res.status(500).json({ success: false, message: '更新失敗，請稍後再試' });
+    }
+});
+
+// 獎勵設定 API
+router.post('/:storeSlug/backstage/rewards', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { rewards } = req.body;
+
+        // 驗證獎勵數據
+        if (!Array.isArray(rewards) || rewards.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '至少需要設定一個獎勵項目' 
+            });
+        }
+
+        // 驗證每個獎勵項目
+        for (let i = 0; i < rewards.length; i++) {
+            const reward = rewards[i];
+            
+            if (!reward.name || reward.name.trim().length === 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `獎勵項目 ${i + 1} 的名稱不能為空` 
+                });
+            }
+
+            if (!reward.points || reward.points < 1 || reward.points > 100) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `獎勵項目 ${i + 1} 的所需點數必須在1-100之間` 
+                });
+            }
+        }
+
+        // 更新客戶設定
+        await Client.findOneAndUpdate(
+            { slugname: storeSlug },
+            { $set: { 'customSettings.rewards': rewards } },
+            { upsert: true }
+        );
+
+        res.json({ success: true, message: '獎勵設定已更新' });
+    } catch (error) {
+        console.error('❌ 獎勵設定更新錯誤:', error);
+        res.status(500).json({ success: false, message: '更新失敗，請稍後再試' });
     }
 });
 

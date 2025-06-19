@@ -1,4 +1,7 @@
-/* 後台登入頁面樣式 - 黑白灰配色 */
+::webkit-scrollbar {
+    display: none;
+}
+
 body {
     margin: 0;
     padding: 0;

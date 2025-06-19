@@ -341,11 +341,147 @@
                             </form>
                         </div>
 
-                        <!-- 集點卡規則和獎勵設定 -->
+                        <!-- 集點卡規則設定 -->
                         <div class="backstage-setting-card">
-                            <h3>規則和獎勵設定</h3>
-                            <div class="backstage-info-box">
-                                <p>🚧 集點卡規則和獎勵設定功能正在開發中...</p>
+                            <h3>集點規則設定</h3>
+                            <form id="pointsRulesForm" class="backstage-form">
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label for="pointsPerVisit">每次用餐獲得點數</label>
+                                        <input type="number" id="pointsPerVisit" name="pointsPerVisit" 
+                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.pointsPerVisit) ? customSettings.pointsRules.pointsPerVisit : '1' %>" 
+                                               min="1" max="10" required>
+                                        <small>每次完成用餐可獲得的點數（1-10點）</small>
+                                    </div>
+                                    <div class="backstage-form-group">
+                                        <label for="maxPointsPerDay">每日點數上限</label>
+                                        <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" 
+                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.maxPointsPerDay) ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
+                                               min="1" max="20" required>
+                                        <small>每位顧客每天最多可獲得的點數</small>
+                                    </div>
+                                </div>
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label for="pointsExpireDays">點數有效期</label>
+                                        <input type="number" id="pointsExpireDays" name="pointsExpireDays" 
+                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.pointsExpireDays) ? customSettings.pointsRules.pointsExpireDays : '365' %>" 
+                                               min="30" max="1095" required>
+                                        <small>點數的有效天數（30-1095天）</small>
+                                    </div>
+                                    <div class="backstage-form-group">
+                                        <label class="backstage-toggle-label">
+                                            <input type="checkbox" id="enableBonusPoints" 
+                                                   <%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.enableBonusPoints) ? 'checked' : '' %>>
+                                            <span class="backstage-toggle-slider"></span>
+                                            <span class="backstage-toggle-text">啟用生日雙倍點數</span>
+                                        </label>
+                                        <small>顧客生日當月可獲得雙倍點數</small>
+                                    </div>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存規則設定</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 獎勵項目設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>獎勵項目設定</h3>
+                            <form id="rewardsForm" class="backstage-form">
+                                <div id="rewards-list" class="backstage-rewards-list">
+                                    <% if (customSettings && customSettings.rewards && customSettings.rewards.length > 0) { %>
+                                        <% customSettings.rewards.forEach((reward, index) => { %>
+                                        <div class="backstage-reward-item">
+                                            <div class="reward-item-header">
+                                                <h4>獎勵項目 <%= index + 1 %></h4>
+                                                <% if (customSettings.rewards.length > 1) { %>
+                                                    <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeReward(this)">×</button>
+                                                <% } %>
+                                            </div>
+                                            <div class="backstage-form-row">
+                                                <div class="backstage-form-group">
+                                                    <label>獎勵名稱</label>
+                                                    <input type="text" name="rewardName[]" value="<%= reward.name %>" required placeholder="例如：免費飲料">
+                                                </div>
+                                                <div class="backstage-form-group">
+                                                    <label>所需點數</label>
+                                                    <input type="number" name="rewardPoints[]" value="<%= reward.points %>" min="1" max="100" required placeholder="例如：10">
+                                                </div>
+                                            </div>
+                                            <div class="backstage-form-row">
+                                                <div class="backstage-form-group">
+                                                    <label>獎勵描述</label>
+                                                    <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."><%= reward.description || '' %></textarea>
+                                                </div>
+                                                <div class="backstage-form-group">
+                                                    <label class="backstage-toggle-label">
+                                                        <input type="checkbox" name="rewardActive[]" <%= reward.active ? 'checked' : '' %>>
+                                                        <span class="backstage-toggle-slider"></span>
+                                                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                    <div class="backstage-reward-item">
+                                        <div class="reward-item-header">
+                                            <h4>獎勵項目 1</h4>
+                                        </div>
+                                        <div class="backstage-form-row">
+                                            <div class="backstage-form-group">
+                                                <label>獎勵名稱</label>
+                                                <input type="text" name="rewardName[]" required placeholder="例如：免費飲料">
+                                            </div>
+                                            <div class="backstage-form-group">
+                                                <label>所需點數</label>
+                                                <input type="number" name="rewardPoints[]" min="1" max="100" required placeholder="例如：10">
+                                            </div>
+                                        </div>
+                                        <div class="backstage-form-row">
+                                            <div class="backstage-form-group">
+                                                <label>獎勵描述</label>
+                                                <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."></textarea>
+                                            </div>
+                                            <div class="backstage-form-group">
+                                                <label class="backstage-toggle-label">
+                                                    <input type="checkbox" name="rewardActive[]" checked>
+                                                    <span class="backstage-toggle-slider"></span>
+                                                    <span class="backstage-toggle-text">啟用此獎勵</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="addReward()">新增獎勵項目</button>
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存獎勵設定</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 統計數據 -->
+                        <div class="backstage-setting-card">
+                            <h3>集點卡統計</h3>
+                            <div class="backstage-stats-grid">
+                                <div class="backstage-stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">註冊會員</div>
+                                </div>
+                                <div class="backstage-stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">活躍會員</div>
+                                </div>
+                                <div class="backstage-stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">已兌換獎勵</div>
+                                </div>
+                                <div class="backstage-stat-item">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">總發放點數</div>
+                                </div>
                             </div>
                         </div>
                         <% } else { %>

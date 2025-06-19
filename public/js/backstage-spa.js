@@ -109,6 +109,24 @@ function initializeForms() {
             submitCardImage();
         });
     }
+
+    // 集點規則表單
+    const pointsRulesForm = document.getElementById('pointsRulesForm');
+    if (pointsRulesForm) {
+        pointsRulesForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitPointsRules();
+        });
+    }
+
+    // 獎勵設定表單
+    const rewardsForm = document.getElementById('rewardsForm');
+    if (rewardsForm) {
+        rewardsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRewards();
+        });
+    }
 }
 
 // 圖片預覽功能
@@ -639,4 +657,172 @@ function setupMobileMenu() {
             }
         });
     });
+}
+
+// 新增獎勵項目
+function addReward() {
+    const rewardsList = document.getElementById('rewards-list');
+    const currentRewards = rewardsList.querySelectorAll('.backstage-reward-item');
+    const newIndex = currentRewards.length + 1;
+    
+    const newRewardHTML = `
+        <div class="backstage-reward-item">
+            <div class="reward-item-header">
+                <h4>獎勵項目 ${newIndex}</h4>
+                <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeReward(this)">×</button>
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group">
+                    <label>獎勵名稱</label>
+                    <input type="text" name="rewardName[]" required placeholder="例如：免費飲料">
+                </div>
+                <div class="backstage-form-group">
+                    <label>所需點數</label>
+                    <input type="number" name="rewardPoints[]" min="1" max="100" required placeholder="例如：10">
+                </div>
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group">
+                    <label>獎勵描述</label>
+                    <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."></textarea>
+                </div>
+                <div class="backstage-form-group">
+                    <label class="backstage-toggle-label">
+                        <input type="checkbox" name="rewardActive[]" checked>
+                        <span class="backstage-toggle-slider"></span>
+                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    rewardsList.insertAdjacentHTML('beforeend', newRewardHTML);
+    updateRewardHeaders();
+}
+
+// 移除獎勵項目
+function removeReward(button) {
+    const rewardItem = button.closest('.backstage-reward-item');
+    const rewardsList = document.getElementById('rewards-list');
+    const remainingRewards = rewardsList.querySelectorAll('.backstage-reward-item');
+    
+    // 確保至少保留一個獎勵項目
+    if (remainingRewards.length > 1) {
+        rewardItem.remove();
+        updateRewardHeaders();
+    } else {
+        showNotification('至少需要保留一個獎勵項目', 'warning');
+    }
+}
+
+// 更新獎勵項目標題
+function updateRewardHeaders() {
+    const rewardItems = document.querySelectorAll('.backstage-reward-item');
+    rewardItems.forEach((item, index) => {
+        const header = item.querySelector('.reward-item-header h4');
+        header.textContent = `獎勵項目 ${index + 1}`;
+        
+        // 更新移除按鈕的顯示
+        const removeBtn = item.querySelector('.backstage-btn-remove');
+        if (rewardItems.length <= 1) {
+            if (removeBtn) removeBtn.style.display = 'none';
+        } else {
+            if (removeBtn) removeBtn.style.display = 'block';
+        }
+    });
+}
+
+// 提交集點規則設定
+async function submitPointsRules() {
+    const form = document.getElementById('pointsRulesForm');
+    const formData = new FormData(form);
+    
+    const pointsRules = {
+        pointsPerVisit: parseInt(formData.get('pointsPerVisit')),
+        maxPointsPerDay: parseInt(formData.get('maxPointsPerDay')),
+        pointsExpireDays: parseInt(formData.get('pointsExpireDays')),
+        enableBonusPoints: formData.get('enableBonusPoints') === 'on'
+    };
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/backstage/points-rules`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pointsRules)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('集點規則設定已更新');
+        } else {
+            showNotification(result.message || '更新失敗', 'error');
+        }
+    } catch (error) {
+        console.error('提交集點規則失敗:', error);
+        showNotification('提交失敗，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 提交獎勵設定
+async function submitRewards() {
+    const form = document.getElementById('rewardsForm');
+    const formData = new FormData(form);
+    
+    const rewardNames = formData.getAll('rewardName[]');
+    const rewardPoints = formData.getAll('rewardPoints[]');
+    const rewardDescriptions = formData.getAll('rewardDescription[]');
+    const rewardActives = formData.getAll('rewardActive[]');
+    
+    const rewards = [];
+    for (let i = 0; i < rewardNames.length; i++) {
+        if (rewardNames[i].trim()) {
+            rewards.push({
+                name: rewardNames[i].trim(),
+                points: parseInt(rewardPoints[i]),
+                description: rewardDescriptions[i] ? rewardDescriptions[i].trim() : '',
+                active: rewardActives.includes('on') && rewardActives.indexOf('on') === i
+            });
+        }
+    }
+    
+    // 檢查checkbox狀態
+    const checkboxes = form.querySelectorAll('input[name="rewardActive[]"]');
+    checkboxes.forEach((checkbox, index) => {
+        if (rewards[index]) {
+            rewards[index].active = checkbox.checked;
+        }
+    });
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/backstage/rewards`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rewards })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('獎勵設定已更新');
+        } else {
+            showNotification(result.message || '更新失敗', 'error');
+        }
+    } catch (error) {
+        console.error('提交獎勵設定失敗:', error);
+        showNotification('提交失敗，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
 } 

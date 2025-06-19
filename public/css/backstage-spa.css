@@ -1,4 +1,6 @@
-/* 商家後台 SPA 樣式 */
+::webkit-scrollbar {
+    display: none;
+}
 
 * {
     margin: 0;
@@ -702,6 +704,24 @@
     .backstage-main-footer-content {
         padding: 0 15px;
     }
+
+    /* 獎勵項目響應式 */
+    .backstage-reward-item {
+        padding: 15px;
+    }
+
+    .backstage-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .backstage-stat-item {
+        padding: 20px 15px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -762,6 +782,32 @@
     
     .backstage-main-footer-content {
         padding: 0 10px;
+    }
+
+    /* 小螢幕獎勵項目優化 */
+    .backstage-reward-item {
+        padding: 12px;
+    }
+
+    .reward-item-header h4 {
+        font-size: 14px;
+    }
+
+    .backstage-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .backstage-stat-item {
+        padding: 15px 10px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-label {
+        font-size: 13px;
     }
 }
 
@@ -866,6 +912,86 @@
 .backstage-toggle-text {
     font-size: 14px;
     color: #333;
+    font-weight: 500;
+}
+
+/* 獎勵項目設定樣式 */
+.backstage-rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.backstage-reward-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+}
+
+.reward-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.reward-item-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.backstage-reward-item textarea {
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.backstage-reward-item textarea:focus {
+    outline: none;
+    border-color: #333;
+}
+
+/* 統計數據樣式 */
+.backstage-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.backstage-stat-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.backstage-stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
     font-weight: 500;
 }
 
