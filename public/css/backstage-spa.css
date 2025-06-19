@@ -204,7 +204,7 @@
 /* 控制台首頁樣式 */
 .backstage-dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
     margin-bottom: 50px;
 }
@@ -274,7 +274,7 @@
 
 .quick-actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 15px;
 }
 
@@ -566,10 +566,12 @@
 
     .backstage-dashboard-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 15px;
     }
 
     .quick-actions-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
 
     .backstage-image-upload {
@@ -614,6 +616,11 @@
 }
 
 @media (max-width: 768px) {
+    .backstage-page {
+        padding: 15px;
+        padding-top: 65px; /* 為漢堡選單按鈕預留空間 */
+    }
+    
     .backstage-page-header h1 {
         font-size: 24px;
     }
@@ -634,6 +641,90 @@
     
     .backstage-list-item input {
         margin-bottom: 5px;
+    }
+
+    /* 更小螢幕的優化 */
+    .backstage-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .backstage-status-card {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .status-card-icon {
+        font-size: 28px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .status-value {
+        font-size: 18px;
+    }
+
+    .quick-action-btn {
+        padding: 15px;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .backstage-page {
+        padding: 10px;
+        padding-top: 65px; /* 為漢堡選單按鈕預留空間 */
+    }
+
+    .backstage-page-header {
+        margin-bottom: 25px;
+    }
+
+    .backstage-page-header h1 {
+        font-size: 20px;
+    }
+
+    .backstage-status-card {
+        padding: 15px;
+        gap: 12px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .status-card-icon {
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+        margin: 0 auto;
+    }
+
+    .backstage-quick-actions {
+        padding: 20px;
+    }
+
+    .backstage-quick-actions h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .quick-action-btn {
+        padding: 12px;
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .action-icon {
+        font-size: 18px;
+    }
+
+    .action-text {
+        font-size: 13px;
     }
 }
 
