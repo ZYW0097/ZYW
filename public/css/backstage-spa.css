@@ -40,14 +40,14 @@
 }
 
 .backstage-logo-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background: #666;
     border-radius: 4px;
 }
 
 .backstage-logo h2 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
     color: white;
 }
@@ -60,13 +60,13 @@
 
 .store-name {
     font-weight: 600;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 5px;
     color: #e0e0e0;
 }
 
 .store-slug {
-    font-size: 13px;
+    font-size: 14px;
     color: #b0b0b0;
     font-family: 'Courier New', monospace;
 }
@@ -108,8 +108,8 @@
 }
 
 .nav-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background: #666;
     border-radius: 3px;
     margin-right: 12px;
@@ -117,7 +117,7 @@
 }
 
 .nav-text {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -133,7 +133,7 @@
     padding: 12px 0;
     color: #cccccc;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
     transition: color 0.3s ease;
 }
 
@@ -226,11 +226,14 @@
 }
 
 .status-card-icon {
+    font-size: 36px;
     width: 60px;
     height: 60px;
-    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
     border-radius: 12px;
-    border: 2px solid #e0e0e0;
 }
 
 .status-card-content h3 {
@@ -294,10 +297,7 @@
 }
 
 .action-icon {
-    width: 20px;
-    height: 20px;
-    background: #666;
-    border-radius: 3px;
+    font-size: 20px;
 }
 
 .action-text {

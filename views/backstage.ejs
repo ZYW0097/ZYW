@@ -71,7 +71,7 @@
             <!-- 系統狀態卡片 -->
             <div class="backstage-dashboard-grid">
                 <div class="backstage-status-card">
-                    <div class="status-card-icon"></div>
+                    <div class="status-card-icon">📊</div>
                     <div class="status-card-content">
                         <h3>系統狀態</h3>
                         <p class="status-value">正常運行</p>
@@ -80,7 +80,7 @@
                 </div>
                 
                 <div class="backstage-status-card">
-                    <div class="status-card-icon"></div>
+                    <div class="status-card-icon">📅</div>
                     <div class="status-card-content">
                         <h3>建立時間</h3>
                         <p class="status-value"><%= createdAt ? new Date(createdAt).toLocaleDateString('zh-TW') : '未知' %></p>
@@ -89,7 +89,7 @@
                 </div>
                 
                 <div class="backstage-status-card">
-                    <div class="status-card-icon"></div>
+                    <div class="status-card-icon">🔄</div>
                     <div class="status-card-content">
                         <h3>最後更新</h3>
                         <p class="status-value"><%= updatedAt ? new Date(updatedAt).toLocaleDateString('zh-TW') : '未知' %></p>
@@ -98,7 +98,7 @@
                 </div>
                 
                 <div class="backstage-status-card">
-                    <div class="status-card-icon"></div>
+                    <div class="status-card-icon">🔗</div>
                     <div class="status-card-content">
                         <h3>餐廳網址</h3>
                         <p class="status-value">/<%= storeSlug %></p>
@@ -112,19 +112,19 @@
                 <h2>快捷操作</h2>
                 <div class="quick-actions-grid">
                     <button class="quick-action-btn" onclick="navigateToPage('basic')">
-                        <span class="action-icon"></span>
+                        <span class="action-icon">⚙️</span>
                         <span class="action-text">基本設定</span>
                     </button>
                     <button class="quick-action-btn" onclick="navigateToPage('booking')">
-                        <span class="action-icon"></span>
+                        <span class="action-icon">📅</span>
                         <span class="action-text">訂位設定</span>
                     </button>
                     <button class="quick-action-btn" onclick="navigateToPage('points')">
-                        <span class="action-icon"></span>
+                        <span class="action-icon">🎯</span>
                         <span class="action-text">集點卡設定</span>
                     </button>
                     <button class="quick-action-btn" onclick="navigateToPage('qrcode')">
-                        <span class="action-icon"></span>
+                        <span class="action-icon">📱</span>
                         <span class="action-text">點數QR碼</span>
                     </button>
                 </div>
