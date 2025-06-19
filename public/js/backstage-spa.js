@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeForms();
     initializeImagePreview();
     initializeDynamicLists();
+    setupMobileMenu();
     
     // 從URL hash設置初始頁面
     const hash = window.location.hash.substring(1);
@@ -606,4 +607,36 @@ async function updateFeatureSettings() {
     } finally {
         hideLoading();
     }
+}
+
+// 行動版選單控制
+function setupMobileMenu() {
+    const mobileToggle = document.getElementById('backstage-mobile-toggle');
+    const sidebar = document.querySelector('.backstage-sidebar');
+    const overlay = document.getElementById('backstage-mobile-overlay');
+
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // 點擊導航連結時關閉行動版選單
+    const navLinks = document.querySelectorAll('.backstage-nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            }
+        });
+    });
 } 

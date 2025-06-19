@@ -1,147 +1,157 @@
-<div class="backstage-auth-container">
-    <div class="backstage-auth-header">
-        <div class="backstage-logo">
-            <span class="backstage-logo-icon">⚙️</span>
-            <h1 class="backstage-title">商家控制台</h1>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>商家控制台登入 - <%= clientname %></title>
+    <link rel="stylesheet" href="/css/backstage-login.css">
+</head>
+<body>
+    <div class="backstage-auth-container">
+        <div class="backstage-auth-header">
+            <div class="backstage-logo">
+                <span class="backstage-logo-icon">⚙️</span>
+                <h1 class="backstage-title">商家控制台</h1>
+            </div>
+            <p class="backstage-subtitle">請輸入您的管理員密碼</p>
         </div>
-        <p class="backstage-subtitle">請輸入您的管理員密碼</p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="backstage-error-message">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="backstage-success-message">
+                <%= success %>
+            </div>
+        <% } %>
+
+        <form class="backstage-auth-form" action="/<%= storeSlug %>/backstage-login" method="POST" id="backstageForm">
+            <div class="backstage-form-group">
+                <label class="backstage-form-label" for="adminPassword">管理員密碼</label>
+                <input 
+                    type="password" 
+                    id="adminPassword" 
+                    name="adminPassword" 
+                    class="backstage-form-input" 
+                    placeholder="請輸入管理員密碼"
+                    required
+                >
+            </div>
+
+            <div class="backstage-remember-group">
+                <input 
+                    type="checkbox" 
+                    id="rememberMe" 
+                    name="rememberMe" 
+                    class="backstage-remember-checkbox"
+                >
+                <label class="backstage-remember-label" for="rememberMe">記住登入狀態（30天）</label>
+            </div>
+
+            <button type="submit" class="backstage-auth-btn" id="loginBtn">
+                登入控制台
+            </button>
+        </form>
+
+        <div class="backstage-footer">
+            <a href="/<%= storeSlug %>" class="backstage-back-link">← 返回餐廳首頁</a>
+        </div>
     </div>
 
-    <% if (typeof error !== 'undefined' && error) { %>
-        <div class="backstage-error-message">
-            <%= error %>
-        </div>
-    <% } %>
-
-    <% if (typeof success !== 'undefined' && success) { %>
-        <div class="backstage-success-message">
-            <%= success %>
-        </div>
-    <% } %>
-
-    <form class="backstage-auth-form" action="/<%= storeSlug %>/backstage-login" method="POST" id="backstageForm">
-        <div class="backstage-form-group">
-            <label class="backstage-form-label" for="adminPassword">管理員密碼</label>
-            <input 
-                type="password" 
-                id="adminPassword" 
-                name="adminPassword" 
-                class="backstage-form-input" 
-                placeholder="請輸入管理員密碼"
-                required
-            >
-        </div>
-
-        <div class="backstage-remember-group">
-            <input 
-                type="checkbox" 
-                id="rememberMe" 
-                name="rememberMe" 
-                class="backstage-remember-checkbox"
-            >
-            <label class="backstage-remember-label" for="rememberMe">記住登入狀態（30天）</label>
-        </div>
-
-        <button type="submit" class="backstage-auth-btn" id="loginBtn">
-            登入控制台
-        </button>
-    </form>
-
-    <div class="backstage-footer">
-        <a href="/<%= storeSlug %>" class="backstage-back-link">← 返回餐廳首頁</a>
-    </div>
-</div>
-
-<link rel="stylesheet" href="/css/backstage-login.css">
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('backstageForm');
-    const submitBtn = document.getElementById('loginBtn');
-    const passwordInput = document.getElementById('adminPassword');
-    
-    // URL 參數中的訊息處理
-    const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('message');
-    
-    if (message) {
-        showMessage(message, 'success');
-    }
-    
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('backstageForm');
+        const submitBtn = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('adminPassword');
         
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
+        // URL 參數中的訊息處理
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
         
-        // 顯示載入狀態
-        submitBtn.disabled = true;
-        submitBtn.classList.add('loading');
-        submitBtn.textContent = '登入中...';
+        if (message) {
+            showMessage(message, 'success');
+        }
         
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            const result = await response.json();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
             
-            if (result.success) {
-                showMessage('登入成功，正在跳轉...', 'success');
-                setTimeout(() => {
-                    window.location.href = result.redirectUrl;
-                }, 1000);
-            } else {
-                showMessage(result.message, 'error');
+            // 顯示載入狀態
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = '登入中...';
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('登入成功，正在跳轉...', 'success');
+                    setTimeout(() => {
+                        window.location.href = result.redirectUrl;
+                    }, 1000);
+                } else {
+                    showMessage(result.message, 'error');
+                    resetButton();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('登入失敗，請檢查網路連接', 'error');
                 resetButton();
             }
-        } catch (error) {
-            console.error('Login error:', error);
-            showMessage('登入失敗，請檢查網路連接', 'error');
-            resetButton();
+        });
+        
+        function resetButton() {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = '登入控制台';
         }
+        
+        function showMessage(text, type) {
+            // 移除現有訊息
+            const existingMsg = document.querySelector('.backstage-error-message, .backstage-success-message');
+            if (existingMsg) {
+                existingMsg.remove();
+            }
+            
+            // 創建新訊息
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'backstage-error-message' : 'backstage-success-message';
+            messageDiv.textContent = text;
+            
+            // 插入到表單前
+            form.parentNode.insertBefore(messageDiv, form);
+            
+            // 自動隱藏成功訊息
+            if (type === 'success') {
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Enter 鍵提交
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
     });
-    
-    function resetButton() {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
-        submitBtn.textContent = '登入控制台';
-    }
-    
-    function showMessage(text, type) {
-        // 移除現有訊息
-        const existingMsg = document.querySelector('.backstage-error-message, .backstage-success-message');
-        if (existingMsg) {
-            existingMsg.remove();
-        }
-        
-        // 創建新訊息
-        const messageDiv = document.createElement('div');
-        messageDiv.className = type === 'error' ? 'backstage-error-message' : 'backstage-success-message';
-        messageDiv.textContent = text;
-        
-        // 插入到表單前
-        form.parentNode.insertBefore(messageDiv, form);
-        
-        // 自動隱藏成功訊息
-        if (type === 'success') {
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.remove();
-                }
-            }, 3000);
-        }
-    }
-    
-    // Enter 鍵提交
-    passwordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            form.dispatchEvent(new Event('submit'));
-        }
-    });
-});
-</script> 
+    </script>
+</body>
+</html> 

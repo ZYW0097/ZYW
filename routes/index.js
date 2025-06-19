@@ -617,9 +617,18 @@ router.get('/:storeSlug/:page', async (req, res) => {
         const isOwner = res.locals.isOwner || false;
         const currentUser = res.locals.user || null;
 
-        // 如果是後台頁面且用戶不是擁有者，跳轉到登入頁面
-        if (page === 'backstage' && !isOwner) {
-            return res.redirect(`/${storeSlug}/backstage-login`);
+        // 如果是後台頁面，檢查是否已通過後台驗證
+        if (page === 'backstage') {
+            // 檢查session中是否有後台驗證記錄
+            const backstageAuth = req.session.backstageAuth;
+            const isBackstageAuthenticated = backstageAuth && 
+                                           backstageAuth.storeSlug === storeSlug &&
+                                           (Date.now() - new Date(backstageAuth.loginTime).getTime()) < 2 * 60 * 60 * 1000; // 2小時有效
+            
+            if (!isBackstageAuthenticated) {
+                // 無論是否為owner，都需要通過後台登入驗證
+                return res.redirect(`/${storeSlug}/backstage-login`);
+            }
         }
 
         // 移除自訂設定檢查，不再需要
@@ -696,7 +705,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
         }
 
         // 渲染對應頁面
-        res.render(page, {
+        const renderOptions = {
             storeSlug,
             clientname: client.clientname,
             customSettings: {
@@ -711,7 +720,14 @@ router.get('/:storeSlug/:page', async (req, res) => {
             updatedAt: client.updatedAt,
             isOwner: isOwner,
             user: currentUser
-        });
+        };
+
+        // 如果是 backstage 頁面，不載入 layout
+        if (page === 'backstage') {
+            renderOptions.layout = false;
+        }
+
+        res.render(page, renderOptions);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).render('error', { message: '系統錯誤' });
@@ -1080,22 +1096,7 @@ router.get('/:storeSlug/backstage-login', async (req, res) => {
             return res.status(404).render('error', { message: '餐廳不存在' });
         }
 
-        // 檢查是否已經是擁有者登入
-        if (req.session.userId) {
-            try {
-                const adb = getClientDb('main', 'ADB');
-                const userSchema = require('../models/user');
-                const User = adb.model('User', userSchema);
-                const user = await User.findById(req.session.userId);
-                
-                if (user && user.lineId && client.ownerid === user.lineId) {
-                    // 如果已經是擁有者，直接跳轉到後台
-                    return res.redirect(`/${storeSlug}/backstage`);
-                }
-            } catch (error) {
-                console.error('Error checking owner status:', error);
-            }
-        }
+        // 移除自動跳轉邏輯，每次都要求密碼驗證
 
         res.render('backstage-login', {
             storeSlug,
@@ -1142,7 +1143,8 @@ router.post('/:storeSlug/backstage-login', async (req, res) => {
         // 設置 session
         req.session.backstageAuth = {
             storeSlug: storeSlug,
-            loginTime: new Date()
+            loginTime: new Date(),
+            authenticated: true
         };
 
         // 如果選擇記住登入狀態，設置較長的過期時間
