@@ -688,6 +688,10 @@
         padding: 15px;
         gap: 10px;
     }
+
+    .backstage-main-footer-content {
+        padding: 0 15px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -740,6 +744,14 @@
 
     .action-text {
         font-size: 13px;
+    }
+
+    .backstage-main-footer {
+        padding: 15px 0;
+    }
+    
+    .backstage-main-footer-content {
+        padding: 0 10px;
     }
 }
 
@@ -852,7 +864,7 @@
     background: #1a1a1a;
     color: white;
     margin-left: 280px;
-    padding: 30px 0;
+    padding: 20px 0;
     border-top: 1px solid #333;
 }
 
@@ -860,49 +872,13 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.footer-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.footer-brand {
-    font-size: 18px;
-    font-weight: 600;
-    color: white;
-    margin: 0;
-    letter-spacing: 0.5px;
+    text-align: center;
 }
 
 .footer-copyright {
     font-size: 13px;
     color: #ccc;
     margin: 0;
-}
-
-.footer-links {
-    display: flex;
-    gap: 25px;
-    align-items: center;
-}
-
-.footer-link {
-    font-size: 14px;
-    color: #ccc;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-link:hover {
-    color: white;
-    text-decoration: underline;
 }
 
 /* 響應式 Footer */
@@ -918,33 +894,16 @@
 
 @media (max-width: 768px) {
     .backstage-main-footer-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .footer-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+        padding: 0 15px;
     }
 }
 
 @media (max-width: 480px) {
     .backstage-main-footer {
-        padding: 20px 0;
+        padding: 15px 0;
     }
     
     .backstage-main-footer-content {
         padding: 0 10px;
-    }
-    
-    .footer-links {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .footer-brand {
-        font-size: 16px;
     }
 } 
