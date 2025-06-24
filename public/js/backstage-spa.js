@@ -80,6 +80,11 @@ function navigateToPage(pageName) {
     if (pageName === 'qrcode') {
         setTimeout(updateQRCodeStatus, 300);
     }
+    
+    // 如果導航到集點卡設定頁面，載入規則
+    if (pageName === 'points') {
+        setTimeout(loadRules, 300);
+    }
 }
 
 // 初始化表單
@@ -153,6 +158,15 @@ function initializeForms() {
         qrcodeForm.addEventListener('submit', function(e) {
             e.preventDefault();
             generateQRCode();
+        });
+    }
+
+    // 使用規則表單
+    const rulesForm = document.getElementById('rulesForm');
+    if (rulesForm) {
+        rulesForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRules();
         });
     }
 }
@@ -860,6 +874,149 @@ async function submitRewards() {
         }
     } catch (error) {
         console.error('提交獎勵設定失敗:', error);
+        showNotification('提交失敗，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 規則管理功能
+async function loadRules() {
+    try {
+        const response = await fetch(`/${storeSlug}/backstage/rules`);
+        const result = await response.json();
+        
+        const rulesList = document.getElementById('rules-list');
+        const loadingElement = rulesList.querySelector('.loading-rules');
+        
+        if (loadingElement) {
+            loadingElement.remove();
+        }
+        
+        if (result.success && result.rules && result.rules.length > 0) {
+            displayRules(result.rules);
+        } else {
+            // 如果沒有規則，顯示空狀態並添加第一個規則
+            rulesList.innerHTML = '';
+            addRule();
+        }
+    } catch (error) {
+        console.error('載入規則失敗:', error);
+        const rulesList = document.getElementById('rules-list');
+        rulesList.innerHTML = '<div class="backstage-error">載入規則失敗，請重新整理頁面</div>';
+    }
+}
+
+function displayRules(rules) {
+    const rulesList = document.getElementById('rules-list');
+    rulesList.innerHTML = '';
+    
+    rules.forEach((rule, index) => {
+        addRuleItem(rule.text, index + 1);
+    });
+    
+    // 如果沒有規則，至少添加一個空規則
+    if (rules.length === 0) {
+        addRule();
+    }
+}
+
+function addRule() {
+    const rulesList = document.getElementById('rules-list');
+    const ruleCount = rulesList.querySelectorAll('.rule-item').length;
+    addRuleItem('', ruleCount + 1);
+}
+
+function addRuleItem(text = '', article = 1) {
+    const rulesList = document.getElementById('rules-list');
+    const ruleCount = rulesList.querySelectorAll('.rule-item').length;
+    
+    const ruleItem = document.createElement('div');
+    ruleItem.className = 'rule-item';
+    ruleItem.innerHTML = `
+        <div class="rule-item-header">
+            <h4>規則 ${article}</h4>
+            ${ruleCount > 0 ? '<button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeRule(this)">×</button>' : ''}
+        </div>
+        <div class="backstage-form-group">
+            <label>規則內容</label>
+            <input type="text" name="ruleText[]" value="${text}" maxlength="100" 
+                   placeholder="例如：每次消費滿100元可獲得1點" required>
+            <small>最多100個字元</small>
+        </div>
+    `;
+    
+    rulesList.appendChild(ruleItem);
+    updateRuleHeaders();
+}
+
+function removeRule(button) {
+    const ruleItem = button.closest('.rule-item');
+    const rulesList = document.getElementById('rules-list');
+    
+    // 確保至少保留一個規則
+    if (rulesList.querySelectorAll('.rule-item').length > 1) {
+        ruleItem.remove();
+        updateRuleHeaders();
+    } else {
+        showNotification('至少需要保留一個規則', 'error');
+    }
+}
+
+function updateRuleHeaders() {
+    const ruleItems = document.querySelectorAll('.rule-item');
+    ruleItems.forEach((item, index) => {
+        const header = item.querySelector('h4');
+        header.textContent = `規則 ${index + 1}`;
+        
+        // 更新刪除按鈕的顯示
+        const removeBtn = item.querySelector('.backstage-btn-remove');
+        if (removeBtn) {
+            removeBtn.style.display = ruleItems.length > 1 ? 'block' : 'none';
+        }
+    });
+}
+
+async function submitRules() {
+    const form = document.getElementById('rulesForm');
+    const formData = new FormData(form);
+    const ruleTexts = formData.getAll('ruleText[]');
+    
+    // 過濾空規則
+    const rules = ruleTexts
+        .filter(text => text.trim())
+        .map((text, index) => ({
+            article: index + 1,
+            text: text.trim()
+        }));
+    
+    if (rules.length === 0) {
+        showNotification('請至少添加一個規則', 'error');
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/backstage/rules`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rules })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('使用規則已更新');
+            // 重新載入規則以確保順序正確
+            await loadRules();
+        } else {
+            showNotification(result.message || '更新失敗', 'error');
+        }
+    } catch (error) {
+        console.error('提交規則失敗:', error);
         showNotification('提交失敗，請稍後再試', 'error');
     } finally {
         hideLoading();

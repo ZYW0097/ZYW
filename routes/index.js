@@ -1419,6 +1419,68 @@ router.post('/:storeSlug/backstage/rewards', async (req, res) => {
     }
 });
 
+// 獲取使用規則
+router.get('/:storeSlug/backstage/rules', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const pointsRulesSchema = require('../models/points/rules');
+        const PointsRules = cdb.model('PointsRules', pointsRulesSchema);
+        
+        const rules = await PointsRules.find({
+            slug: storeSlug,
+            type: 'points_settings',
+            class: 'rule_settings'
+        }).sort({ article: 1 });
+        
+        res.json({ success: true, rules });
+    } catch (error) {
+        console.error('❌ 獲取規則錯誤:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 更新使用規則
+router.post('/:storeSlug/backstage/rules', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { rules } = req.body;
+        
+        if (!Array.isArray(rules) || rules.length === 0) {
+            return res.status(400).json({ success: false, error: '請提供有效的規則數據' });
+        }
+        
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const pointsRulesSchema = require('../models/points/rules');
+        const PointsRules = cdb.model('PointsRules', pointsRulesSchema);
+        
+        // 刪除現有規則
+        await PointsRules.deleteMany({
+            slug: storeSlug,
+            type: 'points_settings',
+            class: 'rule_settings'
+        });
+        
+        // 新增更新的規則
+        const newRules = rules.map((rule, index) => ({
+            slug: storeSlug,
+            type: 'points_settings',
+            class: 'rule_settings',
+            article: index + 1,
+            text: rule.text,
+            updatedAt: new Date()
+        }));
+        
+        await PointsRules.insertMany(newRules);
+        
+        res.json({ success: true, message: '使用規則已更新' });
+    } catch (error) {
+        console.error('❌ 規則更新錯誤:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // API獲取時段資料
 router.get('/:storeSlug/api/timeSlots', async (req, res) => {
     try {

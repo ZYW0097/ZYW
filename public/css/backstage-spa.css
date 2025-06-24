@@ -1433,4 +1433,96 @@
         max-width: 150px;
         max-height: 150px;
     }
+}
+
+/* 使用規則設定樣式 */
+.backstage-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rule-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.rule-item:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rule-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.rule-item-header h4 {
+    color: #495057;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.loading-rules {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.backstage-error {
+    text-align: center;
+    padding: 30px 20px;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.backstage-card-desc {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .rule-item {
+        padding: 15px;
+    }
+    
+    .rule-item-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .rule-item-header h4 {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .backstage-rules-list {
+        gap: 10px;
+    }
+    
+    .rule-item {
+        padding: 12px;
+    }
+    
+    .rule-item-header {
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+    }
 } 

@@ -451,8 +451,26 @@
                                     <button type="button" class="backstage-btn backstage-btn-outline" onclick="addReward()">新增獎勵項目</button>
                                     <button type="submit" class="backstage-btn backstage-btn-primary">儲存獎勵設定</button>
                                 </div>
-        </form>
-    </div>
+                                </form>
+                        </div>
+
+                        <!-- 使用規則設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>使用規則設定</h3>
+                            <p class="backstage-card-desc">設定集點卡的使用規則說明，這些規則會顯示在顧客的集點卡頁面上</p>
+                            <form id="rulesForm" class="backstage-form">
+                                <div id="rules-list" class="backstage-rules-list">
+                                    <!-- 動態載入規則列表 -->
+                                    <div class="loading-rules">
+                                        <p>🔄 正在載入規則設定...</p>
+                                    </div>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="addRule()">新增規則</button>
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存規則</button>
+                                </div>
+                            </form>
+                        </div>
 
                         <!-- 統計數據 -->
                         <div class="backstage-setting-card">
