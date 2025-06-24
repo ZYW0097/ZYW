@@ -1,6 +1,20 @@
 // 商家後台 SPA JavaScript
 
+// 全局變數
+let storeSlug = '';
+let currentQR = null;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // 從頁面獲取 storeSlug
+    const metaSlug = document.querySelector('meta[name="store-slug"]');
+    if (metaSlug) {
+        storeSlug = metaSlug.getAttribute('content');
+    } else {
+        // 如果沒有meta標籤，從URL路徑獲取
+        const pathParts = window.location.pathname.split('/');
+        storeSlug = pathParts[1] || '';
+    }
+    
     initializeSPA();
     initializeForms();
     initializeImagePreview();
@@ -917,7 +931,7 @@ function displayQRCode(qrData) {
                     <label>兌換網址：</label>
                     <div class="url-container">
                         <input type="text" value="${qrData.url}" readonly />
-                        <button onclick="backstageManager.copyToClipboard('${qrData.url}')" class="copy-btn">
+                        <button onclick="copyToClipboard('${qrData.url}')" class="copy-btn">
                             📋 複製
                         </button>
                     </div>
@@ -930,10 +944,10 @@ function displayQRCode(qrData) {
             </div>
             
             <div class="qr-actions">
-                <button onclick="backstageManager.downloadQRCode()" class="download-btn">
+                <button onclick="downloadQRCode()" class="download-btn">
                     💾 下載QR碼
                 </button>
-                <button onclick="backstageManager.deleteQRCode()" class="delete-btn">
+                <button onclick="deleteCurrentQRCode()" class="delete-btn">
                     🗑️ 刪除QR碼
                 </button>
             </div>
@@ -999,4 +1013,117 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('qrcode-page')) {
         setTimeout(updateQRCodeStatus, 500);
     }
-}); 
+});
+
+// 更新QR碼狀態
+async function updateQRCodeStatus() {
+    try {
+        const response = await fetch(`/${storeSlug}/backstage/qrcode/status`);
+        const result = await response.json();
+        
+        const qrDisplay = document.getElementById('qrCodeDisplay');
+        if (!qrDisplay) return;
+        
+        if (result.success && result.hasActiveQR) {
+            currentQR = result.qrcode;
+            displayQRCode(result.qrcode);
+            startCountdown(new Date(result.qrcode.expiresAt));
+        } else {
+            qrDisplay.innerHTML = `
+                <div class="backstage-info-box">
+                    <p>📱 目前沒有活躍的QR碼</p>
+                    <p>請使用上方表單生成新的QR碼</p>
+                </div>
+            `;
+            qrDisplay.style.display = 'block';
+            currentQR = null;
+        }
+    } catch (error) {
+        console.error('獲取QR碼狀態失敗:', error);
+        const qrDisplay = document.getElementById('qrCodeDisplay');
+        if (qrDisplay) {
+            qrDisplay.innerHTML = `
+                <div class="backstage-info-box">
+                    <p>❌ 無法獲取QR碼狀態</p>
+                </div>
+            `;
+            qrDisplay.style.display = 'block';
+        }
+    }
+}
+
+// 倒數計時函數
+function startCountdown(expiresAt) {
+    const countdownElement = document.getElementById('countdown');
+    if (!countdownElement) return;
+    
+    const updateCountdown = () => {
+        const now = new Date();
+        const timeLeft = expiresAt - now;
+        
+        if (timeLeft <= 0) {
+            countdownElement.textContent = '已過期';
+            countdownElement.className = 'countdown danger';
+            updateQRCodeStatus(); // 重新檢查狀態
+            return;
+        }
+        
+        const minutes = Math.floor(timeLeft / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        
+        countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft < 60000) { // 小於1分鐘
+            countdownElement.className = 'countdown danger';
+        } else if (timeLeft < 120000) { // 小於2分鐘
+            countdownElement.className = 'countdown warning';
+        } else {
+            countdownElement.className = 'countdown';
+        }
+        
+        setTimeout(updateCountdown, 1000);
+    };
+    
+    updateCountdown();
+}
+
+// 複製到剪貼簿
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('網址已複製到剪貼簿', 'success');
+        }).catch(err => {
+            console.error('複製失敗:', err);
+            fallbackCopyTextToClipboard(text);
+        });
+    } else {
+        fallbackCopyTextToClipboard(text);
+    }
+}
+
+// 備用複製方法
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showNotification('網址已複製到剪貼簿', 'success');
+        } else {
+            showNotification('複製失敗，請手動複製', 'error');
+        }
+    } catch (err) {
+        console.error('複製失敗:', err);
+        showNotification('複製失敗，請手動複製', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+} 

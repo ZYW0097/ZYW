@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="store-slug" content="<%= storeSlug %>">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <title>商家控制台 - <%= clientname %></title>
     <link rel="stylesheet" href="/css/backstage-spa.css">
@@ -513,7 +514,7 @@
                                     </div>
                                 </div>
                                 <div class="backstage-form-actions">
-                                    <button type="submit" class="backstage-btn backstage-btn-primary">生成QR碼</button>
+                                    <button type="submit" id="generateQRBtn" class="backstage-btn backstage-btn-primary">生成QR碼</button>
                                 </div>
                             </form>
                         </div>
@@ -521,8 +522,8 @@
                         <!-- 當前QR碼狀態 -->
                         <div class="backstage-setting-card">
                             <h3>當前QR碼狀態</h3>
-                            <div id="qrcode-status">
-                                <div class="backstage-info-box" id="no-qr-message">
+                            <div id="qrCodeDisplay">
+                                <div class="backstage-info-box">
                                     <p>🔄 正在檢查QR碼狀態...</p>
                                 </div>
                             </div>
@@ -566,9 +567,6 @@
         </div>
     </footer>
 
-    <script>
-        const storeSlug = '<%= storeSlug %>';
-    </script>
     <script src="/js/backstage-spa.js"></script>
 </body>
 </html>
