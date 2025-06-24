@@ -895,7 +895,7 @@ async function checkPointsSystemCompleteness(storeSlug) {
         } else {
             // 檢查獎勵是否有效
             const activeRewards = client.customSettings.rewards.filter(reward => 
-                reward.name && reward.points && reward.points > 0 && reward.active !== false
+                reward.name && reward.points && reward.points > 0 && reward.active === true
             );
             if (activeRewards.length === 0) {
                 missing.push('有效的獎勵項目');
@@ -1431,22 +1431,46 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage', 10), as
                 }
             }
 
+            // 初始設定為未啟用，稍後會重新處理
             rewards.push({
                 name: name.trim(),
                 points: point,
                 img: imgUrl,
-                active: rewardActives.includes('on') || 
-                        (Array.isArray(rewardActives) && rewardActives[i] === 'on') ||
-                        (typeof rewardActives === 'string' && rewardActives === 'on')
+                active: false
             });
         }
 
-        // 處理checkbox狀態（因為未選中的checkbox不會被發送）
-        if (Array.isArray(rewardActives)) {
-            rewards.forEach((reward, index) => {
-                reward.active = rewardActives.includes(`${index}`) || rewardActives.includes('on');
-            });
+        // 處理checkbox狀態（HTML checkbox只會在選中時發送值）
+        const activeValues = Array.isArray(rewardActives) ? rewardActives : (rewardActives ? [rewardActives] : []);
+        
+        console.log('🔍 Checkbox處理調試:');
+        console.log('  rewardActives:', rewardActives);
+        console.log('  activeValues:', activeValues);
+        console.log('  rewards count:', rewards.length);
+        
+        // 根據發送的checkbox值設定active狀態
+        // 每個checkbox的value應該是該項目的索引
+        activeValues.forEach(value => {
+            if (value === 'on') {
+                // 如果沒有指定索引，可能是單一checkbox
+                rewards.forEach(reward => reward.active = true);
+                console.log('  設定所有獎勵為啟用 (value=on)');
+            } else {
+                const index = parseInt(value);
+                if (!isNaN(index) && rewards[index]) {
+                    rewards[index].active = true;
+                    console.log(`  啟用獎勵項目 ${index}`);
+                }
+            }
+        });
+        
+        // 如果沒有收到任何active值，檢查form data中是否有checkbox名稱出現
+        if (activeValues.length === 0) {
+            // 所有checkbox都未選中，保持active: false
+            console.log('  沒有啟用的獎勵項目');
         }
+        
+        console.log('  最終獎勵狀態:', rewards.map((r, i) => ({ index: i, name: r.name, active: r.active })));
 
         // 更新客戶設定
         await Client.findOneAndUpdate(

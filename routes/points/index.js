@@ -74,7 +74,7 @@ router.get('/:storeSlug/card', async (req, res) => {
         let activeRewards = [];
         if (client.customSettings?.rewards && Array.isArray(client.customSettings.rewards)) {
             activeRewards = client.customSettings.rewards.filter(reward => 
-                reward.name && reward.points && reward.points > 0 && reward.active !== false
+                reward.name && reward.points && reward.points > 0 && reward.active === true
             );
         }
         

@@ -81,9 +81,12 @@ function navigateToPage(pageName) {
         setTimeout(updateQRCodeStatus, 300);
     }
     
-    // 如果導航到集點卡設定頁面，載入規則
+    // 如果導航到集點卡設定頁面，載入規則和初始化toggle
     if (pageName === 'points') {
-        setTimeout(loadRules, 300);
+        setTimeout(() => {
+            loadRules();
+            initializeRewardToggles();
+        }, 300);
     }
 }
 
@@ -734,9 +737,16 @@ function addReward() {
                     <label>所需點數</label>
                     <input type="number" name="rewardPoints[]" min="1" max="100" required placeholder="例如：10">
                 </div>
+                <div class="backstage-form-group backstage-toggle-group">
+                    <label class="backstage-toggle-label">
+                        <input type="checkbox" name="rewardActive[]" value="${newIndex}" checked>
+                        <span class="backstage-toggle-slider"></span>
+                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                    </label>
+                </div>
             </div>
             <div class="backstage-form-row">
-                <div class="backstage-form-group">
+                <div class="backstage-form-group backstage-image-group">
                     <label>獎勵圖片</label>
                     <div class="backstage-file-upload-area" onclick="triggerFileUpload('${newIndex}')">
                         <input type="file" name="rewardImage[]" id="rewardImage-${newIndex}" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '${newIndex}')">
@@ -747,19 +757,21 @@ function addReward() {
                         </div>
                     </div>
                 </div>
-                <div class="backstage-form-group">
-                    <label class="backstage-toggle-label">
-                        <input type="checkbox" name="rewardActive[]" checked>
-                        <span class="backstage-toggle-slider"></span>
-                        <span class="backstage-toggle-text">啟用此獎勵</span>
-                    </label>
-                </div>
             </div>
         </div>
     `;
     
     rewardsList.insertAdjacentHTML('beforeend', newRewardHTML);
     updateRewardHeaders();
+    
+    // 為新添加的toggle添加事件監聽
+    const newRewardItem = rewardsList.lastElementChild;
+    const newCheckbox = newRewardItem.querySelector('input[name="rewardActive[]"]');
+    if (newCheckbox) {
+        newCheckbox.addEventListener('change', updateRewardItemStatus);
+        // 初始狀態設定
+        updateRewardItemStatus.call(newCheckbox);
+    }
 }
 
 // 移除獎勵項目
@@ -777,12 +789,61 @@ function removeReward(button) {
     }
 }
 
+// 更新獎勵項目狀態顯示
+function updateRewardItemStatus() {
+    const checkbox = this;
+    const rewardItem = checkbox.closest('.backstage-reward-item');
+    
+    if (checkbox.checked) {
+        rewardItem.classList.remove('inactive');
+        rewardItem.classList.add('active');
+    } else {
+        rewardItem.classList.remove('active');
+        rewardItem.classList.add('inactive');
+    }
+}
+
+// 初始化所有獎勵項目的toggle事件
+function initializeRewardToggles() {
+    const checkboxes = document.querySelectorAll('input[name="rewardActive[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateRewardItemStatus);
+        // 設定初始狀態
+        updateRewardItemStatus.call(checkbox);
+    });
+}
+
 // 更新獎勵項目標題
 function updateRewardHeaders() {
     const rewardItems = document.querySelectorAll('.backstage-reward-item');
     rewardItems.forEach((item, index) => {
         const header = item.querySelector('.reward-item-header h4');
         header.textContent = `獎勵項目 ${index + 1}`;
+        
+        // 更新checkbox的value值
+        const checkbox = item.querySelector('input[name="rewardActive[]"]');
+        if (checkbox) {
+            checkbox.value = index;
+        }
+        
+        // 更新文件上傳相關的ID
+        const fileInput = item.querySelector('input[type="file"]');
+        const uploadArea = item.querySelector('.backstage-file-upload-area');
+        const placeholder = item.querySelector('.backstage-file-placeholder');
+        const preview = item.querySelector('.backstage-reward-preview');
+        
+        if (fileInput) {
+            fileInput.id = `rewardImage-${index}`;
+        }
+        if (uploadArea) {
+            uploadArea.setAttribute('onclick', `triggerFileUpload('${index}')`);
+        }
+        if (placeholder) {
+            placeholder.id = `placeholder-${index}`;
+        }
+        if (preview) {
+            preview.id = `preview-${index}`;
+        }
         
         // 更新移除按鈕的顯示
         const removeBtn = item.querySelector('.backstage-btn-remove');

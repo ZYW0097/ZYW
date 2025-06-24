@@ -400,9 +400,16 @@
                                                     <label>所需點數</label>
                                                     <input type="number" name="rewardPoints[]" value="<%= reward.points %>" min="1" max="100" required placeholder="例如：10">
                                                 </div>
+                                                <div class="backstage-form-group backstage-toggle-group">
+                                                    <label class="backstage-toggle-label">
+                                                        <input type="checkbox" name="rewardActive[]" value="<%= index %>" <%= reward.active ? 'checked' : '' %>>
+                                                        <span class="backstage-toggle-slider"></span>
+                                                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                                                    </label>
+                                                </div>
                                             </div>
                                             <div class="backstage-form-row">
-                                                <div class="backstage-form-group">
+                                                <div class="backstage-form-group backstage-image-group">
                                                     <label>獎勵圖片</label>
                                                     <div class="backstage-file-upload-area" onclick="triggerFileUpload('<%= index %>')">
                                                         <input type="file" name="rewardImage[]" id="rewardImage-<%= index %>" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '<%= index %>')">
@@ -419,13 +426,6 @@
                                                             </div>
                                                         <% } %>
                                                     </div>
-                                                </div>
-                                                <div class="backstage-form-group">
-                                                    <label class="backstage-toggle-label">
-                                                        <input type="checkbox" name="rewardActive[]" <%= reward.active ? 'checked' : '' %>>
-                                                        <span class="backstage-toggle-slider"></span>
-                                                        <span class="backstage-toggle-text">啟用此獎勵</span>
-                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -444,9 +444,16 @@
                                                 <label>所需點數</label>
                                                 <input type="number" name="rewardPoints[]" min="1" max="100" required placeholder="例如：10">
                                             </div>
+                                            <div class="backstage-form-group backstage-toggle-group">
+                                                <label class="backstage-toggle-label">
+                                                    <input type="checkbox" name="rewardActive[]" value="0" checked>
+                                                    <span class="backstage-toggle-slider"></span>
+                                                    <span class="backstage-toggle-text">啟用此獎勵</span>
+                                                </label>
+                                            </div>
                                         </div>
                                         <div class="backstage-form-row">
-                                            <div class="backstage-form-group">
+                                            <div class="backstage-form-group backstage-image-group">
                                                 <label>獎勵圖片</label>
                                                 <div class="backstage-file-upload-area" onclick="triggerFileUpload('0')">
                                                     <input type="file" name="rewardImage[]" id="rewardImage-0" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '0')">
@@ -456,13 +463,6 @@
                                                         <small>支援 PNG、JPG、JPEG 格式</small>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="backstage-form-group">
-                                                <label class="backstage-toggle-label">
-                                                    <input type="checkbox" name="rewardActive[]" checked>
-                                                    <span class="backstage-toggle-slider"></span>
-                                                    <span class="backstage-toggle-text">啟用此獎勵</span>
-                                                </label>
                                             </div>
                                         </div>
                 </div>

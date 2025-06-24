@@ -1002,6 +1002,89 @@
     font-weight: 500;
 }
 
+/* 特殊佈局群組 */
+.backstage-toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.backstage-toggle-group:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.backstage-image-group {
+    width: 100%;
+}
+
+/* 調整第一行的grid佈局 */
+.backstage-form-row:first-child {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 20px;
+    align-items: end;
+}
+
+/* 調整第二行的佈局 */
+.backstage-form-row:last-child {
+    display: block;
+    margin-top: 20px;
+}
+
+/* 獎勵項目狀態指示 */
+.backstage-reward-item {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.backstage-reward-item.inactive {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.backstage-reward-item.inactive::before {
+    content: '未啟用';
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    background: #6c757d;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 1;
+    opacity: 0.9;
+}
+
+.backstage-reward-item.active::before {
+    content: '已啟用';
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 1;
+    opacity: 0.9;
+}
+
+/* 當只有一個獎勵項目時，狀態標籤位置調整 */
+.backstage-reward-item:only-child.inactive::before,
+.backstage-reward-item:only-child.active::before {
+    right: 10px;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
     .backstage-file-upload-area {
@@ -1022,6 +1105,17 @@
     
     .backstage-file-placeholder small {
         font-size: 11px;
+    }
+    
+    /* 平板上的佈局調整 */
+    .backstage-form-row:first-child {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .backstage-toggle-group {
+        min-height: 50px;
+        justify-content: flex-start;
     }
 }
 
@@ -1044,6 +1138,35 @@
     
     .backstage-reward-item {
         padding: 15px;
+    }
+    
+    /* 手機上的佈局調整 */
+    .backstage-form-row:first-child {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .backstage-toggle-group {
+        min-height: 45px;
+        justify-content: flex-start;
+    }
+    
+    .backstage-toggle-slider {
+        width: 40px;
+        height: 22px;
+    }
+    
+    .backstage-toggle-slider::before {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .backstage-toggle-label input[type="checkbox"]:checked + .backstage-toggle-slider::before {
+        transform: translateX(18px);
+    }
+    
+    .backstage-toggle-text {
+        font-size: 13px;
     }
 }
 
