@@ -745,16 +745,15 @@ router.get('/:storeSlug/:page', async (req, res) => {
             }
         }
 
-        // 移除自訂設定檢查，不再需要
-
         // 如果是後台頁面，獲取點數相關數據和時段、規則數據
         let points = 0;
         let timeSlots = [];
         let diningRules = [];
         let featureSettings = { pointsSystem: false, bookingSystem: true };
+        let pointsRulesFromDB = null;
         
         if (page === 'backstage') {
-            // 獲取功能設定
+            // 獲取功能設定和點數規則
             try {
                 // 從 clientCDB 獲取集點卡設定
                 const cardDB = getClientDb(storeSlug, 'CDB');
@@ -765,6 +764,14 @@ router.get('/:storeSlug/:page', async (req, res) => {
                     type: 'points_settings', 
                     class: 'main_settings' 
                 });
+                
+                // 從 pointsSettings 載入點數規則
+                if (pointsSettings) {
+                    pointsRulesFromDB = {
+                        maxPointsPerDay: pointsSettings.maxPointsPerDay || 3,
+                        pointsExpireDays: pointsSettings.pointsExpireDays || 365
+                    };
+                }
                 
                 // 從 clientBDB 獲取訂位設定
                 const bookingDB = getClientDb(storeSlug, 'BDB');
@@ -828,7 +835,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 restaurantImage: client.restaurantImage,
                 cardBackgroundImage: client.cardBackgroundImage,
                 features: featureSettings,
-                pointsRules: client.customSettings?.pointsRules || null,
+                pointsRules: pointsRulesFromDB || client.customSettings?.pointsRules || null,
                 rewards: client.customSettings?.rewards || null,
                 restaurantAddress: client.customSettings?.restaurantAddress || ''
             },
@@ -1079,16 +1086,9 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
 router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
     try {
         const { storeSlug } = req.params;
-        const { pointsPerVisit, maxPointsPerDay, pointsExpireDays, enableBonusPoints } = req.body;
+        const { maxPointsPerDay, pointsExpireDays } = req.body;
 
         // 驗證數據
-        if (!pointsPerVisit || pointsPerVisit < 1 || pointsPerVisit > 10) {
-            return res.status(400).json({ 
-                success: false, 
-                message: '每次用餐點數必須在1-10之間' 
-            });
-        }
-
         if (!maxPointsPerDay || maxPointsPerDay < 1 || maxPointsPerDay > 20) {
             return res.status(400).json({ 
                 success: false, 
@@ -1106,16 +1106,35 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
         // 更新客戶設定
         const updateData = {
             pointsRules: {
-                pointsPerVisit: parseInt(pointsPerVisit),
                 maxPointsPerDay: parseInt(maxPointsPerDay),
-                pointsExpireDays: parseInt(pointsExpireDays),
-                enableBonusPoints: Boolean(enableBonusPoints)
+                pointsExpireDays: parseInt(pointsExpireDays)
             }
         };
 
         await Client.findOneAndUpdate(
             { slugname: storeSlug },
             { $set: { customSettings: updateData } },
+            { upsert: true }
+        );
+
+        // 同時更新 pointssettings 資料庫
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const pointsSettingsSchema = require('../models/points/settings');
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        await PointsSettings.findOneAndUpdate(
+            { 
+                slug: storeSlug,
+                type: 'points_settings', 
+                class: 'main_settings' 
+            },
+            { 
+                $set: { 
+                    maxPointsPerDay: parseInt(maxPointsPerDay),
+                    pointsExpireDays: parseInt(pointsExpireDays),
+                    updatedAt: new Date()
+                } 
+            },
             { upsert: true }
         );
 

@@ -739,10 +739,8 @@ async function submitPointsRules() {
     const formData = new FormData(form);
     
     const pointsRules = {
-        pointsPerVisit: parseInt(formData.get('pointsPerVisit')),
         maxPointsPerDay: parseInt(formData.get('maxPointsPerDay')),
-        pointsExpireDays: parseInt(formData.get('pointsExpireDays')),
-        enableBonusPoints: formData.get('enableBonusPoints') === 'on'
+        pointsExpireDays: parseInt(formData.get('pointsExpireDays'))
     };
     
     try {

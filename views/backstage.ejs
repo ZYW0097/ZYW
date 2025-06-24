@@ -347,36 +347,18 @@
                             <form id="pointsRulesForm" class="backstage-form">
                                 <div class="backstage-form-row">
                                     <div class="backstage-form-group">
-                                        <label for="pointsPerVisit">每次用餐獲得點數</label>
-                                        <input type="number" id="pointsPerVisit" name="pointsPerVisit" 
-                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.pointsPerVisit) ? customSettings.pointsRules.pointsPerVisit : '1' %>" 
-                                               min="1" max="10" required>
-                                        <small>每次完成用餐可獲得的點數（1-10點）</small>
-                                    </div>
-                                    <div class="backstage-form-group">
                                         <label for="maxPointsPerDay">每日點數上限</label>
                                         <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" 
                                                value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.maxPointsPerDay) ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
                                                min="1" max="20" required>
                                         <small>每位顧客每天最多可獲得的點數</small>
                                     </div>
-                                </div>
-                                <div class="backstage-form-row">
                                     <div class="backstage-form-group">
                                         <label for="pointsExpireDays">點數有效期</label>
                                         <input type="number" id="pointsExpireDays" name="pointsExpireDays" 
                                                value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.pointsExpireDays) ? customSettings.pointsRules.pointsExpireDays : '365' %>" 
                                                min="30" max="1095" required>
                                         <small>點數的有效天數（30-1095天）</small>
-                                    </div>
-                                    <div class="backstage-form-group">
-                                        <label class="backstage-toggle-label">
-                                            <input type="checkbox" id="enableBonusPoints" 
-                                                   <%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.enableBonusPoints) ? 'checked' : '' %>>
-                                            <span class="backstage-toggle-slider"></span>
-                                            <span class="backstage-toggle-text">啟用生日雙倍點數</span>
-                                        </label>
-                                        <small>顧客生日當月可獲得雙倍點數</small>
                                     </div>
                                 </div>
                                 <div class="backstage-form-actions">

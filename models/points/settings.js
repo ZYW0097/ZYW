@@ -23,6 +23,20 @@ const pointsSettingsSchema = new mongoose.Schema({
         default: 0,
         required: true
     },
+    maxPointsPerDay: {
+        type: Number,
+        default: 3,
+        min: 1,
+        max: 20,
+        required: true
+    },
+    pointsExpireDays: {
+        type: Number,
+        default: 365,
+        min: 30,
+        max: 1095,
+        required: true
+    },
     updatedAt: {
         type: Date,
         default: Date.now
