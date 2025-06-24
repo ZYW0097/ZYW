@@ -1376,9 +1376,9 @@ router.delete('/:storeSlug/backstage/qrcode/current', async (req, res) => {
 router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), async (req, res) => {
     try {
         const { storeSlug } = req.params;
-        const rewardNames = req.body['rewardName[]'] || [];
-        const rewardPoints = req.body['rewardPoints[]'] || [];
-        const rewardActives = req.body['rewardActive[]'] || [];
+        const rewardNames = req.body['rewardName[]'] || req.body.rewardName || [];
+        const rewardPoints = req.body['rewardPoints[]'] || req.body.rewardPoints || [];
+        const rewardActives = req.body['rewardActive[]'] || req.body.rewardActive || [];
         const files = req.files || [];
 
         // 詳細調試信息
