@@ -350,14 +350,14 @@
                                     <div class="backstage-form-group">
                                         <label for="welcomePoints">首次領取獎勵</label>
                                         <input type="number" id="welcomePoints" name="welcomePoints" 
-                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.welcomePoints) ? customSettings.pointsRules.welcomePoints : '0' %>" 
+                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.welcomePoints !== 'undefined') ? customSettings.pointsRules.welcomePoints : '0' %>" 
                                                min="0" max="50" required>
                                         <small>新用戶首次領取集點卡時獲得的點數（0-50點）</small>
                                     </div>
                                     <div class="backstage-form-group">
                                         <label for="maxPointsPerDay">每日點數上限</label>
                                         <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" 
-                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.maxPointsPerDay) ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
+                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.maxPointsPerDay !== 'undefined') ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
                                                min="1" max="20" required>
                                         <small>每位顧客每天最多可獲得的點數</small>
                                     </div>
@@ -366,7 +366,7 @@
                                     <div class="backstage-form-group">
                                         <label for="pointsExpireDays">點數有效期</label>
                                         <input type="number" id="pointsExpireDays" name="pointsExpireDays" 
-                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.pointsExpireDays) ? customSettings.pointsRules.pointsExpireDays : '365' %>" 
+                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.pointsExpireDays !== 'undefined') ? customSettings.pointsRules.pointsExpireDays : '365' %>" 
                                                min="30" max="1095" required>
                                         <small>點數的有效天數（30-1095天）</small>
                                     </div>

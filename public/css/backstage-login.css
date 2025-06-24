@@ -2,28 +2,36 @@
     display: none;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    color: white;
 }
 
 /* 主要容器 */
 .backstage-auth-container {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     margin: 0 auto;
-    padding: 40px 32px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
+    padding: 50px 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
 }
 
 /* 頁面標題區域 */
@@ -32,109 +40,134 @@ body {
     margin-bottom: 40px;
 }
 
+.backstage-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.backstage-logo::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: #666;
+    border-radius: 4px;
+}
+
 .backstage-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #212529;
+    font-size: 26px;
+    font-weight: 600;
+    color: white;
     margin: 0;
     letter-spacing: -0.5px;
 }
 
 .backstage-subtitle {
-    font-size: 14px;
-    color: #6c757d;
-    margin: 0;
+    font-size: 16px;
+    color: #cccccc;
+    margin: 15px 0 0 0;
     line-height: 1.5;
 }
 
 /* 表單樣式 */
 .backstage-auth-form {
-    margin-bottom: 32px;
+    margin-bottom: 35px;
 }
 
 .backstage-form-group {
-    margin-bottom: 24px;
+    margin-bottom: 25px;
 }
 
 .backstage-form-label {
     display: block;
     font-size: 14px;
-    font-weight: 600;
-    color: #343a40;
-    margin-bottom: 8px;
+    font-weight: 500;
+    color: #e0e0e0;
+    margin-bottom: 10px;
 }
 
 .backstage-form-input {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
+    padding: 15px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
     box-sizing: border-box;
-    background: #ffffff;
-    color: #495057;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(10px);
 }
 
 .backstage-form-input:focus {
     outline: none;
-    border-color: #495057;
-    box-shadow: 0 0 0 2px rgba(73, 80, 87, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .backstage-form-input::placeholder {
-    color: #adb5bd;
+    color: #b0b0b0;
 }
 
 /* 記住登入選項 */
 .backstage-remember-group {
     display: flex;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 35px;
 }
 
 .backstage-remember-checkbox {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    accent-color: #495057;
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    accent-color: white;
+    cursor: pointer;
 }
 
 .backstage-remember-label {
-    font-size: 13px;
-    color: #6c757d;
+    font-size: 14px;
+    color: #cccccc;
     cursor: pointer;
     user-select: none;
+    transition: color 0.3s ease;
+}
+
+.backstage-remember-label:hover {
+    color: white;
 }
 
 /* 登入按鈕 */
 .backstage-auth-btn {
     width: 100%;
-    padding: 14px 24px;
+    padding: 16px 24px;
     border: none;
-    border-radius: 4px;
-    font-size: 14px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: #212529;
-    color: #ffffff;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1a1a1a;
     letter-spacing: 0.5px;
 }
 
 .backstage-auth-btn:hover {
-    background: #495057;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .backstage-auth-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .backstage-auth-btn:disabled {
-    background: #adb5bd;
+    background: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -142,64 +175,66 @@ body {
 
 /* 錯誤訊息 */
 .backstage-error-message {
-    background: #f8d7da;
-    color: #721c24;
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    border: 1px solid #f5c6cb;
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    padding: 15px 18px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 /* 成功訊息 */
 .backstage-success-message {
-    background: #d4edda;
-    color: #155724;
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    border: 1px solid #c3e6cb;
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    padding: 15px 18px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 /* 頁腳 */
 .backstage-footer {
     text-align: center;
-    padding-top: 24px;
-    border-top: 1px solid #e9ecef;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .backstage-back-link {
-    color: #6c757d;
+    color: #b0b0b0;
     text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s ease;
+    font-size: 14px;
+    transition: color 0.3s ease;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .backstage-back-link:hover {
-    color: #495057;
+    color: white;
     text-decoration: underline;
 }
 
 .backstage-login-footer-info {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #f1f3f4;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .backstage-login-footer-info .footer-brand {
     font-size: 16px;
     font-weight: 600;
-    color: #495057;
-    margin: 0 0 5px 0;
+    color: #e0e0e0;
+    margin: 0 0 8px 0;
     letter-spacing: 0.5px;
 }
 
 .backstage-login-footer-info .footer-copyright {
     font-size: 12px;
-    color: #6c757d;
+    color: #888;
     margin: 0;
 }
 
@@ -215,10 +250,10 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-top: 2px solid transparent;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #1a1a1a;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -229,17 +264,104 @@ body {
 }
 
 /* 響應式設計 */
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
+    body {
+        padding: 20px;
+    }
+    
     .backstage-auth-container {
-        margin: 20px;
-        padding: 32px 24px;
+        max-width: 400px;
+        padding: 40px 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    .backstage-auth-container {
+        max-width: 360px;
+        padding: 35px 25px;
     }
 
     .backstage-title {
-        font-size: 20px;
+        font-size: 24px;
     }
 
-    .backstage-logo-icon {
-        font-size: 40px;
+    .backstage-subtitle {
+        font-size: 15px;
+    }
+    
+    .backstage-form-input {
+        padding: 14px 16px;
+        font-size: 16px; /* iOS不會縮放 */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .backstage-auth-container {
+        max-width: none;
+        margin: 0;
+        padding: 30px 20px;
+        border-radius: 10px;
+    }
+
+    .backstage-title {
+        font-size: 22px;
+    }
+
+    .backstage-subtitle {
+        font-size: 14px;
+    }
+    
+    .backstage-form-input {
+        padding: 13px 15px;
+        font-size: 16px;
+    }
+    
+    .backstage-auth-btn {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+    
+    .backstage-form-group {
+        margin-bottom: 20px;
+    }
+    
+    .backstage-remember-group {
+        margin-bottom: 30px;
+    }
+    
+    .backstage-auth-form {
+        margin-bottom: 30px;
+    }
+    
+    .backstage-footer {
+        padding-top: 25px;
+    }
+    
+    .backstage-back-link {
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .backstage-auth-container {
+        padding: 25px 15px;
+    }
+    
+    .backstage-title {
+        font-size: 20px;
+    }
+    
+    .backstage-logo::before {
+        width: 18px;
+        height: 18px;
     }
 } 

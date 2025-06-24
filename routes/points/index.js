@@ -119,6 +119,8 @@ router.get('/:storeSlug/card', async (req, res) => {
             userPoints,
             storeSlug,
             rules,
+            systemDisabled: false,
+            systemIncomplete: false,
             customSettings: {
                 cardBackgroundImage: client ? client.cardBackgroundImage : '/images/dine.jpg'
             },

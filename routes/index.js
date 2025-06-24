@@ -1176,18 +1176,16 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
             });
         }
 
-        // 更新客戶設定
-        const updateData = {
-            pointsRules: {
-                welcomePoints: parseInt(welcomePoints || 0),
-                maxPointsPerDay: parseInt(maxPointsPerDay),
-                pointsExpireDays: parseInt(pointsExpireDays)
-            }
+        // 更新客戶設定 (只更新 pointsRules 部分，保留其他設定)
+        const pointsRulesData = {
+            welcomePoints: parseInt(welcomePoints || 0),
+            maxPointsPerDay: parseInt(maxPointsPerDay),
+            pointsExpireDays: parseInt(pointsExpireDays)
         };
 
         await Client.findOneAndUpdate(
             { slugname: storeSlug },
-            { $set: { customSettings: updateData } },
+            { $set: { 'customSettings.pointsRules': pointsRulesData } },
             { upsert: true }
         );
 
