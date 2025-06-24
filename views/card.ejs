@@ -1,8 +1,15 @@
-<% if (!settings || settings.state !== 'enable') { %>
+<% if (systemDisabled) { %>
   <div class="no-card-section">
     <div class="no-card-content">
       <h2>此商家尚未開啟集點卡</h2>
       <p>請稍後再試或聯絡商家。</p>
+    </div>
+  </div>
+<% } else if (systemIncomplete) { %>
+  <div class="no-card-section">
+    <div class="no-card-content">
+      <h2>集點卡設定不完整</h2>
+      <p><%= message %></p>
     </div>
   </div>
 <% } else { %>

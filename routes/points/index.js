@@ -38,13 +38,66 @@ router.get('/:storeSlug/card', async (req, res) => {
         const { storeSlug } = req.params;
         const db = getClientDb(storeSlug, 'CDB');
         
-        // 獲取設定
+        // 獲取Client資訊
+        const Client = require('../../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
+        
+        // 確保 storeName 一定有值
+        let storeName = client ? client.clientname : storeSlug;
+        
+        // 檢查集點卡功能是否啟用
         const settings = await db.model('PointsSettings', pointsSettingsSchema)
             .findOne({ type: 'points_settings', class: 'main_settings' });
+            
+        if (!settings || settings.state !== 'enable') {
+            return res.render('card', {
+                storeName,
+                storeSlug,
+                systemDisabled: true,
+                message: '集點卡功能目前未開啟',
+                customSettings: {
+                    cardBackgroundImage: client ? client.cardBackgroundImage : '/images/dine.jpg'
+                },
+                req: req
+            });
+        }
 
-        // 獲取獎勵
-        const rewards = await db.model('PointsRewards', pointsRewardsSchema)
-            .find({ type: 'points_reward' });
+        // 檢查設定完整性
+        const incompleteness = [];
+        
+        // 檢查規則設定
+        if (settings.maxPointsPerDay === undefined || settings.pointsExpireDays === undefined) {
+            incompleteness.push('集點規則設定不完整');
+        }
+
+        // 檢查獎勵設定
+        let activeRewards = [];
+        if (client.customSettings?.rewards && Array.isArray(client.customSettings.rewards)) {
+            activeRewards = client.customSettings.rewards.filter(reward => 
+                reward.name && reward.points && reward.points > 0 && reward.active !== false
+            );
+        }
+        
+        if (activeRewards.length === 0) {
+            incompleteness.push('沒有設定有效的獎勵項目');
+        }
+
+        // 如果設定不完整，顯示錯誤頁面
+        if (incompleteness.length > 0) {
+            return res.render('card', {
+                storeName,
+                storeSlug,
+                systemIncomplete: true,
+                message: `集點卡設定不完整：${incompleteness.join('、')}。請聯繫商家完善設定。`,
+                customSettings: {
+                    cardBackgroundImage: client ? client.cardBackgroundImage : '/images/dine.jpg'
+                },
+                req: req
+            });
+        }
+
+        // 獲取獎勵 (從Client.customSettings而不是單獨的rewards表)
+        const rewards = activeRewards;
 
         // 如果用戶已登入，獲取用戶點數
         let userPoints = null;
@@ -54,19 +107,10 @@ router.get('/:storeSlug/card', async (req, res) => {
                 .findOne({ lineId: req.user.lineId });
         }
 
-        // 確保 storeName 一定有值
-        let storeName = storeSlug;
-        if (settings && settings.name) {
-            storeName = settings.name;
-        }
-
+        // 獲取規則
         const rules = await db.model('PointsRules', require('../../models/points/rules'))
             .find({ slug: storeSlug, type: 'points_settings', class: 'rule_settings' })
             .sort({ article: 1 });
-
-        // 獲取Client資訊以取得圖片
-        const Client = require('../../models/Client');
-        const client = await Client.findOne({ slugname: storeSlug });
 
         res.render('card', {
             storeName,

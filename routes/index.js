@@ -861,11 +861,74 @@ router.get('/:storeSlug/:page', async (req, res) => {
     }
 });
 
+// 檢查集點卡系統完整性的輔助函數
+async function checkPointsSystemCompleteness(storeSlug) {
+    const missing = [];
+    
+    try {
+        // 檢查是否有集點規則設定
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const pointsSettingsSchema = require('../models/points/settings');
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        const pointsSettings = await PointsSettings.findOne({ 
+            slug: storeSlug, 
+            type: 'points_settings', 
+            class: 'main_settings' 
+        });
+        
+        if (!pointsSettings || 
+            pointsSettings.maxPointsPerDay === undefined || 
+            pointsSettings.pointsExpireDays === undefined) {
+            missing.push('集點規則設定');
+        }
+        
+        // 檢查是否有獎勵設定
+        const client = await Client.findOne({ slugname: storeSlug });
+        if (!client.customSettings?.rewards || 
+            !Array.isArray(client.customSettings.rewards) || 
+            client.customSettings.rewards.length === 0) {
+            missing.push('獎勵項目設定');
+        } else {
+            // 檢查獎勵是否有效
+            const activeRewards = client.customSettings.rewards.filter(reward => 
+                reward.name && reward.points && reward.points > 0 && reward.active !== false
+            );
+            if (activeRewards.length === 0) {
+                missing.push('有效的獎勵項目');
+            }
+        }
+        
+        return {
+            complete: missing.length === 0,
+            missing: missing
+        };
+    } catch (error) {
+        console.error('檢查集點卡完整性錯誤:', error);
+        return {
+            complete: false,
+            missing: ['系統設定檢查失敗']
+        };
+    }
+}
+
 // 功能啟用API
 router.post('/:storeSlug/api/settings/features', async (req, res) => {
     try {
         const { storeSlug } = req.params;
         const { pointsSystem, bookingSystem } = req.body;
+
+        // 如果要啟用集點卡系統，先檢查完整性
+        if (pointsSystem) {
+            const completenessCheck = await checkPointsSystemCompleteness(storeSlug);
+            if (!completenessCheck.complete) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: `集點卡功能需要完整設定才能啟用。缺少：${completenessCheck.missing.join('、')}`,
+                    missingSettings: completenessCheck.missing
+                });
+            }
+        }
 
         // 更新 clientCDB 中的集點卡設定
         try {

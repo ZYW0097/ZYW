@@ -645,7 +645,19 @@ async function updateFeatureSettings() {
                 window.location.reload();
             }, 1500);
         } else {
-            showNotification(result.message || '功能設定更新失敗', 'error');
+            showNotification(result.error || result.message || '功能設定更新失敗', 'error');
+            
+            // 如果是集點卡設定不完整，提示用戶去相應頁面設定
+            if (result.missingSettings) {
+                setTimeout(() => {
+                    if (result.missingSettings.includes('集點規則設定')) {
+                        showNotification('請先完成集點規則設定', 'warning');
+                    }
+                    if (result.missingSettings.includes('獎勵項目設定')) {
+                        showNotification('請先完成獎勵項目設定', 'warning');
+                    }
+                }, 3000);
+            }
         }
     } catch (error) {
         console.error('Error:', error);
