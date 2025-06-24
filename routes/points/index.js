@@ -434,28 +434,35 @@ router.get('/:storeSlug/api/points/coupons', isAuthenticated, async (req, res) =
             return res.json({ success: true, coupons: [] });
         }
         
-        // 獲取獎勵資料庫
-        const cdb = getClientDb(storeSlug, 'CDB');
-        const Rewards = cdb.model('PointsRewards', pointsRewardsSchema);
+        // 獲取商家獎勵設定
+        const Client = require('../../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
         
-        // 獲取所有獎勵ID
-        const rewardIds = userPoints['ah-coupon-id'].map(c => c.rewardId);
-        
-        // 查詢所有獎勵詳情
-        const rewards = await Rewards.find({ 
-            _id: { $in: rewardIds },
-            type: 'points_reward'
-        });
+        if (!client || !client.customSettings || !client.customSettings.rewards) {
+            return res.json({ success: true, coupons: [] });
+        }
         
         // 合併優惠券和獎勵數據
         const coupons = userPoints['ah-coupon-id'].map(coupon => {
-            const rewardData = rewards.find(r => r._id.equals(coupon.rewardId));
+            // 如果coupon已經包含rewardName和rewardImg，直接使用
+            if (coupon.rewardName && coupon.rewardImg) {
+                return {
+                    id: coupon.rewardId,
+                    count: coupon.count || 1,
+                    name: coupon.rewardName,
+                    img: coupon.rewardImg
+                };
+            }
+            
+            // 否則從client.customSettings.rewards中獲取
+            const rewardIndex = parseInt(coupon.rewardId);
+            const rewardData = client.customSettings.rewards[rewardIndex];
+            
             return {
                 id: coupon.rewardId,
                 count: coupon.count || 1,
                 name: rewardData ? rewardData.name : '未知獎勵',
-                img: rewardData ? rewardData.img : '',
-                points: rewardData ? rewardData.points : 0
+                img: rewardData ? rewardData.img : '/images/coupon-default.svg'
             };
         });
         

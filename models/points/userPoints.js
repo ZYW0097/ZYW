@@ -22,7 +22,9 @@ const userPointsSchema = new mongoose.Schema({
         default: 0
     },
     'ah-coupon-id': [{
-        rewardId: { type: mongoose.Schema.Types.ObjectId, ref: 'PointsRewards' },
+        rewardId: { type: mongoose.Schema.Types.Mixed }, // 支援數字索引或ObjectId
+        rewardName: { type: String },
+        rewardImg: { type: String },
         count: { type: Number, default: 1 }
     }],
     // 每日點數限制追蹤
