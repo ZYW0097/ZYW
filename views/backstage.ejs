@@ -110,10 +110,10 @@
                                 <h3>餐廳網址</h3>
                                 <p class="status-value">/<%= storeSlug %></p>
                                 <span class="status-time">客戶訪問連結</span>
-                            </div>
-                        </div>
-                    </div>
-                    
+            </div>
+        </div>
+    </div>
+
                     <!-- 快捷操作 -->
                     <div class="backstage-quick-actions">
                         <h2>快捷操作</h2>
@@ -152,20 +152,20 @@
                                 <h3>餐廳資訊</h3>
                                 <div class="backstage-form-row">
                                     <div class="backstage-form-group">
-                                        <label for="clientname">餐廳名稱</label>
+                <label for="clientname">餐廳名稱</label>
                                         <input type="text" id="clientname" name="clientname" 
                                                value="<%= clientname || '' %>" 
                                                required maxlength="30" placeholder="請輸入餐廳名稱">
-                                    </div>
+            </div>
                                     <div class="backstage-form-group">
-                                        <label for="restaurantAddress">餐廳地址</label>
+                <label for="restaurantAddress">餐廳地址</label>
                                         <input type="text" id="restaurantAddress" name="restaurantAddress" 
                                                value="<%= (customSettings && customSettings.restaurantAddress) ? customSettings.restaurantAddress : '' %>" 
                                                placeholder="請輸入餐廳完整地址">
                                     </div>
-                                </div>
-                            </div>
-                            
+            </div>
+    </div>
+
                             <div class="backstage-form-section">
                                 <h3>功能設定</h3>
                                 <div class="backstage-form-row">
@@ -175,7 +175,7 @@
                                                    <%= (customSettings && customSettings.features && customSettings.features.pointsSystem) ? 'checked' : '' %>>
                                             <span class="backstage-toggle-slider"></span>
                                             <span class="backstage-toggle-text">集點卡系統</span>
-                                        </label>
+                </label>
                                         <small>開啟或關閉集點卡功能</small>
                                     </div>
                                     <div class="backstage-form-group">
@@ -184,15 +184,15 @@
                                                    <%= (customSettings && customSettings.features && customSettings.features.bookingSystem) ? 'checked' : '' %>>
                                             <span class="backstage-toggle-slider"></span>
                                             <span class="backstage-toggle-text">訂位系統</span>
-                                        </label>
+                </label>
                                         <small>開啟或關閉訂位功能</small>
                                     </div>
                                 </div>
                                 <div class="backstage-form-actions">
                                     <button type="button" class="backstage-btn backstage-btn-primary" onclick="updateFeatureSettings()">更新功能設定</button>
-                                </div>
-                            </div>
-                            
+            </div>
+    </div>
+
                             <div class="backstage-form-section">
                                 <h3>安全設定</h3>
                                 <div class="backstage-form-row">
@@ -245,61 +245,61 @@
                                             選擇圖片
                                         </button>
                                         <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
-                        <!-- 訂位時段設定 -->
+    <!-- 訂位時段設定 -->
                         <div class="backstage-setting-card">
                             <h3>訂位時段</h3>
                             <form id="timeSlotsForm" class="backstage-form">
                                 <div id="timeSlots-list" class="backstage-dynamic-list">
-                                    <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
-                                        <% customSettings.timeSlots.forEach((slot, index) => { %>
+                <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
+                    <% customSettings.timeSlots.forEach((slot, index) => { %>
                                         <div class="backstage-list-item">
                                             <input type="text" name="timeSlots[]" value="<%= slot.time %>" required placeholder="例如: 12:00">
-                                            <% if (index === customSettings.timeSlots.length - 1) { %>
+                        <% if (index === customSettings.timeSlots.length - 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                                            <% } %>
-                                            <% if (customSettings.timeSlots.length > 1) { %>
+                        <% } %>
+                        <% if (customSettings.timeSlots.length > 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeTimeSlot(this)">×</button>
-                                            <% } %>
-                                        </div>
-                                        <% }) %>
-                                    <% } else { %>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                <% } else { %>
                                     <div class="backstage-list-item">
                                         <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required>
                                         <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                                    </div>
-                                    <% } %>
-                                </div>
+                </div>
+                <% } %>
+            </div>
                                 <div class="backstage-form-actions">
                                     <button type="submit" class="backstage-btn backstage-btn-primary">儲存時段設定</button>
                                 </div>
-                            </form>
-                        </div>
+        </form>
+    </div>
 
-                        <!-- 用餐規則設定 -->
+    <!-- 用餐規則設定 -->
                         <div class="backstage-setting-card">
                             <h3>用餐規則</h3>
                             <form id="diningRulesForm" class="backstage-form">
                                 <div id="diningRules-list" class="backstage-dynamic-list">
-                                    <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
-                                        <% customSettings.diningRules.forEach((rule, index) => { %>
+                <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
+                    <% customSettings.diningRules.forEach((rule, index) => { %>
                                         <div class="backstage-list-item">
                                             <input type="text" name="diningRules[]" value="<%= rule.text %>" required placeholder="請輸入用餐規則">
-                                            <% if (index === customSettings.diningRules.length - 1) { %>
+                        <% if (index === customSettings.diningRules.length - 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
-                                            <% } %>
-                                            <% if (customSettings.diningRules.length > 1) { %>
+                        <% } %>
+                        <% if (customSettings.diningRules.length > 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeDiningRule(this)">×</button>
-                                            <% } %>
-                                        </div>
-                                        <% }) %>
-                                    <% } else { %>
+                        <% } %>
+                    </div>
+                    <% }) %>
+                <% } else { %>
                                     <div class="backstage-list-item">
-                                        <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
                                         <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
                                     </div>
                                     <% } %>
@@ -444,15 +444,15 @@
                                                 </label>
                                             </div>
                                         </div>
-                                    </div>
-                                    <% } %>
-                                </div>
+                </div>
+                <% } %>
+            </div>
                                 <div class="backstage-form-actions">
                                     <button type="button" class="backstage-btn backstage-btn-outline" onclick="addReward()">新增獎勵項目</button>
                                     <button type="submit" class="backstage-btn backstage-btn-primary">儲存獎勵設定</button>
                                 </div>
-                            </form>
-                        </div>
+        </form>
+    </div>
 
                         <!-- 統計數據 -->
                         <div class="backstage-setting-card">
@@ -497,8 +497,8 @@
                         <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
                         <h1>點數QR碼</h1>
                         <p>生成和管理點數發放QR碼</p>
-                    </div>
-                    
+            </div>
+
                     <div class="backstage-page-content">
                         <% if (customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
                         <!-- QR碼生成器 -->
@@ -564,7 +564,7 @@
     <footer class="backstage-main-footer">
         <div class="backstage-main-footer-content">
             <p class="footer-copyright">© 2025 ZYW. All rights reserved.</p>
-        </div>
+</div>
     </footer>
 
     <script src="/js/backstage-spa.js"></script>

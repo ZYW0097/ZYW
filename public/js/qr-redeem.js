@@ -70,11 +70,11 @@ class QRRedeemPage {
     }
     
     redirectToLogin() {
-        // 將當前QR碼URL保存到sessionStorage，登入後可以返回
-        sessionStorage.setItem('qr_redeem_return_url', window.location.href);
+        // 將當前QR碼URL作為重定向參數傳遞給登入頁面
+        const returnUrl = encodeURIComponent(window.location.href);
         
-        // 跳轉到登入頁面
-        window.location.href = `/${this.storeSlug}/auth/line`;
+        // 跳轉到登入頁面並帶上重定向參數
+        window.location.href = `/account/login?redirect=${returnUrl}`;
     }
     
     setupRedeemButton() {
@@ -88,13 +88,7 @@ class QRRedeemPage {
     }
     
     bindEvents() {
-        // 檢查是否是從登入返回
-        const returnUrl = sessionStorage.getItem('qr_redeem_return_url');
-        if (returnUrl && returnUrl === window.location.href) {
-            sessionStorage.removeItem('qr_redeem_return_url');
-            // 重新檢查登入狀態
-            setTimeout(() => this.checkLoginStatus(), 1000);
-        }
+        // 不需要特殊處理，頁面載入時會自動檢查登入狀態
     }
     
     async handleRedeem() {

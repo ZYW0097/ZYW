@@ -478,10 +478,16 @@ router.get('/:storeSlug/points/qr/:code', async (req, res) => {
             });
         }
 
+        // 獲取商家名稱
+        const Client = require('../../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
+        const storeName = client ? client.clientname : storeSlug;
+
         // 顯示QR碼兌換頁面（不需要登入驗證）
         res.render('qr-redeem', {
             layout: false,
             storeSlug: storeSlug,
+            storeName: storeName,
             qrcode: {
                 code: code,
                 points: qrcode.points
