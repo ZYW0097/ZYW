@@ -846,7 +846,10 @@ router.get('/:storeSlug/:page', async (req, res) => {
             createdAt: client.createdAt,
             updatedAt: client.updatedAt,
             isOwner: isOwner,
-            user: currentUser
+            user: currentUser,
+            systemDisabled: false,
+            systemIncomplete: false,
+            req: req
         };
 
         // 如果是 backstage 頁面，不載入 layout

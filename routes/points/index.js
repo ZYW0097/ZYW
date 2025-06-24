@@ -87,6 +87,7 @@ router.get('/:storeSlug/card', async (req, res) => {
             return res.render('card', {
                 storeName,
                 storeSlug,
+                systemDisabled: false,
                 systemIncomplete: true,
                 message: `集點卡設定不完整：${incompleteness.join('、')}。請聯繫商家完善設定。`,
                 customSettings: {
