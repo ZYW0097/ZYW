@@ -1,0 +1,190 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.qr-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    margin: 20px;
+}
+
+.qr-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #667eea;
+}
+
+.qr-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.qr-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.points-display {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.points-number {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.points-label {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.redeem-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.redeem-btn:hover {
+    transform: translateY(-2px);
+}
+
+.redeem-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.status-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-loading {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.status-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.loading-spinner {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* 響應式設計 */
+@media (max-width: 480px) {
+    .qr-container {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .qr-icon {
+        font-size: 48px;
+    }
+    
+    .qr-title {
+        font-size: 24px;
+    }
+    
+    .points-number {
+        font-size: 36px;
+    }
+    
+    .redeem-btn, .login-btn {
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+} 

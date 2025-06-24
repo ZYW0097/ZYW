@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 
 /**
- * 檢查用戶今日是否已達到點數上限
+ * 檢查用戶今日是否能夠獲得指定點數（不超過每日上限）
  * @param {Object} userPoints - 用戶點數記錄
+ * @param {number} pointsToAdd - 要添加的點數
  * @param {number} maxPointsPerDay - 每日點數上限
- * @returns {Object} - {canEarn: boolean, todayEarned: number, remaining: number}
+ * @returns {boolean} - 是否可以添加這些點數
  */
-function checkDailyPointsLimit(userPoints, maxPointsPerDay) {
+function checkDailyPointsLimit(userPoints, pointsToAdd, maxPointsPerDay) {
+    if (!maxPointsPerDay || maxPointsPerDay <= 0) {
+        return true; // 沒有設定限制
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -19,14 +24,7 @@ function checkDailyPointsLimit(userPoints, maxPointsPerDay) {
     });
 
     const todayEarned = todayRecord ? todayRecord.pointsEarned : 0;
-    const remaining = Math.max(0, maxPointsPerDay - todayEarned);
-    const canEarn = remaining > 0;
-
-    return {
-        canEarn,
-        todayEarned,
-        remaining
-    };
+    return (todayEarned + pointsToAdd) <= maxPointsPerDay;
 }
 
 /**
@@ -34,7 +32,7 @@ function checkDailyPointsLimit(userPoints, maxPointsPerDay) {
  * @param {Object} userPoints - 用戶點數記錄
  * @param {number} points - 獲得的點數
  */
-function recordDailyPoints(userPoints, points) {
+async function recordDailyPoints(userPoints, points) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -70,21 +68,28 @@ function recordDailyPoints(userPoints, points) {
  * @param {Object} userPoints - 用戶點數記錄
  * @param {number} points - 添加的點數
  * @param {number} expireDays - 點數有效天數
+ * @param {string} description - 點數來源描述
  */
-function addPointsWithExpiry(userPoints, points, expireDays) {
-    const earnedDate = new Date();
-    const expiredDate = new Date();
-    expiredDate.setDate(expiredDate.getDate() + expireDays);
+async function addPointsWithExpiry(userPoints, points, expireDays, description = '獲得點數') {
+    const createdAt = new Date();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expireDays);
 
-    // 添加到總點數
-    userPoints['ah-points'] += points;
+    // 添加到新的點數系統
+    userPoints.points += points;
+    
+    // 兼容舊系統
+    if (userPoints['ah-points'] !== undefined) {
+        userPoints['ah-points'] += points;
+    }
 
     // 記錄點數歷史
     userPoints.pointsHistory.push({
         points: points,
-        earnedDate: earnedDate,
-        expiredDate: expiredDate,
-        isExpired: false
+        type: 'earned',
+        description: description,
+        createdAt: createdAt,
+        expiresAt: expiresAt
     });
 }
 

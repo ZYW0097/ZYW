@@ -1042,4 +1042,205 @@
     .backstage-main-footer-content {
         padding: 0 10px;
     }
+}
+
+/* QR碼相關樣式 */
+.qrcode-active {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+}
+
+.qrcode-info h4 {
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qrcode-details {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.qrcode-details p {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #495057;
+}
+
+.qrcode-details p:last-child {
+    margin-bottom: 0;
+}
+
+.qrcode-details strong {
+    color: #212529;
+    font-weight: 600;
+    min-width: 80px;
+    display: inline-block;
+}
+
+.qrcode-details code {
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    color: #e83e8c;
+    border: 1px solid #dee2e6;
+}
+
+#countdown {
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+.qrcode-url {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.qrcode-url label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.url-display {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.url-display input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #495057;
+    background: #f8f9fa;
+    font-family: 'Courier New', monospace;
+}
+
+.url-display input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.qrcode-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.qrcode-actions .backstage-btn {
+    min-width: 120px;
+}
+
+/* QR碼生成表單樣式 */
+#qrcodeGenerateForm .backstage-form-group {
+    max-width: 300px;
+}
+
+#qrcodeGenerateForm input[type="number"] {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* QR碼狀態指示器 */
+.qrcode-status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qrcode-status-active {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.qrcode-status-expired {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+    color: white;
+}
+
+.qrcode-status-used {
+    background: linear-gradient(135deg, #6c757d, #adb5bd);
+    color: white;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .url-display {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .url-display input {
+        margin-bottom: 10px;
+    }
+    
+    .qrcode-actions {
+        flex-direction: column;
+    }
+    
+    .qrcode-actions .backstage-btn {
+        width: 100%;
+    }
+    
+    .qrcode-details {
+        padding: 15px;
+    }
+    
+    .qrcode-url {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .qrcode-active {
+        padding: 20px 15px;
+    }
+    
+    .qrcode-info h4 {
+        font-size: 16px;
+    }
+    
+    .qrcode-details p {
+        font-size: 13px;
+    }
+    
+    #countdown {
+        min-width: 50px;
+        padding: 2px 8px;
+        font-size: 12px;
+    }
 } 

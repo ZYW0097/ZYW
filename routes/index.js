@@ -768,6 +768,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 // 從 pointsSettings 載入點數規則
                 if (pointsSettings) {
                     pointsRulesFromDB = {
+                        welcomePoints: pointsSettings.s_reward || 0,
                         maxPointsPerDay: pointsSettings.maxPointsPerDay || 3,
                         pointsExpireDays: pointsSettings.pointsExpireDays || 365
                     };
@@ -1086,9 +1087,16 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
 router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
     try {
         const { storeSlug } = req.params;
-        const { maxPointsPerDay, pointsExpireDays } = req.body;
+        const { welcomePoints, maxPointsPerDay, pointsExpireDays } = req.body;
 
         // 驗證數據
+        if (welcomePoints !== undefined && (welcomePoints < 0 || welcomePoints > 50)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '首次領取獎勵必須在0-50之間' 
+            });
+        }
+
         if (!maxPointsPerDay || maxPointsPerDay < 1 || maxPointsPerDay > 20) {
             return res.status(400).json({ 
                 success: false, 
@@ -1106,6 +1114,7 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
         // 更新客戶設定
         const updateData = {
             pointsRules: {
+                welcomePoints: parseInt(welcomePoints || 0),
                 maxPointsPerDay: parseInt(maxPointsPerDay),
                 pointsExpireDays: parseInt(pointsExpireDays)
             }
@@ -1130,6 +1139,7 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
             },
             { 
                 $set: { 
+                    s_reward: parseInt(welcomePoints || 0),
                     maxPointsPerDay: parseInt(maxPointsPerDay),
                     pointsExpireDays: parseInt(pointsExpireDays),
                     updatedAt: new Date()
@@ -1142,6 +1152,130 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
     } catch (error) {
         console.error('❌ 集點規則設定更新錯誤:', error);
         res.status(500).json({ success: false, message: '更新失敗，請稍後再試' });
+    }
+});
+
+// QR碼生成 API
+router.post('/:storeSlug/backstage/qrcode/generate', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        const { points } = req.body;
+
+        // 驗證點數
+        if (!points || points < 1 || points > 100) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '點數必須在1-100之間' 
+            });
+        }
+
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const qrcodeSchema = require('../models/points/qrcode');
+        const QRCode = cardDB.model('QRCode', qrcodeSchema);
+        const { generateQRCode, generateQRCodeURL, calculateExpireTime } = require('../utils/qrcodeHelper');
+
+        // 刪除該商家所有未使用的舊QR碼
+        await QRCode.deleteMany({ 
+            slug: storeSlug, 
+            status: 'active' 
+        });
+
+        // 生成新的QR碼
+        const code = generateQRCode(storeSlug, points);
+        const expiresAt = calculateExpireTime();
+        
+        const newQRCode = await QRCode.create({
+            code: code,
+            points: parseInt(points),
+            slug: storeSlug,
+            status: 'active',
+            expiresAt: expiresAt
+        });
+
+        const qrURL = generateQRCodeURL(storeSlug, code);
+
+        res.json({ 
+            success: true, 
+            qrcode: {
+                code: code,
+                points: points,
+                url: qrURL,
+                expiresAt: expiresAt
+            },
+            message: `已生成 ${points} 點的QR碼，5分鐘後自動失效`
+        });
+    } catch (error) {
+        console.error('❌ QR碼生成錯誤:', error);
+        res.status(500).json({ success: false, message: 'QR碼生成失敗，請稍後再試' });
+    }
+});
+
+// 獲取當前QR碼狀態 API
+router.get('/:storeSlug/backstage/qrcode/status', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const qrcodeSchema = require('../models/points/qrcode');
+        const QRCode = cardDB.model('QRCode', qrcodeSchema);
+        const { generateQRCodeURL } = require('../utils/qrcodeHelper');
+
+        // 查找當前活躍的QR碼
+        const activeQRCode = await QRCode.findOne({ 
+            slug: storeSlug, 
+            status: 'active',
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (!activeQRCode) {
+            return res.json({ 
+                success: true, 
+                hasActiveQR: false,
+                message: '目前沒有活躍的QR碼'
+            });
+        }
+
+        const qrURL = generateQRCodeURL(storeSlug, activeQRCode.code);
+
+        res.json({ 
+            success: true, 
+            hasActiveQR: true,
+            qrcode: {
+                code: activeQRCode.code,
+                points: activeQRCode.points,
+                url: qrURL,
+                expiresAt: activeQRCode.expiresAt,
+                createdAt: activeQRCode.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('❌ QR碼狀態獲取錯誤:', error);
+        res.status(500).json({ success: false, message: '獲取QR碼狀態失敗' });
+    }
+});
+
+// 刪除當前QR碼 API
+router.delete('/:storeSlug/backstage/qrcode/current', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const qrcodeSchema = require('../models/points/qrcode');
+        const QRCode = cardDB.model('QRCode', qrcodeSchema);
+
+        // 刪除該商家所有活躍的QR碼
+        const result = await QRCode.deleteMany({ 
+            slug: storeSlug, 
+            status: 'active' 
+        });
+
+        res.json({ 
+            success: true, 
+            message: `已刪除 ${result.deletedCount} 個QR碼`
+        });
+    } catch (error) {
+        console.error('❌ QR碼刪除錯誤:', error);
+        res.status(500).json({ success: false, message: 'QR碼刪除失敗' });
     }
 });
 
@@ -1321,5 +1455,131 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
 
 // 點數系統路由
 router.use('/', pointsRoutes);
+
+// 用戶狀態檢查 API
+router.get('/:storeSlug/api/user/status', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 檢查用戶是否登入
+        if (!req.user) {
+            return res.json({ 
+                success: false, 
+                message: '用戶未登入',
+                user: null,
+                hasCard: false
+            });
+        }
+        
+        // 檢查用戶是否有集點卡
+        let hasCard = false;
+        try {
+            const userDb = getClientDb(storeSlug, 'ADB');
+            const userPointsSchema = require('../models/points/userPoints');
+            const UserPoints = userDb.model('UserPoints', userPointsSchema);
+            
+            const userCard = await UserPoints.findOne({ 
+                lineId: req.user.lineId,
+                type: 'user_points'
+            });
+            
+            hasCard = !!userCard;
+        } catch (cardError) {
+            console.error('檢查集點卡狀態失敗:', cardError);
+        }
+        
+        res.json({ 
+            success: true, 
+            user: {
+                lineId: req.user.lineId,
+                name: req.user.name
+            },
+            hasCard: hasCard
+        });
+    } catch (error) {
+        console.error('❌ 用戶狀態檢查錯誤:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '檢查用戶狀態失敗',
+            user: null,
+            hasCard: false
+        });
+    }
+});
+
+// 領取集點卡 API
+router.post('/:storeSlug/api/points/claim', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 檢查用戶是否登入
+        if (!req.user) {
+            return res.status(401).json({ 
+                success: false, 
+                error: '請先登入'
+            });
+        }
+        
+        const userDb = getClientDb(storeSlug, 'ADB');
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        
+        const userPointsSchema = require('../models/points/userPoints');
+        const pointsSettingsSchema = require('../models/points/pointsSettings');
+        
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        // 檢查是否已有集點卡
+        const existingCard = await UserPoints.findOne({ 
+            lineId: req.user.lineId,
+            type: 'user_points'
+        });
+        
+        if (existingCard) {
+            return res.json({
+                success: true,
+                message: '您已經擁有集點卡',
+                alreadyHas: true
+            });
+        }
+        
+        // 獲取首次獎勵設定
+        const settings = await PointsSettings.findOne({ slug: storeSlug });
+        const firstReward = settings?.s_reward || 0;
+        
+        // 創建新的集點卡
+        const newCard = new UserPoints({
+            lineId: req.user.lineId,
+            type: 'user_points',
+            points: firstReward,
+            pointsHistory: firstReward > 0 ? [{
+                points: firstReward,
+                type: 'reward',
+                description: '首次領取集點卡獎勵',
+                createdAt: new Date(),
+                expiresAt: new Date(Date.now() + (settings?.pointsExpireDays || 365) * 24 * 60 * 60 * 1000)
+            }] : [],
+            dailyPointsHistory: [],
+            createdAt: new Date()
+        });
+        
+        await newCard.save();
+        
+        res.json({
+            success: true,
+            message: firstReward > 0 
+                ? `集點卡領取成功！獲得 ${firstReward} 點首次獎勵`
+                : '集點卡領取成功！',
+            reward: firstReward
+        });
+        
+    } catch (error) {
+        console.error('❌ 集點卡領取錯誤:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: '集點卡領取失敗'
+        });
+    }
+});
 
 module.exports = router; 

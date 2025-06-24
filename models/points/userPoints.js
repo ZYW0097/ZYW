@@ -10,9 +10,14 @@ const userPointsSchema = new mongoose.Schema({
         required: true
     },
     'u-name': {
-        type: String,
-        required: true
+        type: String
     },
+    // 新的點數系統
+    points: {
+        type: Number,
+        default: 0
+    },
+    // 兼容舊系統
     'ah-points': {
         type: Number,
         default: 0
@@ -33,14 +38,23 @@ const userPointsSchema = new mongoose.Schema({
     // 點數歷史記錄（用於追蹤有效期）
     pointsHistory: [{
         points: { type: Number, required: true },
-        earnedDate: { type: Date, default: Date.now },
-        expiredDate: { type: Date, required: true },
-        isExpired: { type: Boolean, default: false }
+        type: { type: String, enum: ['earned', 'redeemed', 'expired', 'reward'], default: 'earned' },
+        description: { type: String },
+        createdAt: { type: Date, default: Date.now },
+        expiresAt: { type: Date }
     }],
-    updateat: {
+    // 已兌換的QR碼記錄
+    redeemedQRCodes: [{
+        type: String
+    }],
+    createdAt: {
         type: Date,
         default: Date.now
     },
+    updateat: {
+        type: Date,
+        default: Date.now
+    }
 }, { timestamps: true });
 
 module.exports = userPointsSchema;

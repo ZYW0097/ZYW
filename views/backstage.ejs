@@ -347,12 +347,21 @@
                             <form id="pointsRulesForm" class="backstage-form">
                                 <div class="backstage-form-row">
                                     <div class="backstage-form-group">
+                                        <label for="welcomePoints">首次領取獎勵</label>
+                                        <input type="number" id="welcomePoints" name="welcomePoints" 
+                                               value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.welcomePoints) ? customSettings.pointsRules.welcomePoints : '0' %>" 
+                                               min="0" max="50" required>
+                                        <small>新用戶首次領取集點卡時獲得的點數（0-50點）</small>
+                                    </div>
+                                    <div class="backstage-form-group">
                                         <label for="maxPointsPerDay">每日點數上限</label>
                                         <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" 
                                                value="<%= (customSettings && customSettings.pointsRules && customSettings.pointsRules.maxPointsPerDay) ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
                                                min="1" max="20" required>
                                         <small>每位顧客每天最多可獲得的點數</small>
                                     </div>
+                                </div>
+                                <div class="backstage-form-row">
                                     <div class="backstage-form-group">
                                         <label for="pointsExpireDays">點數有效期</label>
                                         <input type="number" id="pointsExpireDays" name="pointsExpireDays" 
@@ -486,16 +495,64 @@
                     <div class="backstage-page-header">
                         <button class="backstage-back-btn" onclick="navigateToPage('dashboard')">← 返回</button>
                         <h1>點數QR碼</h1>
-                        <p>管理和生成點數QR碼</p>
+                        <p>生成和管理點數發放QR碼</p>
                     </div>
                     
                     <div class="backstage-page-content">
+                        <% if (customSettings && customSettings.features && customSettings.features.pointsSystem) { %>
+                        <!-- QR碼生成器 -->
                         <div class="backstage-setting-card">
-                            <h3>QR碼功能</h3>
-                            <div class="backstage-info-box">
-                                <p>🚧 點數QR碼功能正在開發中，敬請期待...</p>
+                            <h3>生成點數QR碼</h3>
+                            <form id="qrcodeGenerateForm" class="backstage-form">
+                                <div class="backstage-form-row">
+                                    <div class="backstage-form-group">
+                                        <label for="qrPoints">點數數量</label>
+                                        <input type="number" id="qrPoints" name="points" 
+                                               min="1" max="100" value="1" required>
+                                        <small>設定此QR碼可兌換的點數（1-100點）</small>
+                                    </div>
+                                </div>
+                                <div class="backstage-form-actions">
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">生成QR碼</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 當前QR碼狀態 -->
+                        <div class="backstage-setting-card">
+                            <h3>當前QR碼狀態</h3>
+                            <div id="qrcode-status">
+                                <div class="backstage-info-box" id="no-qr-message">
+                                    <p>🔄 正在檢查QR碼狀態...</p>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- QR碼使用說明 -->
+                        <div class="backstage-setting-card">
+                            <h3>使用說明</h3>
+                            <div class="backstage-info-box">
+                                <ul style="text-align: left; padding-left: 20px;">
+                                    <li>每次只能有一個活躍的QR碼</li>
+                                    <li>QR碼會在5分鐘後自動失效</li>
+                                    <li>生成新QR碼會自動刪除舊的未使用QR碼</li>
+                                    <li>顧客掃描QR碼後可以直接兌換對應點數</li>
+                                    <li>已兌換的QR碼會自動記錄到系統中</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <!-- 集點卡功能未開啟 -->
+                        <div class="backstage-setting-card">
+                            <h3>集點卡功能未開啟</h3>
+                            <div class="backstage-info-box">
+                                <p>QR碼功能需要先開啟集點卡系統。請到基本設定中開啟集點卡功能。</p>
+                                <button type="button" class="backstage-btn backstage-btn-primary" onclick="navigateToPage('basic')">
+                                    前往開啟集點卡功能
+                                </button>
+                            </div>
+                        </div>
+                        <% } %>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>兌換點數 - QR碼</title>
+    <link rel="stylesheet" href="/css/qr-redeem.css">
+</head>
+<body>
+    <div class="qr-container">
+        <div class="qr-icon">🎯</div>
+        <h1 class="qr-title">點數兌換</h1>
+        <p class="qr-subtitle">掃描成功！準備兌換您的點數</p>
+        
+        <div class="points-display">
+            <div class="points-number"><%= qrcode.points %></div>
+            <div class="points-label">點數</div>
+        </div>
+        
+        <button id="redeemBtn" class="redeem-btn">
+            兌換點數
+        </button>
+        
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+        
+        <a href="/<%= storeSlug %>" class="back-link">← 返回餐廳頁面</a>
+    </div>
+    
+    <script src="/js/qr-redeem.js"></script>
+</body>
+</html> 

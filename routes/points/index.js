@@ -109,13 +109,42 @@ router.post('/:storeSlug/api/points/claim', isAuthenticated, async (req, res) =>
             return res.status(400).json({ error: '您已經領取過集點卡了' });
         }
 
+        // 獲取首次領取獎勵設定
+        let welcomePoints = 0;
+        let pointsExpireDays = 365;
+        
+        try {
+            const cdb = getClientDb(storeSlug, 'CDB');
+            const pointsSettingsSchema = require('../../models/points/settings');
+            const PointsSettings = cdb.model('PointsSettings', pointsSettingsSchema);
+            const settings = await PointsSettings.findOne({
+                slug: storeSlug,
+                type: 'points_settings',
+                class: 'main_settings'
+            });
+            
+            if (settings) {
+                welcomePoints = settings.s_reward || 0;
+                pointsExpireDays = settings.pointsExpireDays || 365;
+            }
+        } catch (settingsError) {
+            console.error('無法獲取點數設定:', settingsError);
+        }
+
         // 創建新的集點卡
         const newCard = await UserPoints.create({
             lineId: req.user.lineId,
             'u-name': req.user.name || '未命名用戶',
-            'ah-points': 0,
+            'ah-points': welcomePoints,
             'ah-coupon': 0,
             'ah-coupon-id': [],
+            dailyPointsHistory: [],
+            pointsHistory: welcomePoints > 0 ? [{
+                points: welcomePoints,
+                earnedDate: new Date(),
+                expiredDate: new Date(Date.now() + pointsExpireDays * 24 * 60 * 60 * 1000),
+                isExpired: false
+            }] : [],
             updateat: new Date(),
             type: 'user_points'
         });
@@ -123,7 +152,8 @@ router.post('/:storeSlug/api/points/claim', isAuthenticated, async (req, res) =>
         res.json({ 
             success: true, 
             card: newCard,
-            message: '集點卡領取成功'
+            welcomePoints: welcomePoints,
+            message: welcomePoints > 0 ? `集點卡領取成功！獲得 ${welcomePoints} 點歡迎獎勵` : '集點卡領取成功'
         });
     } catch (error) {
         console.error('Error in claim card:', error);
@@ -288,8 +318,7 @@ router.post('/:storeSlug/api/coupons/use', isAuthenticated, async (req, res) => 
     } catch (error) {
         console.error('Error using coupon:', error);
         res.status(500).json({ 
-            success: false, 
-            message: '使用優惠券失敗',
+            error: '使用優惠券失敗，請稍後再試',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
@@ -389,6 +418,219 @@ router.get('/:storeSlug/api/points/coupons', isAuthenticated, async (req, res) =
             error: '獲取優惠券列表失敗，請稍後再試',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
+    }
+});
+
+// QR碼兌換點數 API
+router.get('/:storeSlug/points/qr/:code', async (req, res) => {
+    try {
+        const { storeSlug, code } = req.params;
+        
+        // 基本驗證
+        if (!storeSlug || !code) {
+            return res.status(400).render('error', { 
+                message: '無效的QR碼連結',
+                layout: false 
+            });
+        }
+
+        const { validateQRCode, isQRCodeExpired } = require('../../utils/qrcodeHelper');
+        
+        // 驗證QR碼格式
+        if (!validateQRCode(code)) {
+            return res.status(400).render('error', { 
+                message: 'QR碼格式無效',
+                layout: false 
+            });
+        }
+
+        // 查找QR碼
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const qrcodeSchema = require('../../models/points/qrcode');
+        const QRCode = cardDB.model('QRCode', qrcodeSchema);
+        
+        const qrcode = await QRCode.findOne({ code: code });
+        
+        if (!qrcode) {
+            return res.status(404).render('error', { 
+                message: 'QR碼不存在或已失效',
+                layout: false 
+            });
+        }
+
+        // 檢查QR碼狀態
+        if (qrcode.status !== 'active') {
+            return res.status(400).render('error', { 
+                message: 'QR碼已被使用',
+                layout: false 
+            });
+        }
+
+        // 檢查是否過期
+        if (isQRCodeExpired(qrcode.expiresAt)) {
+            // 更新QR碼狀態為過期
+            qrcode.status = 'expired';
+            await qrcode.save();
+            
+            return res.status(400).render('error', { 
+                message: 'QR碼已過期',
+                layout: false 
+            });
+        }
+
+        // 顯示QR碼兌換頁面（不需要登入驗證）
+        res.render('qr-redeem', {
+            layout: false,
+            storeSlug: storeSlug,
+            qrcode: {
+                code: code,
+                points: qrcode.points
+            }
+        });
+        
+    } catch (error) {
+        console.error('QR碼處理錯誤:', error);
+        res.status(500).render('error', { 
+            message: '系統錯誤，請稍後再試',
+            layout: false 
+        });
+    }
+});
+
+// QR碼兌換確認 API
+router.post('/:storeSlug/points/qr/:code/redeem', isLoggedIn, async (req, res) => {
+    try {
+        const { storeSlug, code } = req.params;
+        const lineId = req.user.lineId;
+        
+        const { validateQRCode, isQRCodeExpired } = require('../../utils/qrcodeHelper');
+        const { addPointsWithExpiry, checkDailyPointsLimit, recordDailyPoints } = require('../../utils/pointsHelper');
+        
+        // 驗證QR碼格式
+        if (!validateQRCode(code)) {
+            return res.status(400).json({ success: false, message: 'QR碼格式無效' });
+        }
+
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const userDb = getClientDb(storeSlug, 'ADB');
+        
+        const qrcodeSchema = require('../../models/points/qrcode');
+        const userPointsSchema = require('../../models/points/userPoints');
+        const pointsSettingsSchema = require('../../models/points/pointsSettings');
+        
+        const QRCode = cardDB.model('QRCode', qrcodeSchema);
+        const UserPoints = userDb.model('UserPoints', userPointsSchema);
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        // 查找QR碼
+        const qrcode = await QRCode.findOne({ code: code });
+        
+        if (!qrcode) {
+            return res.status(404).json({ success: false, message: 'QR碼不存在或已失效' });
+        }
+
+        if (qrcode.status !== 'active') {
+            return res.status(400).json({ success: false, message: 'QR碼已被使用' });
+        }
+
+        if (isQRCodeExpired(qrcode.expiresAt)) {
+            qrcode.status = 'expired';
+            await qrcode.save();
+            return res.status(400).json({ success: false, message: 'QR碼已過期' });
+        }
+
+        // 檢查用戶是否已兌換過此QR碼
+        let userCard = await UserPoints.findOne({ 
+            lineId: lineId,
+            type: 'user_points'
+        });
+        
+        if (userCard && userCard.redeemedQRCodes && userCard.redeemedQRCodes.includes(code)) {
+            return res.status(400).json({ success: false, message: '您已經兌換過此QR碼' });
+        }
+        
+        let isFirstTimeUser = false;
+        let firstReward = 0;
+        
+        // 如果用戶沒有集點卡，自動創建一個
+        if (!userCard) {
+            isFirstTimeUser = true;
+            const settings = await PointsSettings.findOne({ slug: storeSlug });
+            firstReward = settings?.s_reward || 0;
+            
+            userCard = new UserPoints({
+                lineId: lineId,
+                type: 'user_points',
+                points: firstReward,
+                pointsHistory: firstReward > 0 ? [{
+                    points: firstReward,
+                    type: 'reward',
+                    description: '首次領取集點卡獎勵',
+                    createdAt: new Date(),
+                    expiresAt: new Date(Date.now() + (settings?.pointsExpireDays || 365) * 24 * 60 * 60 * 1000)
+                }] : [],
+                dailyPointsHistory: [],
+                redeemedQRCodes: [],
+                createdAt: new Date()
+            });
+            
+            await userCard.save();
+        }
+
+        // 獲取點數設定
+        const settings = await PointsSettings.findOne({ slug: storeSlug }) || {};
+        
+        // 檢查每日點數限制（僅檢查QR碼點數，不包含首次獎勵）
+        if (settings.maxPointsPerDay && settings.maxPointsPerDay > 0 && !isFirstTimeUser) {
+            const canAdd = await checkDailyPointsLimit(userCard, qrcode.points, settings.maxPointsPerDay);
+            if (!canAdd) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `今日點數已達上限 ${settings.maxPointsPerDay} 點` 
+                });
+            }
+        }
+
+        // 添加QR碼點數
+        await addPointsWithExpiry(userCard, qrcode.points, settings.pointsExpireDays || 365, `QR碼兌換：${qrcode.points}點`);
+        
+        // 記錄每日點數（僅記錄QR碼點數，不包含首次獎勵）
+        if (settings.maxPointsPerDay && settings.maxPointsPerDay > 0) {
+            await recordDailyPoints(userCard, qrcode.points);
+        }
+        
+        // 記錄已兌換的QR碼
+        if (!userCard.redeemedQRCodes) {
+            userCard.redeemedQRCodes = [];
+        }
+        userCard.redeemedQRCodes.push(code);
+        
+        await userCard.save();
+
+        // 更新QR碼狀態
+        qrcode.status = 'redeemed';
+        qrcode.redeemedBy = lineId;
+        qrcode.redeemedAt = new Date();
+        await qrcode.save();
+
+        // 組成返回訊息
+        let message = `成功兌換 ${qrcode.points} 點數！`;
+        if (isFirstTimeUser && firstReward > 0) {
+            message = `集點卡領取成功！獲得首次獎勵 ${firstReward} 點 + QR碼兌換 ${qrcode.points} 點，共 ${firstReward + qrcode.points} 點！`;
+        }
+
+        res.json({
+            success: true,
+            message: message,
+            qrPoints: qrcode.points,
+            firstReward: isFirstTimeUser ? firstReward : 0,
+            totalPoints: userCard.points,
+            isFirstTime: isFirstTimeUser
+        });
+
+    } catch (error) {
+        console.error('QR碼兌換錯誤:', error);
+        res.status(500).json({ success: false, message: '兌換失敗，請稍後再試' });
     }
 });
 

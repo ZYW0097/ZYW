@@ -61,23 +61,28 @@ function navigateToPage(pageName) {
     if (window.location.hash.substring(1) !== pageName) {
         window.location.hash = pageName;
     }
+    
+    // 如果導航到QR碼頁面，更新狀態
+    if (pageName === 'qrcode') {
+        setTimeout(updateQRCodeStatus, 300);
+    }
 }
 
 // 初始化表單
 function initializeForms() {
     // 基本設定表單
-    const basicInfoForm = document.getElementById('basicInfoForm');
-    if (basicInfoForm) {
-        basicInfoForm.addEventListener('submit', function(e) {
+    const basicForm = document.getElementById('basicInfoForm');
+    if (basicForm) {
+        basicForm.addEventListener('submit', function(e) {
             e.preventDefault();
             submitBasicSettings();
         });
     }
     
     // 餐廳圖片表單
-    const restaurantImageForm = document.getElementById('restaurantImageForm');
-    if (restaurantImageForm) {
-        restaurantImageForm.addEventListener('submit', function(e) {
+    const imageForm = document.getElementById('restaurantImageForm');
+    if (imageForm) {
+        imageForm.addEventListener('submit', function(e) {
             e.preventDefault();
             submitRestaurantImage();
         });
@@ -125,6 +130,15 @@ function initializeForms() {
         rewardsForm.addEventListener('submit', function(e) {
             e.preventDefault();
             submitRewards();
+        });
+    }
+
+    // QR碼生成表單
+    const qrcodeForm = document.getElementById('qrcodeGenerateForm');
+    if (qrcodeForm) {
+        qrcodeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateQRCode();
         });
     }
 }
@@ -739,6 +753,7 @@ async function submitPointsRules() {
     const formData = new FormData(form);
     
     const pointsRules = {
+        welcomePoints: parseInt(formData.get('welcomePoints')),
         maxPointsPerDay: parseInt(formData.get('maxPointsPerDay')),
         pointsExpireDays: parseInt(formData.get('pointsExpireDays'))
     };
@@ -823,4 +838,177 @@ async function submitRewards() {
     } finally {
         hideLoading();
     }
-} 
+}
+
+// QR碼相關功能
+async function generateQRCode() {
+    const form = document.getElementById('qrcodeGenerateForm');
+    const formData = new FormData(form);
+    
+    const points = parseInt(formData.get('points'));
+    
+    if (!points || points < 1 || points > 100) {
+        showNotification('點數必須在1-100之間', 'error');
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/backstage/qrcode/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ points })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            updateQRCodeStatus();
+        } else {
+            showNotification(result.message || 'QR碼生成失敗', 'error');
+        }
+    } catch (error) {
+        console.error('QR碼生成失敗:', error);
+        showNotification('生成失敗，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function updateQRCodeStatus() {
+    try {
+        const response = await fetch(`/${storeSlug}/backstage/qrcode/status`);
+        const result = await response.json();
+        
+        const statusDiv = document.getElementById('qrcode-status');
+        
+        if (result.success && result.hasActiveQR) {
+            const qrcode = result.qrcode;
+            const expiresAt = new Date(qrcode.expiresAt);
+            const now = new Date();
+            const remainingTime = Math.max(0, Math.floor((expiresAt - now) / 1000));
+            
+            statusDiv.innerHTML = `
+                <div class="qrcode-active">
+                    <div class="qrcode-info">
+                        <h4>🎯 活躍QR碼</h4>
+                        <div class="qrcode-details">
+                            <p><strong>點數：</strong>${qrcode.points} 點</p>
+                            <p><strong>代碼：</strong><code>${qrcode.code}</code></p>
+                            <p><strong>剩餘時間：</strong><span id="countdown">${formatTime(remainingTime)}</span></p>
+                        </div>
+                        <div class="qrcode-url">
+                            <label>QR碼網址：</label>
+                            <div class="url-display">
+                                <input type="text" value="${qrcode.url}" readonly id="qrUrl">
+                                <button type="button" class="backstage-btn backstage-btn-outline" onclick="copyQRUrl()">複製</button>
+                            </div>
+                        </div>
+                        <div class="qrcode-actions">
+                            <button type="button" class="backstage-btn backstage-btn-danger" onclick="deleteCurrentQRCode()">
+                                刪除QR碼
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 開始倒計時
+            startCountdown(remainingTime);
+        } else {
+            statusDiv.innerHTML = `
+                <div class="backstage-info-box">
+                    <p>📱 目前沒有活躍的QR碼</p>
+                    <p>請使用上方表單生成新的QR碼</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('獲取QR碼狀態失敗:', error);
+        const statusDiv = document.getElementById('qrcode-status');
+        statusDiv.innerHTML = `
+            <div class="backstage-info-box">
+                <p>❌ 無法獲取QR碼狀態</p>
+            </div>
+        `;
+    }
+}
+
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+function startCountdown(initialSeconds) {
+    let seconds = initialSeconds;
+    const countdownElement = document.getElementById('countdown');
+    
+    const timer = setInterval(() => {
+        if (seconds <= 0) {
+            clearInterval(timer);
+            showNotification('QR碼已過期', 'warning');
+            updateQRCodeStatus();
+            return;
+        }
+        
+        seconds--;
+        if (countdownElement) {
+            countdownElement.textContent = formatTime(seconds);
+        }
+    }, 1000);
+}
+
+function copyQRUrl() {
+    const urlInput = document.getElementById('qrUrl');
+    urlInput.select();
+    urlInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        document.execCommand('copy');
+        showNotification('QR碼網址已複製到剪貼簿', 'success');
+    } catch (err) {
+        console.error('複製失敗:', err);
+        showNotification('複製失敗，請手動複製', 'error');
+    }
+}
+
+async function deleteCurrentQRCode() {
+    if (!confirm('確定要刪除當前的QR碼嗎？')) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/backstage/qrcode/current`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            updateQRCodeStatus();
+        } else {
+            showNotification(result.message || '刪除失敗', 'error');
+        }
+    } catch (error) {
+        console.error('刪除QR碼失敗:', error);
+        showNotification('刪除失敗，請稍後再試', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 頁面載入時初始化QR碼狀態
+document.addEventListener('DOMContentLoaded', function() {
+    // 如果當前在QR碼頁面，載入狀態
+    if (document.getElementById('qrcode-page')) {
+        setTimeout(updateQRCodeStatus, 500);
+    }
+}); 
