@@ -516,7 +516,7 @@ router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, r
         
         const qrcodeSchema = require('../../models/points/qrcode');
         const userPointsSchema = require('../../models/points/userPoints');
-        const pointsSettingsSchema = require('../../models/points/pointsSettings');
+        const pointsSettingsSchema = require('../../models/points/settings');
         
         const QRCode = cardDB.model('QRCode', qrcodeSchema);
         const UserPoints = userDb.model('UserPoints', userPointsSchema);
@@ -561,7 +561,7 @@ router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, r
             userCard = new UserPoints({
                 lineId: lineId,
                 type: 'user_points',
-                points: firstReward,
+                'ah-points': firstReward,
                 pointsHistory: firstReward > 0 ? [{
                     points: firstReward,
                     type: 'reward',
@@ -624,7 +624,7 @@ router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, r
             message: message,
             qrPoints: qrcode.points,
             firstReward: isFirstTimeUser ? firstReward : 0,
-            totalPoints: userCard.points,
+            totalPoints: userCard['ah-points'],
             isFirstTime: isFirstTimeUser
         });
 

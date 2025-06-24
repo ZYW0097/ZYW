@@ -1243,4 +1243,194 @@
         padding: 2px 8px;
         font-size: 12px;
     }
+}
+
+/* QR碼相關樣式 */
+.qr-info {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.qr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.qr-header h4 {
+    color: #333;
+    font-size: 18px;
+    margin: 0;
+}
+
+.qr-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.qr-status.active {
+    background: #28a745;
+    color: white;
+}
+
+.qr-status.expired {
+    background: #dc3545;
+    color: white;
+}
+
+.qr-image-container {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.qr-image {
+    max-width: 200px;
+    max-height: 200px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    padding: 10px;
+}
+
+.qr-image-caption {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.qr-warning {
+    text-align: center;
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    color: #856404;
+    margin: 15px 0;
+}
+
+.qr-details {
+    margin: 20px 0;
+}
+
+.qr-details > div {
+    margin-bottom: 15px;
+}
+
+.qr-details label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.url-container {
+    display: flex;
+    gap: 10px;
+}
+
+.url-container input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+    background: #f8f9fa;
+}
+
+.copy-btn, .download-btn {
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover, .download-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    padding: 8px 16px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.countdown {
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: bold;
+    color: #28a745;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.countdown.warning {
+    color: #ffc107;
+}
+
+.countdown.danger {
+    color: #dc3545;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .qr-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .url-container {
+        flex-direction: column;
+    }
+    
+    .qr-actions {
+        flex-direction: column;
+    }
+    
+    .qr-image {
+        max-width: 150px;
+        max-height: 150px;
+    }
 } 

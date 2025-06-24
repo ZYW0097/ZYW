@@ -12,12 +12,7 @@ const userPointsSchema = new mongoose.Schema({
     'u-name': {
         type: String
     },
-    // 新的點數系統
-    points: {
-        type: Number,
-        default: 0
-    },
-    // 兼容舊系統
+    // 點數系統
     'ah-points': {
         type: Number,
         default: 0

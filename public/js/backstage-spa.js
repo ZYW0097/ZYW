@@ -842,19 +842,21 @@ async function submitRewards() {
 
 // QR碼相關功能
 async function generateQRCode() {
-    const form = document.getElementById('qrcodeGenerateForm');
-    const formData = new FormData(form);
+    const pointsInput = document.getElementById('qrPoints');
+    const generateBtn = document.getElementById('generateQRBtn');
+    const qrDisplay = document.getElementById('qrCodeDisplay');
     
-    const points = parseInt(formData.get('points'));
+    const points = parseInt(pointsInput.value);
     
     if (!points || points < 1 || points > 100) {
-        showNotification('點數必須在1-100之間', 'error');
+        showNotification('請輸入 1-100 之間的點數', 'error');
         return;
     }
     
+    generateBtn.disabled = true;
+    generateBtn.textContent = '生成中...';
+    
     try {
-        showLoading();
-        
         const response = await fetch(`/${storeSlug}/backstage/qrcode/generate`, {
             method: 'POST',
             headers: {
@@ -866,114 +868,100 @@ async function generateQRCode() {
         const result = await response.json();
         
         if (result.success) {
-            showNotification(result.message, 'success');
-            updateQRCodeStatus();
+            currentQR = result;
+            displayQRCode(result);
+            startCountdown(new Date(result.expiresAt));
+            showNotification(`成功生成 ${points} 點數的QR碼`, 'success');
         } else {
             showNotification(result.message || 'QR碼生成失敗', 'error');
         }
     } catch (error) {
-        console.error('QR碼生成失敗:', error);
-        showNotification('生成失敗，請稍後再試', 'error');
+        console.error('QR碼生成錯誤:', error);
+        showNotification('網路錯誤，請稍後再試', 'error');
     } finally {
-        hideLoading();
+        generateBtn.disabled = false;
+        generateBtn.textContent = '生成QR碼';
     }
 }
 
-async function updateQRCodeStatus() {
-    try {
-        const response = await fetch(`/${storeSlug}/backstage/qrcode/status`);
-        const result = await response.json();
-        
-        const statusDiv = document.getElementById('qrcode-status');
-        
-        if (result.success && result.hasActiveQR) {
-            const qrcode = result.qrcode;
-            const expiresAt = new Date(qrcode.expiresAt);
-            const now = new Date();
-            const remainingTime = Math.max(0, Math.floor((expiresAt - now) / 1000));
-            
-            statusDiv.innerHTML = `
-                <div class="qrcode-active">
-                    <div class="qrcode-info">
-                        <h4>🎯 活躍QR碼</h4>
-                        <div class="qrcode-details">
-                            <p><strong>點數：</strong>${qrcode.points} 點</p>
-                            <p><strong>代碼：</strong><code>${qrcode.code}</code></p>
-                            <p><strong>剩餘時間：</strong><span id="countdown">${formatTime(remainingTime)}</span></p>
-                        </div>
-                        <div class="qrcode-url">
-                            <label>QR碼網址：</label>
-                            <div class="url-display">
-                                <input type="text" value="${qrcode.url}" readonly id="qrUrl">
-                                <button type="button" class="backstage-btn backstage-btn-outline" onclick="copyQRUrl()">複製</button>
-                            </div>
-                        </div>
-                        <div class="qrcode-actions">
-                            <button type="button" class="backstage-btn backstage-btn-danger" onclick="deleteCurrentQRCode()">
-                                刪除QR碼
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 開始倒計時
-            startCountdown(remainingTime);
-        } else {
-            statusDiv.innerHTML = `
-                <div class="backstage-info-box">
-                    <p>📱 目前沒有活躍的QR碼</p>
-                    <p>請使用上方表單生成新的QR碼</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        console.error('獲取QR碼狀態失敗:', error);
-        const statusDiv = document.getElementById('qrcode-status');
-        statusDiv.innerHTML = `
-            <div class="backstage-info-box">
-                <p>❌ 無法獲取QR碼狀態</p>
+function displayQRCode(qrData) {
+    const qrDisplay = document.getElementById('qrCodeDisplay');
+    
+    let qrImageHtml = '';
+    if (qrData.qrImage) {
+        qrImageHtml = `
+            <div class="qr-image-container">
+                <img src="${qrData.qrImage}" alt="QR碼" class="qr-image" />
+                <p class="qr-image-caption">掃描此QR碼兌換 ${qrData.points} 點</p>
+            </div>
+        `;
+    } else if (qrData.warning) {
+        qrImageHtml = `
+            <div class="qr-warning">
+                <p>⚠️ ${qrData.warning}</p>
             </div>
         `;
     }
-}
-
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
-
-function startCountdown(initialSeconds) {
-    let seconds = initialSeconds;
-    const countdownElement = document.getElementById('countdown');
     
-    const timer = setInterval(() => {
-        if (seconds <= 0) {
-            clearInterval(timer);
-            showNotification('QR碼已過期', 'warning');
-            updateQRCodeStatus();
-            return;
-        }
-        
-        seconds--;
-        if (countdownElement) {
-            countdownElement.textContent = formatTime(seconds);
-        }
-    }, 1000);
+    qrDisplay.innerHTML = `
+        <div class="qr-info">
+            <div class="qr-header">
+                <h4>🎯 ${qrData.points} 點數 QR碼</h4>
+                <span class="qr-status active">有效</span>
+            </div>
+            
+            ${qrImageHtml}
+            
+            <div class="qr-details">
+                <div class="qr-url">
+                    <label>兌換網址：</label>
+                    <div class="url-container">
+                        <input type="text" value="${qrData.url}" readonly />
+                        <button onclick="backstageManager.copyToClipboard('${qrData.url}')" class="copy-btn">
+                            📋 複製
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="qr-countdown">
+                    <label>剩餘時間：</label>
+                    <span id="countdown" class="countdown">計算中...</span>
+                </div>
+            </div>
+            
+            <div class="qr-actions">
+                <button onclick="backstageManager.downloadQRCode()" class="download-btn">
+                    💾 下載QR碼
+                </button>
+                <button onclick="backstageManager.deleteQRCode()" class="delete-btn">
+                    🗑️ 刪除QR碼
+                </button>
+            </div>
+        </div>
+    `;
+    
+    qrDisplay.style.display = 'block';
 }
 
-function copyQRUrl() {
-    const urlInput = document.getElementById('qrUrl');
-    urlInput.select();
-    urlInput.setSelectionRange(0, 99999); // For mobile devices
+function downloadQRCode() {
+    if (!currentQR || !currentQR.qrImage) {
+        showNotification('沒有可下載的QR碼圖片', 'error');
+        return;
+    }
     
     try {
-        document.execCommand('copy');
-        showNotification('QR碼網址已複製到剪貼簿', 'success');
-    } catch (err) {
-        console.error('複製失敗:', err);
-        showNotification('複製失敗，請手動複製', 'error');
+        // 創建下載連結
+        const link = document.createElement('a');
+        link.download = `QR碼_${currentQR.points}點_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+        link.href = currentQR.qrImage;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('QR碼圖片已下載', 'success');
+    } catch (error) {
+        console.error('下載QR碼失敗:', error);
+        showNotification('下載失敗，請稍後再試', 'error');
     }
 }
 

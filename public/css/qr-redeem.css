@@ -1,3 +1,7 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,127 +10,149 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #f8f9fa;
+    color: #1D1D1F;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
+    line-height: 1.6;
 }
 
 .qr-container {
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 40px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     text-align: center;
-    max-width: 400px;
+    max-width: 420px;
     width: 90%;
     margin: 20px;
+    border: 1px solid #f0f0f0;
 }
 
 .qr-icon {
-    font-size: 64px;
+    font-size: 48px;
     margin-bottom: 20px;
-    color: #667eea;
+    color: #333;
 }
 
 .qr-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1D1D1F;
 }
 
 .qr-subtitle {
     font-size: 16px;
     color: #666;
     margin-bottom: 30px;
+    font-weight: 400;
 }
 
 .points-display {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
     color: white;
-    padding: 20px;
-    border-radius: 15px;
+    padding: 25px;
+    border-radius: 12px;
     margin-bottom: 30px;
+    border: 1px solid #333;
 }
 
 .points-number {
-    font-size: 48px;
-    font-weight: bold;
+    font-size: 36px;
+    font-weight: 700;
     margin-bottom: 5px;
+    color: white;
 }
 
 .points-label {
-    font-size: 16px;
-    opacity: 0.9;
+    font-size: 14px;
+    color: #cccccc;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.redeem-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+.redeem-btn, .login-btn {
+    background: #333;
     color: white;
     border: none;
-    padding: 15px 40px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
     width: 100%;
     margin-bottom: 20px;
+    letter-spacing: 0.5px;
 }
 
-.redeem-btn:hover {
-    transform: translateY(-2px);
+.redeem-btn:hover, .login-btn:hover {
+    background: #222;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .redeem-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+}
+
+.login-btn {
+    background: #666;
+}
+
+.login-btn:hover {
+    background: #555;
 }
 
 .status-message {
     margin-top: 20px;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 8px;
     font-weight: 500;
+    font-size: 14px;
 }
 
 .status-success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #e9ecef;
 }
 
 .status-error {
-    background: #f8d7da;
-    color: #721c24;
+    background: #f8f9fa;
+    color: #dc3545;
     border: 1px solid #f5c6cb;
 }
 
 .status-loading {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+    background: #f8f9fa;
+    color: #666;
+    border: 1px solid #e9ecef;
 }
 
 .status-info {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #e9ecef;
 }
 
 .loading-spinner {
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #667eea;
+    border: 2px solid #f0f0f0;
+    border-top: 2px solid #333;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     animation: spin 1s linear infinite;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
 @keyframes spin {
@@ -136,55 +162,69 @@ body {
 
 .back-link {
     display: inline-block;
-    margin-top: 20px;
-    color: #667eea;
+    margin-top: 25px;
+    color: #666;
     text-decoration: none;
     font-weight: 500;
+    font-size: 14px;
+    transition: color 0.3s ease;
 }
 
 .back-link:hover {
+    color: #333;
     text-decoration: underline;
-}
-
-.login-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
 }
 
 /* 響應式設計 */
 @media (max-width: 480px) {
     .qr-container {
         padding: 30px 20px;
-        margin: 10px;
+        margin: 15px;
+        max-width: 95%;
     }
     
     .qr-icon {
-        font-size: 48px;
+        font-size: 40px;
     }
     
     .qr-title {
-        font-size: 24px;
+        font-size: 20px;
+    }
+    
+    .qr-subtitle {
+        font-size: 14px;
     }
     
     .points-number {
-        font-size: 36px;
+        font-size: 28px;
+    }
+    
+    .points-display {
+        padding: 20px;
     }
     
     .redeem-btn, .login-btn {
-        padding: 12px 30px;
-        font-size: 16px;
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .qr-container {
+        padding: 25px 15px;
+        margin: 10px;
+    }
+    
+    .qr-title {
+        font-size: 18px;
+    }
+    
+    .points-number {
+        font-size: 24px;
+    }
+    
+    .redeem-btn, .login-btn {
+        padding: 12px 20px;
+        font-size: 14px;
     }
 } 

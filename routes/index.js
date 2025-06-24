@@ -8,6 +8,8 @@ const path = require('path');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const QRCode = require('qrcode');
+const { generateQRCode, isQRCodeExpired } = require('../utils/qrcodeHelper');
 
 const pointsRoutes = require('./points');
 const bookingRoutes = require('./booking');
@@ -1155,58 +1157,85 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
     }
 });
 
-// QR碼生成 API
+// 生成QR碼 API
 router.post('/:storeSlug/backstage/qrcode/generate', async (req, res) => {
     try {
         const { storeSlug } = req.params;
         const { points } = req.body;
 
-        // 驗證點數
+        // 驗證參數
         if (!points || points < 1 || points > 100) {
             return res.status(400).json({ 
                 success: false, 
-                message: '點數必須在1-100之間' 
+                message: '點數必須介於 1-100 之間' 
             });
         }
 
+        // 刪除該商家所有舊的QR碼
         const cardDB = getClientDb(storeSlug, 'CDB');
         const qrcodeSchema = require('../models/points/qrcode');
-        const QRCode = cardDB.model('QRCode', qrcodeSchema);
-        const { generateQRCode, generateQRCodeURL, calculateExpireTime } = require('../utils/qrcodeHelper');
+        const QRCodeModel = cardDB.model('QRCode', qrcodeSchema);
 
-        // 刪除該商家所有未使用的舊QR碼
-        await QRCode.deleteMany({ 
+        await QRCodeModel.deleteMany({ 
             slug: storeSlug, 
             status: 'active' 
         });
 
         // 生成新的QR碼
-        const code = generateQRCode(storeSlug, points);
-        const expiresAt = calculateExpireTime();
-        
-        const newQRCode = await QRCode.create({
-            code: code,
-            points: parseInt(points),
+        const qrCode = generateQRCode(storeSlug, points);
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5分鐘後過期
+
+        // 保存到資料庫
+        const newQRCode = new QRCodeModel({
+            code: qrCode,
             slug: storeSlug,
+            points: points,
             status: 'active',
-            expiresAt: expiresAt
+            expiresAt: expiresAt,
+            createdAt: new Date()
         });
 
-        const qrURL = generateQRCodeURL(storeSlug, code);
+        await newQRCode.save();
 
-        res.json({ 
-            success: true, 
-            qrcode: {
-                code: code,
+        // 生成QR碼圖片
+        const qrUrl = `${req.protocol}://${req.get('host')}/${storeSlug}/points/qr/${qrCode}`;
+        
+        try {
+            // 生成QR碼圖片 (Base64格式)
+            const qrImageDataUrl = await QRCode.toDataURL(qrUrl, {
+                width: 256,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            });
+
+            res.json({ 
+                success: true, 
+                qrCode: qrCode,
+                url: qrUrl,
+                qrImage: qrImageDataUrl, // Base64 圖片
                 points: points,
-                url: qrURL,
-                expiresAt: expiresAt
-            },
-            message: `已生成 ${points} 點的QR碼，5分鐘後自動失效`
-        });
+                expiresAt: expiresAt.toISOString()
+            });
+        } catch (qrError) {
+            console.error('QR碼圖片生成失敗:', qrError);
+            // 即使圖片生成失敗，仍然返回基本資訊
+            res.json({ 
+                success: true, 
+                qrCode: qrCode,
+                url: qrUrl,
+                qrImage: null,
+                points: points,
+                expiresAt: expiresAt.toISOString(),
+                warning: 'QR碼圖片生成失敗，但功能正常'
+            });
+        }
+
     } catch (error) {
         console.error('❌ QR碼生成錯誤:', error);
-        res.status(500).json({ success: false, message: 'QR碼生成失敗，請稍後再試' });
+        res.status(500).json({ success: false, message: 'QR碼生成失敗' });
     }
 });
 
@@ -1551,7 +1580,7 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
         const newCard = new UserPoints({
             lineId: req.user.lineId,
             type: 'user_points',
-            points: firstReward,
+            'ah-points': firstReward,
             pointsHistory: firstReward > 0 ? [{
                 points: firstReward,
                 type: 'reward',
@@ -1560,6 +1589,7 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
                 expiresAt: new Date(Date.now() + (settings?.pointsExpireDays || 365) * 24 * 60 * 60 * 1000)
             }] : [],
             dailyPointsHistory: [],
+            redeemedQRCodes: [],
             createdAt: new Date()
         });
         

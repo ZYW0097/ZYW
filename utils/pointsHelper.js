@@ -75,13 +75,8 @@ async function addPointsWithExpiry(userPoints, points, expireDays, description =
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + expireDays);
 
-    // 添加到新的點數系統
-    userPoints.points += points;
-    
-    // 兼容舊系統
-    if (userPoints['ah-points'] !== undefined) {
-        userPoints['ah-points'] += points;
-    }
+    // 添加到ah-points系統
+    userPoints['ah-points'] += points;
 
     // 記錄點數歷史
     userPoints.pointsHistory.push({
