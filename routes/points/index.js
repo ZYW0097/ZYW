@@ -276,7 +276,8 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
                 rewardId: rewardIndex, 
                 count: 1,
                 rewardName: reward.name,
-                rewardImg: reward.img
+                rewardImg: reward.img,
+                redeemedAt: new Date()
             });
         }
         

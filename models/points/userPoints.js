@@ -25,7 +25,8 @@ const userPointsSchema = new mongoose.Schema({
         rewardId: { type: mongoose.Schema.Types.Mixed }, // 支援數字索引或ObjectId
         rewardName: { type: String },
         rewardImg: { type: String },
-        count: { type: Number, default: 1 }
+        count: { type: Number, default: 1 },
+        redeemedAt: { type: Date, default: Date.now }
     }],
     // 每日點數限制追蹤
     dailyPointsHistory: [{

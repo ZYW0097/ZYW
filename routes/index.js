@@ -1381,14 +1381,6 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         const rewardActives = req.body['rewardActive[]'] || req.body.rewardActive || [];
         const files = req.files || [];
 
-        // 詳細調試信息
-        console.log('🔍 獎勵設定 - 收到的原始數據:');
-        console.log('  req.body:', JSON.stringify(req.body, null, 2));
-        console.log('  rewardNames:', rewardNames);
-        console.log('  rewardPoints:', rewardPoints);
-        console.log('  rewardActives:', rewardActives);
-        console.log('  files:', files.map(f => ({ originalname: f.originalname, fieldname: f.fieldname })));
-
         // 確保所有輸入都是陣列
         const names = Array.isArray(rewardNames) ? rewardNames : (rewardNames ? [rewardNames] : []);
         const points = Array.isArray(rewardPoints) ? rewardPoints : (rewardPoints ? [rewardPoints] : []);
@@ -1405,7 +1397,6 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
             }
         }
         
-        console.log('  有效獎勵數量:', validRewards.length);
         
         // 驗證至少有一個有效獎勵
         if (validRewards.length === 0) {
@@ -1465,23 +1456,18 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         // 處理checkbox狀態（HTML checkbox只會在選中時發送值）
         const activeValues = Array.isArray(rewardActives) ? rewardActives : (rewardActives ? [rewardActives] : []);
         
-        console.log('🔍 Checkbox處理調試:');
-        console.log('  rewardActives:', rewardActives);
-        console.log('  activeValues:', activeValues);
-        console.log('  rewards count:', rewards.length);
+        
         
         // 根據發送的checkbox值設定active狀態
         // 每個checkbox的value應該是該項目的索引
         activeValues.forEach(value => {
             if (value === 'on') {
                 // 如果沒有指定索引，可能是單一checkbox
-                rewards.forEach(reward => reward.active = true);
-                console.log('  設定所有獎勵為啟用 (value=on)');
+                rewards.forEach(reward => reward.active = true);        
             } else {
                 const index = parseInt(value);
                 if (!isNaN(index) && rewards[index]) {
                     rewards[index].active = true;
-                    console.log(`  啟用獎勵項目 ${index}`);
                 }
             }
         });
@@ -1489,15 +1475,10 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         // 如果沒有收到任何active值，檢查form data中是否有checkbox名稱出現
         if (activeValues.length === 0) {
             // 所有checkbox都未選中，保持active: false
-            console.log('  沒有啟用的獎勵項目');
         }
         
-        console.log('  最終獎勵狀態:', rewards.map((r, i) => ({ index: i, name: r.name, active: r.active })));
 
         // 更新客戶設定
-        console.log('💾 開始保存到資料庫...');
-        console.log('  storeSlug:', storeSlug);
-        console.log('  要保存的rewards:', JSON.stringify(rewards, null, 2));
         
         const updateResult = await Client.findOneAndUpdate(
             { slugname: storeSlug },
@@ -1505,11 +1486,7 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
             { upsert: true, new: true }
         );
         
-        console.log('✅ 資料庫更新完成');
-        console.log('  更新結果:', updateResult ? '成功' : '失敗');
-        if (updateResult) {
-            console.log('  保存的獎勵數據:', JSON.stringify(updateResult.customSettings?.rewards, null, 2));
-        }
+
 
         res.json({ success: true, message: '獎勵設定已更新' });
     } catch (error) {
@@ -1544,23 +1521,54 @@ router.get('/:storeSlug/backstage/points-stats', async (req, res) => {
             updatedAt: { $gte: thirtyDaysAgo }
         });
         
-        // 3. 已兌換獎勵數量
-        const totalRedeemed = await PointsCoupons.countDocuments({
-            type: 'points_coupon',
-            status: { $in: ['issued', 'used'] }
-        });
-        
-        // 4. 總發放點數
-        const totalPointsResult = await UserPoints.aggregate([
+        // 3. 已兌換獎勵數量 - 計算所有用戶的優惠券總數
+        const totalRedeemedResult = await UserPoints.aggregate([
             {
                 $group: {
                     _id: null,
-                    totalPoints: { $sum: '$ah-points' }
+                    totalRedeemed: { $sum: '$ah-coupon' }
                 }
             }
         ]);
         
-        const totalPoints = totalPointsResult.length > 0 ? totalPointsResult[0].totalPoints : 0;
+        const totalRedeemed = totalRedeemedResult.length > 0 ? totalRedeemedResult[0].totalRedeemed : 0;
+        
+        // 4. 總發放點數 - 計算當前剩餘點數 + 已兌換獎勵使用的點數
+        const currentPointsResult = await UserPoints.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    currentPoints: { $sum: '$ah-points' }
+                }
+            }
+        ]);
+        
+        const currentPoints = currentPointsResult.length > 0 ? currentPointsResult[0].currentPoints : 0;
+        
+        // 計算已兌換獎勵使用的點數
+        let redeemedPointsTotal = 0;
+        
+        // 獲取商家獎勵設定
+        const Client = require('../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
+        
+        if (client && client.customSettings && client.customSettings.rewards) {
+            const allUsers = await UserPoints.find({});
+            
+            for (const user of allUsers) {
+                if (user['ah-coupon-id'] && Array.isArray(user['ah-coupon-id'])) {
+                    for (const coupon of user['ah-coupon-id']) {
+                        const rewardIndex = parseInt(coupon.rewardId);
+                        const reward = client.customSettings.rewards[rewardIndex];
+                        if (reward && reward.points) {
+                            redeemedPointsTotal += reward.points * (coupon.count || 1);
+                        }
+                    }
+                }
+            }
+        }
+        
+        const totalPoints = currentPoints + redeemedPointsTotal;
         
         // 5. 額外統計 - 本月新增會員
         const thisMonth = new Date();
@@ -1572,11 +1580,21 @@ router.get('/:storeSlug/backstage/points-stats', async (req, res) => {
         });
         
         // 6. 額外統計 - 本月兌換數量
-        const redeemedThisMonth = await PointsCoupons.countDocuments({
-            type: 'points_coupon',
-            status: { $in: ['issued', 'used'] },
-            createdAt: { $gte: thisMonth }
+        let redeemedThisMonth = 0;
+        const usersWithCoupons = await UserPoints.find({
+            'ah-coupon-id': { $exists: true, $ne: [] }
         });
+        
+        for (const user of usersWithCoupons) {
+            if (user['ah-coupon-id'] && Array.isArray(user['ah-coupon-id'])) {
+                for (const coupon of user['ah-coupon-id']) {
+                    // 檢查兌換時間是否在本月
+                    if (coupon.redeemedAt && coupon.redeemedAt >= thisMonth) {
+                        redeemedThisMonth += coupon.count || 1;
+                    }
+                }
+            }
+        }
         
         res.json({
             success: true,
