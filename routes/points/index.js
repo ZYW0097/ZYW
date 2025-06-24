@@ -498,7 +498,7 @@ router.get('/:storeSlug/points/qr/:code', async (req, res) => {
 });
 
 // QR碼兌換確認 API
-router.post('/:storeSlug/points/qr/:code/redeem', isLoggedIn, async (req, res) => {
+router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, res) => {
     try {
         const { storeSlug, code } = req.params;
         const lineId = req.user.lineId;
