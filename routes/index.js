@@ -1495,11 +1495,21 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         console.log('  最終獎勵狀態:', rewards.map((r, i) => ({ index: i, name: r.name, active: r.active })));
 
         // 更新客戶設定
-        await Client.findOneAndUpdate(
+        console.log('💾 開始保存到資料庫...');
+        console.log('  storeSlug:', storeSlug);
+        console.log('  要保存的rewards:', JSON.stringify(rewards, null, 2));
+        
+        const updateResult = await Client.findOneAndUpdate(
             { slugname: storeSlug },
             { $set: { 'customSettings.rewards': rewards } },
-            { upsert: true }
+            { upsert: true, new: true }
         );
+        
+        console.log('✅ 資料庫更新完成');
+        console.log('  更新結果:', updateResult ? '成功' : '失敗');
+        if (updateResult) {
+            console.log('  保存的獎勵數據:', JSON.stringify(updateResult.customSettings?.rewards, null, 2));
+        }
 
         res.json({ success: true, message: '獎勵設定已更新' });
     } catch (error) {

@@ -39,6 +39,10 @@ const clientSchema = new mongoose.Schema({
     tutorialImage2: {
         type: String,
         default: ''
+    },
+    customSettings: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     }
 }, {
     timestamps: true
