@@ -22,7 +22,7 @@ const qrcodeSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'used', 'expired'],
+        enum: ['active', 'redeemed', 'expired'],
         default: 'active'
     },
     createdAt: {
@@ -37,6 +37,12 @@ const qrcodeSchema = new mongoose.Schema({
         type: Date
     },
     usedBy: {
+        type: String
+    },
+    redeemedAt: {
+        type: Date
+    },
+    redeemedBy: {
         type: String
     }
 }, { 

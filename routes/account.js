@@ -135,16 +135,12 @@ router.get('/line/callback', async (req, res) => {
         delete req.session.loginRedirect;
 
         // 根據條件決定跳轉
-        if (isNewUser || !user.birthday || !user.gender) {
-            // 首次登入或資料不完整，前往個人資料頁
-            // 如果有 loginRedirect，在完成個人資料設定後重定向
-            if (loginRedirect) {
-                req.session.postProfileRedirect = loginRedirect;
-            }
-            return res.redirect('/account/profile');
-        } else if (loginRedirect) {
-            // 已有完整資料且有 redirect 參數，返回原頁面
+        if (loginRedirect) {
+            // 有 redirect 參數，直接返回原頁面（優先處理重定向）
             return res.redirect(loginRedirect);
+        } else if (isNewUser || !user.birthday || !user.gender) {
+            // 首次登入或資料不完整，前往個人資料頁
+            return res.redirect('/account/profile');
         } else {
             // 默認跳轉到點數頁面
             return res.redirect('/account/points');
