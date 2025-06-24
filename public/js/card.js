@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 檢查特殊狀態並添加背景覆蓋層
-    const specialSections = document.querySelectorAll('.no-card-section, .login-prompt-section, .claim-card-section');
-    if (specialSections.length > 0) {
-        document.body.classList.add('has-overlay');
-    }
+    // 移除黑色覆蓋層邏輯，保持簡潔設計
 
     // 元素選擇
     const claimCardBtn = document.getElementById('claimCardBtn');

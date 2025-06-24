@@ -86,6 +86,7 @@ function navigateToPage(pageName) {
         setTimeout(() => {
             loadRules();
             initializeRewardToggles();
+            loadPointsStats();
         }, 300);
     }
 }
@@ -970,6 +971,58 @@ function handleRewardImageUpload(input, index) {
 }
 
 // 規則管理功能
+// 載入集點卡統計數據
+async function loadPointsStats() {
+    try {
+        const storeSlug = window.location.pathname.split('/')[1];
+        const response = await fetch(`/${storeSlug}/backstage/points-stats`);
+        const result = await response.json();
+        
+        if (result.success) {
+            displayPointsStats(result.stats);
+        } else {
+            console.error('載入統計數據失敗:', result.error);
+        }
+    } catch (error) {
+        console.error('載入統計數據錯誤:', error);
+    }
+}
+
+// 顯示統計數據
+function displayPointsStats(stats) {
+    const statItems = document.querySelectorAll('.backstage-stats-grid .backstage-stat-item');
+    
+    const statsData = [
+        stats.totalMembers,
+        stats.activeMembers,
+        stats.totalRedeemed,
+        stats.totalPoints
+    ];
+    
+    statItems.forEach((item, index) => {
+        const loadingSpan = item.querySelector('.loading-stats');
+        const numberSpan = item.querySelector('.stat-number');
+        
+        if (loadingSpan && numberSpan) {
+            // 隱藏載入動畫
+            loadingSpan.style.display = 'none';
+            
+            // 顯示實際數據
+            numberSpan.textContent = statsData[index].toLocaleString();
+            numberSpan.style.display = 'block';
+            
+            // 添加數字變化動畫
+            numberSpan.style.opacity = '0';
+            setTimeout(() => {
+                numberSpan.style.transition = 'opacity 0.5s ease';
+                numberSpan.style.opacity = '1';
+            }, 100);
+        }
+    });
+    
+    console.log('統計數據已更新:', stats);
+}
+
 async function loadRules() {
     try {
         const response = await fetch(`/${storeSlug}/backstage/rules`);

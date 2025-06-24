@@ -972,10 +972,13 @@
 }
 
 .backstage-reward-preview {
-    width: 100%;
-    height: 120px;
+    width: 75px;
+    height: 75px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    margin: 10px auto;
+    display: block;
 }
 
 .backstage-file-overlay {
@@ -1100,7 +1103,8 @@
     }
     
     .backstage-reward-preview {
-        height: 100px;
+        width: 65px;
+        height: 65px;
     }
     
     .backstage-file-placeholder small {
@@ -1133,7 +1137,8 @@
     }
     
     .backstage-reward-preview {
-        height: 80px;
+        width: 60px;
+        height: 60px;
     }
     
     .backstage-reward-item {
@@ -1227,12 +1232,35 @@
     font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 8px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .stat-label {
     font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.stat-desc {
+    font-size: 11px;
     color: #666;
-    font-weight: 500;
+    line-height: 1.3;
+    margin-top: 4px;
+}
+
+.loading-stats {
+    font-size: 18px;
+    animation: spin 1.5s linear infinite;
+    color: #007bff;
+}
+
+.stat-number {
+    display: block;
+    transition: opacity 0.5s ease;
 }
 
 /* 後台 Footer 樣式 */

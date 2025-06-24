@@ -496,23 +496,43 @@
                         <!-- 統計數據 -->
                         <div class="backstage-setting-card">
                             <h3>集點卡統計</h3>
+                            <p class="backstage-card-desc">查看集點卡系統的使用情況和統計數據</p>
                             <div class="backstage-stats-grid">
                                 <div class="backstage-stat-item">
-                                    <div class="stat-value">0</div>
+                                    <div class="stat-value">
+                                        <span class="loading-stats">🔄</span>
+                                        <span class="stat-number" style="display: none;">0</span>
+                                    </div>
                                     <div class="stat-label">註冊會員</div>
+                                    <div class="stat-desc">擁有集點卡的會員總數</div>
                                 </div>
                                 <div class="backstage-stat-item">
-                                    <div class="stat-value">0</div>
+                                    <div class="stat-value">
+                                        <span class="loading-stats">🔄</span>
+                                        <span class="stat-number" style="display: none;">0</span>
+                                    </div>
                                     <div class="stat-label">活躍會員</div>
+                                    <div class="stat-desc">30天內有活動的會員</div>
                                 </div>
                                 <div class="backstage-stat-item">
-                                    <div class="stat-value">0</div>
+                                    <div class="stat-value">
+                                        <span class="loading-stats">🔄</span>
+                                        <span class="stat-number" style="display: none;">0</span>
+                                    </div>
                                     <div class="stat-label">已兌換獎勵</div>
+                                    <div class="stat-desc">累計兌換的獎勵數量</div>
                                 </div>
                                 <div class="backstage-stat-item">
-                                    <div class="stat-value">0</div>
+                                    <div class="stat-value">
+                                        <span class="loading-stats">🔄</span>
+                                        <span class="stat-number" style="display: none;">0</span>
+                                    </div>
                                     <div class="stat-label">總發放點數</div>
+                                    <div class="stat-desc">系統累計發放的點數</div>
                                 </div>
+                            </div>
+                            <div class="backstage-form-actions" style="margin-top: 20px;">
+                                <button type="button" class="backstage-btn backstage-btn-outline" onclick="loadPointsStats()">🔄 重新整理統計</button>
                             </div>
                         </div>
                         <% } else { %>

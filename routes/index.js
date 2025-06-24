@@ -1373,7 +1373,7 @@ router.delete('/:storeSlug/backstage/qrcode/current', async (req, res) => {
 });
 
 // 獎勵設定 API
-router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage', 10), async (req, res) => {
+router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), async (req, res) => {
     try {
         const { storeSlug } = req.params;
         const rewardNames = req.body['rewardName[]'] || [];
@@ -1483,6 +1483,84 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage', 10), as
     } catch (error) {
         console.error('❌ 獎勵設定更新錯誤:', error);
         res.status(500).json({ success: false, message: '更新失敗，請稍後再試' });
+    }
+});
+
+// 獲取集點卡統計數據
+router.get('/:storeSlug/backstage/points-stats', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 獲取用戶數據庫
+        const adb = getClientDb(storeSlug, 'ADB');
+        const userPointsSchema = require('../models/points/userPoints');
+        const UserPoints = adb.model('UserPoints', userPointsSchema);
+        
+        // 獲取集點卡數據庫
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const pointsCouponsSchema = require('../models/points/coupons');
+        const PointsCoupons = cdb.model('PointsCoupons', pointsCouponsSchema);
+        
+        // 1. 註冊會員數量 (擁有集點卡的用戶)
+        const totalMembers = await UserPoints.countDocuments({});
+        
+        // 2. 活躍會員數量 (30天內有點數變動的用戶)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const activeMembers = await UserPoints.countDocuments({
+            updatedAt: { $gte: thirtyDaysAgo }
+        });
+        
+        // 3. 已兌換獎勵數量
+        const totalRedeemed = await PointsCoupons.countDocuments({
+            type: 'points_coupon',
+            status: { $in: ['issued', 'used'] }
+        });
+        
+        // 4. 總發放點數
+        const totalPointsResult = await UserPoints.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalPoints: { $sum: '$ah-points' }
+                }
+            }
+        ]);
+        
+        const totalPoints = totalPointsResult.length > 0 ? totalPointsResult[0].totalPoints : 0;
+        
+        // 5. 額外統計 - 本月新增會員
+        const thisMonth = new Date();
+        thisMonth.setDate(1);
+        thisMonth.setHours(0, 0, 0, 0);
+        
+        const newMembersThisMonth = await UserPoints.countDocuments({
+            createdAt: { $gte: thisMonth }
+        });
+        
+        // 6. 額外統計 - 本月兌換數量
+        const redeemedThisMonth = await PointsCoupons.countDocuments({
+            type: 'points_coupon',
+            status: { $in: ['issued', 'used'] },
+            createdAt: { $gte: thisMonth }
+        });
+        
+        res.json({
+            success: true,
+            stats: {
+                totalMembers,
+                activeMembers,
+                totalRedeemed,
+                totalPoints,
+                newMembersThisMonth,
+                redeemedThisMonth
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ 獲取統計數據錯誤:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
