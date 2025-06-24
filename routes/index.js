@@ -1381,50 +1381,72 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         const rewardActives = req.body['rewardActive[]'] || [];
         const files = req.files || [];
 
-        // 確保所有輸入都是陣列
-        const names = Array.isArray(rewardNames) ? rewardNames : [rewardNames];
-        const points = Array.isArray(rewardPoints) ? rewardPoints : [rewardPoints];
-        
-        // 驗證獎勵數據
-        if (names.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: '至少需要設定一個獎勵項目' 
-            });
-        }
+        // 詳細調試信息
+        console.log('🔍 獎勵設定 - 收到的原始數據:');
+        console.log('  req.body:', JSON.stringify(req.body, null, 2));
+        console.log('  rewardNames:', rewardNames);
+        console.log('  rewardPoints:', rewardPoints);
+        console.log('  rewardActives:', rewardActives);
+        console.log('  files:', files.map(f => ({ originalname: f.originalname, fieldname: f.fieldname })));
 
-        const rewards = [];
+        // 確保所有輸入都是陣列
+        const names = Array.isArray(rewardNames) ? rewardNames : (rewardNames ? [rewardNames] : []);
+        const points = Array.isArray(rewardPoints) ? rewardPoints : (rewardPoints ? [rewardPoints] : []);
+        
+        // 過濾出有效的獎勵數據（去除空的項目）
+        const validRewards = [];
         for (let i = 0; i < names.length; i++) {
             const name = names[i];
             const point = parseInt(points[i]);
             
-            if (!name || name.trim().length === 0) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `獎勵項目 ${i + 1} 的名稱不能為空` 
-                });
+            // 只有當名稱不為空且點數有效時才加入
+            if (name && name.trim().length > 0 && !isNaN(point) && point >= 1 && point <= 100) {
+                validRewards.push({ name: name.trim(), points: point, index: i });
             }
+        }
+        
+        console.log('  有效獎勵數量:', validRewards.length);
+        
+        // 驗證至少有一個有效獎勵
+        if (validRewards.length === 0) {
+            console.log('❌ 驗證失敗: 沒有有效的獎勵項目');
+            return res.status(400).json({ 
+                success: false, 
+                message: '至少需要設定一個獎勵項目，請檢查獎勵名稱和點數是否正確填寫' 
+            });
+        }
 
-            if (!point || point < 1 || point > 100) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `獎勵項目 ${i + 1} 的所需點數必須在1-100之間` 
-                });
-            }
-
+        // 處理有效的獎勵數據
+        const rewards = [];
+        for (let j = 0; j < validRewards.length; j++) {
+            const validReward = validRewards[j];
+            const originalIndex = validReward.index;
+            
             // 處理獎勵圖片
             let imgUrl = '/images/coupon-default.svg'; // 預設圖片
-            if (files[i] && files[i].path) {
-                imgUrl = files[i].path; // Cloudinary URL
+            
+            // 尋找對應的上傳文件
+            const matchingFile = files.find(file => {
+                // 文件的索引可能不連續，需要根據fieldname來匹配
+                return file.fieldname === 'rewardImage[]';
+            });
+            
+            if (matchingFile && matchingFile.path) {
+                imgUrl = matchingFile.path; // Cloudinary URL
+                // 使用完畢後從files陣列中移除，避免重複使用
+                const fileIndex = files.indexOf(matchingFile);
+                if (fileIndex > -1) {
+                    files.splice(fileIndex, 1);
+                }
             } else {
                 // 如果沒有新圖片，保持現有圖片
                 try {
                     const currentClient = await Client.findOne({ slugname: storeSlug });
                     if (currentClient && currentClient.customSettings && 
                         currentClient.customSettings.rewards && 
-                        currentClient.customSettings.rewards[i] && 
-                        currentClient.customSettings.rewards[i].img) {
-                        imgUrl = currentClient.customSettings.rewards[i].img;
+                        currentClient.customSettings.rewards[j] && 
+                        currentClient.customSettings.rewards[j].img) {
+                        imgUrl = currentClient.customSettings.rewards[j].img;
                     }
                 } catch (err) {
                     console.log('無法獲取現有圖片:', err);
@@ -1433,8 +1455,8 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
 
             // 初始設定為未啟用，稍後會重新處理
             rewards.push({
-                name: name.trim(),
-                points: point,
+                name: validReward.name,
+                points: validReward.points,
                 img: imgUrl,
                 active: false
             });
