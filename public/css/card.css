@@ -6,6 +6,18 @@ body {
     min-height: 100vh;
 }
 
+/* 背景覆蓋層 - 用於特殊狀態 */
+body.has-overlay::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+}
+
 /* === 新版卡片主要區塊 === */
 .card-bg {
     width: 100%;
@@ -431,13 +443,18 @@ body {
 .claim-card-section,
 .login-prompt-section,
 .no-card-section {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     max-width: 480px;
-    margin: 0 auto;
+    width: 90%;
     background: #fff;
     border-radius: 16px;
     padding: 32px 24px;
     text-align: center;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    z-index: 100;
 }
 
 .claim-card-content,
@@ -932,7 +949,30 @@ body {
     .reward-name, .coupon-info {
         left: 50px;
         right: 60px;
+    }
+
+    /* 移動設備上的特殊狀態區塊 */
+    .claim-card-section,
+    .login-prompt-section,
+    .no-card-section {
+        max-width: 350px;
+        width: 95%;
+        padding: 24px 20px;
+        border-radius: 12px;
+    }
+
+    .claim-card-content h2,
+    .login-prompt-content h2,
+    .no-card-content h2 {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .claim-card-content p,
+    .login-prompt-content p,
+    .no-card-content p {
         font-size: 14px;
+        margin-bottom: 20px;
     }
     
     .reward-points, .coupon-use {
@@ -981,6 +1021,33 @@ body {
     
     .reward-row {
         padding-left: 46px; /* 圖片40px + 6px */
+    }
+
+    /* 超小螢幕的特殊狀態區塊 */
+    .claim-card-section,
+    .login-prompt-section,
+    .no-card-section {
+        max-width: 300px;
+        width: 90%;
+        padding: 20px 16px;
+    }
+
+    .claim-card-content h2,
+    .login-prompt-content h2,
+    .no-card-content h2 {
+        font-size: 18px;
+    }
+
+    .claim-card-content p,
+    .login-prompt-content p,
+    .no-card-content p {
+        font-size: 13px;
+    }
+
+    .claim-btn,
+    .login-btn {
+        padding: 10px 20px;
+        font-size: 14px;
     }
 }
 

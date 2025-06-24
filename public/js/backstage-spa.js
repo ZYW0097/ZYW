@@ -717,12 +717,12 @@ function setupMobileMenu() {
 function addReward() {
     const rewardsList = document.getElementById('rewards-list');
     const currentRewards = rewardsList.querySelectorAll('.backstage-reward-item');
-    const newIndex = currentRewards.length + 1;
+    const newIndex = currentRewards.length;
     
     const newRewardHTML = `
         <div class="backstage-reward-item">
             <div class="reward-item-header">
-                <h4>獎勵項目 ${newIndex}</h4>
+                <h4>獎勵項目 ${newIndex + 1}</h4>
                 <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeReward(this)">×</button>
             </div>
             <div class="backstage-form-row">
@@ -737,8 +737,15 @@ function addReward() {
             </div>
             <div class="backstage-form-row">
                 <div class="backstage-form-group">
-                    <label>獎勵描述</label>
-                    <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."></textarea>
+                    <label>獎勵圖片</label>
+                    <div class="backstage-file-upload-area" onclick="triggerFileUpload('${newIndex}')">
+                        <input type="file" name="rewardImage[]" id="rewardImage-${newIndex}" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '${newIndex}')">
+                        <div class="backstage-file-placeholder" id="placeholder-${newIndex}">
+                            <span class="backstage-file-icon">📷</span>
+                            <span class="backstage-file-text">點擊上傳獎勵圖片</span>
+                            <small>支援 PNG、JPG、JPEG 格式</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="backstage-form-group">
                     <label class="backstage-toggle-label">
@@ -829,46 +836,22 @@ async function submitRewards() {
     const form = document.getElementById('rewardsForm');
     const formData = new FormData(form);
     
-    const rewardNames = formData.getAll('rewardName[]');
-    const rewardPoints = formData.getAll('rewardPoints[]');
-    const rewardDescriptions = formData.getAll('rewardDescription[]');
-    const rewardActives = formData.getAll('rewardActive[]');
-    
-    const rewards = [];
-    for (let i = 0; i < rewardNames.length; i++) {
-        if (rewardNames[i].trim()) {
-            rewards.push({
-                name: rewardNames[i].trim(),
-                points: parseInt(rewardPoints[i]),
-                description: rewardDescriptions[i] ? rewardDescriptions[i].trim() : '',
-                active: rewardActives.includes('on') && rewardActives.indexOf('on') === i
-            });
-        }
-    }
-    
-    // 檢查checkbox狀態
-    const checkboxes = form.querySelectorAll('input[name="rewardActive[]"]');
-    checkboxes.forEach((checkbox, index) => {
-        if (rewards[index]) {
-            rewards[index].active = checkbox.checked;
-        }
-    });
-    
     try {
         showLoading();
         
         const response = await fetch(`/${storeSlug}/backstage/rewards`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ rewards })
+            body: formData // 直接發送FormData以支援圖片上傳
         });
         
         const result = await response.json();
         
         if (result.success) {
             showNotification('獎勵設定已更新');
+            // 重新載入頁面以顯示新的圖片
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
             showNotification(result.message || '更新失敗', 'error');
         }
@@ -878,6 +861,51 @@ async function submitRewards() {
     } finally {
         hideLoading();
     }
+}
+
+// 觸發文件上傳
+function triggerFileUpload(index) {
+    document.getElementById(`rewardImage-${index}`).click();
+}
+
+// 處理獎勵圖片上傳
+function handleRewardImageUpload(input, index) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // 檢查文件類型
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('請選擇 PNG、JPG 或 JPEG 格式的圖片', 'error');
+        input.value = '';
+        return;
+    }
+
+    // 檢查文件大小（限制為 5MB）
+    if (file.size > 5 * 1024 * 1024) {
+        showNotification('圖片大小不能超過 5MB', 'error');
+        input.value = '';
+        return;
+    }
+
+    // 顯示預覽
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const placeholder = document.getElementById(`placeholder-${index}`);
+        const existingPreview = document.getElementById(`preview-${index}`);
+        
+        if (existingPreview) {
+            existingPreview.src = e.target.result;
+        } else {
+            placeholder.innerHTML = `
+                <img src="${e.target.result}" alt="獎勵圖片" class="backstage-reward-preview" id="preview-${index}">
+                <div class="backstage-file-overlay">
+                    <span>📷 更換圖片</span>
+                </div>
+            `;
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 // 規則管理功能

@@ -380,7 +380,7 @@
                         <!-- 獎勵項目設定 -->
                         <div class="backstage-setting-card">
                             <h3>獎勵項目設定</h3>
-                            <form id="rewardsForm" class="backstage-form">
+                            <form id="rewardsForm" class="backstage-form" enctype="multipart/form-data">
                                 <div id="rewards-list" class="backstage-rewards-list">
                                     <% if (customSettings && customSettings.rewards && customSettings.rewards.length > 0) { %>
                                         <% customSettings.rewards.forEach((reward, index) => { %>
@@ -403,8 +403,22 @@
                                             </div>
                                             <div class="backstage-form-row">
                                                 <div class="backstage-form-group">
-                                                    <label>獎勵描述</label>
-                                                    <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."><%= reward.description || '' %></textarea>
+                                                    <label>獎勵圖片</label>
+                                                    <div class="backstage-file-upload-area" onclick="triggerFileUpload('<%= index %>')">
+                                                        <input type="file" name="rewardImage[]" id="rewardImage-<%= index %>" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '<%= index %>')">
+                                                        <% if (reward.img && reward.img !== '/images/coupon-default.svg') { %>
+                                                            <img src="<%= reward.img %>" alt="獎勵圖片" class="backstage-reward-preview" id="preview-<%= index %>">
+                                                            <div class="backstage-file-overlay">
+                                                                <span>📷 更換圖片</span>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div class="backstage-file-placeholder" id="placeholder-<%= index %>">
+                                                                <span class="backstage-file-icon">📷</span>
+                                                                <span class="backstage-file-text">點擊上傳獎勵圖片</span>
+                                                                <small>支援 PNG、JPG、JPEG 格式</small>
+                                                            </div>
+                                                        <% } %>
+                                                    </div>
                                                 </div>
                                                 <div class="backstage-form-group">
                                                     <label class="backstage-toggle-label">
@@ -433,8 +447,15 @@
                                         </div>
                                         <div class="backstage-form-row">
                                             <div class="backstage-form-group">
-                                                <label>獎勵描述</label>
-                                                <textarea name="rewardDescription[]" rows="2" placeholder="詳細描述這個獎勵..."></textarea>
+                                                <label>獎勵圖片</label>
+                                                <div class="backstage-file-upload-area" onclick="triggerFileUpload('0')">
+                                                    <input type="file" name="rewardImage[]" id="rewardImage-0" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '0')">
+                                                    <div class="backstage-file-placeholder" id="placeholder-0">
+                                                        <span class="backstage-file-icon">📷</span>
+                                                        <span class="backstage-file-text">點擊上傳獎勵圖片</span>
+                                                        <small>支援 PNG、JPG、JPEG 格式</small>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="backstage-form-group">
                                                 <label class="backstage-toggle-label">

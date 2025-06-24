@@ -308,7 +308,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                                     type: 'points_reward',
                                     name: parsedRewardNames[i],
                                     points: parsedRewardPoints[i],
-                                    img: rewardImages[i] || '/images/default-reward.jpg',
+                                    img: rewardImages[i] || '/images/coupon-default.svg',
                                     slug: slugname
                                 });
                             }
@@ -1373,36 +1373,79 @@ router.delete('/:storeSlug/backstage/qrcode/current', async (req, res) => {
 });
 
 // 獎勵設定 API
-router.post('/:storeSlug/backstage/rewards', async (req, res) => {
+router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage', 10), async (req, res) => {
     try {
         const { storeSlug } = req.params;
-        const { rewards } = req.body;
+        const rewardNames = req.body['rewardName[]'] || [];
+        const rewardPoints = req.body['rewardPoints[]'] || [];
+        const rewardActives = req.body['rewardActive[]'] || [];
+        const files = req.files || [];
 
+        // 確保所有輸入都是陣列
+        const names = Array.isArray(rewardNames) ? rewardNames : [rewardNames];
+        const points = Array.isArray(rewardPoints) ? rewardPoints : [rewardPoints];
+        
         // 驗證獎勵數據
-        if (!Array.isArray(rewards) || rewards.length === 0) {
+        if (names.length === 0) {
             return res.status(400).json({ 
                 success: false, 
                 message: '至少需要設定一個獎勵項目' 
             });
         }
 
-        // 驗證每個獎勵項目
-        for (let i = 0; i < rewards.length; i++) {
-            const reward = rewards[i];
+        const rewards = [];
+        for (let i = 0; i < names.length; i++) {
+            const name = names[i];
+            const point = parseInt(points[i]);
             
-            if (!reward.name || reward.name.trim().length === 0) {
+            if (!name || name.trim().length === 0) {
                 return res.status(400).json({ 
                     success: false, 
                     message: `獎勵項目 ${i + 1} 的名稱不能為空` 
                 });
             }
 
-            if (!reward.points || reward.points < 1 || reward.points > 100) {
+            if (!point || point < 1 || point > 100) {
                 return res.status(400).json({ 
                     success: false, 
                     message: `獎勵項目 ${i + 1} 的所需點數必須在1-100之間` 
                 });
             }
+
+            // 處理獎勵圖片
+            let imgUrl = '/images/coupon-default.svg'; // 預設圖片
+            if (files[i] && files[i].path) {
+                imgUrl = files[i].path; // Cloudinary URL
+            } else {
+                // 如果沒有新圖片，保持現有圖片
+                try {
+                    const currentClient = await Client.findOne({ slugname: storeSlug });
+                    if (currentClient && currentClient.customSettings && 
+                        currentClient.customSettings.rewards && 
+                        currentClient.customSettings.rewards[i] && 
+                        currentClient.customSettings.rewards[i].img) {
+                        imgUrl = currentClient.customSettings.rewards[i].img;
+                    }
+                } catch (err) {
+                    console.log('無法獲取現有圖片:', err);
+                }
+            }
+
+            rewards.push({
+                name: name.trim(),
+                points: point,
+                img: imgUrl,
+                active: rewardActives.includes('on') || 
+                        (Array.isArray(rewardActives) && rewardActives[i] === 'on') ||
+                        (typeof rewardActives === 'string' && rewardActives === 'on')
+            });
+        }
+
+        // 處理checkbox狀態（因為未選中的checkbox不會被發送）
+        if (Array.isArray(rewardActives)) {
+            rewards.forEach((reward, index) => {
+                reward.active = rewardActives.includes(`${index}`) || rewardActives.includes('on');
+            });
         }
 
         // 更新客戶設定

@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 檢查特殊狀態並添加背景覆蓋層
+    const specialSections = document.querySelectorAll('.no-card-section, .login-prompt-section, .claim-card-section');
+    if (specialSections.length > 0) {
+        document.body.classList.add('has-overlay');
+    }
+
     // 元素選擇
     const claimCardBtn = document.getElementById('claimCardBtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
