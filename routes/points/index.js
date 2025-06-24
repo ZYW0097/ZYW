@@ -233,16 +233,19 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
             return res.status(404).json({ error: '找不到用戶點數資料' });
         }
 
-        // 獲取獎勵資料
-        const cdb = getClientDb(storeSlug, 'CDB');
-        const Rewards = cdb.model('PointsRewards', pointsRewardsSchema);
-        const reward = await Rewards.findOne({ 
-            _id: rewardId,
-            type: 'points_reward'
-        });
-
-        if (!reward) {
-            return res.status(404).json({ error: '找不到獎勵資料' });
+        // 獲取獎勵資料 - 從Client模型的customSettings中獲取
+        const Client = require('../../models/Client');
+        const client = await Client.findOne({ slugname: storeSlug });
+        
+        if (!client || !client.customSettings || !client.customSettings.rewards) {
+            return res.status(404).json({ error: '找不到商家獎勵設定' });
+        }
+        
+        const rewardIndex = parseInt(rewardId);
+        const reward = client.customSettings.rewards[rewardIndex];
+        
+        if (!reward || !reward.active) {
+            return res.status(404).json({ error: '找不到獎勵資料或獎勵未啟用' });
         }
 
         // 檢查點數是否足夠
@@ -261,7 +264,7 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         
         // 查找是否已經有這個獎勵
         const existingCoupon = userPoints['ah-coupon-id'].find(c => 
-            c && c.rewardId && c.rewardId.equals(reward._id)
+            c && c.rewardId && c.rewardId.toString() === rewardIndex.toString()
         );
         
         if (existingCoupon) {
@@ -270,8 +273,10 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         } else {
             // 如果沒有，新增一個
             userPoints['ah-coupon-id'].push({ 
-                rewardId: reward._id, 
-                count: 1 
+                rewardId: rewardIndex, 
+                count: 1,
+                rewardName: reward.name,
+                rewardImg: reward.img
             });
         }
         

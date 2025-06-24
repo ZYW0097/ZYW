@@ -75,11 +75,11 @@
           </div>
           <div class="rewards-section">
             <div class="rewards-title">獎勵兌換</div>
-            <% (rewards || []).forEach(reward => { %>
+            <% (rewards || []).forEach((reward, index) => { %>
               <div class="reward-row">
                 <img class="reward-img" src="<%= reward.img %>" alt="<%= reward.name %>">
                 <div class="reward-name"><%= reward.name %></div>
-                <button class="reward-points redeem-btn" data-reward-id="<%= reward._id %>"><%= reward.points %>點</button>
+                <button class="reward-points redeem-btn" data-reward-id="<%= index %>"><%= reward.points %>點</button>
               </div>
             <% }) %>
           </div>
