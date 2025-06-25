@@ -277,7 +277,7 @@
                                         </div>
                                     </div>
                                     <div class="backstage-form-row">
-                                        <div class="backstage-form-group">
+                                        <div class="backstage-form-group full-width">
                                             <label for="maxTotalPeople">總人數上限</label>
                                             <input type="number" id="maxTotalPeople" name="maxTotalPeople" 
                                                    value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxTotalPeople) ? customSettings.bookingSettings.maxTotalPeople : '10' %>" 
@@ -806,6 +806,11 @@
 </div>
     </footer>
 
+    <script>
+        // 設定全域 storeSlug 變數
+        window.storeSlug = '<%= storeSlug %>';
+        console.log('🏪 設定 storeSlug:', window.storeSlug);
+    </script>
     <script src="/js/backstage-spa.js"></script>
 </body>
 </html>

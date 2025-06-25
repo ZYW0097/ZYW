@@ -585,6 +585,9 @@ async function submitBookingBasicSettings() {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
+        console.log('🌐 使用 storeSlug:', storeSlug);
+        
         const response = await fetch(`/${storeSlug}/api/booking-settings`, {
             method: 'PUT',
             headers: {
@@ -1220,7 +1223,7 @@ function handleRewardImageUpload(input, index) {
 // 載入集點卡統計數據
 async function loadPointsStats() {
     try {
-        const storeSlug = window.location.pathname.split('/')[1];
+        const storeSlug = getCurrentSlug();
         const response = await fetch(`/${storeSlug}/backstage/points-stats`);
         const result = await response.json();
         
@@ -1744,10 +1747,12 @@ function initializeBookingBasicSettings() {
 
 // 載入訂位設定數據
 async function loadBookingSettings() {
-    console.log('🔄 載入訂位設定數據...');
+    const storeSlug = getCurrentSlug();
+    console.log('🔄 載入訂位設定數據...', 'storeSlug:', storeSlug);
     
-    if (!storeSlug || storeSlug === 'undefined') {
+    if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
         console.error('❌ storeSlug 無效:', storeSlug);
+        showNotification('商家代碼無效，請重新載入頁面', 'error');
         return;
     }
     
@@ -1818,14 +1823,15 @@ async function loadTimeSlots() {
         return;
     }
     
-    console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
-    
-    // 檢查 storeSlug 是否有效
-    if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
-        console.error('❌ storeSlug 無效:', storeSlug);
-        gridContainer.innerHTML = '<div class="backstage-error"><p>店家代碼無效，請重新載入頁面</p><button onclick="window.location.reload()" class="backstage-btn backstage-btn-outline">重新載入</button></div>';
-        return;
-    }
+            const storeSlug = getCurrentSlug();
+        console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
+        
+        // 檢查 storeSlug 是否有效
+        if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
+            console.error('❌ storeSlug 無效:', storeSlug);
+            gridContainer.innerHTML = '<div class="backstage-error"><p>店家代碼無效，請重新載入頁面</p><button onclick="window.location.reload()" class="backstage-btn backstage-btn-outline">重新載入</button></div>';
+            return;
+        }
     
     gridContainer.dataset.loading = 'true';
     
@@ -2012,6 +2018,7 @@ async function addNewTimeSlot() {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
         const response = await fetch(`/${storeSlug}/api/timeslots/management`, {
             method: 'POST',
             headers: {
@@ -2080,6 +2087,7 @@ async function updateTimeSlot() {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
         const response = await fetch(`/${storeSlug}/api/timeslots/management/${slotId}`, {
             method: 'PUT',
             headers: {
@@ -2117,6 +2125,7 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
         const url = `/${storeSlug}/api/timeslots/management/${slotId}/toggle`;
         console.log(`請求URL: ${url}`);
         
@@ -2173,6 +2182,7 @@ async function deleteTimeSlot(slotId, time) {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
         const response = await fetch(`/${storeSlug}/api/timeslots/management/${slotId}`, {
             method: 'DELETE'
         });
@@ -2203,6 +2213,7 @@ async function toggleAllTimeSlots(available) {
     try {
         showLoading();
         
+        const storeSlug = getCurrentSlug();
         const response = await fetch(`/${storeSlug}/api/timeslots/management/toggle-all`, {
             method: 'PATCH',
             headers: {
@@ -2318,6 +2329,16 @@ function closeBookingsModal() {
 
 // 獲取當前商店 slug
 function getCurrentSlug() {
+    // 優先使用全域變數，其次從 meta 標籤，最後從 URL 路徑
+    if (window.storeSlug) {
+        return window.storeSlug;
+    }
+    
+    const metaStoreSlug = document.querySelector('meta[name="store-slug"]')?.getAttribute('content');
+    if (metaStoreSlug) {
+        return metaStoreSlug;
+    }
+    
     const path = window.location.pathname;
     const slugMatch = path.match(/^\/([^\/]+)/);
     return slugMatch ? slugMatch[1] : '';
