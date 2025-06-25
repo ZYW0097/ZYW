@@ -524,6 +524,69 @@ async function submitDiningRules() {
     }
 }
 
+// 提交訂位基本設定
+async function submitBookingBasicSettings() {
+    const form = document.getElementById('bookingBasicSettingsForm');
+    const formData = new FormData(form);
+    
+    const bookingSettings = {
+        maxAdults: parseInt(formData.get('maxAdults')),
+        maxChildren: parseInt(formData.get('maxChildren')),
+        maxTotalPeople: parseInt(formData.get('maxTotalPeople')),
+        enableFastFood: formData.get('enableFastFood') === 'on',
+        enableSpecialRequests: formData.get('enableSpecialRequests') === 'on'
+    };
+    
+    // 驗證數據
+    if (bookingSettings.maxAdults < 1 || bookingSettings.maxAdults > 20) {
+        showNotification('大人最多人數必須在1-20之間', 'error');
+        return;
+    }
+    
+    if (bookingSettings.maxChildren < 0 || bookingSettings.maxChildren > 20) {
+        showNotification('小孩最多人數必須在0-20之間', 'error');
+        return;
+    }
+    
+    if (bookingSettings.maxTotalPeople < 1 || bookingSettings.maxTotalPeople > 30) {
+        showNotification('總人數上限必須在1-30之間', 'error');
+        return;
+    }
+    
+    // 檢查總人數邏輯
+    if (bookingSettings.maxTotalPeople < bookingSettings.maxAdults) {
+        showNotification('總人數上限不能小於大人最多人數', 'error');
+        return;
+    }
+    
+    console.log('📝 提交訂位基本設定:', bookingSettings);
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/booking-settings`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ bookingSettings })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('訂位基本設定已更新！');
+        } else {
+            throw new Error(result.message || '更新失敗');
+        }
+    } catch (error) {
+        console.error('提交訂位基本設定失敗:', error);
+        showNotification(error.message || '更新訂位基本設定失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
 async function submitCardImage() {
     const form = document.getElementById('cardImageForm');
     const formData = new FormData(form);
@@ -1503,6 +1566,16 @@ function initializeTimeSlotManagement() {
         timeslotModalForm.addEventListener('submit', function(e) {
             e.preventDefault();
             updateTimeSlot();
+        });
+    }
+    
+    // 訂位基本設定表單
+    const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
+    console.log('⚙️ 訂位基本設定表單:', bookingBasicSettingsForm ? '✅ 找到' : '❌ 未找到');
+    if (bookingBasicSettingsForm) {
+        bookingBasicSettingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitBookingBasicSettings();
         });
     }
     

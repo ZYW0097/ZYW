@@ -283,6 +283,34 @@ textarea {
     color: #666;
 }
 
+/* 禁用選項樣式 */
+.disabled-group {
+    opacity: 0.7;
+}
+
+.disabled-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.unavailable-text {
+    font-size: 14px;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.disabled-option::before {
+    content: "🚫";
+    margin-right: 8px;
+    font-size: 16px;
+}
+
 /* 響應式設計 */
 @media (max-width: 1024px) {
     .page-container {

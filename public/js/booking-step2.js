@@ -1,12 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 從 sessionStorage 獲取所有選擇的資訊
     const bookingData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
+    const bookingSettings = JSON.parse(sessionStorage.getItem('bookingSettings') || '{}');
     const storeSlug = window.storeSlug || (window.location.pathname.split('/')[1]);
 
     if (!bookingData.date || !bookingData.time) {
         window.location.href = `/${storeSlug}/booking/step1`;
         return;
     }
+
+    // 根據商家設定處理特殊選項
+    handleSpecialOptions(bookingSettings);
 
     // 顯示選擇的日期和時間 (合併顯示)
     const dateTimeText = `${bookingData.date} ${bookingData.time}`;
@@ -44,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             phone: formEntries.phone,
             email: formEntries.email,
             vegetarian: formEntries.vegetarian,
+            fastFood: formEntries.fastFood || '否', // 新增速食選項
             special: formEntries.specialNeeds || '', // 映射 specialNeeds 到 special
             note: formEntries.notes || '', // 映射 notes 到 note
             guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數
@@ -74,3 +79,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// 根據商家設定處理特殊選項
+function handleSpecialOptions(bookingSettings) {
+    const fastFoodGroup = document.getElementById('fastFoodGroup');
+    const specialNeedsRow = document.getElementById('specialNeedsRow');
+    
+    // 處理速食服務選項
+    if (!bookingSettings.enableFastFood) {
+        // 如果商家未開啟速食服務，隱藏選項並顯示未開放提示
+        fastFoodGroup.innerHTML = `
+            <label for="fastFood">速食服務</label>
+            <div class="disabled-option">
+                <span class="unavailable-text">商家未開放此服務</span>
+                <input type="hidden" name="fastFood" value="否">
+            </div>
+        `;
+        fastFoodGroup.classList.add('disabled-group');
+    }
+    
+    // 處理特殊需求選項
+    if (!bookingSettings.enableSpecialRequests) {
+        // 如果商家未開啟特殊需求，隱藏選項並顯示未開放提示
+        specialNeedsRow.innerHTML = `
+            <div class="form-group full-width">
+                <label for="specialNeeds">特殊需求</label>
+                <div class="disabled-option">
+                    <span class="unavailable-text">商家未開放特殊需求填寫</span>
+                    <input type="hidden" name="specialNeeds" value="無">
+                </div>
+            </div>
+        `;
+        specialNeedsRow.classList.add('disabled-group');
+    }
+    
+    console.log('特殊選項設定完成:', {
+        fastFood: bookingSettings.enableFastFood ? '已開啟' : '未開啟',
+        specialRequests: bookingSettings.enableSpecialRequests ? '已開啟' : '未開啟'
+    });
+}

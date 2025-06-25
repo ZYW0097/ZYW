@@ -2602,6 +2602,146 @@ router.delete('/:slug/api/timeslots/management/:slotId', async (req, res) => {
     }
 });
 
+// ====== 訂位基本設定 API ======
+
+// 更新訂位基本設定
+router.put('/:slug/api/booking-settings', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { bookingSettings } = req.body;
+        
+        console.log(`更新訂位基本設定 - 商家: ${slug}`, bookingSettings);
+        
+        // 驗證必要欄位
+        if (!bookingSettings) {
+            return res.status(400).json({
+                success: false,
+                message: '缺少訂位設定資料'
+            });
+        }
+        
+        const { maxAdults, maxChildren, maxTotalPeople, enableFastFood, enableSpecialRequests } = bookingSettings;
+        
+        // 驗證數據
+        if (!maxAdults || maxAdults < 1 || maxAdults > 20) {
+            return res.status(400).json({
+                success: false,
+                message: '大人最多人數必須在1-20之間'
+            });
+        }
+        
+        if (maxChildren < 0 || maxChildren > 20) {
+            return res.status(400).json({
+                success: false,
+                message: '小孩最多人數必須在0-20之間'
+            });
+        }
+        
+        if (!maxTotalPeople || maxTotalPeople < 1 || maxTotalPeople > 30) {
+            return res.status(400).json({
+                success: false,
+                message: '總人數上限必須在1-30之間'
+            });
+        }
+        
+        if (maxTotalPeople < maxAdults) {
+            return res.status(400).json({
+                success: false,
+                message: '總人數上限不能小於大人最多人數'
+            });
+        }
+        
+        // 使用正確的資料庫連接
+        const db = getClientDb(slug, 'ADB');
+        const ClientSchema = require('../models/Client');
+        const Client = db.model('Client', ClientSchema);
+        
+        // 查找並更新客戶資料
+        const client = await Client.findOne({ slug });
+        if (!client) {
+            return res.status(404).json({
+                success: false,
+                message: '找不到商家資料'
+            });
+        }
+        
+        // 更新 customSettings 中的 bookingSettings
+        if (!client.customSettings) {
+            client.customSettings = {};
+        }
+        
+        client.customSettings.bookingSettings = {
+            maxAdults: parseInt(maxAdults),
+            maxChildren: parseInt(maxChildren),
+            maxTotalPeople: parseInt(maxTotalPeople),
+            enableFastFood: Boolean(enableFastFood),
+            enableSpecialRequests: Boolean(enableSpecialRequests),
+            updatedAt: new Date()
+        };
+        
+        await client.save();
+        
+        console.log(`✅ 訂位基本設定更新成功 - 商家: ${slug}`);
+        
+        res.json({
+            success: true,
+            message: '訂位基本設定更新成功',
+            bookingSettings: client.customSettings.bookingSettings
+        });
+        
+    } catch (error) {
+        console.error('更新訂位基本設定失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '更新訂位基本設定失敗'
+        });
+    }
+});
+
+// 獲取訂位基本設定
+router.get('/:slug/api/booking-settings', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        
+        // 使用正確的資料庫連接
+        const db = getClientDb(slug, 'ADB');
+        const ClientSchema = require('../models/Client');
+        const Client = db.model('Client', ClientSchema);
+        
+        // 查找客戶資料
+        const client = await Client.findOne({ slug });
+        if (!client) {
+            return res.status(404).json({
+                success: false,
+                message: '找不到商家資料'
+            });
+        }
+        
+        // 返回訂位設定，如果沒有設定就使用預設值
+        const defaultSettings = {
+            maxAdults: 6,
+            maxChildren: 6,
+            maxTotalPeople: 10,
+            enableFastFood: false,
+            enableSpecialRequests: false
+        };
+        
+        const bookingSettings = client.customSettings?.bookingSettings || defaultSettings;
+        
+        res.json({
+            success: true,
+            bookingSettings: bookingSettings
+        });
+        
+    } catch (error) {
+        console.error('獲取訂位基本設定失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '獲取訂位基本設定失敗'
+        });
+    }
+});
+
 // 查看特定日期時段的訂位
 router.get('/:slug/api/bookings/:date/:time', async (req, res) => {
     try {

@@ -251,6 +251,73 @@
                             </form>
                         </div>
 
+                        <!-- 訂位基本設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>訂位基本設定</h3>
+                            <p class="backstage-card-desc">設定訂位的人數限制和餐廳特色選項</p>
+                            
+                            <form id="bookingBasicSettingsForm" class="backstage-form">
+                                <!-- 人數限制設定 -->
+                                <div class="backstage-form-section">
+                                    <h4>人數限制設定</h4>
+                                    <div class="backstage-form-row">
+                                        <div class="backstage-form-group">
+                                            <label for="maxAdults">大人最多人數</label>
+                                            <input type="number" id="maxAdults" name="maxAdults" 
+                                                   value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxAdults) ? customSettings.bookingSettings.maxAdults : '6' %>" 
+                                                   min="1" max="20" required>
+                                            <small>單次訂位大人的最多人數（1-20人）</small>
+                                        </div>
+                                        <div class="backstage-form-group">
+                                            <label for="maxChildren">小孩最多人數</label>
+                                            <input type="number" id="maxChildren" name="maxChildren" 
+                                                   value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxChildren) ? customSettings.bookingSettings.maxChildren : '6' %>" 
+                                                   min="0" max="20" required>
+                                            <small>單次訂位小孩的最多人數（0-20人）</small>
+                                        </div>
+                                    </div>
+                                    <div class="backstage-form-row">
+                                        <div class="backstage-form-group">
+                                            <label for="maxTotalPeople">總人數上限</label>
+                                            <input type="number" id="maxTotalPeople" name="maxTotalPeople" 
+                                                   value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxTotalPeople) ? customSettings.bookingSettings.maxTotalPeople : '10' %>" 
+                                                   min="1" max="30" required>
+                                            <small>單次訂位的總人數上限（大人+小孩，1-30人）</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 餐廳特色選項設定 -->
+                                <div class="backstage-form-section">
+                                    <h4>餐廳特色選項</h4>
+                                    <div class="backstage-form-row">
+                                        <div class="backstage-form-group">
+                                            <label class="backstage-toggle-label">
+                                                <input type="checkbox" id="enableFastFood" name="enableFastFood" 
+                                                       <%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.enableFastFood) ? 'checked' : '' %>>
+                                                <span class="backstage-toggle-slider"></span>
+                                                <span class="backstage-toggle-text">提供速食服務</span>
+                                            </label>
+                                            <small>開啟此選項讓顧客可選擇速食需求</small>
+                                        </div>
+                                        <div class="backstage-form-group">
+                                            <label class="backstage-toggle-label">
+                                                <input type="checkbox" id="enableSpecialRequests" name="enableSpecialRequests" 
+                                                       <%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.enableSpecialRequests) ? 'checked' : '' %>>
+                                                <span class="backstage-toggle-slider"></span>
+                                                <span class="backstage-toggle-text">接受特殊需求</span>
+                                            </label>
+                                            <small>開啟此選項讓顧客可填寫特殊需求（如素食、過敏等）</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="backstage-form-actions">
+                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存基本設定</button>
+                                </div>
+                            </form>
+                        </div>
+
                         <!-- 訂位時段設定 -->
                         <div class="backstage-setting-card">
                             <h3>訂位時段管理</h3>

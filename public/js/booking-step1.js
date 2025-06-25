@@ -15,6 +15,7 @@ let selectedDate = null;
 let selectedTime = null;
 let customTimeSlots = []; // 存儲自訂時段
 let isLoadingTimeSlots = false; // 載入狀態標記，防止重複載入
+let bookingSettings = null; // 存儲商家的訂位設定
 
 // 生成日曆
 function generateCalendar() {
@@ -266,15 +267,20 @@ function checkNextButton() {
     nextButton.disabled = !(selectedDate && selectedTime && adultsSelect.value);
 }
 
-// 更新兒童人數選項
+// 更新兒童人數選項（根據商家設定和總人數限制）
 function updateChildrenOptions() {
-    const maxChildren = Math.min(6, parseInt(adultsSelect.value) * 2);
+    if (!bookingSettings) return;
+    
+    const adults = parseInt(adultsSelect.value);
+    const maxChildrenByTotal = bookingSettings.maxTotalPeople - adults;
+    const maxChildren = Math.min(bookingSettings.maxChildren, maxChildrenByTotal);
+    
     childrenSelect.innerHTML = '';
     
-    for (let i = 0; i <= maxChildren; i++) {
+    for (let i = 0; i <= Math.max(0, maxChildren); i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = i;
+        option.textContent = `${i}位`;
         childrenSelect.appendChild(option);
     }
     
@@ -294,11 +300,27 @@ nextMonthBtn.addEventListener('click', () => {
 
 adultsSelect.addEventListener('change', () => {
     updateChildrenOptions();
+    validatePeopleCount();
+    checkNextButton();
+});
+
+childrenSelect.addEventListener('change', () => {
+    validatePeopleCount();
     checkNextButton();
 });
 
 nextButton.addEventListener('click', () => {
     if (!selectedDate || !selectedTime || !adultsSelect.value) return;
+    
+    const adults = parseInt(adultsSelect.value);
+    const children = parseInt(childrenSelect.value);
+    const totalPeople = adults + children;
+    
+    // 檢查總人數上限
+    if (totalPeople > bookingSettings.maxTotalPeople) {
+        alert(`很抱歉，單次訂位最多${bookingSettings.maxTotalPeople}位客人`);
+        return;
+    }
     
     // 修正：使用本地時區格式化日期，避免時區轉換問題
     const year = selectedDate.getFullYear();
@@ -306,23 +328,99 @@ nextButton.addEventListener('click', () => {
     const day = String(selectedDate.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     
-    // 將數據存儲在 sessionStorage 中
+    // 將數據存儲在 sessionStorage 中，包含商家設定
     sessionStorage.setItem('bookingData', JSON.stringify({
         date: formattedDate,
         time: selectedTime,
-        adults: parseInt(adultsSelect.value),
-        children: parseInt(childrenSelect.value)
+        adults: adults,
+        children: children
     }));
+    
+    sessionStorage.setItem('bookingSettings', JSON.stringify(bookingSettings));
     
     // 跳轉到第二步
     window.location.href = `/${storeSlug}/booking/step2`;
 });
 
+// 載入商家的訂位設定
+async function loadBookingSettings() {
+    try {
+        const response = await fetch(`/${storeSlug}/api/booking-settings`);
+        const data = await response.json();
+        
+        if (data.success) {
+            bookingSettings = data.bookingSettings;
+            console.log('商家訂位設定載入成功:', bookingSettings);
+            
+            // 根據設定生成人數選擇器
+            generatePeopleSelectors();
+        } else {
+            console.error('載入商家訂位設定失敗:', data.message);
+            // 使用預設設定
+            useDefaultBookingSettings();
+        }
+    } catch (error) {
+        console.error('載入商家訂位設定發生錯誤:', error);
+        // 使用預設設定
+        useDefaultBookingSettings();
+    }
+}
+
+// 使用預設訂位設定
+function useDefaultBookingSettings() {
+    bookingSettings = {
+        maxAdults: 6,
+        maxChildren: 6,
+        maxTotalPeople: 10,
+        enableFastFood: false,
+        enableSpecialRequests: false
+    };
+    generatePeopleSelectors();
+}
+
+// 根據商家設定生成人數選擇器
+function generatePeopleSelectors() {
+    // 生成大人選項
+    adultsSelect.innerHTML = '';
+    for (let i = 1; i <= bookingSettings.maxAdults; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i}位`;
+        adultsSelect.appendChild(option);
+    }
+    
+    // 生成小孩選項（初始為0）
+    childrenSelect.innerHTML = '';
+    for (let i = 0; i <= bookingSettings.maxChildren; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i}位`;
+        childrenSelect.appendChild(option);
+    }
+    
+    console.log(`人數選擇器已更新 - 大人最多${bookingSettings.maxAdults}位，小孩最多${bookingSettings.maxChildren}位，總人數上限${bookingSettings.maxTotalPeople}位`);
+}
+
+// 驗證人數是否超過限制
+function validatePeopleCount() {
+    const adults = parseInt(adultsSelect.value);
+    const children = parseInt(childrenSelect.value);
+    const totalPeople = adults + children;
+    
+    if (totalPeople > bookingSettings.maxTotalPeople) {
+        // 如果總人數超過限制，自動調整小孩人數
+        const maxChildren = bookingSettings.maxTotalPeople - adults;
+        if (maxChildren >= 0) {
+            childrenSelect.value = Math.min(maxChildren, bookingSettings.maxChildren);
+        }
+    }
+}
+
 // 初始化
 async function init() {
+    await loadBookingSettings(); // 先載入商家設定
     await loadCustomTimeSlots();
     generateCalendar();
-    updateChildrenOptions();
     checkNextButton();
 }
 
