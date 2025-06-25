@@ -1691,30 +1691,198 @@ router.post('/:storeSlug/backstage/rules', async (req, res) => {
     }
 });
 
-// API獲取可用時段列表 (用於訂位頁面)
+// API獲取時段列表 - 現在支援兩種模式
 router.get('/:storeSlug/api/timeSlots', async (req, res) => {
     try {
         const { storeSlug } = req.params;
+        const isManagement = req.query.management === 'true' || req.headers['x-management'] === 'true';
+        
+        console.log(`🔍 時段 API 被調用 - Slug: ${storeSlug}, 管理模式: ${isManagement}`);
         
         const bookingDB = getClientDb(storeSlug, 'BDB');
-        const timeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
-        const rawTimeSlots = await TimeSettings.find({ available: true }).sort({ time: 1 });
-        
-        // 按時間排序時段
-        const sortedTimeSlots = rawTimeSlots.sort((a, b) => {
-            const getTimeValue = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
+        if (isManagement) {
+            // 管理模式：返回今天和明天的完整時段狀況
+            const ReservationSchema = require('../models/Reservation');
+            const Reservation = bookingDB.model('Reservation', ReservationSchema);
+            
+            let timeSlots = await TimeSettings.find().sort({ time: 1 });
+            console.log(`📊 找到 ${timeSlots.length} 個時段設定`);
+            
+            // 如果沒有時段，創建一些預設時段
+            if (timeSlots.length === 0) {
+                console.log(`為商家 ${storeSlug} 創建預設時段`);
+                const defaultSlots = [
+                    { time: '11:30', maxBookings: 10, available: true },
+                    { time: '12:00', maxBookings: 10, available: true },
+                    { time: '12:30', maxBookings: 10, available: true },
+                    { time: '18:00', maxBookings: 10, available: true },
+                    { time: '18:30', maxBookings: 10, available: true },
+                    { time: '19:00', maxBookings: 10, available: true }
+                ];
+                
+                await TimeSettings.insertMany(defaultSlots);
+                timeSlots = await TimeSettings.find().sort({ time: 1 });
+                console.log(`✅ 創建完成，現在有 ${timeSlots.length} 個時段`);
+            }
+            
+            // 獲取今天和明天的日期 (GMT+8 台灣時間)
+            const now = new Date();
+            const taiwanTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // GMT+8
+            
+            const today = new Date(taiwanTime.getFullYear(), taiwanTime.getMonth(), taiwanTime.getDate());
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const formatDate = (date) => {
+                return date.getFullYear() + '-' + 
+                       String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(date.getDate()).padStart(2, '0');
             };
-            return getTimeValue(a.time) - getTimeValue(b.time);
-        });
-        
-        res.json({ timeSlots: sortedTimeSlots });
+            
+            const formatDateLabel = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            
+            const todayStr = formatDate(today);
+            const tomorrowStr = formatDate(tomorrow);
+            
+            console.log(`🕐 台灣時間 - 今天: ${todayStr}, 明天: ${tomorrowStr}`);
+            
+            // 獲取今天和明天所有已確認的訂位
+            const reservations = await Reservation.find({
+                date: { $in: [todayStr, tomorrowStr] },
+                status: { $in: ['confirmed', 'pending'] }
+            });
+            
+            // 統計每個日期+時段的訂位數量
+            const bookingCounts = {};
+            reservations.forEach(reservation => {
+                const key = `${reservation.date}_${reservation.time}`;
+                bookingCounts[key] = (bookingCounts[key] || 0) + 1;
+            });
+            
+            // 為每個時段準備今天和明天的數據
+            const timeSlotsWithBookings = [];
+            
+            timeSlots.forEach(slot => {
+                // 今天的時段
+                const todayKey = `${todayStr}_${slot.time}`;
+                const todayBookings = bookingCounts[todayKey] || 0;
+                const todayAvailable = slot.available && todayBookings < slot.maxBookings;
+                
+                // 決定今天時段的狀態
+                let todayStatus = 'available';
+                let todayStatusText = '開放中';
+                if (!slot.available) {
+                    todayStatus = 'closed';
+                    todayStatusText = '已關閉';
+                } else if (todayBookings >= slot.maxBookings) {
+                    todayStatus = 'full';
+                    todayStatusText = '已滿';
+                }
+                
+                timeSlotsWithBookings.push({
+                    _id: slot._id,
+                    time: slot.time,
+                    maxBookings: slot.maxBookings,
+                    available: slot.available,
+                    date: todayStr,
+                    dateLabel: `今天 (${formatDateLabel(today)})`,
+                    currentBookings: todayBookings,
+                    isFullyBooked: todayBookings >= slot.maxBookings,
+                    canAcceptBooking: todayAvailable,
+                    dayType: 'today',
+                    status: todayStatus,
+                    statusText: todayStatusText
+                });
+                
+                // 明天的時段
+                const tomorrowKey = `${tomorrowStr}_${slot.time}`;
+                const tomorrowBookings = bookingCounts[tomorrowKey] || 0;
+                const tomorrowAvailable = slot.available && tomorrowBookings < slot.maxBookings;
+                
+                // 決定明天時段的狀態
+                let tomorrowStatus = 'available';
+                let tomorrowStatusText = '開放中';
+                if (!slot.available) {
+                    tomorrowStatus = 'closed';
+                    tomorrowStatusText = '已關閉';
+                } else if (tomorrowBookings >= slot.maxBookings) {
+                    tomorrowStatus = 'full';
+                    tomorrowStatusText = '已滿';
+                }
+                
+                timeSlotsWithBookings.push({
+                    _id: slot._id,
+                    time: slot.time,
+                    maxBookings: slot.maxBookings,
+                    available: slot.available,
+                    date: tomorrowStr,
+                    dateLabel: `明天 (${formatDateLabel(tomorrow)})`,
+                    currentBookings: tomorrowBookings,
+                    isFullyBooked: tomorrowBookings >= slot.maxBookings,
+                    canAcceptBooking: tomorrowAvailable,
+                    dayType: 'tomorrow',
+                    status: tomorrowStatus,
+                    statusText: tomorrowStatusText
+                });
+            });
+            
+            // 按日期和時間排序
+            timeSlotsWithBookings.sort((a, b) => {
+                if (a.date !== b.date) {
+                    return a.date.localeCompare(b.date);
+                }
+                // 時間排序：將時間字串轉換為分鐘進行比較
+                const getTimeInMinutes = (timeStr) => {
+                    const [hours, minutes] = timeStr.split(':').map(Number);
+                    return hours * 60 + minutes;
+                };
+                return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
+            });
+            
+            console.log(`📤 準備回傳 ${timeSlotsWithBookings.length} 個時段數據`);
+            console.log('🔍 回傳的數據範例:', timeSlotsWithBookings.slice(0, 2));
+            
+            const responseData = {
+                success: true,
+                timeSlots: timeSlotsWithBookings,
+                dates: {
+                    today: todayStr,
+                    tomorrow: tomorrowStr
+                }
+            };
+            
+            res.json(responseData);
+        } else {
+            // 訂位模式：只返回可用時段列表
+            const rawTimeSlots = await TimeSettings.find({ available: true }).sort({ time: 1 });
+            
+            // 按時間排序時段
+            const sortedTimeSlots = rawTimeSlots.sort((a, b) => {
+                const getTimeValue = (timeStr) => {
+                    const [hours, minutes] = timeStr.split(':').map(Number);
+                    return hours * 60 + minutes;
+                };
+                return getTimeValue(a.time) - getTimeValue(b.time);
+            });
+            
+            res.json({ timeSlots: sortedTimeSlots });
+        }
     } catch (error) {
-        console.error('Error getting available time slots:', error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('❌ 獲取時段失敗:', error);
+        console.error('❌ 錯誤詳情:', error.stack);
+        res.status(500).json({
+            success: false,
+            message: '獲取時段設定失敗',
+            error: error.message
+        });
     }
 });
 

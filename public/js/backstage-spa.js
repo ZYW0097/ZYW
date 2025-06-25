@@ -1542,10 +1542,14 @@ async function loadTimeSlots() {
     try {
         gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
         
-        const url = `/${storeSlug}/api/timeslots/management`;
+        const url = `/${storeSlug}/api/timeSlots?management=true`;
         console.log('📡 請求 URL:', url);
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: {
+                'X-Management': 'true'
+            }
+        });
         console.log('📊 響應狀態:', response.status, response.statusText);
         
         if (!response.ok) {
