@@ -1723,6 +1723,72 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
     }
 });
 
+// API獲取特定日期的時段容量資訊
+router.get('/:storeSlug/api/timeSlots/:date', async (req, res) => {
+    try {
+        const { storeSlug, date } = req.params;
+        
+        const bookingDB = getClientDb(storeSlug, 'BDB');
+        const timeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
+        const reservationSchema = require('../models/Reservation');
+        const Reservation = bookingDB.model('Reservation', reservationSchema);
+        
+        // 獲取所有開放的時段
+        const timeSlots = await TimeSettings.find({ available: true }).sort({ createdAt: 1 });
+        
+        // 獲取該日期的所有訂位
+        const bookings = await Reservation.find({
+            date: date,
+            status: { $in: ['confirmed', 'pending'] }
+        });
+        
+        // 統計每個時段的訂位數量
+        const bookingCounts = {};
+        bookings.forEach(booking => {
+            const time = booking.time;
+            bookingCounts[time] = (bookingCounts[time] || 0) + 1;
+        });
+        
+        // 為每個時段添加容量資訊
+        const timeSlotsWithCapacity = timeSlots.map(slot => {
+            const currentBookings = bookingCounts[slot.time] || 0;
+            const isAvailable = currentBookings < slot.maxBookings;
+            
+            return {
+                time: slot.time,
+                maxBookings: slot.maxBookings,
+                currentBookings: currentBookings,
+                isAvailable: isAvailable,
+                remainingSlots: Math.max(0, slot.maxBookings - currentBookings)
+            };
+        });
+        
+        // 按時間排序
+        const sortedTimeSlots = timeSlotsWithCapacity.sort((a, b) => {
+            const getTimeValue = (timeStr) => {
+                const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
+                if (match) {
+                    const hours = parseInt(match[1]);
+                    const minutes = parseInt(match[2]);
+                    return hours * 60 + minutes;
+                }
+                return 0;
+            };
+            return getTimeValue(a.time) - getTimeValue(b.time);
+        });
+        
+        res.json({ 
+            success: true,
+            date: date,
+            timeSlots: sortedTimeSlots 
+        });
+    } catch (error) {
+        console.error('Error getting time slots capacity:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // 臨時端點：清理錯誤的時段數據
 router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
     try {
@@ -1950,7 +2016,7 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
 
 // ====== 時段管理 API ======
 
-// 獲取所有時段
+// 獲取今天和明天的時段狀況
 router.get('/:slug/api/timeslots', async (req, res) => {
     try {
         const { slug } = req.params;
@@ -1959,6 +2025,8 @@ router.get('/:slug/api/timeslots', async (req, res) => {
         const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
+        const ReservationSchema = require('../models/Reservation');
+        const Reservation = bookingDB.model('Reservation', ReservationSchema);
         
         let timeSlots = await TimeSettings.find().sort({ time: 1 });
         
@@ -1978,9 +2046,115 @@ router.get('/:slug/api/timeslots', async (req, res) => {
             timeSlots = await TimeSettings.find().sort({ time: 1 });
         }
         
+        // 獲取今天和明天的日期
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const formatDate = (date) => {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        };
+        
+        const todayStr = formatDate(today);
+        const tomorrowStr = formatDate(tomorrow);
+        
+        // 獲取今天和明天所有已確認的訂位
+        const reservations = await Reservation.find({
+            date: { $in: [todayStr, tomorrowStr] },
+            status: { $in: ['confirmed', 'pending'] }
+        });
+        
+        // 統計每個日期+時段的訂位數量
+        const bookingCounts = {};
+        reservations.forEach(reservation => {
+            const key = `${reservation.date}_${reservation.time}`;
+            bookingCounts[key] = (bookingCounts[key] || 0) + 1;
+        });
+        
+        // 為每個時段準備今天和明天的數據
+        const timeSlotsWithBookings = [];
+        
+        timeSlots.forEach(slot => {
+            // 今天的時段
+            const todayKey = `${todayStr}_${slot.time}`;
+            const todayBookings = bookingCounts[todayKey] || 0;
+            const todayAvailable = slot.available && todayBookings < slot.maxBookings;
+            
+            // 決定今天時段的狀態
+            let todayStatus = 'available';
+            let todayStatusText = '開放中';
+            if (!slot.available) {
+                todayStatus = 'closed';
+                todayStatusText = '已關閉';
+            } else if (todayBookings >= slot.maxBookings) {
+                todayStatus = 'full';
+                todayStatusText = '已滿';
+            }
+            
+            timeSlotsWithBookings.push({
+                _id: slot._id,
+                time: slot.time,
+                maxBookings: slot.maxBookings,
+                available: slot.available,
+                date: todayStr,
+                dateLabel: '今天',
+                currentBookings: todayBookings,
+                isFullyBooked: todayBookings >= slot.maxBookings,
+                canAcceptBooking: todayAvailable,
+                dayType: 'today',
+                status: todayStatus,
+                statusText: todayStatusText
+            });
+            
+            // 明天的時段
+            const tomorrowKey = `${tomorrowStr}_${slot.time}`;
+            const tomorrowBookings = bookingCounts[tomorrowKey] || 0;
+            const tomorrowAvailable = slot.available && tomorrowBookings < slot.maxBookings;
+            
+            // 決定明天時段的狀態
+            let tomorrowStatus = 'available';
+            let tomorrowStatusText = '開放中';
+            if (!slot.available) {
+                tomorrowStatus = 'closed';
+                tomorrowStatusText = '已關閉';
+            } else if (tomorrowBookings >= slot.maxBookings) {
+                tomorrowStatus = 'full';
+                tomorrowStatusText = '已滿';
+            }
+            
+            timeSlotsWithBookings.push({
+                _id: slot._id,
+                time: slot.time,
+                maxBookings: slot.maxBookings,
+                available: slot.available,
+                date: tomorrowStr,
+                dateLabel: '明天',
+                currentBookings: tomorrowBookings,
+                isFullyBooked: tomorrowBookings >= slot.maxBookings,
+                canAcceptBooking: tomorrowAvailable,
+                dayType: 'tomorrow',
+                status: tomorrowStatus,
+                statusText: tomorrowStatusText
+            });
+        });
+        
+        // 按日期和時間排序
+        timeSlotsWithBookings.sort((a, b) => {
+            if (a.date !== b.date) {
+                return a.date.localeCompare(b.date);
+            }
+            return a.time.localeCompare(b.time);
+        });
+        
         res.json({
             success: true,
-            timeSlots: timeSlots
+            timeSlots: timeSlotsWithBookings,
+            dates: {
+                today: todayStr,
+                tomorrow: tomorrowStr
+            }
         });
     } catch (error) {
         console.error('獲取時段失敗:', error);
@@ -2229,6 +2403,41 @@ router.delete('/:slug/api/timeslots/:slotId', async (req, res) => {
         res.status(500).json({
             success: false,
             message: '刪除時段失敗'
+        });
+    }
+});
+
+// 查看特定日期時段的訂位
+router.get('/:slug/api/bookings/:date/:time', async (req, res) => {
+    try {
+        const { slug, date, time } = req.params;
+        
+        console.log(`查看訂位 - 商家: ${slug}, 日期: ${date}, 時間: ${time}`);
+        
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
+        const ReservationSchema = require('../models/Reservation');
+        const Reservation = bookingDB.model('Reservation', ReservationSchema);
+        
+        // 查找該日期和時間的所有訂位
+        const bookings = await Reservation.find({
+            date: date,
+            time: time,
+            status: { $in: ['confirmed', 'pending'] }
+        }).sort({ createdAt: -1 });
+        
+        console.log(`找到 ${bookings.length} 筆訂位記錄`);
+        
+        res.json({
+            success: true,
+            bookings: bookings,
+            count: bookings.length
+        });
+    } catch (error) {
+        console.error('查看訂位失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '查看訂位失敗'
         });
     }
 });

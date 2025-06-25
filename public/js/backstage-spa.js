@@ -1541,39 +1541,87 @@ function displayTimeSlots(timeSlots) {
         return;
     }
     
-    const timeSlotsHTML = timeSlots.map(slot => {
-        const status = slot.available ? 'active' : 'inactive';
-        const statusText = slot.available ? '開放中' : '已關閉';
-        const statusIcon = slot.available ? '✅' : '⚠️';
-        const toggleText = slot.available ? '關閉' : '開啟';
-        const toggleClass = slot.available ? 'close' : '';
+    // 按日期分組
+    const groupedSlots = {};
+    timeSlots.forEach(slot => {
+        if (!groupedSlots[slot.dateLabel]) {
+            groupedSlots[slot.dateLabel] = [];
+        }
+        groupedSlots[slot.dateLabel].push(slot);
+    });
+    
+    let timeSlotsHTML = '';
+    
+    // 為每個日期組生成HTML
+    Object.keys(groupedSlots).forEach(dateLabel => {
+        timeSlotsHTML += `
+            <div class="timeslot-date-section">
+                <h4 class="timeslot-date-header">${dateLabel} (${groupedSlots[dateLabel][0].date})</h4>
+                <div class="timeslot-date-grid">
+        `;
         
-        return `
-            <div class="backstage-timeslot-card ${slot.available ? '' : 'disabled'}" data-slot-id="${slot._id}">
-                <div class="timeslot-header">
-                    <div class="timeslot-time">${slot.time}</div>
-                    <div class="timeslot-status ${status}">
-                        ${statusIcon} ${statusText}
+        groupedSlots[dateLabel].forEach(slot => {
+            // 使用後端提供的狀態資訊
+            const status = slot.status;
+            const statusText = slot.statusText;
+            
+            // 決定樣式和圖示
+            let statusIcon, cardClass;
+            
+            if (status === 'closed') {
+                statusIcon = '🚫';
+                cardClass = 'disabled';
+            } else if (status === 'full') {
+                statusIcon = '🈵';
+                cardClass = 'fully-booked';
+            } else {
+                statusIcon = '✅';
+                cardClass = '';
+            }
+            
+            const bookingPercentage = slot.maxBookings > 0 ? 
+                Math.round((slot.currentBookings / slot.maxBookings) * 100) : 0;
+            
+            timeSlotsHTML += `
+                <div class="backstage-timeslot-card ${cardClass}" data-slot-id="${slot._id}" data-date="${slot.date}">
+                    <div class="timeslot-header">
+                        <div class="timeslot-time">${slot.time}</div>
+                        <div class="timeslot-status ${status}">
+                            ${statusIcon} ${statusText}
+                        </div>
+                    </div>
+                    <div class="timeslot-info">
+                        <p><strong>組數限制:</strong> ${slot.maxBookings} 組</p>
+                        <p><strong>已訂組數:</strong> ${slot.currentBookings} 組</p>
+                        <p><strong>使用率:</strong> ${bookingPercentage}%</p>
+                        <div class="booking-progress">
+                            <div class="booking-progress-bar" style="width: ${bookingPercentage}%"></div>
+                        </div>
+                    </div>
+                    <div class="timeslot-actions">
+                        <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
+                            編輯
+                        </button>
+                        ${slot.dayType === 'today' ? `
+                            <button class="timeslot-btn timeslot-btn-toggle ${slot.available ? 'close' : ''}" 
+                                    onclick="toggleTimeSlot('${slot._id}', ${!slot.available})"
+                                    ${status === 'full' && slot.available ? 'title="時段已滿，但仍可關閉"' : ''}>
+                                ${slot.available ? '關閉' : '開啟'}
+                            </button>
+                        ` : ''}
+                        <button class="timeslot-btn timeslot-btn-view" onclick="viewTimeSlotBookings('${slot.date}', '${slot.time}')">
+                            查看訂位 ${slot.currentBookings > 0 ? `(${slot.currentBookings})` : ''}
+                        </button>
                     </div>
                 </div>
-                <div class="timeslot-info">
-                    <p><strong>最多訂位:</strong> ${slot.maxBookings} 組</p>
-                    <p><strong>當前狀態:</strong> ${statusText}</p>
-                </div>
-                <div class="timeslot-actions">
-                    <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
-                        編輯
-                    </button>
-                    <button class="timeslot-btn timeslot-btn-toggle ${toggleClass}" onclick="toggleTimeSlot('${slot._id}', ${!slot.available})">
-                        ${toggleText}
-                    </button>
-                    <button class="timeslot-btn timeslot-btn-delete" onclick="deleteTimeSlot('${slot._id}', '${slot.time}')">
-                        刪除
-                    </button>
+            `;
+        });
+        
+        timeSlotsHTML += `
                 </div>
             </div>
         `;
-    }).join('');
+    });
     
     gridContainer.innerHTML = timeSlotsHTML;
 }
@@ -1813,4 +1861,92 @@ document.addEventListener('click', function(e) {
     if (modal && e.target === modal) {
         closeTimeslotModal();
     }
-}); 
+});
+
+// 查看特定日期時段的訂位資訊
+async function viewTimeSlotBookings(date, time) {
+    try {
+        const slug = getCurrentSlug();
+        const response = await fetch(`/${slug}/api/bookings/${date}/${time}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            showBookingsModal(date, time, data.bookings);
+        } else {
+            alert('獲取訂位資訊失敗: ' + (data.message || '未知錯誤'));
+        }
+    } catch (error) {
+        console.error('查看訂位失敗:', error);
+        alert('查看訂位失敗，請稍後再試');
+    }
+}
+
+// 顯示訂位詳情彈窗
+function showBookingsModal(date, time, bookings) {
+    // 移除舊的彈窗
+    const existingModal = document.getElementById('bookings-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const totalGuests = bookings.reduce((sum, booking) => {
+        return sum + (booking.adults || 0) + (booking.children || 0);
+    }, 0);
+    
+    const bookingsHTML = bookings.length > 0 ? 
+        bookings.map(booking => `
+            <div class="booking-item">
+                <div class="booking-header">
+                    <strong>${booking.name} (${booking.gender})</strong>
+                    <span class="booking-status status-${booking.status}">${booking.status === 'confirmed' ? '已確認' : '待確認'}</span>
+                </div>
+                <div class="booking-details">
+                    <p><strong>聯絡方式:</strong> ${booking.phone} / ${booking.email}</p>
+                    <p><strong>人數:</strong> 大人 ${booking.adults || 0} 位，小孩 ${booking.children || 0} 位</p>
+                    ${booking.vegetarian && booking.vegetarian !== 'no' ? `<p><strong>素食:</strong> ${booking.vegetarian}</p>` : ''}
+                    ${booking.special ? `<p><strong>特殊需求:</strong> ${booking.special}</p>` : ''}
+                    ${booking.note ? `<p><strong>備註:</strong> ${booking.note}</p>` : ''}
+                    <p><strong>訂位時間:</strong> ${new Date(booking.createdAt).toLocaleString('zh-TW')}</p>
+                </div>
+            </div>
+        `).join('') : '<p class="no-bookings">此時段目前沒有訂位</p>';
+    
+    const modalHTML = `
+        <div id="bookings-modal" class="modal-overlay">
+            <div class="modal-content bookings-modal-content">
+                <div class="modal-header">
+                    <h3>${date} ${time} 的訂位清單</h3>
+                    <button type="button" class="modal-close" onclick="closeBookingsModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="bookings-summary">
+                        <p><strong>總共:</strong> ${bookings.length} 組訂位，${totalGuests} 位客人</p>
+                    </div>
+                    <div class="bookings-list">
+                        ${bookingsHTML}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBookingsModal()">關閉</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// 關閉訂位詳情彈窗
+function closeBookingsModal() {
+    const modal = document.getElementById('bookings-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// 獲取當前商店 slug
+function getCurrentSlug() {
+    const path = window.location.pathname;
+    const slugMatch = path.match(/^\/([^\/]+)/);
+    return slugMatch ? slugMatch[1] : '';
+} 

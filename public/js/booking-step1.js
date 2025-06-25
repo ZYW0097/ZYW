@@ -70,7 +70,7 @@ function generateCalendar() {
 function selectDate(day) {
     selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     generateCalendar();
-    updateTimeButtons();
+    updateTimeButtons(); // 這個現在是異步的，但不需要等待
     checkNextButton();
 }
 
@@ -98,13 +98,47 @@ async function loadCustomTimeSlots() {
     }
 }
 
+// 載入特定日期的時段容量資訊
+async function loadTimeSlotsWithCapacity(date) {
+    try {
+        const dateStr = date.getFullYear() + '-' + 
+                       String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(date.getDate()).padStart(2, '0');
+        
+        const response = await fetch(`/${storeSlug}/api/timeSlots/${dateStr}`);
+        const data = await response.json();
+        
+        if (data.success && data.timeSlots) {
+            return data.timeSlots;
+        } else {
+            console.warn('未能獲取時段容量資訊，使用基本時段');
+            return customTimeSlots.map(time => ({
+                time: time,
+                maxBookings: 10,
+                currentBookings: 0,
+                isAvailable: true,
+                remainingSlots: 10
+            }));
+        }
+    } catch (error) {
+        console.error('Error loading time slots capacity:', error);
+        // 回退到基本時段
+        return customTimeSlots.map(time => ({
+            time: time,
+            maxBookings: 10,
+            currentBookings: 0,
+            isAvailable: true,
+            remainingSlots: 10
+        }));
+    }
+}
+
 // 更新時段按鈕
-function updateTimeButtons() {
+async function updateTimeButtons() {
     if (!selectedDate) return;
     
-    // 使用自訂時段或預設時段
-    const timeSlots = customTimeSlots.length > 0 ? customTimeSlots : 
-        ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+    // 顯示載入狀態
+    timeButtons.innerHTML = '<div class="loading-message">載入時段中...</div>';
     
     // 檢查是否是今天
     const today = new Date();
@@ -117,47 +151,83 @@ function updateTimeButtons() {
     const currentMinute = today.getMinutes();
     const currentTimeInMinutes = currentHour * 60 + currentMinute;
     
-    timeButtons.innerHTML = '';
-    
-    timeSlots.forEach(time => {
-        const button = document.createElement('button');
-        button.className = 'time-button';
-        button.textContent = time;
+    try {
+        // 載入特定日期的時段容量資訊
+        const timeSlotsWithCapacity = await loadTimeSlotsWithCapacity(selectedDate);
         
-        // 檢查時段是否已過期（只對今天有效）
-        let isTimeDisabled = false;
-        if (isToday) {
-            const [timeHour, timeMinute] = time.split(':').map(Number);
-            const timeInMinutes = timeHour * 60 + timeMinute;
+        timeButtons.innerHTML = '';
+        
+        timeSlotsWithCapacity.forEach(slot => {
+            const button = document.createElement('button');
+            button.className = 'time-button';
             
-            // 如果時段已經過了，禁用該時段
-            if (timeInMinutes <= currentTimeInMinutes) {
-                isTimeDisabled = true;
+            // 檢查時段是否已過期（只對今天有效）
+            let isTimeExpired = false;
+            if (isToday) {
+                const [timeHour, timeMinute] = slot.time.split(':').map(Number);
+                const timeInMinutes = timeHour * 60 + timeMinute;
+                
+                // 如果時段已經過了，禁用該時段
+                if (timeInMinutes <= currentTimeInMinutes) {
+                    isTimeExpired = true;
+                }
             }
-        }
-        
-        if (isTimeDisabled) {
-            button.classList.add('disabled');
+            
+            // 檢查容量狀態
+            const isFullyBooked = !slot.isAvailable;
+            const isDisabled = isTimeExpired || isFullyBooked;
+            
+            // 設置按鈕文字和樣式
+            if (isFullyBooked) {
+                button.innerHTML = `
+                    <span class="time">${slot.time}</span>
+                    <span class="status full">已滿</span>
+                `;
+                button.classList.add('disabled', 'fully-booked');
+            } else if (isTimeExpired) {
+                button.innerHTML = `
+                    <span class="time">${slot.time}</span>
+                    <span class="status expired">已過期</span>
+                `;
+                button.classList.add('disabled', 'expired');
+            } else {
+                button.innerHTML = `
+                    <span class="time">${slot.time}</span>
+                    <span class="capacity">剩餘 ${slot.remainingSlots} 組</span>
+                `;
+                
+                // 如果容量較少，添加警告樣式
+                if (slot.remainingSlots <= 2) {
+                    button.classList.add('low-capacity');
+                }
+            }
+            
             // 如果當前選中的時間被禁用，清除選擇
-            if (selectedTime === time) {
+            if (selectedTime === slot.time && isDisabled) {
                 selectedTime = null;
             }
-        } else {
-            // 只有未禁用的時段才能點擊
-            button.addEventListener('click', () => {
-                selectedTime = time;
-                updateTimeButtons();
-                checkNextButton();
-            });
-        }
+            
+            if (!isDisabled) {
+                // 只有未禁用的時段才能點擊
+                button.addEventListener('click', () => {
+                    selectedTime = slot.time;
+                    updateTimeButtons();
+                    checkNextButton();
+                });
+            }
+            
+            // 如果是選中的時間且未被禁用，添加選中樣式
+            if (selectedTime === slot.time && !isDisabled) {
+                button.classList.add('selected');
+            }
+            
+            timeButtons.appendChild(button);
+        });
         
-        // 如果是選中的時間且未被禁用，添加選中樣式
-        if (selectedTime === time && !isTimeDisabled) {
-            button.classList.add('selected');
-        }
-        
-        timeButtons.appendChild(button);
-    });
+    } catch (error) {
+        console.error('更新時段按鈕失敗:', error);
+        timeButtons.innerHTML = '<div class="error-message">載入時段失敗，請重新選擇日期</div>';
+    }
 }
 
 // 檢查是否可以進入下一步

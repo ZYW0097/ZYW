@@ -215,6 +215,87 @@
     pointer-events: none; /* 保持不能點擊但不顯示禁止圖標 */
 }
 
+/* 時段按鈕內容樣式 */
+.time-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.time-button .time {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.time-button .capacity {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.time-button .status {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.time-button .status.full {
+    color: #dc3545;
+}
+
+.time-button .status.expired {
+    color: #6c757d;
+}
+
+/* 容量警告樣式 */
+.time-button.low-capacity {
+    border-color: #ffc107;
+    background-color: #fff9e6;
+}
+
+.time-button.low-capacity:hover:not(.disabled) {
+    background: #ffc107;
+    color: #1a1a1a;
+    border-color: #ffc107;
+}
+
+.time-button.low-capacity .capacity {
+    color: #d97706;
+    font-weight: 600;
+}
+
+/* 已滿狀態樣式 */
+.time-button.fully-booked {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.time-button.fully-booked .time {
+    color: #6b7280;
+}
+
+/* 已過期狀態樣式 */
+.time-button.expired {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.time-button.expired .time {
+    color: #6c757d;
+}
+
+/* 載入和錯誤訊息樣式 */
+.loading-message,
+.error-message {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.error-message {
+    color: #dc3545;
+}
+
 /* 人數選擇樣式 */
 .people-selector {
     margin-bottom: 3rem;

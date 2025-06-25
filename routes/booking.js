@@ -339,6 +339,43 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
         const db = getClientDb(storeSlug, 'BDB');
         const Reservation = db.model('Reservation', reservationSchema);
 
+        // 檢查時段容量限制
+        try {
+            const TimeSettingsSchema = require('../models/TimeSettings');
+            const TimeSettings = db.model('TimeSettings', TimeSettingsSchema);
+            
+            // 查找該時段的設定
+            const timeSlotSetting = await TimeSettings.findOne({ time });
+            
+            if (timeSlotSetting) {
+                // 檢查時段是否開放
+                if (!timeSlotSetting.available) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        error: '此時段目前未開放訂位' 
+                    });
+                }
+                
+                // 檢查該日期時段的現有訂位數量
+                const existingBookings = await Reservation.countDocuments({
+                    date: date,
+                    time: time,
+                    status: { $in: ['confirmed', 'pending'] }
+                });
+                
+                // 檢查是否已達到最大訂位組數
+                if (existingBookings >= timeSlotSetting.maxBookings) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        error: `此時段已額滿，最多接受 ${timeSlotSetting.maxBookings} 組訂位` 
+                    });
+                }
+            }
+        } catch (timeSlotError) {
+            console.error('檢查時段容量失敗:', timeSlotError);
+            // 如果檢查失敗，繼續處理訂位（向下兼容）
+        }
+
         // 生成自訂訂位編號
         const customBookingId = generateBookingId(storeSlug);
 
