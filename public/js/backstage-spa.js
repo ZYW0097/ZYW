@@ -1638,7 +1638,7 @@ function displayTimeSlots(timeSlots) {
         return a.localeCompare(b);
     });
     
-    // 為每個日期組生成HTML
+    // 垂直排列：先顯示所有今天的時段，再顯示所有明天的時段
     sortedDateLabels.forEach(dateLabel => {
         // 對每個日期內的時段按時間排序
         const slots = groupedSlots[dateLabel].sort((a, b) => {
@@ -1648,28 +1648,32 @@ function displayTimeSlots(timeSlots) {
             };
             return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
         });
+        
         timeSlotsHTML += `
             <div class="timeslot-date-section">
                 <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
-                <div class="timeslot-cards-row">
+                <div class="timeslot-cards-vertical">
         `;
         
         slots.forEach(slot => {
-            // 使用後端提供的狀態資訊
+            // 統一狀態處理：使用後端提供的狀態資訊
             const status = slot.status || 'available';
             const statusText = slot.statusText || '開放中';
             
-            // 決定樣式和圖示
-            let statusIcon, cardClass;
+            // 統一樣式和圖示
+            let statusIcon, cardClass, statusClass;
             
             if (status === 'closed') {
                 statusIcon = '🚫';
+                statusClass = 'closed';
                 cardClass = 'disabled';
             } else if (status === 'full') {
                 statusIcon = '🈵';
+                statusClass = 'full';
                 cardClass = 'fully-booked';
             } else {
                 statusIcon = '✅';
+                statusClass = 'available';
                 cardClass = '';
             }
             
@@ -1677,7 +1681,7 @@ function displayTimeSlots(timeSlots) {
                 <div class="backstage-timeslot-card ${cardClass}" data-slot-id="${slot._id}" data-date="${slot.date}">
                     <div class="timeslot-header">
                         <div class="timeslot-time">${slot.time}</div>
-                        <div class="timeslot-status ${status}">
+                        <div class="timeslot-status ${statusClass}">
                             ${statusIcon} ${statusText}
                         </div>
                     </div>

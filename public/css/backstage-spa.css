@@ -1850,18 +1850,7 @@
     opacity: 0.6;
 }
 
-.backstage-timeslot-card.disabled::before {
-    content: '⚠️ 已關閉';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ffc107;
-    color: #1a1a1a;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
+/* 移除重複的關閉標籤，統一使用狀態區域顯示 */
 
 .timeslot-header {
     display: flex;
@@ -2137,6 +2126,19 @@
     max-width: 250px;
 }
 
+/* 垂直排列樣式 */
+.timeslot-cards-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.timeslot-cards-vertical .backstage-timeslot-card {
+    width: 100%;
+    max-width: none;
+}
+
 .backstage-timeslot-card.fully-booked {
     background: #fef2f2;
     border-color: #fca5a5;
@@ -2148,18 +2150,7 @@
     border-color: #dc3545;
 }
 
-.backstage-timeslot-card.fully-booked::before {
-    content: '🈵 已滿';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ef4444;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
+/* 移除重複的已滿標籤，統一使用狀態區域顯示 */
 
 /* 更新狀態樣式 */
 .timeslot-status.available {
