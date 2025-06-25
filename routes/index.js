@@ -1691,7 +1691,7 @@ router.post('/:storeSlug/backstage/rules', async (req, res) => {
     }
 });
 
-// API獲取時段資料
+// API獲取可用時段列表 (用於訂位頁面)
 router.get('/:storeSlug/api/timeSlots', async (req, res) => {
     try {
         const { storeSlug } = req.params;
@@ -1700,25 +1700,20 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
         const timeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', timeSettingsSchema);
         
-        const rawTimeSlots = await TimeSettings.find({ available: true }).sort({ createdAt: 1 });
+        const rawTimeSlots = await TimeSettings.find({ available: true }).sort({ time: 1 });
         
         // 按時間排序時段
         const sortedTimeSlots = rawTimeSlots.sort((a, b) => {
             const getTimeValue = (timeStr) => {
-                const match = timeStr.match(/^(\d{1,2}):(\d{2})/);
-                if (match) {
-                    const hours = parseInt(match[1]);
-                    const minutes = parseInt(match[2]);
-                    return hours * 60 + minutes;
-                }
-                return 0;
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
             };
             return getTimeValue(a.time) - getTimeValue(b.time);
         });
         
         res.json({ timeSlots: sortedTimeSlots });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error getting available time slots:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
