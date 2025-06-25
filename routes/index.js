@@ -1955,10 +1955,10 @@ router.get('/:slug/api/timeslots', async (req, res) => {
     try {
         const { slug } = req.params;
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         let timeSlots = await TimeSettings.find().sort({ time: 1 });
         
@@ -2025,10 +2025,10 @@ router.post('/:slug/api/timeslots', async (req, res) => {
             });
         }
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         // 檢查是否已存在相同時間的時段
         const existingSlot = await TimeSettings.findOne({ time });
@@ -2070,10 +2070,10 @@ router.put('/:slug/api/timeslots/:slotId', async (req, res) => {
         const { slug, slotId } = req.params;
         const { time, maxBookings, available } = req.body;
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         // 檢查時段是否存在
         const timeSlot = await TimeSettings.findById(slotId);
@@ -2125,10 +2125,10 @@ router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
         const { slug } = req.params;
         const { available } = req.body;
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         // 更新所有時段的開放狀態
         await TimeSettings.updateMany({}, { available });
@@ -2163,10 +2163,10 @@ router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
             });
         }
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         // 檢查時段是否存在
         const timeSlot = await TimeSettings.findById(slotId);
@@ -2203,10 +2203,10 @@ router.delete('/:slug/api/timeslots/:slotId', async (req, res) => {
     try {
         const { slug, slotId } = req.params;
         
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        // 使用正確的資料庫連接方式
+        const bookingDB = getClientDb(slug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
         
         // 檢查時段是否存在
         const timeSlot = await TimeSettings.findById(slotId);

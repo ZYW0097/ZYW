@@ -9,10 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const metaSlug = document.querySelector('meta[name="store-slug"]');
     if (metaSlug) {
         storeSlug = metaSlug.getAttribute('content');
+        console.log('✅ 從 meta 標籤獲取 storeSlug:', storeSlug);
     } else {
         // 如果沒有meta標籤，從URL路徑獲取
         const pathParts = window.location.pathname.split('/');
         storeSlug = pathParts[1] || '';
+        console.log('⚠️ 從 URL 路徑獲取 storeSlug:', storeSlug, '完整路徑:', window.location.pathname);
     }
     
     initializeSPA();
@@ -1492,19 +1494,35 @@ function initializeTimeSlotManagement() {
 // 載入時段列表
 async function loadTimeSlots() {
     const gridContainer = document.getElementById('timeSlots-grid');
-    if (!gridContainer) return;
+    if (!gridContainer) {
+        console.error('❌ 找不到 timeSlots-grid 容器');
+        return;
+    }
+    
+    console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
     
     try {
         gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
         
-        const response = await fetch(`/${storeSlug}/api/timeslots`);
-        if (!response.ok) throw new Error('載入失敗');
+        const url = `/${storeSlug}/api/timeslots`;
+        console.log('📡 請求 URL:', url);
+        
+        const response = await fetch(url);
+        console.log('📊 響應狀態:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ API 錯誤響應:', errorText);
+            throw new Error(`載入失敗 (${response.status}): ${response.statusText}`);
+        }
         
         const data = await response.json();
+        console.log('✅ 成功獲取時段數據:', data);
+        
         displayTimeSlots(data.timeSlots || []);
     } catch (error) {
-        console.error('載入時段失敗:', error);
-        gridContainer.innerHTML = '<div class="backstage-error"><p>載入時段設定失敗，請重新整理頁面</p></div>';
+        console.error('❌ 載入時段失敗:', error);
+        gridContainer.innerHTML = `<div class="backstage-error"><p>載入時段設定失敗: ${error.message}</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>`;
     }
 }
 
