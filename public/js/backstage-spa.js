@@ -533,7 +533,7 @@ async function submitBookingBasicSettings() {
         maxAdults: parseInt(formData.get('maxAdults')),
         maxChildren: parseInt(formData.get('maxChildren')),
         maxTotalPeople: parseInt(formData.get('maxTotalPeople')),
-        enableFastFood: formData.get('enableFastFood') === 'on',
+        enableVegetarian: formData.get('enableVegetarian') === 'on',
         enableSpecialRequests: formData.get('enableSpecialRequests') === 'on'
     };
     

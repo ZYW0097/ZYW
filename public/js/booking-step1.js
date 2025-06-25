@@ -372,7 +372,7 @@ function useDefaultBookingSettings() {
         maxAdults: 6,
         maxChildren: 6,
         maxTotalPeople: 10,
-        enableFastFood: false,
+        enableVegetarian: false,
         enableSpecialRequests: false
     };
     generatePeopleSelectors();

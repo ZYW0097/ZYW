@@ -2620,7 +2620,7 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             });
         }
         
-        const { maxAdults, maxChildren, maxTotalPeople, enableFastFood, enableSpecialRequests } = bookingSettings;
+        const { maxAdults, maxChildren, maxTotalPeople, enableVegetarian, enableSpecialRequests } = bookingSettings;
         
         // 驗證數據
         if (!maxAdults || maxAdults < 1 || maxAdults > 20) {
@@ -2674,7 +2674,7 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             maxAdults: parseInt(maxAdults),
             maxChildren: parseInt(maxChildren),
             maxTotalPeople: parseInt(maxTotalPeople),
-            enableFastFood: Boolean(enableFastFood),
+            enableVegetarian: Boolean(enableVegetarian),
             enableSpecialRequests: Boolean(enableSpecialRequests),
             updatedAt: new Date()
         };
@@ -2722,7 +2722,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
             maxAdults: 6,
             maxChildren: 6,
             maxTotalPeople: 10,
-            enableFastFood: false,
+            enableVegetarian: false,
             enableSpecialRequests: false
         };
         

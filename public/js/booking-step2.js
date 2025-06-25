@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             phone: formEntries.phone,
             email: formEntries.email,
             vegetarian: formEntries.vegetarian,
-            fastFood: formEntries.fastFood || '否', // 新增速食選項
+            vegetarianOption: formEntries.vegetarianOption || '否', // 新增素食選項
             special: formEntries.specialNeeds || '', // 映射 specialNeeds 到 special
             note: formEntries.notes || '', // 映射 notes 到 note
             guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數
@@ -82,20 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 根據商家設定處理特殊選項
 function handleSpecialOptions(bookingSettings) {
-    const fastFoodGroup = document.getElementById('fastFoodGroup');
+    const vegetarianGroup = document.getElementById('vegetarianGroup');
     const specialNeedsRow = document.getElementById('specialNeedsRow');
     
-    // 處理速食服務選項
-    if (!bookingSettings.enableFastFood) {
-        // 如果商家未開啟速食服務，隱藏選項並顯示未開放提示
-        fastFoodGroup.innerHTML = `
-            <label for="fastFood">速食服務</label>
+    // 處理素食選項
+    if (!bookingSettings.enableVegetarian) {
+        // 如果商家未開啟素食選項，隱藏選項並顯示未開放提示
+        vegetarianGroup.innerHTML = `
+            <label for="vegetarianOption">素食選項</label>
             <div class="disabled-option">
-                <span class="unavailable-text">商家未開放此服務</span>
-                <input type="hidden" name="fastFood" value="否">
+                <span class="unavailable-text">商家未開放素食選項</span>
+                <input type="hidden" name="vegetarianOption" value="否">
             </div>
         `;
-        fastFoodGroup.classList.add('disabled-group');
+        vegetarianGroup.classList.add('disabled-group');
     }
     
     // 處理特殊需求選項
@@ -114,7 +114,7 @@ function handleSpecialOptions(bookingSettings) {
     }
     
     console.log('特殊選項設定完成:', {
-        fastFood: bookingSettings.enableFastFood ? '已開啟' : '未開啟',
+        vegetarian: bookingSettings.enableVegetarian ? '已開啟' : '未開啟',
         specialRequests: bookingSettings.enableSpecialRequests ? '已開啟' : '未開啟'
     });
 }
