@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('⚠️ 從 URL 路徑獲取 storeSlug:', storeSlug, '完整路徑:', window.location.pathname);
     }
     
+    // 驗證 storeSlug
+    if (!storeSlug || storeSlug === '' || storeSlug === 'undefined') {
+        console.error('❌ 無法獲取有效的 storeSlug!');
+        console.error('❌ meta 標籤內容:', metaSlug ? metaSlug.getAttribute('content') : 'null');
+        console.error('❌ URL 路徑:', window.location.pathname);
+        console.error('❌ URL 完整:', window.location.href);
+    } else {
+        console.log('✅ storeSlug 獲取成功:', storeSlug);
+    }
+    
     initializeSPA();
     initializeForms();
     initializeImagePreview();
@@ -1519,6 +1529,14 @@ async function loadTimeSlots() {
     }
     
     console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
+    
+    // 檢查 storeSlug 是否有效
+    if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
+        console.error('❌ storeSlug 無效:', storeSlug);
+        gridContainer.innerHTML = '<div class="backstage-error"><p>店家代碼無效，請重新載入頁面</p><button onclick="window.location.reload()" class="backstage-btn backstage-btn-outline">重新載入</button></div>';
+        return;
+    }
+    
     gridContainer.dataset.loading = 'true';
     
     try {
@@ -1533,17 +1551,39 @@ async function loadTimeSlots() {
         if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ API 錯誤響應:', errorText);
-            throw new Error(`載入失敗 (${response.status}): ${response.statusText}`);
+            
+            // 嘗試解析錯誤信息
+            try {
+                const errorData = JSON.parse(errorText);
+                throw new Error(`API 錯誤: ${errorData.message || errorText}`);
+            } catch (parseError) {
+                throw new Error(`載入失敗 (${response.status}): ${response.statusText} - ${errorText}`);
+            }
         }
         
-        const data = await response.json();
-        console.log('✅ 成功獲取時段數據:', data);
+        const rawResponse = await response.text();
+        console.log('📄 原始響應:', rawResponse);
+        
+        let data;
+        try {
+            data = JSON.parse(rawResponse);
+        } catch (parseError) {
+            console.error('❌ JSON 解析錯誤:', parseError);
+            console.error('❌ 原始響應內容:', rawResponse);
+            throw new Error(`回應格式錯誤，無法解析 JSON: ${parseError.message}`);
+        }
+        
+        console.log('✅ 解析後的數據:', data);
         
         if (data.success && data.timeSlots) {
             displayTimeSlots(data.timeSlots);
+        } else if (data.success === false) {
+            console.error('❌ API 回應錯誤:', data.message);
+            gridContainer.innerHTML = `<div class="backstage-error"><p>API 錯誤: ${data.message}</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>`;
         } else {
             console.error('❌ API 回應格式錯誤:', data);
-            gridContainer.innerHTML = '<div class="backstage-error"><p>API 回應格式錯誤</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>';
+            console.error('❌ 預期格式: {success: true, timeSlots: [...]}');
+            gridContainer.innerHTML = `<div class="backstage-error"><p>API 回應格式錯誤<br/>預期: success 和 timeSlots 欄位<br/>實際: ${JSON.stringify(data).substring(0, 200)}...</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>`;
         }
     } catch (error) {
         console.error('❌ 載入時段失敗:', error);

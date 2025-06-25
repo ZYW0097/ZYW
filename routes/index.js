@@ -2020,6 +2020,7 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
 router.get('/:slug/api/timeslots', async (req, res) => {
     try {
         const { slug } = req.params;
+        console.log(`🔍 獲取時段 API 被調用 - Slug: ${slug}`);
         
         // 使用正確的資料庫連接方式
         const bookingDB = getClientDb(slug, 'BDB');
@@ -2029,6 +2030,7 @@ router.get('/:slug/api/timeslots', async (req, res) => {
         const Reservation = bookingDB.model('Reservation', ReservationSchema);
         
         let timeSlots = await TimeSettings.find().sort({ time: 1 });
+        console.log(`📊 找到 ${timeSlots.length} 個時段設定`);
         
         // 如果沒有時段，創建一些預設時段
         if (timeSlots.length === 0) {
@@ -2044,6 +2046,7 @@ router.get('/:slug/api/timeslots', async (req, res) => {
             
             await TimeSettings.insertMany(defaultSlots);
             timeSlots = await TimeSettings.find().sort({ time: 1 });
+            console.log(`✅ 創建完成，現在有 ${timeSlots.length} 個時段`);
         }
         
         // 獲取今天和明天的日期 (GMT+8 台灣時間)
@@ -2165,19 +2168,26 @@ router.get('/:slug/api/timeslots', async (req, res) => {
             return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
         });
         
-        res.json({
+        console.log(`📤 準備回傳 ${timeSlotsWithBookings.length} 個時段數據`);
+        console.log('🔍 回傳的數據範例:', timeSlotsWithBookings.slice(0, 2));
+        
+        const responseData = {
             success: true,
             timeSlots: timeSlotsWithBookings,
             dates: {
                 today: todayStr,
                 tomorrow: tomorrowStr
             }
-        });
+        };
+        
+        res.json(responseData);
     } catch (error) {
-        console.error('獲取時段失敗:', error);
+        console.error('❌ 獲取時段失敗:', error);
+        console.error('❌ 錯誤詳情:', error.stack);
         res.status(500).json({
             success: false,
-            message: '獲取時段設定失敗'
+            message: '獲取時段設定失敗',
+            error: error.message
         });
     }
 });
