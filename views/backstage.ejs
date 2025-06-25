@@ -230,6 +230,7 @@
                     </div>
                     
                     <div class="backstage-page-content">
+                        <% if (customSettings && customSettings.features && customSettings.features.bookingSystem) { %>
                         <!-- 餐廳圖片設定 -->
                         <div class="backstage-setting-card">
                             <h3>餐廳圖片</h3>
@@ -245,63 +246,82 @@
                                             選擇圖片
                                         </button>
                                         <button type="submit" class="backstage-btn backstage-btn-primary">更新圖片</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <!-- 訂位時段設定 -->
-                        <div class="backstage-setting-card">
-                            <h3>訂位時段</h3>
-                            <form id="timeSlotsForm" class="backstage-form">
-                                <div id="timeSlots-list" class="backstage-dynamic-list">
-                <% if (customSettings && customSettings.timeSlots && customSettings.timeSlots.length > 0) { %>
-                    <% customSettings.timeSlots.forEach((slot, index) => { %>
-                                        <div class="backstage-list-item">
-                                            <input type="text" name="timeSlots[]" value="<%= slot.time %>" required placeholder="例如: 12:00">
-                        <% if (index === customSettings.timeSlots.length - 1) { %>
-                                                <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                        <% } %>
-                        <% if (customSettings.timeSlots.length > 1) { %>
-                                                <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeTimeSlot(this)">×</button>
-                        <% } %>
-                    </div>
-                    <% }) %>
-                <% } else { %>
-                                    <div class="backstage-list-item">
-                                        <input type="text" name="timeSlots[]" placeholder="例如: 12:00" required>
-                                        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addTimeSlot()">+</button>
-                </div>
-                <% } %>
-            </div>
-                                <div class="backstage-form-actions">
-                                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存時段設定</button>
+                                    </div>
                                 </div>
-        </form>
-    </div>
+                            </form>
+                        </div>
 
-    <!-- 用餐規則設定 -->
+                        <!-- 訂位時段設定 -->
+                        <div class="backstage-setting-card">
+                            <h3>訂位時段管理</h3>
+                            <p class="backstage-card-desc">設定餐廳的訂位時段，並管理每個時段的開放狀態和訂位上限</p>
+                            
+                            <!-- 新增時段 -->
+                            <div class="backstage-add-timeslot-section">
+                                <h4>新增時段</h4>
+                                <form id="addTimeSlotForm" class="backstage-form">
+                                    <div class="backstage-form-row">
+                                        <div class="backstage-form-group">
+                                            <label for="newTimeSlot">時段時間</label>
+                                            <input type="time" id="newTimeSlot" name="newTimeSlot" required>
+                                        </div>
+                                        <div class="backstage-form-group">
+                                            <label for="newMaxBookings">最多訂位組數</label>
+                                            <input type="number" id="newMaxBookings" name="newMaxBookings" 
+                                                   min="1" max="50" value="10" required>
+                                        </div>
+                                        <div class="backstage-form-group">
+                                            <button type="submit" class="backstage-btn backstage-btn-primary">新增時段</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- 現有時段管理 -->
+                            <div class="backstage-timeslots-management">
+                                <h4>時段管理</h4>
+                                <div class="backstage-timeslots-header">
+                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="toggleAllTimeSlots(true)">
+                                        全部開啟
+                                    </button>
+                                    <button type="button" class="backstage-btn backstage-btn-outline" onclick="toggleAllTimeSlots(false)">
+                                        全部關閉
+                                    </button>
+                                    <button type="button" class="backstage-btn backstage-btn-secondary" onclick="loadTimeSlots()">
+                                        🔄 重新整理
+                                    </button>
+                                </div>
+                                
+                                <div id="timeSlots-grid" class="backstage-timeslots-grid">
+                                    <div class="loading-timeslots">
+                                        <p>🔄 正在載入時段設定...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 用餐規則設定 -->
                         <div class="backstage-setting-card">
                             <h3>用餐規則</h3>
                             <form id="diningRulesForm" class="backstage-form">
                                 <div id="diningRules-list" class="backstage-dynamic-list">
-                <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
-                    <% customSettings.diningRules.forEach((rule, index) => { %>
+                                    <% if (customSettings && customSettings.diningRules && customSettings.diningRules.length > 0) { %>
+                                        <% customSettings.diningRules.forEach((rule, index) => { %>
                                         <div class="backstage-list-item">
                                             <input type="text" name="diningRules[]" value="<%= rule.text %>" required placeholder="請輸入用餐規則">
-                        <% if (index === customSettings.diningRules.length - 1) { %>
+                                            <% if (index === customSettings.diningRules.length - 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
-                        <% } %>
-                        <% if (customSettings.diningRules.length > 1) { %>
+                                            <% } %>
+                                            <% if (customSettings.diningRules.length > 1) { %>
                                                 <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeDiningRule(this)">×</button>
-                        <% } %>
-                    </div>
-                    <% }) %>
-                <% } else { %>
-                                    <div class="backstage-list-item">
-                    <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
-                                        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
-                                    </div>
+                                            <% } %>
+                                        </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <div class="backstage-list-item">
+                                            <input type="text" name="diningRules[]" placeholder="請輸入用餐規則" required>
+                                            <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addDiningRule()">+</button>
+                                        </div>
                                     <% } %>
                                 </div>
                                 <div class="backstage-form-actions">
@@ -309,6 +329,18 @@
                                 </div>
                             </form>
                         </div>
+                        <% } else { %>
+                        <!-- 訂位功能未開啟 -->
+                        <div class="backstage-setting-card">
+                            <h3>訂位功能未開啟</h3>
+                            <div class="backstage-info-box">
+                                <p>訂位功能目前未開啟。請到基本設定中開啟訂位系統。</p>
+                                <button type="button" class="backstage-btn backstage-btn-primary" onclick="navigateToPage('basic')">
+                                    前往開啟訂位功能
+                                </button>
+                            </div>
+                        </div>
+                        <% } %>
                     </div>
                 </div>
 
@@ -616,6 +648,39 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 時段編輯彈窗 -->
+    <div class="timeslot-modal" id="timeslotModal">
+        <div class="timeslot-modal-content">
+            <div class="timeslot-modal-header">
+                <h3 id="modalTitle">編輯時段</h3>
+                <button type="button" class="timeslot-modal-close" onclick="closeTimeslotModal()">×</button>
+            </div>
+            <form id="timeslotModalForm" class="timeslot-modal-form">
+                <input type="hidden" id="modalSlotId" name="slotId">
+                <div class="backstage-form-group">
+                    <label for="modalTime">時段時間</label>
+                    <input type="time" id="modalTime" name="time" required>
+                </div>
+                <div class="backstage-form-group">
+                    <label for="modalMaxBookings">最多訂位組數</label>
+                    <input type="number" id="modalMaxBookings" name="maxBookings" 
+                           min="1" max="50" required>
+                </div>
+                <div class="backstage-form-group">
+                    <label class="backstage-toggle-label">
+                        <input type="checkbox" id="modalAvailable" name="available">
+                        <span class="backstage-toggle-slider"></span>
+                        <span class="backstage-toggle-text">開放此時段</span>
+                    </label>
+                </div>
+                <div class="timeslot-modal-actions">
+                    <button type="button" class="backstage-btn backstage-btn-secondary" onclick="closeTimeslotModal()">取消</button>
+                    <button type="submit" class="backstage-btn backstage-btn-primary">儲存</button>
+                </div>
+            </form>
         </div>
     </div>
 

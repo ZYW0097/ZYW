@@ -21,11 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeDynamicLists();
     setupMobileMenu();
     
-    // 從URL hash設置初始頁面
-    const hash = window.location.hash.substring(1);
-    if (hash && ['dashboard', 'basic', 'booking', 'points', 'qrcode'].includes(hash)) {
-        navigateToPage(hash);
-    }
+    // 從URL hash設置初始頁面（延遲執行以確保 DOM 完全載入）
+    setTimeout(() => {
+        const hash = window.location.hash.substring(1);
+        if (hash && ['dashboard', 'basic', 'booking', 'points', 'qrcode'].includes(hash)) {
+            navigateToPage(hash);
+        } else {
+            navigateToPage('dashboard'); // 預設顯示首頁
+        }
+    }, 100);
 });
 
 // SPA 導航系統
@@ -42,7 +46,7 @@ function initializeSPA() {
             e.preventDefault();
             const page = this.getAttribute('data-page');
             navigateToPage(page);
-            window.location.hash = page;
+            // navigateToPage 內部會處理 hash 更新，避免重複設置
         });
     });
 }
@@ -63,6 +67,13 @@ function navigateToPage(pageName) {
     const targetPage = document.getElementById(pageName + '-page');
     if (targetPage) {
         targetPage.classList.add('active');
+    } else {
+        // 如果頁面不存在，回到首頁
+        const dashboardPage = document.getElementById('dashboard-page');
+        if (dashboardPage) {
+            dashboardPage.classList.add('active');
+            pageName = 'dashboard';
+        }
     }
     
     // 設置對應導航連結為活動狀態
@@ -87,6 +98,13 @@ function navigateToPage(pageName) {
             loadRules();
             initializeRewardToggles();
             loadPointsStats();
+        }, 300);
+    }
+    
+    // 如果是訂位頁面，初始化時段管理
+    if (pageName === 'booking') {
+        setTimeout(() => {
+            initializeTimeSlotManagement();
         }, 300);
     }
 }
@@ -1423,6 +1441,8 @@ function copyToClipboard(text) {
 function fallbackCopyTextToClipboard(text) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
+    
+    // 避免在頁面中顯示
     textArea.style.top = "0";
     textArea.style.left = "0";
     textArea.style.position = "fixed";
@@ -1433,15 +1453,317 @@ function fallbackCopyTextToClipboard(text) {
     
     try {
         const successful = document.execCommand('copy');
-        if (successful) {
-            showNotification('網址已複製到剪貼簿', 'success');
-        } else {
-            showNotification('複製失敗，請手動複製', 'error');
-        }
+        const msg = successful ? '成功' : '失敗';
+        showNotification(`複製到剪貼簿${msg}`, successful ? 'success' : 'error');
     } catch (err) {
-        console.error('複製失敗:', err);
-        showNotification('複製失敗，請手動複製', 'error');
+        console.error('Fallback: Oops, unable to copy', err);
+        showNotification('複製失敗', 'error');
     }
     
     document.body.removeChild(textArea);
-} 
+}
+
+// ===== 時段管理功能 =====
+
+// 初始化時段管理表單
+function initializeTimeSlotManagement() {
+    // 新增時段表單
+    const addTimeSlotForm = document.getElementById('addTimeSlotForm');
+    if (addTimeSlotForm) {
+        addTimeSlotForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addNewTimeSlot();
+        });
+    }
+    
+    // 時段編輯彈窗表單
+    const timeslotModalForm = document.getElementById('timeslotModalForm');
+    if (timeslotModalForm) {
+        timeslotModalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateTimeSlot();
+        });
+    }
+    
+    // 載入現有時段
+    loadTimeSlots();
+}
+
+// 載入時段列表
+async function loadTimeSlots() {
+    const gridContainer = document.getElementById('timeSlots-grid');
+    if (!gridContainer) return;
+    
+    try {
+        gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots`);
+        if (!response.ok) throw new Error('載入失敗');
+        
+        const data = await response.json();
+        displayTimeSlots(data.timeSlots || []);
+    } catch (error) {
+        console.error('載入時段失敗:', error);
+        gridContainer.innerHTML = '<div class="backstage-error"><p>載入時段設定失敗，請重新整理頁面</p></div>';
+    }
+}
+
+// 顯示時段列表
+function displayTimeSlots(timeSlots) {
+    const gridContainer = document.getElementById('timeSlots-grid');
+    if (!gridContainer) return;
+    
+    if (timeSlots.length === 0) {
+        gridContainer.innerHTML = `
+            <div class="backstage-info-box">
+                <p>目前沒有設定任何時段</p>
+                <p>請使用上方表單新增第一個訂位時段</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const timeSlotsHTML = timeSlots.map(slot => {
+        const status = slot.available ? 'active' : 'inactive';
+        const statusText = slot.available ? '開放中' : '已關閉';
+        const statusIcon = slot.available ? '✅' : '⚠️';
+        const toggleText = slot.available ? '關閉' : '開啟';
+        const toggleClass = slot.available ? 'close' : '';
+        
+        return `
+            <div class="backstage-timeslot-card ${slot.available ? '' : 'disabled'}" data-slot-id="${slot._id}">
+                <div class="timeslot-header">
+                    <div class="timeslot-time">${slot.time}</div>
+                    <div class="timeslot-status ${status}">
+                        ${statusIcon} ${statusText}
+                    </div>
+                </div>
+                <div class="timeslot-info">
+                    <p><strong>最多訂位:</strong> ${slot.maxBookings} 組</p>
+                    <p><strong>當前狀態:</strong> ${statusText}</p>
+                </div>
+                <div class="timeslot-actions">
+                    <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
+                        編輯
+                    </button>
+                    <button class="timeslot-btn timeslot-btn-toggle ${toggleClass}" onclick="toggleTimeSlot('${slot._id}', ${!slot.available})">
+                        ${toggleText}
+                    </button>
+                    <button class="timeslot-btn timeslot-btn-delete" onclick="deleteTimeSlot('${slot._id}', '${slot.time}')">
+                        刪除
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    gridContainer.innerHTML = timeSlotsHTML;
+}
+
+// 新增時段
+async function addNewTimeSlot() {
+    const form = document.getElementById('addTimeSlotForm');
+    const formData = new FormData(form);
+    
+    const timeSlotData = {
+        time: formData.get('newTimeSlot'),
+        maxBookings: parseInt(formData.get('newMaxBookings')),
+        available: true
+    };
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(timeSlotData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('時段新增成功！');
+            form.reset();
+            loadTimeSlots(); // 重新載入時段列表
+        } else {
+            throw new Error(result.message || '新增失敗');
+        }
+    } catch (error) {
+        console.error('新增時段失敗:', error);
+        showNotification(error.message || '新增時段失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 編輯時段（開啟彈窗）
+function editTimeSlot(slotId, time, maxBookings, available) {
+    const modal = document.getElementById('timeslotModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSlotId = document.getElementById('modalSlotId');
+    const modalTime = document.getElementById('modalTime');
+    const modalMaxBookings = document.getElementById('modalMaxBookings');
+    const modalAvailable = document.getElementById('modalAvailable');
+    
+    if (!modal) return;
+    
+    modalTitle.textContent = `編輯時段 - ${time}`;
+    modalSlotId.value = slotId;
+    modalTime.value = time;
+    modalMaxBookings.value = maxBookings;
+    modalAvailable.checked = available;
+    
+    modal.classList.add('show');
+}
+
+// 關閉編輯彈窗
+function closeTimeslotModal() {
+    const modal = document.getElementById('timeslotModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+// 更新時段
+async function updateTimeSlot() {
+    const form = document.getElementById('timeslotModalForm');
+    const formData = new FormData(form);
+    
+    const slotId = formData.get('slotId');
+    const updateData = {
+        time: formData.get('time'),
+        maxBookings: parseInt(formData.get('maxBookings')),
+        available: formData.get('available') === 'on'
+    };
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updateData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('時段更新成功！');
+            closeTimeslotModal();
+            loadTimeSlots(); // 重新載入時段列表
+        } else {
+            throw new Error(result.message || '更新失敗');
+        }
+    } catch (error) {
+        console.error('更新時段失敗:', error);
+        showNotification(error.message || '更新時段失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 切換時段開關狀態
+async function toggleTimeSlot(slotId, newAvailableStatus) {
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}/toggle`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ available: newAvailableStatus })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            const action = newAvailableStatus ? '開啟' : '關閉';
+            showNotification(`時段${action}成功！`);
+            loadTimeSlots(); // 重新載入時段列表
+        } else {
+            throw new Error(result.message || '操作失敗');
+        }
+    } catch (error) {
+        console.error('切換時段狀態失敗:', error);
+        showNotification(error.message || '操作失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 刪除時段
+async function deleteTimeSlot(slotId, time) {
+    if (!confirm(`確定要刪除時段「${time}」嗎？\n刪除後將無法復原。`)) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('時段刪除成功！');
+            loadTimeSlots(); // 重新載入時段列表
+        } else {
+            throw new Error(result.message || '刪除失敗');
+        }
+    } catch (error) {
+        console.error('刪除時段失敗:', error);
+        showNotification(error.message || '刪除時段失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 全部開啟/關閉時段
+async function toggleAllTimeSlots(available) {
+    const action = available ? '開啟' : '關閉';
+    if (!confirm(`確定要${action}所有時段嗎？`)) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        const response = await fetch(`/${storeSlug}/api/timeslots/toggle-all`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ available })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification(`所有時段${action}成功！`);
+            loadTimeSlots(); // 重新載入時段列表
+        } else {
+            throw new Error(result.message || '操作失敗');
+        }
+    } catch (error) {
+        console.error('批量操作失敗:', error);
+        showNotification(error.message || '操作失敗', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 點擊彈窗背景關閉彈窗
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('timeslotModal');
+    if (modal && e.target === modal) {
+        closeTimeslotModal();
+    }
+}); 

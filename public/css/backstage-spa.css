@@ -1793,4 +1793,319 @@
         margin-bottom: 10px;
         padding-bottom: 8px;
     }
+}
+
+/* 時段管理樣式 */
+.backstage-add-timeslot-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.backstage-add-timeslot-section h4 {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.backstage-timeslots-management h4 {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.backstage-timeslots-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.backstage-timeslots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.backstage-timeslot-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.backstage-timeslot-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #d0d0d0;
+}
+
+.backstage-timeslot-card.disabled {
+    background: #f5f5f5;
+    opacity: 0.6;
+}
+
+.backstage-timeslot-card.disabled::before {
+    content: '⚠️ 已關閉';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffc107;
+    color: #1a1a1a;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.timeslot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.timeslot-time {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.timeslot-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.timeslot-status.active {
+    background: #d4edda;
+    color: #28a745;
+}
+
+.timeslot-status.inactive {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.timeslot-info {
+    margin-bottom: 15px;
+}
+
+.timeslot-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.timeslot-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.timeslot-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 70px;
+}
+
+.timeslot-btn-edit {
+    background: #1a1a1a;
+    color: white;
+}
+
+.timeslot-btn-edit:hover {
+    background: #333;
+}
+
+.timeslot-btn-toggle {
+    background: #28a745;
+    color: white;
+}
+
+.timeslot-btn-toggle:hover {
+    background: #218838;
+}
+
+.timeslot-btn-toggle.close {
+    background: #ffc107;
+    color: #1a1a1a;
+}
+
+.timeslot-btn-toggle.close:hover {
+    background: #e0a800;
+}
+
+.timeslot-btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.timeslot-btn-delete:hover {
+    background: #c82333;
+}
+
+.loading-timeslots {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.loading-timeslots p {
+    font-size: 16px;
+}
+
+/* 時段編輯彈窗 */
+.timeslot-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.timeslot-modal.show {
+    display: flex;
+}
+
+.timeslot-modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.timeslot-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.timeslot-modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.timeslot-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeslot-modal-close:hover {
+    color: #333;
+}
+
+.timeslot-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.timeslot-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.backstage-btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
+.backstage-btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .backstage-timeslots-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .backstage-timeslots-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .backstage-timeslots-header button {
+        width: 100%;
+    }
+    
+    .timeslot-actions {
+        flex-direction: column;
+    }
+    
+    .timeslot-btn {
+        flex: none;
+        width: 100%;
+    }
+    
+    .timeslot-modal-content {
+        padding: 20px;
+        margin: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .backstage-add-timeslot-section {
+        padding: 15px;
+    }
+    
+    .backstage-form-row {
+        flex-direction: column;
+    }
+    
+    .backstage-form-row .backstage-form-group {
+        margin-bottom: 15px;
+    }
+    
+    .timeslot-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .timeslot-modal-actions {
+        flex-direction: column;
+    }
+    
+    .timeslot-modal-actions button {
+        width: 100%;
+    }
 } 

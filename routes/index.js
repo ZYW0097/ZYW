@@ -1948,4 +1948,239 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
     }
 });
 
+// ====== 時段管理 API ======
+
+// 獲取所有時段
+router.get('/:slug/api/timeslots', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        const timeSlots = await TimeSettings.find().sort({ time: 1 });
+        
+        res.json({
+            success: true,
+            timeSlots: timeSlots
+        });
+    } catch (error) {
+        console.error('獲取時段失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '獲取時段設定失敗'
+        });
+    }
+});
+
+// 新增時段
+router.post('/:slug/api/timeslots', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { time, maxBookings, available = true } = req.body;
+        
+        // 驗證必要欄位
+        if (!time || !maxBookings) {
+            return res.status(400).json({
+                success: false,
+                message: '時間和最多訂位組數為必填欄位'
+            });
+        }
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 檢查是否已存在相同時間的時段
+        const existingSlot = await TimeSettings.findOne({ time });
+        if (existingSlot) {
+            return res.status(400).json({
+                success: false,
+                message: '此時段已存在，請選擇其他時間'
+            });
+        }
+        
+        // 創建新時段
+        const newTimeSlot = new TimeSettings({
+            time,
+            maxBookings: parseInt(maxBookings),
+            available
+        });
+        
+        await newTimeSlot.save();
+        
+        res.json({
+            success: true,
+            message: '時段新增成功',
+            timeSlot: newTimeSlot
+        });
+    } catch (error) {
+        console.error('新增時段失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '新增時段失敗'
+        });
+    }
+});
+
+// 更新時段
+router.put('/:slug/api/timeslots/:slotId', async (req, res) => {
+    try {
+        const { slug, slotId } = req.params;
+        const { time, maxBookings, available } = req.body;
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 檢查時段是否存在
+        const timeSlot = await TimeSettings.findById(slotId);
+        if (!timeSlot) {
+            return res.status(404).json({
+                success: false,
+                message: '找不到指定的時段'
+            });
+        }
+        
+        // 如果更改了時間，檢查是否與其他時段衝突
+        if (time !== timeSlot.time) {
+            const existingSlot = await TimeSettings.findOne({ 
+                time, 
+                _id: { $ne: slotId } 
+            });
+            if (existingSlot) {
+                return res.status(400).json({
+                    success: false,
+                    message: '此時段已存在，請選擇其他時間'
+                });
+            }
+        }
+        
+        // 更新時段
+        timeSlot.time = time;
+        timeSlot.maxBookings = parseInt(maxBookings);
+        timeSlot.available = available;
+        
+        await timeSlot.save();
+        
+        res.json({
+            success: true,
+            message: '時段更新成功',
+            timeSlot: timeSlot
+        });
+    } catch (error) {
+        console.error('更新時段失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '更新時段失敗'
+        });
+    }
+});
+
+// 切換時段開放狀態
+router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
+    try {
+        const { slug, slotId } = req.params;
+        const { available } = req.body;
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 檢查時段是否存在
+        const timeSlot = await TimeSettings.findById(slotId);
+        if (!timeSlot) {
+            return res.status(404).json({
+                success: false,
+                message: '找不到指定的時段'
+            });
+        }
+        
+        // 更新開放狀態
+        timeSlot.available = available;
+        await timeSlot.save();
+        
+        const action = available ? '開啟' : '關閉';
+        res.json({
+            success: true,
+            message: `時段${action}成功`,
+            timeSlot: timeSlot
+        });
+    } catch (error) {
+        console.error('切換時段狀態失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '操作失敗'
+        });
+    }
+});
+
+// 批量切換所有時段狀態
+router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { available } = req.body;
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 更新所有時段的開放狀態
+        await TimeSettings.updateMany({}, { available });
+        
+        const action = available ? '開啟' : '關閉';
+        res.json({
+            success: true,
+            message: `所有時段${action}成功`
+        });
+    } catch (error) {
+        console.error('批量操作失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '操作失敗'
+        });
+    }
+});
+
+// 刪除時段
+router.delete('/:slug/api/timeslots/:slotId', async (req, res) => {
+    try {
+        const { slug, slotId } = req.params;
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 檢查時段是否存在
+        const timeSlot = await TimeSettings.findById(slotId);
+        if (!timeSlot) {
+            return res.status(404).json({
+                success: false,
+                message: '找不到指定的時段'
+            });
+        }
+        
+        // 刪除時段
+        await TimeSettings.findByIdAndDelete(slotId);
+        
+        res.json({
+            success: true,
+            message: '時段刪除成功'
+        });
+    } catch (error) {
+        console.error('刪除時段失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '刪除時段失敗'
+        });
+    }
+});
+
 module.exports = router; 
