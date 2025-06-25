@@ -317,9 +317,24 @@ router.post('/api/setup', requireLogin, upload.fields([
                         // 只有當有有效數據時才儲存獎勵資料
                         if (rewardsData.length > 0) {
                             try {
+                                // 儲存到獎勵表
                                 const RewardsSchema = require('../models/points/rewards');
                                 const Rewards = cardDB.model('PointsRewards', RewardsSchema);
                                 await Rewards.insertMany(rewardsData);
+                                
+                                // 同時儲存到 Client 的 customSettings.rewards (這是前端讀取的地方)
+                                const rewardsForClient = rewardsData.map((reward, index) => ({
+                                    name: reward.name,
+                                    points: reward.points,
+                                    img: reward.img,
+                                    active: true // 默認啟用
+                                }));
+                                
+                                await Client.findOneAndUpdate(
+                                    { slugname: slugname },
+                                    { $set: { 'customSettings.rewards': rewardsForClient } },
+                                    { upsert: true, new: true }
+                                );
                             } catch (error) {
                                 console.error('❌ 獎勵設定失敗:', error);
                             }

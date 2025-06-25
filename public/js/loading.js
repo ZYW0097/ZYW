@@ -284,8 +284,6 @@ const observer = new MutationObserver((mutations) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
             const target = mutation.target;
             if (target.id === 'successContent' && target.classList.contains('show')) {
-                // 成功頁面已顯示，可以執行額外的初始化
-                console.log('成功頁面已顯示');
             }
         }
     });

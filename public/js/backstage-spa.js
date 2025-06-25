@@ -898,24 +898,12 @@ async function submitRewards() {
     const form = document.getElementById('rewardsForm');
     const formData = new FormData(form);
     
-    // 調試信息 - 檢查FormData內容
-    console.log('🔍 前端提交獎勵設定 - FormData內容:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}:`, value);
-    }
-    
     // 檢查表單中的所有獎勵項目
     const rewardItems = form.querySelectorAll('.backstage-reward-item');
-    console.log(`  發現 ${rewardItems.length} 個獎勵項目:`);
     rewardItems.forEach((item, index) => {
         const nameInput = item.querySelector('input[name="rewardName[]"]');
         const pointsInput = item.querySelector('input[name="rewardPoints[]"]');
         const activeInput = item.querySelector('input[name="rewardActive[]"]');
-        console.log(`    項目 ${index + 1}:`, {
-            name: nameInput ? nameInput.value : 'N/A',
-            points: pointsInput ? pointsInput.value : 'N/A',
-            active: activeInput ? activeInput.checked : 'N/A'
-        });
     });
     
     try {
@@ -1040,7 +1028,6 @@ function displayPointsStats(stats) {
         }
     });
     
-    console.log('統計數據已更新:', stats);
 }
 
 async function loadRules() {

@@ -19,8 +19,6 @@ exports.createCard = async (req, res) => {
     const rewards = [];
     const files = req.files || [];
 
-    console.log('req.files:', files);
-    console.log('req.body:', req.body);
 
     if (Array.isArray(req.body.rewards)) {
       req.body.rewards.forEach((rewardObj, idx) => {
@@ -33,7 +31,7 @@ exports.createCard = async (req, res) => {
       });
     }
 
-    console.log('rewards to insert:', rewards);
+    
 
     // 3-1. 建立設定（先檢查是否已存在）
     const exist = await PointsSettings.findOne({
