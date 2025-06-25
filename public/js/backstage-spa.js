@@ -529,6 +529,7 @@ async function submitDiningRules() {
 async function submitBookingBasicSettings() {
     console.log('🔄 開始提交訂位基本設定...');
     
+    // 重新獲取表單元素確保是最新的
     const form = document.getElementById('bookingBasicSettingsForm');
     if (!form) {
         console.error('❌ 找不到表單元素');
@@ -536,7 +537,16 @@ async function submitBookingBasicSettings() {
         return;
     }
     
+    console.log('✅ 找到表單，準備提取數據...');
+    console.log('📊 表單元素:', form);
+    
     const formData = new FormData(form);
+    
+    // 列出所有表單數據用於調試
+    console.log('📝 表單數據:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+    }
     
     const bookingSettings = {
         maxAdults: parseInt(formData.get('maxAdults')),
@@ -622,8 +632,13 @@ function addSpecialRequest() {
     // 創建新項目
     const newItem = document.createElement('div');
     newItem.className = 'backstage-list-item';
+    
+    // 檢查當前是否選擇自訂模式來決定是否加 required
+    const customRadio = document.querySelector('input[name="specialRequestsType"][value="custom"]');
+    const isCustomMode = customRadio && customRadio.checked;
+    
     newItem.innerHTML = `
-        <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項" required>
+        <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項" ${isCustomMode ? 'required' : ''}>
         <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
     `;
     
@@ -684,8 +699,18 @@ function initializeSpecialRequestsToggle() {
         const customRadio = document.querySelector('input[name="specialRequestsType"][value="custom"]');
         if (customRadio && customRadio.checked) {
             customSpecialRequestsList.style.display = 'block';
+            // 當顯示時，啟用 required 屬性
+            const inputs = customSpecialRequestsList.querySelectorAll('input[name="customSpecialRequests[]"]');
+            inputs.forEach(input => {
+                input.required = true;
+            });
         } else {
             customSpecialRequestsList.style.display = 'none';
+            // 當隱藏時，移除 required 屬性避免表單驗證錯誤
+            const inputs = customSpecialRequestsList.querySelectorAll('input[name="customSpecialRequests[]"]');
+            inputs.forEach(input => {
+                input.required = false;
+            });
         }
     }
     
@@ -1668,21 +1693,50 @@ function initializeBookingBasicSettings() {
     console.log('📋 訂位基本設定表單:', bookingBasicSettingsForm ? '✅ 找到' : '❌ 未找到');
     
     if (bookingBasicSettingsForm) {
-        // 移除已有的事件監聽器（避免重複綁定）
+        console.log('🔍 表單詳細信息:');
+        console.log('  - 表單ID:', bookingBasicSettingsForm.id);
+        console.log('  - 表單類名:', bookingBasicSettingsForm.className);
+        console.log('  - 表單元素數量:', bookingBasicSettingsForm.elements.length);
+        console.log('  - 提交按鈕:', bookingBasicSettingsForm.querySelector('[type="submit"]'));
+        
+        // 移除所有現有的 submit 事件監聽器
         const newForm = bookingBasicSettingsForm.cloneNode(true);
         bookingBasicSettingsForm.parentNode.replaceChild(newForm, bookingBasicSettingsForm);
         
-        // 重新綁定事件
-        newForm.addEventListener('submit', function(e) {
-            console.log('📝 基本設定表單提交事件觸發');
-            e.preventDefault();
-            submitBookingBasicSettings();
-        });
+        // 獲取新的表單引用
+        const freshForm = document.getElementById('bookingBasicSettingsForm');
         
-        console.log('✅ 訂位基本設定表單事件已重新綁定');
-        
-        // 初始化特殊需求選項控制
-        initializeSpecialRequestsToggle();
+        if (freshForm) {
+            // 重新綁定事件
+            freshForm.addEventListener('submit', function(e) {
+                console.log('📝 基本設定表單提交事件觸發！');
+                console.log('🎯 事件目標:', e.target);
+                console.log('⚡ 阻止預設行為');
+                e.preventDefault();
+                e.stopPropagation();
+                submitBookingBasicSettings();
+            });
+            
+            // 額外綁定按鈕點擊事件作為備用
+            const submitBtn = freshForm.querySelector('[type="submit"]');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function(e) {
+                    console.log('🖱️ 提交按鈕點擊事件觸發');
+                    e.preventDefault();
+                    submitBookingBasicSettings();
+                });
+                console.log('✅ 提交按鈕點擊事件已綁定');
+            }
+            
+            console.log('✅ 訂位基本設定表單事件已重新綁定');
+            
+            // 延遲初始化特殊需求選項控制，確保DOM更新完成
+            setTimeout(() => {
+                initializeSpecialRequestsToggle();
+            }, 100);
+        } else {
+            console.error('❌ 表單克隆後無法重新找到');
+        }
     } else {
         console.error('❌ 無法找到 bookingBasicSettingsForm 表單');
     }

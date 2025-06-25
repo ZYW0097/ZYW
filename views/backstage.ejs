@@ -341,7 +341,7 @@
                                             <% if (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.customSpecialRequests && customSettings.bookingSettings.customSpecialRequests.length > 0) { %>
                                                 <% customSettings.bookingSettings.customSpecialRequests.forEach((option, index) => { %>
                                                 <div class="backstage-list-item">
-                                                    <input type="text" name="customSpecialRequests[]" value="<%= option %>" required placeholder="請輸入特殊需求選項">
+                                                    <input type="text" name="customSpecialRequests[]" value="<%= option %>" placeholder="請輸入特殊需求選項">
                                                     <% if (index === customSettings.bookingSettings.customSpecialRequests.length - 1) { %>
                                                         <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
                                                     <% } %>
@@ -352,7 +352,7 @@
                                                 <% }) %>
                                             <% } else { %>
                                                 <div class="backstage-list-item">
-                                                    <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項" required>
+                                                    <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項">
                                                     <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
                                                 </div>
                                             <% } %>
