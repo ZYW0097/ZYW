@@ -1652,7 +1652,7 @@ function displayTimeSlots(timeSlots) {
         timeSlotsHTML += `
             <div class="timeslot-date-section">
                 <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
-                <div class="timeslot-cards-vertical">
+                <div class="timeslot-cards-row">
         `;
         
         slots.forEach(slot => {

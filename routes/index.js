@@ -1767,11 +1767,12 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                 bookingCounts[key] = (bookingCounts[key] || 0) + 1;
             });
             
-            // 為每個時段準備今天和明天的數據
+            // 分別處理今天和明天的時段數據
             const timeSlotsWithBookings = [];
             
+            // 先處理今天的所有時段
+            const todaySlots = [];
             timeSlots.forEach(slot => {
-                // 今天的時段
                 const todayKey = `${todayStr}_${slot.time}`;
                 const todayBookings = bookingCounts[todayKey] || 0;
                 const todayAvailable = slot.available && todayBookings < slot.maxBookings;
@@ -1787,7 +1788,7 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                     todayStatusText = '已滿';
                 }
                 
-                timeSlotsWithBookings.push({
+                todaySlots.push({
                     _id: slot._id,
                     time: slot.time,
                     maxBookings: slot.maxBookings,
@@ -1801,8 +1802,11 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                     status: todayStatus,
                     statusText: todayStatusText
                 });
-                
-                // 明天的時段
+            });
+            
+            // 再處理明天的所有時段
+            const tomorrowSlots = [];
+            timeSlots.forEach(slot => {
                 const tomorrowKey = `${tomorrowStr}_${slot.time}`;
                 const tomorrowBookings = bookingCounts[tomorrowKey] || 0;
                 const tomorrowAvailable = slot.available && tomorrowBookings < slot.maxBookings;
@@ -1818,7 +1822,7 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                     tomorrowStatusText = '已滿';
                 }
                 
-                timeSlotsWithBookings.push({
+                tomorrowSlots.push({
                     _id: slot._id,
                     time: slot.time,
                     maxBookings: slot.maxBookings,
@@ -1834,18 +1838,19 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                 });
             });
             
-            // 按日期和時間排序
-            timeSlotsWithBookings.sort((a, b) => {
-                if (a.date !== b.date) {
-                    return a.date.localeCompare(b.date);
-                }
-                // 時間排序：將時間字串轉換為分鐘進行比較
-                const getTimeInMinutes = (timeStr) => {
-                    const [hours, minutes] = timeStr.split(':').map(Number);
-                    return hours * 60 + minutes;
-                };
-                return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
-            });
+            // 對時段按時間排序
+            const getTimeInMinutes = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            
+            todaySlots.sort((a, b) => getTimeInMinutes(a.time) - getTimeInMinutes(b.time));
+            tomorrowSlots.sort((a, b) => getTimeInMinutes(a.time) - getTimeInMinutes(b.time));
+            
+            // 按順序合併：先今天，後明天
+            timeSlotsWithBookings.push(...todaySlots, ...tomorrowSlots);
+            
+            // 數據已經按照正確順序排列：今天的所有時段 + 明天的所有時段
             
             console.log(`📤 準備回傳 ${timeSlotsWithBookings.length} 個時段數據`);
             console.log('🔍 回傳的數據範例:', timeSlotsWithBookings.slice(0, 2));
