@@ -1615,104 +1615,94 @@ function displayTimeSlots(timeSlots) {
     
     console.log('📊 收到的時段數據:', timeSlots);
     
-    // 按日期分組
-    const groupedSlots = {};
-    timeSlots.forEach(slot => {
-        const label = slot.dateLabel || 'undefined';
-        if (!groupedSlots[label]) {
-            groupedSlots[label] = [];
-        }
-        groupedSlots[label].push(slot);
-    });
-    
-    console.log('📋 分組後的時段:', groupedSlots);
-    
     let timeSlotsHTML = '';
+    let currentDateLabel = '';
+    let hasOpenSection = false;
     
-    // 確保日期順序：今天在前，明天在後
-    const sortedDateLabels = Object.keys(groupedSlots).sort((a, b) => {
-        if (a.includes('今天')) return -1;
-        if (b.includes('今天')) return 1;
-        if (a.includes('明天')) return -1;
-        if (b.includes('明天')) return 1;
-        return a.localeCompare(b);
-    });
-    
-    // 垂直排列：先顯示所有今天的時段，再顯示所有明天的時段
-    sortedDateLabels.forEach(dateLabel => {
-        // 對每個日期內的時段按時間排序
-        const slots = groupedSlots[dateLabel].sort((a, b) => {
-            const getTimeInMinutes = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-            return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
-        });
+    // 直接按後端提供的順序處理時段，不重新分組
+    timeSlots.forEach((slot, index) => {
+        const dateLabel = slot.dateLabel || 'undefined';
         
-        timeSlotsHTML += `
-            <div class="timeslot-date-section">
-                <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
-                <div class="timeslot-cards-row">
-        `;
-        
-        slots.forEach(slot => {
-            // 統一狀態處理：使用後端提供的狀態資訊
-            const status = slot.status || 'available';
-            const statusText = slot.statusText || '開放中';
-            
-            // 統一樣式和圖示
-            let statusIcon, cardClass, statusClass;
-            
-            if (status === 'closed') {
-                statusIcon = '🚫';
-                statusClass = 'closed';
-                cardClass = 'disabled';
-            } else if (status === 'full') {
-                statusIcon = '🈵';
-                statusClass = 'full';
-                cardClass = 'fully-booked';
-            } else {
-                statusIcon = '✅';
-                statusClass = 'available';
-                cardClass = '';
-            }
-            
-            timeSlotsHTML += `
-                <div class="backstage-timeslot-card ${cardClass}" data-slot-id="${slot._id}" data-date="${slot.date}">
-                    <div class="timeslot-header">
-                        <div class="timeslot-time">${slot.time}</div>
-                        <div class="timeslot-status ${statusClass}">
-                            ${statusIcon} ${statusText}
-                        </div>
-                    </div>
-                    <div class="timeslot-info">
-                        <p><strong>最多訂位:</strong> ${slot.maxBookings} 組</p>
-                        <p><strong>已訂組數:</strong> ${slot.currentBookings} 組</p>
-                    </div>
-                    <div class="timeslot-actions">
-                        <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
-                            編輯
-                        </button>
-                        ${slot.dayType === 'today' ? `
-                            <button class="timeslot-btn timeslot-btn-toggle ${slot.available ? 'close' : ''}" 
-                                    onclick="toggleTimeSlot('${slot._id}', ${!slot.available})"
-                                    ${status === 'full' && slot.available ? 'title="時段已滿，但仍可關閉"' : ''}>
-                                ${slot.available ? '關閉' : '開啟'}
-                            </button>
-                        ` : ''}
-                        <button class="timeslot-btn timeslot-btn-view" onclick="viewTimeSlotBookings('${slot.date}', '${slot.time}')">
-                            查看訂位${slot.currentBookings > 0 ? ` (${slot.currentBookings})` : ''}
-                        </button>
+        // 如果遇到新的日期，關閉上一個區段並開始新區段
+        if (dateLabel !== currentDateLabel) {
+            // 關閉前一個日期區段
+            if (hasOpenSection) {
+                timeSlotsHTML += `
                     </div>
                 </div>
+                `;
+            }
+            
+            // 開始新的日期區段
+            timeSlotsHTML += `
+                <div class="timeslot-date-section">
+                    <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
+                    <div class="timeslot-cards-row">
             `;
-        });
+            
+            currentDateLabel = dateLabel;
+            hasOpenSection = true;
+        }
+        
+        // 統一狀態處理：使用後端提供的狀態資訊
+        const status = slot.status || 'available';
+        const statusText = slot.statusText || '開放中';
+        
+        // 統一樣式和圖示
+        let statusIcon, cardClass, statusClass;
+        
+        if (status === 'closed') {
+            statusIcon = '🚫';
+            statusClass = 'closed';
+            cardClass = 'disabled';
+        } else if (status === 'full') {
+            statusIcon = '🈵';
+            statusClass = 'full';
+            cardClass = 'fully-booked';
+        } else {
+            statusIcon = '✅';
+            statusClass = 'available';
+            cardClass = '';
+        }
         
         timeSlotsHTML += `
+            <div class="backstage-timeslot-card ${cardClass}" data-slot-id="${slot._id}" data-date="${slot.date}">
+                <div class="timeslot-header">
+                    <div class="timeslot-time">${slot.time}</div>
+                    <div class="timeslot-status ${statusClass}">
+                        ${statusIcon} ${statusText}
+                    </div>
+                </div>
+                <div class="timeslot-info">
+                    <p><strong>最多訂位:</strong> ${slot.maxBookings} 組</p>
+                    <p><strong>已訂組數:</strong> ${slot.currentBookings} 組</p>
+                </div>
+                <div class="timeslot-actions">
+                    <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
+                        編輯
+                    </button>
+                    ${slot.dayType === 'today' ? `
+                        <button class="timeslot-btn timeslot-btn-toggle ${slot.available ? 'close' : ''}" 
+                                onclick="toggleTimeSlot('${slot._id}', ${!slot.available})"
+                                ${status === 'full' && slot.available ? 'title="時段已滿，但仍可關閉"' : ''}>
+                            ${slot.available ? '關閉' : '開啟'}
+                        </button>
+                    ` : ''}
+                    <button class="timeslot-btn timeslot-btn-view" onclick="viewTimeSlotBookings('${slot.date}', '${slot.time}')">
+                        查看訂位${slot.currentBookings > 0 ? ` (${slot.currentBookings})` : ''}
+                    </button>
                 </div>
             </div>
         `;
     });
+    
+    // 關閉最後一個日期區段
+    if (hasOpenSection) {
+        timeSlotsHTML += `
+                </div>
+            </div>
+        `;
+    }
     
     gridContainer.innerHTML = timeSlotsHTML;
 }
