@@ -106,8 +106,9 @@ function navigateToPage(pageName) {
     // 如果是訂位頁面，初始化時段管理
     if (pageName === 'booking') {
         setTimeout(() => {
+            console.log('🎯 初始化訂位設定頁面，storeSlug:', storeSlug);
             initializeTimeSlotManagement();
-        }, 300);
+        }, 500);
     }
 }
 
@@ -1469,8 +1470,15 @@ function fallbackCopyTextToClipboard(text) {
 
 // 初始化時段管理表單
 function initializeTimeSlotManagement() {
+    console.log('🔄 初始化時段管理功能...');
+    
+    // 檢查必要元素是否存在
+    const gridContainer = document.getElementById('timeSlots-grid');
+    console.log('📦 時段網格容器:', gridContainer ? '✅ 找到' : '❌ 未找到');
+    
     // 新增時段表單
     const addTimeSlotForm = document.getElementById('addTimeSlotForm');
+    console.log('📝 新增時段表單:', addTimeSlotForm ? '✅ 找到' : '❌ 未找到');
     if (addTimeSlotForm) {
         addTimeSlotForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1480,6 +1488,7 @@ function initializeTimeSlotManagement() {
     
     // 時段編輯彈窗表單
     const timeslotModalForm = document.getElementById('timeslotModalForm');
+    console.log('🖼️ 編輯彈窗表單:', timeslotModalForm ? '✅ 找到' : '❌ 未找到');
     if (timeslotModalForm) {
         timeslotModalForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1488,7 +1497,11 @@ function initializeTimeSlotManagement() {
     }
     
     // 載入現有時段
-    loadTimeSlots();
+    if (gridContainer) {
+        loadTimeSlots();
+    } else {
+        console.error('❌ 無法載入時段，因為找不到容器元素');
+    }
 }
 
 // 載入時段列表
@@ -1556,14 +1569,14 @@ function displayTimeSlots(timeSlots) {
     Object.keys(groupedSlots).forEach(dateLabel => {
         timeSlotsHTML += `
             <div class="timeslot-date-section">
-                <h4 class="timeslot-date-header">${dateLabel} (${groupedSlots[dateLabel][0].date})</h4>
-                <div class="timeslot-date-grid">
+                <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
+                <div class="timeslot-cards-row">
         `;
         
         groupedSlots[dateLabel].forEach(slot => {
             // 使用後端提供的狀態資訊
-            const status = slot.status;
-            const statusText = slot.statusText;
+            const status = slot.status || 'available';
+            const statusText = slot.statusText || '開放中';
             
             // 決定樣式和圖示
             let statusIcon, cardClass;
@@ -1579,9 +1592,6 @@ function displayTimeSlots(timeSlots) {
                 cardClass = '';
             }
             
-            const bookingPercentage = slot.maxBookings > 0 ? 
-                Math.round((slot.currentBookings / slot.maxBookings) * 100) : 0;
-            
             timeSlotsHTML += `
                 <div class="backstage-timeslot-card ${cardClass}" data-slot-id="${slot._id}" data-date="${slot.date}">
                     <div class="timeslot-header">
@@ -1591,12 +1601,8 @@ function displayTimeSlots(timeSlots) {
                         </div>
                     </div>
                     <div class="timeslot-info">
-                        <p><strong>組數限制:</strong> ${slot.maxBookings} 組</p>
+                        <p><strong>最多訂位:</strong> ${slot.maxBookings} 組</p>
                         <p><strong>已訂組數:</strong> ${slot.currentBookings} 組</p>
-                        <p><strong>使用率:</strong> ${bookingPercentage}%</p>
-                        <div class="booking-progress">
-                            <div class="booking-progress-bar" style="width: ${bookingPercentage}%"></div>
-                        </div>
                     </div>
                     <div class="timeslot-actions">
                         <button class="timeslot-btn timeslot-btn-edit" onclick="editTimeSlot('${slot._id}', '${slot.time}', ${slot.maxBookings}, ${slot.available})">
@@ -1610,7 +1616,7 @@ function displayTimeSlots(timeSlots) {
                             </button>
                         ` : ''}
                         <button class="timeslot-btn timeslot-btn-view" onclick="viewTimeSlotBookings('${slot.date}', '${slot.time}')">
-                            查看訂位 ${slot.currentBookings > 0 ? `(${slot.currentBookings})` : ''}
+                            查看訂位${slot.currentBookings > 0 ? ` (${slot.currentBookings})` : ''}
                         </button>
                     </div>
                 </div>

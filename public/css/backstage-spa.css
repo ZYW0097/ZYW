@@ -2119,15 +2119,22 @@
     font-size: 20px;
     font-weight: bold;
     color: #1a1a1a;
-    margin-bottom: 15px;
+    margin: 20px 0 15px 0;
     padding: 10px 0;
-    border-bottom: 2px solid #e5e7eb;
+    text-align: center;
 }
 
-.timeslot-date-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+.timeslot-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.timeslot-cards-row .backstage-timeslot-card {
+    flex: 0 0 auto;
+    min-width: 200px;
+    max-width: 250px;
 }
 
 .backstage-timeslot-card.fully-booked {
@@ -2170,22 +2177,7 @@
     color: #721c24;
 }
 
-/* 訂位進度條 */
-.booking-progress {
-    width: 100%;
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 8px;
-}
 
-.booking-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #28a745 0%, #ffc107 70%, #dc3545 100%);
-    transition: width 0.3s ease;
-    border-radius: 4px;
-}
 
 /* 新的按鈕樣式 */
 .timeslot-btn-view {

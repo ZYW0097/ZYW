@@ -287,9 +287,15 @@
 .loading-message,
 .error-message {
     text-align: center;
-    padding: 2rem;
+    padding: 1rem;
     color: #6b7280;
     font-style: italic;
+    font-size: 0.9rem;
+    grid-column: 1 / -1; /* 佔據整個網格寬度 */
+    min-height: 60px; /* 設定最小高度以防止跳動 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error-message {
