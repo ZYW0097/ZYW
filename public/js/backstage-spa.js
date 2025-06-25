@@ -1669,10 +1669,20 @@ async function updateTimeSlot() {
 
 // 切換時段開關狀態
 async function toggleTimeSlot(slotId, newAvailableStatus) {
+    console.log(`準備切換時段 - ID: ${slotId}, 新狀態: ${newAvailableStatus}`);
+    
+    if (!slotId) {
+        showNotification('時段ID無效', 'error');
+        return;
+    }
+    
     try {
         showLoading();
         
-        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}/toggle`, {
+        const url = `/${storeSlug}/api/timeslots/${slotId}/toggle`;
+        console.log(`請求URL: ${url}`);
+        
+        const response = await fetch(url, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -1680,9 +1690,28 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
             body: JSON.stringify({ available: newAvailableStatus })
         });
         
-        const result = await response.json();
+        console.log(`響應狀態: ${response.status}`);
         
-        if (response.ok) {
+        if (!response.ok) {
+            // 嘗試解析錯誤響應
+            const errorText = await response.text();
+            console.error('API錯誤響應:', errorText);
+            
+            let errorMessage = '操作失敗';
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorMessage = errorJson.message || errorMessage;
+            } catch (e) {
+                console.error('無法解析錯誤響應為JSON:', e);
+            }
+            
+            throw new Error(`${response.status}: ${errorMessage}`);
+        }
+        
+        const result = await response.json();
+        console.log('API響應結果:', result);
+        
+        if (result.success) {
             const action = newAvailableStatus ? '開啟' : '關閉';
             showNotification(`時段${action}成功！`);
             loadTimeSlots(); // 重新載入時段列表

@@ -1960,7 +1960,23 @@ router.get('/:slug/api/timeslots', async (req, res) => {
         const TimeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
         
-        const timeSlots = await TimeSettings.find().sort({ time: 1 });
+        let timeSlots = await TimeSettings.find().sort({ time: 1 });
+        
+        // 如果沒有時段，創建一些預設時段
+        if (timeSlots.length === 0) {
+            console.log(`為商家 ${slug} 創建預設時段`);
+            const defaultSlots = [
+                { time: '11:30', maxBookings: 10, available: true },
+                { time: '12:00', maxBookings: 10, available: true },
+                { time: '12:30', maxBookings: 10, available: true },
+                { time: '18:00', maxBookings: 10, available: true },
+                { time: '18:30', maxBookings: 10, available: true },
+                { time: '19:00', maxBookings: 10, available: true }
+            ];
+            
+            await TimeSettings.insertMany(defaultSlots);
+            timeSlots = await TimeSettings.find().sort({ time: 1 });
+        }
         
         res.json({
             success: true,
@@ -1981,11 +1997,31 @@ router.post('/:slug/api/timeslots', async (req, res) => {
         const { slug } = req.params;
         const { time, maxBookings, available = true } = req.body;
         
+        console.log(`新增時段請求 - Slug: ${slug}, Time: ${time}, MaxBookings: ${maxBookings}`);
+        
         // 驗證必要欄位
         if (!time || !maxBookings) {
             return res.status(400).json({
                 success: false,
                 message: '時間和最多訂位組數為必填欄位'
+            });
+        }
+        
+        // 驗證時間格式 (HH:MM)
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(time)) {
+            return res.status(400).json({
+                success: false,
+                message: '時間格式不正確，請使用 HH:MM 格式'
+            });
+        }
+        
+        // 驗證最大訂位數
+        const maxBookingsNum = parseInt(maxBookings);
+        if (isNaN(maxBookingsNum) || maxBookingsNum < 1 || maxBookingsNum > 50) {
+            return res.status(400).json({
+                success: false,
+                message: '最多訂位組數必須在 1-50 之間'
             });
         }
         
@@ -2006,11 +2042,12 @@ router.post('/:slug/api/timeslots', async (req, res) => {
         // 創建新時段
         const newTimeSlot = new TimeSettings({
             time,
-            maxBookings: parseInt(maxBookings),
+            maxBookings: maxBookingsNum,
             available
         });
         
         await newTimeSlot.save();
+        console.log(`時段新增成功 - ID: ${newTimeSlot._id}, Time: ${newTimeSlot.time}`);
         
         res.json({
             success: true,
@@ -2021,7 +2058,8 @@ router.post('/:slug/api/timeslots', async (req, res) => {
         console.error('新增時段失敗:', error);
         res.status(500).json({
             success: false,
-            message: '新增時段失敗'
+            message: '新增時段失敗',
+            error: error.message
         });
     }
 });
@@ -2081,46 +2119,7 @@ router.put('/:slug/api/timeslots/:slotId', async (req, res) => {
     }
 });
 
-// 切換時段開放狀態
-router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
-    try {
-        const { slug, slotId } = req.params;
-        const { available } = req.body;
-        
-        // 連接到商家專屬資料庫
-        const cardDB = mongoose.connection.useDb(`${slug}_card`);
-        const TimeSettingsSchema = require('../models/TimeSettings');
-        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
-        
-        // 檢查時段是否存在
-        const timeSlot = await TimeSettings.findById(slotId);
-        if (!timeSlot) {
-            return res.status(404).json({
-                success: false,
-                message: '找不到指定的時段'
-            });
-        }
-        
-        // 更新開放狀態
-        timeSlot.available = available;
-        await timeSlot.save();
-        
-        const action = available ? '開啟' : '關閉';
-        res.json({
-            success: true,
-            message: `時段${action}成功`,
-            timeSlot: timeSlot
-        });
-    } catch (error) {
-        console.error('切換時段狀態失敗:', error);
-        res.status(500).json({
-            success: false,
-            message: '操作失敗'
-        });
-    }
-});
-
-// 批量切換所有時段狀態
+// 批量切換所有時段狀態 (必須在 /:slotId/toggle 之前)
 router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
     try {
         const { slug } = req.params;
@@ -2141,6 +2140,57 @@ router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
         });
     } catch (error) {
         console.error('批量操作失敗:', error);
+        res.status(500).json({
+            success: false,
+            message: '操作失敗'
+        });
+    }
+});
+
+// 切換時段開放狀態
+router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
+    try {
+        const { slug, slotId } = req.params;
+        const { available } = req.body;
+        
+        console.log(`切換時段狀態 - Slug: ${slug}, SlotId: ${slotId}, Available: ${available}`);
+        
+        // 驗證 ObjectId 格式
+        if (!mongoose.Types.ObjectId.isValid(slotId)) {
+            return res.status(400).json({
+                success: false,
+                message: '無效的時段ID格式'
+            });
+        }
+        
+        // 連接到商家專屬資料庫
+        const cardDB = mongoose.connection.useDb(`${slug}_card`);
+        const TimeSettingsSchema = require('../models/TimeSettings');
+        const TimeSettings = cardDB.model('TimeSettings', TimeSettingsSchema);
+        
+        // 檢查時段是否存在
+        const timeSlot = await TimeSettings.findById(slotId);
+        if (!timeSlot) {
+            console.log(`時段不存在 - SlotId: ${slotId}`);
+            return res.status(404).json({
+                success: false,
+                message: '找不到指定的時段'
+            });
+        }
+        
+        // 更新開放狀態
+        timeSlot.available = available;
+        await timeSlot.save();
+        
+        const action = available ? '開啟' : '關閉';
+        console.log(`時段狀態更新成功 - ${timeSlot.time} ${action}`);
+        res.json({
+            success: true,
+            message: `時段${action}成功`,
+            timeSlot: timeSlot
+        });
+    } catch (error) {
+        console.error('切換時段狀態失敗:', error);
         res.status(500).json({
             success: false,
             message: '操作失敗'
