@@ -111,10 +111,58 @@ function handleSpecialOptions(bookingSettings) {
             </div>
         `;
         specialNeedsRow.classList.add('disabled-group');
+    } else {
+        // 根據商家設定生成特殊需求選項
+        generateSpecialNeedsOptions(bookingSettings);
     }
     
     console.log('特殊選項設定完成:', {
         vegetarian: bookingSettings.enableVegetarian ? '已開啟' : '未開啟',
         specialRequests: bookingSettings.enableSpecialRequests ? '已開啟' : '未開啟'
     });
+}
+
+// 根據商家設定生成特殊需求選項
+function generateSpecialNeedsOptions(bookingSettings) {
+    const specialNeedsSelect = document.getElementById('specialNeeds');
+    
+    // 預設選項
+    const defaultOptions = [
+        { value: '無', text: '無' },
+        { value: '有行動不便者', text: '有行動不便者' },
+        { value: '有嬰兒車', text: '有嬰兒車' },
+        { value: '攜帶寵物', text: '攜帶寵物' },
+        { value: '食物過敏', text: '食物過敏' },
+        { value: '其他特殊需求', text: '其他特殊需求' }
+    ];
+    
+    let optionsToUse = defaultOptions;
+    
+    // 如果商家使用自訂選項
+    if (bookingSettings.specialRequestsType === 'custom' && 
+        bookingSettings.customSpecialRequests && 
+        bookingSettings.customSpecialRequests.length > 0) {
+        
+        // 使用商家自訂的選項，但保留「無」選項
+        optionsToUse = [
+            { value: '無', text: '無' },
+            ...bookingSettings.customSpecialRequests.map(option => ({
+                value: option,
+                text: option
+            }))
+        ];
+    }
+    
+    // 清空現有選項
+    specialNeedsSelect.innerHTML = '';
+    
+    // 添加選項
+    optionsToUse.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.textContent = option.text;
+        specialNeedsSelect.appendChild(optionElement);
+    });
+    
+    console.log('特殊需求選項已更新:', optionsToUse.map(opt => opt.text));
 }

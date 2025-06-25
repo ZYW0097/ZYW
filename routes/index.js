@@ -2620,7 +2620,7 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             });
         }
         
-        const { maxAdults, maxChildren, maxTotalPeople, enableVegetarian, enableSpecialRequests } = bookingSettings;
+        const { maxAdults, maxChildren, maxTotalPeople, enableVegetarian, enableSpecialRequests, specialRequestsType, customSpecialRequests } = bookingSettings;
         
         // 驗證數據
         if (!maxAdults || maxAdults < 1 || maxAdults > 20) {
@@ -2651,12 +2651,7 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             });
         }
         
-        // 使用正確的資料庫連接
-        const db = getClientDb(slug, 'ADB');
-        const ClientSchema = require('../models/Client');
-        const Client = db.model('Client', ClientSchema);
-        
-        // 查找並更新客戶資料
+        // 直接使用已定義的 Client 模型
         const client = await Client.findOne({ slug });
         if (!client) {
             return res.status(404).json({
@@ -2676,6 +2671,8 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             maxTotalPeople: parseInt(maxTotalPeople),
             enableVegetarian: Boolean(enableVegetarian),
             enableSpecialRequests: Boolean(enableSpecialRequests),
+            specialRequestsType: specialRequestsType || 'default',
+            customSpecialRequests: (specialRequestsType === 'custom' && Array.isArray(customSpecialRequests)) ? customSpecialRequests.filter(req => req.trim() !== '') : [],
             updatedAt: new Date()
         };
         
@@ -2703,12 +2700,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
     try {
         const { slug } = req.params;
         
-        // 使用正確的資料庫連接
-        const db = getClientDb(slug, 'ADB');
-        const ClientSchema = require('../models/Client');
-        const Client = db.model('Client', ClientSchema);
-        
-        // 查找客戶資料
+        // 直接使用已定義的 Client 模型
         const client = await Client.findOne({ slug });
         if (!client) {
             return res.status(404).json({
@@ -2723,7 +2715,9 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
             maxChildren: 6,
             maxTotalPeople: 10,
             enableVegetarian: false,
-            enableSpecialRequests: false
+            enableSpecialRequests: false,
+            specialRequestsType: 'default',
+            customSpecialRequests: []
         };
         
         const bookingSettings = client.customSettings?.bookingSettings || defaultSettings;

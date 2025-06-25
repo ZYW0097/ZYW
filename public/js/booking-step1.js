@@ -373,7 +373,9 @@ function useDefaultBookingSettings() {
         maxChildren: 6,
         maxTotalPeople: 10,
         enableVegetarian: false,
-        enableSpecialRequests: false
+        enableSpecialRequests: false,
+        specialRequestsType: 'default',
+        customSpecialRequests: []
     };
     generatePeopleSelectors();
 }

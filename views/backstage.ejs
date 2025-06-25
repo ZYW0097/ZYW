@@ -307,7 +307,55 @@
                                                 <span class="backstage-toggle-slider"></span>
                                                 <span class="backstage-toggle-text">接受特殊需求</span>
                                             </label>
-                                            <small>開啟此選項讓顧客可填寫特殊需求（如素食、過敏等）</small>
+                                            <small>開啟此選項讓顧客可填寫特殊需求（如過敏、行動不便等）</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 特殊需求選項設定 -->
+                                <div class="backstage-form-section" id="specialRequestsOptions">
+                                    <h4>特殊需求選項設定</h4>
+                                    <div class="backstage-form-row">
+                                        <div class="backstage-form-group">
+                                            <label>
+                                                <input type="radio" name="specialRequestsType" value="default" 
+                                                       <%= (!customSettings || !customSettings.bookingSettings || !customSettings.bookingSettings.specialRequestsType || customSettings.bookingSettings.specialRequestsType === 'default') ? 'checked' : '' %>>
+                                                使用預設範本
+                                            </label>
+                                            <small>使用系統預設的特殊需求選項</small>
+                                        </div>
+                                        <div class="backstage-form-group">
+                                            <label>
+                                                <input type="radio" name="specialRequestsType" value="custom" 
+                                                       <%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.specialRequestsType === 'custom') ? 'checked' : '' %>>
+                                                自訂選項
+                                            </label>
+                                            <small>完全自訂特殊需求選項</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 自訂特殊需求選項列表 -->
+                                    <div id="customSpecialRequestsList" class="backstage-dynamic-list" style="display: none;">
+                                        <h5>自訂特殊需求選項</h5>
+                                        <div id="specialRequests-list">
+                                            <% if (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.customSpecialRequests && customSettings.bookingSettings.customSpecialRequests.length > 0) { %>
+                                                <% customSettings.bookingSettings.customSpecialRequests.forEach((option, index) => { %>
+                                                <div class="backstage-list-item">
+                                                    <input type="text" name="customSpecialRequests[]" value="<%= option %>" required placeholder="請輸入特殊需求選項">
+                                                    <% if (index === customSettings.bookingSettings.customSpecialRequests.length - 1) { %>
+                                                        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
+                                                    <% } %>
+                                                    <% if (customSettings.bookingSettings.customSpecialRequests.length > 1) { %>
+                                                        <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeSpecialRequest(this)">×</button>
+                                                    <% } %>
+                                                </div>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <div class="backstage-list-item">
+                                                    <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項" required>
+                                                    <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
+                                                </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>

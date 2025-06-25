@@ -534,7 +534,9 @@ async function submitBookingBasicSettings() {
         maxChildren: parseInt(formData.get('maxChildren')),
         maxTotalPeople: parseInt(formData.get('maxTotalPeople')),
         enableVegetarian: formData.get('enableVegetarian') === 'on',
-        enableSpecialRequests: formData.get('enableSpecialRequests') === 'on'
+        enableSpecialRequests: formData.get('enableSpecialRequests') === 'on',
+        specialRequestsType: formData.get('specialRequestsType') || 'default',
+        customSpecialRequests: formData.getAll('customSpecialRequests[]').filter(req => req.trim() !== '')
     };
     
     // 驗證數據
@@ -585,6 +587,112 @@ async function submitBookingBasicSettings() {
     } finally {
         hideLoading();
     }
+}
+
+// 新增特殊需求選項
+function addSpecialRequest() {
+    const container = document.getElementById('specialRequests-list');
+    const lastItem = container.querySelector('.backstage-list-item:last-child');
+    
+    // 移除最後一項的新增按鈕
+    const lastAddBtn = lastItem.querySelector('.backstage-btn-add');
+    if (lastAddBtn) {
+        lastAddBtn.remove();
+    }
+    
+    // 為最後一項新增移除按鈕（如果還沒有的話）
+    if (!lastItem.querySelector('.backstage-btn-remove')) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'backstage-btn-icon backstage-btn-remove';
+        removeBtn.onclick = function() { removeSpecialRequest(this); };
+        removeBtn.textContent = '×';
+        lastItem.appendChild(removeBtn);
+    }
+    
+    // 創建新項目
+    const newItem = document.createElement('div');
+    newItem.className = 'backstage-list-item';
+    newItem.innerHTML = `
+        <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項" required>
+        <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
+    `;
+    
+    container.appendChild(newItem);
+    
+    // 焦點到新輸入框
+    newItem.querySelector('input').focus();
+}
+
+// 移除特殊需求選項
+function removeSpecialRequest(button) {
+    const container = document.getElementById('specialRequests-list');
+    const items = container.querySelectorAll('.backstage-list-item');
+    
+    if (items.length <= 1) {
+        alert('至少需要保留一個特殊需求選項');
+        return;
+    }
+    
+    const item = button.parentElement;
+    const isLast = !item.nextElementSibling;
+    
+    // 如果刪除的是最後一項，將新增按鈕移到新的最後一項
+    if (isLast && items.length > 1) {
+        const newLastItem = item.previousElementSibling;
+        if (newLastItem && !newLastItem.querySelector('.backstage-btn-add')) {
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'backstage-btn-icon backstage-btn-add';
+            addBtn.onclick = addSpecialRequest;
+            addBtn.textContent = '+';
+            newLastItem.appendChild(addBtn);
+        }
+    }
+    
+    item.remove();
+}
+
+// 初始化特殊需求選項的顯示控制
+function initializeSpecialRequestsToggle() {
+    const enableSpecialRequests = document.getElementById('enableSpecialRequests');
+    const specialRequestsOptions = document.getElementById('specialRequestsOptions');
+    const specialRequestsTypeRadios = document.querySelectorAll('input[name="specialRequestsType"]');
+    const customSpecialRequestsList = document.getElementById('customSpecialRequestsList');
+    
+    // 控制特殊需求選項區塊的顯示/隱藏
+    function toggleSpecialRequestsOptions() {
+        if (enableSpecialRequests && enableSpecialRequests.checked) {
+            specialRequestsOptions.style.display = 'block';
+            toggleCustomSpecialRequestsList();
+        } else {
+            specialRequestsOptions.style.display = 'none';
+        }
+    }
+    
+    // 控制自訂特殊需求列表的顯示/隱藏
+    function toggleCustomSpecialRequestsList() {
+        const customRadio = document.querySelector('input[name="specialRequestsType"][value="custom"]');
+        if (customRadio && customRadio.checked) {
+            customSpecialRequestsList.style.display = 'block';
+        } else {
+            customSpecialRequestsList.style.display = 'none';
+        }
+    }
+    
+    // 綁定事件監聽器
+    if (enableSpecialRequests) {
+        enableSpecialRequests.addEventListener('change', toggleSpecialRequestsOptions);
+        // 初始化顯示狀態
+        toggleSpecialRequestsOptions();
+    }
+    
+    specialRequestsTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleCustomSpecialRequestsList);
+    });
+    
+    // 初始化自訂列表顯示狀態
+    toggleCustomSpecialRequestsList();
 }
 
 async function submitCardImage() {
@@ -728,6 +836,8 @@ window.addDiningRule = addDiningRule;
 window.removeDiningRule = removeDiningRule;
 window.confirmDeleteStore = confirmDeleteStore;
 window.updateFeatureSettings = updateFeatureSettings;
+window.addSpecialRequest = addSpecialRequest;
+window.removeSpecialRequest = removeSpecialRequest;
 
 // 更新功能設定
 async function updateFeatureSettings() {
@@ -1577,6 +1687,9 @@ function initializeTimeSlotManagement() {
             e.preventDefault();
             submitBookingBasicSettings();
         });
+        
+        // 監聽特殊需求開關和類型選擇
+        initializeSpecialRequestsToggle();
     }
     
     // 載入現有時段
