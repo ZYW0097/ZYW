@@ -2046,8 +2046,11 @@ router.get('/:slug/api/timeslots', async (req, res) => {
             timeSlots = await TimeSettings.find().sort({ time: 1 });
         }
         
-        // 獲取今天和明天的日期
-        const today = new Date();
+        // 獲取今天和明天的日期 (GMT+8 台灣時間)
+        const now = new Date();
+        const taiwanTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // GMT+8
+        
+        const today = new Date(taiwanTime.getFullYear(), taiwanTime.getMonth(), taiwanTime.getDate());
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         
@@ -2057,8 +2060,17 @@ router.get('/:slug/api/timeslots', async (req, res) => {
                    String(date.getDate()).padStart(2, '0');
         };
         
+        const formatDateLabel = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        
         const todayStr = formatDate(today);
         const tomorrowStr = formatDate(tomorrow);
+        
+        console.log(`🕐 台灣時間 - 今天: ${todayStr}, 明天: ${tomorrowStr}`);
         
         // 獲取今天和明天所有已確認的訂位
         const reservations = await Reservation.find({
@@ -2099,7 +2111,7 @@ router.get('/:slug/api/timeslots', async (req, res) => {
                 maxBookings: slot.maxBookings,
                 available: slot.available,
                 date: todayStr,
-                dateLabel: '今天',
+                dateLabel: `今天 (${formatDateLabel(today)})`,
                 currentBookings: todayBookings,
                 isFullyBooked: todayBookings >= slot.maxBookings,
                 canAcceptBooking: todayAvailable,
@@ -2130,7 +2142,7 @@ router.get('/:slug/api/timeslots', async (req, res) => {
                 maxBookings: slot.maxBookings,
                 available: slot.available,
                 date: tomorrowStr,
-                dateLabel: '明天',
+                dateLabel: `明天 (${formatDateLabel(tomorrow)})`,
                 currentBookings: tomorrowBookings,
                 isFullyBooked: tomorrowBookings >= slot.maxBookings,
                 canAcceptBooking: tomorrowAvailable,
@@ -2145,7 +2157,12 @@ router.get('/:slug/api/timeslots', async (req, res) => {
             if (a.date !== b.date) {
                 return a.date.localeCompare(b.date);
             }
-            return a.time.localeCompare(b.time);
+            // 時間排序：將時間字串轉換為分鐘進行比較
+            const getTimeInMinutes = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
         });
         
         res.json({

@@ -1512,7 +1512,14 @@ async function loadTimeSlots() {
         return;
     }
     
+    // 防止重複調用
+    if (gridContainer.dataset.loading === 'true') {
+        console.log('⚠️ 正在載入中，跳過重複請求');
+        return;
+    }
+    
     console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
+    gridContainer.dataset.loading = 'true';
     
     try {
         gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
@@ -1532,10 +1539,18 @@ async function loadTimeSlots() {
         const data = await response.json();
         console.log('✅ 成功獲取時段數據:', data);
         
-        displayTimeSlots(data.timeSlots || []);
+        if (data.success && data.timeSlots) {
+            displayTimeSlots(data.timeSlots);
+        } else {
+            console.error('❌ API 回應格式錯誤:', data);
+            gridContainer.innerHTML = '<div class="backstage-error"><p>API 回應格式錯誤</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>';
+        }
     } catch (error) {
         console.error('❌ 載入時段失敗:', error);
         gridContainer.innerHTML = `<div class="backstage-error"><p>載入時段設定失敗: ${error.message}</p><button onclick="loadTimeSlots()" class="backstage-btn backstage-btn-outline">重試</button></div>`;
+    } finally {
+        // 移除載入標記
+        gridContainer.dataset.loading = 'false';
     }
 }
 
@@ -1554,26 +1569,48 @@ function displayTimeSlots(timeSlots) {
         return;
     }
     
+    console.log('📊 收到的時段數據:', timeSlots);
+    
     // 按日期分組
     const groupedSlots = {};
     timeSlots.forEach(slot => {
-        if (!groupedSlots[slot.dateLabel]) {
-            groupedSlots[slot.dateLabel] = [];
+        const label = slot.dateLabel || 'undefined';
+        if (!groupedSlots[label]) {
+            groupedSlots[label] = [];
         }
-        groupedSlots[slot.dateLabel].push(slot);
+        groupedSlots[label].push(slot);
     });
+    
+    console.log('📋 分組後的時段:', groupedSlots);
     
     let timeSlotsHTML = '';
     
+    // 確保日期順序：今天在前，明天在後
+    const sortedDateLabels = Object.keys(groupedSlots).sort((a, b) => {
+        if (a.includes('今天')) return -1;
+        if (b.includes('今天')) return 1;
+        if (a.includes('明天')) return -1;
+        if (b.includes('明天')) return 1;
+        return a.localeCompare(b);
+    });
+    
     // 為每個日期組生成HTML
-    Object.keys(groupedSlots).forEach(dateLabel => {
+    sortedDateLabels.forEach(dateLabel => {
+        // 對每個日期內的時段按時間排序
+        const slots = groupedSlots[dateLabel].sort((a, b) => {
+            const getTimeInMinutes = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
+        });
         timeSlotsHTML += `
             <div class="timeslot-date-section">
                 <h4 class="timeslot-date-header">-- ${dateLabel} --</h4>
                 <div class="timeslot-cards-row">
         `;
         
-        groupedSlots[dateLabel].forEach(slot => {
+        slots.forEach(slot => {
             // 使用後端提供的狀態資訊
             const status = slot.status || 'available';
             const statusText = slot.statusText || '開放中';
