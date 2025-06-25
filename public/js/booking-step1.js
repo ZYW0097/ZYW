@@ -14,6 +14,7 @@ let currentDate = new Date();
 let selectedDate = null;
 let selectedTime = null;
 let customTimeSlots = []; // 存儲自訂時段
+let isLoadingTimeSlots = false; // 載入狀態標記，防止重複載入
 
 // 生成日曆
 function generateCalendar() {
@@ -69,8 +70,9 @@ function generateCalendar() {
 // 選擇日期
 function selectDate(day) {
     selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    selectedTime = null; // 清空選中的時段，因為不同日期可能有不同的可用時段
     generateCalendar();
-    updateTimeButtons(); // 這個現在是異步的，但不需要等待
+    updateTimeButtons(); // 載入新日期的時段
     checkNextButton();
 }
 
@@ -137,6 +139,14 @@ async function loadTimeSlotsWithCapacity(date) {
 async function updateTimeButtons() {
     if (!selectedDate) return;
     
+    // 防止重複載入
+    if (isLoadingTimeSlots) {
+        console.log('時段正在載入中，跳過重複請求');
+        return;
+    }
+    
+    isLoadingTimeSlots = true;
+    
     // 顯示載入狀態
     timeButtons.innerHTML = '<div class="loading-message">載入時段中...</div>';
     
@@ -153,7 +163,9 @@ async function updateTimeButtons() {
     
     try {
         // 載入特定日期的時段容量資訊
+        console.log('開始載入時段資料...', selectedDate.toLocaleDateString());
         const timeSlotsWithCapacity = await loadTimeSlotsWithCapacity(selectedDate);
+        console.log('時段資料載入完成，共', timeSlotsWithCapacity.length, '個時段');
         
         timeButtons.innerHTML = '';
         
@@ -210,8 +222,9 @@ async function updateTimeButtons() {
             if (!isDisabled) {
                 // 只有未禁用的時段才能點擊
                 button.addEventListener('click', () => {
+                    console.log('使用者選擇時段:', slot.time);
                     selectedTime = slot.time;
-                    updateTimeButtons();
+                    updateSelectedTimeUI(); // 只更新UI，不重新載入時段
                     checkNextButton();
                 });
             }
@@ -227,7 +240,25 @@ async function updateTimeButtons() {
     } catch (error) {
         console.error('更新時段按鈕失敗:', error);
         timeButtons.innerHTML = '<div class="error-message">載入時段失敗，請重新選擇日期</div>';
+    } finally {
+        // 重置載入狀態
+        isLoadingTimeSlots = false;
     }
+}
+
+// 只更新時段按鈕的選中狀態，不重新載入資料
+function updateSelectedTimeUI() {
+    const timeButtonElements = timeButtons.querySelectorAll('.time-button');
+    timeButtonElements.forEach(button => {
+        // 移除所有按鈕的選中狀態
+        button.classList.remove('selected');
+        
+        // 為選中的時段添加選中狀態
+        const timeText = button.querySelector('.time').textContent;
+        if (timeText === selectedTime && !button.classList.contains('disabled')) {
+            button.classList.add('selected');
+        }
+    });
 }
 
 // 檢查是否可以進入下一步
