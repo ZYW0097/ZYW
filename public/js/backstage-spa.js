@@ -113,11 +113,12 @@ function navigateToPage(pageName) {
         }, 300);
     }
     
-    // 如果是訂位頁面，初始化時段管理
+    // 如果是訂位頁面，初始化時段管理和基本設定
     if (pageName === 'booking') {
         setTimeout(() => {
             console.log('🎯 初始化訂位設定頁面，storeSlug:', storeSlug);
             initializeTimeSlotManagement();
+            initializeBookingBasicSettings();
         }, 500);
     }
 }
@@ -526,7 +527,15 @@ async function submitDiningRules() {
 
 // 提交訂位基本設定
 async function submitBookingBasicSettings() {
+    console.log('🔄 開始提交訂位基本設定...');
+    
     const form = document.getElementById('bookingBasicSettingsForm');
+    if (!form) {
+        console.error('❌ 找不到表單元素');
+        showNotification('找不到表單元素', 'error');
+        return;
+    }
+    
     const formData = new FormData(form);
     
     const bookingSettings = {
@@ -1651,6 +1660,57 @@ function fallbackCopyTextToClipboard(text) {
 
 // ===== 時段管理功能 =====
 
+// 初始化訂位基本設定表單
+function initializeBookingBasicSettings() {
+    console.log('⚙️ 初始化訂位基本設定表單...');
+    
+    const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
+    console.log('📋 訂位基本設定表單:', bookingBasicSettingsForm ? '✅ 找到' : '❌ 未找到');
+    
+    if (bookingBasicSettingsForm) {
+        // 移除已有的事件監聽器（避免重複綁定）
+        const newForm = bookingBasicSettingsForm.cloneNode(true);
+        bookingBasicSettingsForm.parentNode.replaceChild(newForm, bookingBasicSettingsForm);
+        
+        // 重新綁定事件
+        newForm.addEventListener('submit', function(e) {
+            console.log('📝 基本設定表單提交事件觸發');
+            e.preventDefault();
+            submitBookingBasicSettings();
+        });
+        
+        console.log('✅ 訂位基本設定表單事件已重新綁定');
+        
+        // 初始化特殊需求選項控制
+        initializeSpecialRequestsToggle();
+    } else {
+        console.error('❌ 無法找到 bookingBasicSettingsForm 表單');
+    }
+}
+
+// 載入訂位設定數據
+async function loadBookingSettings() {
+    console.log('🔄 載入訂位設定數據...');
+    
+    if (!storeSlug || storeSlug === 'undefined') {
+        console.error('❌ storeSlug 無效:', storeSlug);
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/${storeSlug}/api/booking-settings`);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ 訂位設定載入成功:', data);
+            // 這裡可以預填表單數據
+        } else {
+            console.log('⚠️ 訂位設定載入失敗，使用預設值');
+        }
+    } catch (error) {
+        console.error('❌ 載入訂位設定時發生錯誤:', error);
+    }
+}
+
 // 初始化時段管理表單
 function initializeTimeSlotManagement() {
     console.log('🔄 初始化時段管理功能...');
@@ -1679,18 +1739,8 @@ function initializeTimeSlotManagement() {
         });
     }
     
-    // 訂位基本設定表單
-    const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
-    console.log('⚙️ 訂位基本設定表單:', bookingBasicSettingsForm ? '✅ 找到' : '❌ 未找到');
-    if (bookingBasicSettingsForm) {
-        bookingBasicSettingsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitBookingBasicSettings();
-        });
-        
-        // 監聽特殊需求開關和類型選擇
-        initializeSpecialRequestsToggle();
-    }
+    // 載入設定數據
+    loadBookingSettings();
     
     // 載入現有時段
     if (gridContainer) {

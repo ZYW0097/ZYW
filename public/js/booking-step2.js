@@ -47,8 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gender: formEntries.gender,
             phone: formEntries.phone,
             email: formEntries.email,
-            vegetarian: formEntries.vegetarian,
-            vegetarianOption: formEntries.vegetarianOption || '否', // 新增素食選項
+            vegetarian: formEntries.vegetarianOption || '否', // 使用商家控制的素食選項
             special: formEntries.specialNeeds || '', // 映射 specialNeeds 到 special
             note: formEntries.notes || '', // 映射 notes 到 note
             guests: (bookingData.adults || 0) + (bookingData.children || 0), // 計算總人數

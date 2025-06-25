@@ -418,7 +418,7 @@ router.post(['/api/booking', '/:storeSlug/api/booking'], async (req, res) => {
             guests: guestNum,
             gender: req.body.gender || '先生',
             vegetarian: req.body.vegetarian || 'no',
-            vegetarianOption: req.body.vegetarianOption || '否', // 新增素食選項
+            vegetarianOption: req.body.vegetarianOption || '否', // 素食選項
             special: req.body.special ? req.body.special.trim() : '',
             note: req.body.note ? req.body.note.trim() : '', // 添加 note 欄位
             createdAt: new Date(),
