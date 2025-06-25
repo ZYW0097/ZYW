@@ -1614,6 +1614,7 @@ function displayTimeSlots(timeSlots) {
     }
     
     console.log('📊 收到的時段數據:', timeSlots);
+    console.log('🔧 開始分組顯示，使用新版本按日期分組布局');
     
     let timeSlotsHTML = '';
     let currentDateLabel = '';

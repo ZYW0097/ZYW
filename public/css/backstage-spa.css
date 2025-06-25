@@ -1824,11 +1824,10 @@
     flex-wrap: wrap;
 }
 
+/* 修改为支持日期分组的时段网格 */
 .backstage-timeslots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
     margin-top: 20px;
+    /* 移除grid布局，改为支持分组的块级布局 */
 }
 
 .backstage-timeslot-card {
@@ -2042,9 +2041,18 @@
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-    .backstage-timeslots-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+    .timeslot-cards-row {
+        flex-direction: column;
+    }
+    
+    .timeslot-cards-row .backstage-timeslot-card {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .timeslot-date-header {
+        font-size: 18px;
+        padding: 10px 15px;
     }
     
     .backstage-timeslots-header {
@@ -2097,6 +2105,16 @@
     .timeslot-modal-actions button {
         width: 100%;
     }
+    
+    .timeslot-date-header {
+        font-size: 16px;
+        padding: 8px 12px;
+        margin: 15px 0 10px 0;
+    }
+    
+    .timeslot-cards-row {
+        gap: 10px;
+    }
 }
 
 /* 新增樣式：日期分組和進度條 */
@@ -2109,8 +2127,12 @@
     font-weight: bold;
     color: #1a1a1a;
     margin: 20px 0 15px 0;
-    padding: 10px 0;
+    padding: 12px 20px;
     text-align: center;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .timeslot-cards-row {
@@ -2123,7 +2145,8 @@
 .timeslot-cards-row .backstage-timeslot-card {
     flex: 0 0 auto;
     min-width: 200px;
-    max-width: 250px;
+    max-width: 280px;
+    width: calc(33.333% - 10px); /* 每行最多3个 */
 }
 
 /* 垂直排列樣式 */
