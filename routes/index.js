@@ -2011,8 +2011,8 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
 
 // ====== 時段管理 API ======
 
-// 獲取今天和明天的時段狀況
-router.get('/:slug/api/timeslots', async (req, res) => {
+// 獲取今天和明天的時段狀況 (後台管理用)
+router.get('/:slug/api/timeslots/management', async (req, res) => {
     try {
         const { slug } = req.params;
         console.log(`🔍 獲取時段 API 被調用 - Slug: ${slug}`);
@@ -2188,7 +2188,7 @@ router.get('/:slug/api/timeslots', async (req, res) => {
 });
 
 // 新增時段
-router.post('/:slug/api/timeslots', async (req, res) => {
+router.post('/:slug/api/timeslots/management', async (req, res) => {
     try {
         const { slug } = req.params;
         const { time, maxBookings, available = true } = req.body;
@@ -2261,7 +2261,7 @@ router.post('/:slug/api/timeslots', async (req, res) => {
 });
 
 // 更新時段
-router.put('/:slug/api/timeslots/:slotId', async (req, res) => {
+router.put('/:slug/api/timeslots/management/:slotId', async (req, res) => {
     try {
         const { slug, slotId } = req.params;
         const { time, maxBookings, available } = req.body;
@@ -2316,7 +2316,7 @@ router.put('/:slug/api/timeslots/:slotId', async (req, res) => {
 });
 
 // 批量切換所有時段狀態 (必須在 /:slotId/toggle 之前)
-router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
+router.patch('/:slug/api/timeslots/management/toggle-all', async (req, res) => {
     try {
         const { slug } = req.params;
         const { available } = req.body;
@@ -2344,7 +2344,7 @@ router.patch('/:slug/api/timeslots/toggle-all', async (req, res) => {
 });
 
 // 切換時段開放狀態
-router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
+router.patch('/:slug/api/timeslots/management/:slotId/toggle', async (req, res) => {
     try {
         const { slug, slotId } = req.params;
         const { available } = req.body;
@@ -2395,7 +2395,7 @@ router.patch('/:slug/api/timeslots/:slotId/toggle', async (req, res) => {
 });
 
 // 刪除時段
-router.delete('/:slug/api/timeslots/:slotId', async (req, res) => {
+router.delete('/:slug/api/timeslots/management/:slotId', async (req, res) => {
     try {
         const { slug, slotId } = req.params;
         

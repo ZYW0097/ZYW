@@ -1542,7 +1542,7 @@ async function loadTimeSlots() {
     try {
         gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
         
-        const url = `/${storeSlug}/api/timeslots`;
+        const url = `/${storeSlug}/api/timeslots/management`;
         console.log('📡 請求 URL:', url);
         
         const response = await fetch(url);
@@ -1723,7 +1723,7 @@ async function addNewTimeSlot() {
     try {
         showLoading();
         
-        const response = await fetch(`/${storeSlug}/api/timeslots`, {
+        const response = await fetch(`/${storeSlug}/api/timeslots/management`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1791,7 +1791,7 @@ async function updateTimeSlot() {
     try {
         showLoading();
         
-        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}`, {
+        const response = await fetch(`/${storeSlug}/api/timeslots/management/${slotId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -1828,7 +1828,7 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
     try {
         showLoading();
         
-        const url = `/${storeSlug}/api/timeslots/${slotId}/toggle`;
+        const url = `/${storeSlug}/api/timeslots/management/${slotId}/toggle`;
         console.log(`請求URL: ${url}`);
         
         const response = await fetch(url, {
@@ -1884,7 +1884,7 @@ async function deleteTimeSlot(slotId, time) {
     try {
         showLoading();
         
-        const response = await fetch(`/${storeSlug}/api/timeslots/${slotId}`, {
+        const response = await fetch(`/${storeSlug}/api/timeslots/management/${slotId}`, {
             method: 'DELETE'
         });
         
@@ -1914,7 +1914,7 @@ async function toggleAllTimeSlots(available) {
     try {
         showLoading();
         
-        const response = await fetch(`/${storeSlug}/api/timeslots/toggle-all`, {
+        const response = await fetch(`/${storeSlug}/api/timeslots/management/toggle-all`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
