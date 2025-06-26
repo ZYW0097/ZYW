@@ -1144,6 +1144,43 @@ class SetupManager {
             }
         });
 
+        // 收集訂位設定欄位
+        const bookingFields = ['limitType', 'maxAdults', 'maxChildren', 'maxTotalPeople', 'specialRequestsType'];
+        bookingFields.forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && field.value) {
+                formData.append(fieldName, field.value);
+            }
+        });
+
+        // 收集checkbox欄位
+        const checkboxFields = ['enableVegetarian', 'enableSpecialRequests'];
+        checkboxFields.forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && field.checked) {
+                formData.append(fieldName, 'true');
+            }
+        });
+
+        // 收集集點卡設定欄位
+        if (this.selectedFeatures.points) {
+            const pointsFields = ['welcomePoints', 'maxPointsPerDay', 'pointsExpireDays'];
+            pointsFields.forEach(fieldName => {
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                if (field && field.value) {
+                    formData.append(fieldName, field.value);
+                }
+            });
+        }
+
+        // 收集自訂特殊需求
+        const customSpecialRequests = Array.from(document.querySelectorAll('input[name="customSpecialRequests[]"]'))
+            .map(input => input.value.trim())
+            .filter(value => value);
+        if (customSpecialRequests.length > 0) {
+            formData.append('customSpecialRequests', JSON.stringify(customSpecialRequests));
+        }
+
         // 收集檔案
         const fileFields = ['restaurantImage', 'cardBackgroundImage'];
         fileFields.forEach(fieldName => {

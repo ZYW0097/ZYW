@@ -231,9 +231,9 @@ router.post('/api/setup', requireLogin, upload.fields([
         const client = await Client.create(clientData);
 
         // 步驟 2: 創建並初始化資料庫連接
-        const accountDB = mongoose.connection.useDb(`${slugname}ADB`);
-        const cardDB = mongoose.connection.useDb(`${slugname}CDB`);
-        const bookingDB = mongoose.connection.useDb(`${slugname}BDB`);
+        const accountDB = getClientDb(slugname, 'ADB');
+        const cardDB = getClientDb(slugname, 'CDB');
+        const bookingDB = getClientDb(slugname, 'BDB');
         
         // 初始化資料庫（確保資料庫被創建）
         await Promise.all([
@@ -253,7 +253,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                 const pointsSettingsSchema = require('../models/points/settings');
                 const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
                 
-                await PointsSettings.create({
+                const createdPointsSettings = await PointsSettings.create({
                     slug: slugname,
                     type: 'points_settings',
                     class: 'main_settings',
@@ -261,6 +261,13 @@ router.post('/api/setup', requireLogin, upload.fields([
                     s_reward: parseInt(welcomePoints) || 0,
                     maxPointsPerDay: parseInt(maxPointsPerDay) || 3,
                     pointsExpireDays: parseInt(pointsExpireDays) || 365
+                });
+                
+                console.log(`✅ 集點卡設定創建成功: ${slugname}CDB`, {
+                    state: createdPointsSettings.state,
+                    s_reward: createdPointsSettings.s_reward,
+                    maxPointsPerDay: createdPointsSettings.maxPointsPerDay,
+                    pointsExpireDays: createdPointsSettings.pointsExpireDays
                 });
 
                 // 處理集點卡獎勵設定
@@ -336,7 +343,12 @@ router.post('/api/setup', requireLogin, upload.fields([
                                 // 儲存到獎勵表
                                 const RewardsSchema = require('../models/points/rewards');
                                 const Rewards = cardDB.model('PointsRewards', RewardsSchema);
-                                await Rewards.insertMany(rewardsData);
+                                const createdRewards = await Rewards.insertMany(rewardsData);
+                                
+                                console.log(`✅ 獎勵創建成功: ${slugname}CDB`, {
+                                    count: createdRewards.length,
+                                    rewards: createdRewards.map(r => ({ name: r.name, points: r.points, active: r.active }))
+                                });
                                 
                                 // 注意：獎勵資料現在只存在 clientCDB 中，不再存到 customSettings
                             } catch (error) {
@@ -425,7 +437,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                 }
             }
 
-            await BookingSettings.create({
+            const createdBookingSettings = await BookingSettings.create({
                 slug: slugname,
                 type: 'booking_settings',
                 class: 'main_settings',
@@ -438,6 +450,15 @@ router.post('/api/setup', requireLogin, upload.fields([
                 enableSpecialRequests: enableSpecialRequests === 'true' || enableSpecialRequests === true,
                 specialRequestsType: specialRequestsType || 'default',
                 customSpecialRequests: parsedCustomSpecialRequests
+            });
+            
+            console.log(`✅ 訂位設定創建成功: ${slugname}BDB`, {
+                state: createdBookingSettings.state,
+                limitType: createdBookingSettings.limitType,
+                maxAdults: createdBookingSettings.maxAdults,
+                maxChildren: createdBookingSettings.maxChildren,
+                enableVegetarian: createdBookingSettings.enableVegetarian,
+                enableSpecialRequests: createdBookingSettings.enableSpecialRequests
             });
         } catch (error) {
             console.error('❌ 訂位設定失敗:', error);
@@ -1037,14 +1058,10 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
                     class: 'main_settings' 
                 },
                 { 
-                    slug: storeSlug,
-                    type: 'points_settings',
-                    class: 'main_settings',
                     state: pointsSystem ? 'enable' : 'disabled',
-                    s_reward: 0,
                     updatedAt: new Date()
                 },
-                { upsert: true, new: true }
+                { new: true }
             );
         } catch (cdbError) {
             console.error('❌ 集點卡設定更新失敗:', cdbError);
@@ -1063,13 +1080,10 @@ router.post('/:storeSlug/api/settings/features', async (req, res) => {
                     class: 'main_settings' 
                 },
                 { 
-                    slug: storeSlug,
-                    type: 'booking_settings',
-                    class: 'main_settings',
                     state: bookingSystem ? 'enable' : 'disabled',
                     updatedAt: new Date()
                 },
-                { upsert: true, new: true }
+                { new: true }
             );
         } catch (bdbError) {
             console.error('❌ 訂位設定更新失敗:', bdbError);
@@ -1580,7 +1594,7 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
             
             if (matchingFile && matchingFile.path) {
                 imgUrl = matchingFile.path; // Cloudinary URL
-                // 使用完畢後從files陣列中移除，避免重複使用
+                // 使用完畢從files陣列中移除，避免重複使用
                 const fileIndex = files.indexOf(matchingFile);
                 if (fileIndex > -1) {
                     files.splice(fileIndex, 1);
