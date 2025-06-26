@@ -847,6 +847,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
         const renderOptions = {
             storeSlug,
             clientname: client.clientname,
+            restaurantAddress: client.restaurantAddress || '',
             customSettings: {
                 timeSlots,
                 diningRules,
@@ -855,7 +856,9 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 features: featureSettings,
                 pointsRules: pointsRulesFromDB || client.customSettings?.pointsRules || null,
                 rewards: client.customSettings?.rewards || null,
-                restaurantAddress: client.customSettings?.restaurantAddress || ''
+                restaurantAddress: client.restaurantAddress || '',
+                bookingSettings: client.customSettings?.bookingSettings || null,
+                ...client.customSettings
             },
             points,
             createdAt: client.createdAt,

@@ -160,7 +160,7 @@
                                     <div class="backstage-form-group">
                 <label for="restaurantAddress">餐廳地址</label>
                                         <input type="text" id="restaurantAddress" name="restaurantAddress" 
-                                               value="<%= (customSettings && customSettings.restaurantAddress) ? customSettings.restaurantAddress : '' %>" 
+                                               value="<%= restaurantAddress || '' %>" 
                                                placeholder="請輸入餐廳完整地址">
                                     </div>
             </div>

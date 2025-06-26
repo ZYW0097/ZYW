@@ -368,18 +368,27 @@ async function submitBasicSettings() {
     const form = document.getElementById('basicInfoForm');
     const formData = new FormData(form);
     
-    // 只有當密碼字段有值時才包含它
-    const password = formData.get('adminPassword');
-    if (!password || password.trim() === '') {
-        formData.delete('adminPassword');
+    const clientname = formData.get('clientname');
+    const restaurantAddress = formData.get('restaurantAddress');
+    
+    if (!clientname || clientname.trim().length < 2) {
+        showNotification('餐廳名稱必須至少2個字元', 'error');
+        return;
     }
     
     showLoading();
     
     try {
-        const response = await fetch(`/${storeSlug}/api/setup`, {
-            method: 'PUT',
-            body: formData
+        const storeSlug = getCurrentSlug();
+        const response = await fetch(`/${storeSlug}/api/settings/basicInfo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                clientname: clientname.trim(), 
+                restaurantAddress: restaurantAddress ? restaurantAddress.trim() : '' 
+            })
         });
         
         const result = await response.json();
@@ -388,18 +397,19 @@ async function submitBasicSettings() {
             showNotification('基本設定已更新', 'success');
             
             // 更新頁面上的餐廳名稱顯示
-            const storeName = formData.get('clientname');
-            if (storeName) {
-                const storeNameElement = document.querySelector('.store-name');
-                if (storeNameElement) {
-                    storeNameElement.textContent = storeName;
-                }
+            const storeNameElement = document.querySelector('.store-name');
+            if (storeNameElement) {
+                storeNameElement.textContent = clientname.trim();
             }
+            
+            // 刷新頁面以顯示更新後的資訊
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
-            showNotification(result.message || '更新失敗', 'error');
+            showNotification(result.error || '更新失敗', 'error');
         }
     } catch (error) {
-        console.error('Error:', error);
         showNotification('網路錯誤，請稍後再試', 'error');
     } finally {
         hideLoading();
@@ -1743,6 +1753,8 @@ function initializeBookingBasicSettings() {
             setTimeout(() => {
                 initializeSpecialRequestsToggle();
                 initializeLimitTypeToggle();
+                // 載入已存儲的設定
+                loadBookingSettings();
             }, 100);
         } else {
             console.error('❌ 表單克隆後無法重新找到');
@@ -1757,8 +1769,6 @@ async function loadBookingSettings() {
     const storeSlug = getCurrentSlug();
     
     if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
-        console.error('❌ storeSlug 無效:', storeSlug);
-        showNotification('商家代碼無效，請重新載入頁面', 'error');
         return;
     }
     
@@ -1766,12 +1776,103 @@ async function loadBookingSettings() {
         const response = await fetch(`/${storeSlug}/api/booking-settings`);
         if (response.ok) {
             const data = await response.json();
-            // 這裡可以預填表單數據
-        } else {
-            console.log('⚠️ 訂位設定載入失敗，使用預設值');
+            if (data.success && data.bookingSettings) {
+                populateBookingSettingsForm(data.bookingSettings);
+            }
         }
     } catch (error) {
-        console.error('❌ 載入訂位設定時發生錯誤:', error);
+        // 靜默處理錯誤，不影響頁面載入
+    }
+}
+
+// 填充訂位設定表單
+function populateBookingSettingsForm(settings) {
+    try {
+        // 設定人數限制類型
+        const limitTypeRadios = document.querySelectorAll('input[name="limitType"]');
+        limitTypeRadios.forEach(radio => {
+            if (radio.value === (settings.limitType || 'separate')) {
+                radio.checked = true;
+            }
+        });
+        
+        // 設定人數限制值
+        const maxAdultsInput = document.getElementById('maxAdults');
+        const maxChildrenInput = document.getElementById('maxChildren');
+        const maxTotalPeopleInput = document.getElementById('maxTotalPeople');
+        
+        if (maxAdultsInput) maxAdultsInput.value = settings.maxAdults || 6;
+        if (maxChildrenInput) maxChildrenInput.value = settings.maxChildren || 6;
+        if (maxTotalPeopleInput) maxTotalPeopleInput.value = settings.maxTotalPeople || 10;
+        
+        // 設定餐廳特色選項
+        const enableVegetarianCheckbox = document.getElementById('enableVegetarian');
+        const enableSpecialRequestsCheckbox = document.getElementById('enableSpecialRequests');
+        
+        if (enableVegetarianCheckbox) {
+            enableVegetarianCheckbox.checked = Boolean(settings.enableVegetarian);
+        }
+        if (enableSpecialRequestsCheckbox) {
+            enableSpecialRequestsCheckbox.checked = Boolean(settings.enableSpecialRequests);
+        }
+        
+        // 設定特殊需求選項類型
+        const specialRequestsTypeRadios = document.querySelectorAll('input[name="specialRequestsType"]');
+        specialRequestsTypeRadios.forEach(radio => {
+            if (radio.value === (settings.specialRequestsType || 'default')) {
+                radio.checked = true;
+            }
+        });
+        
+        // 填充自訂特殊需求選項
+        if (settings.customSpecialRequests && settings.customSpecialRequests.length > 0) {
+            populateCustomSpecialRequests(settings.customSpecialRequests);
+        }
+        
+        // 觸發相關的顯示控制函數
+        if (typeof initializeLimitTypeToggle === 'function') {
+            initializeLimitTypeToggle();
+        }
+        if (typeof initializeSpecialRequestsToggle === 'function') {
+            initializeSpecialRequestsToggle();
+        }
+    } catch (error) {
+        // 靜默處理錯誤，不影響頁面載入
+    }
+}
+
+// 填充自訂特殊需求選項
+function populateCustomSpecialRequests(customRequests) {
+    const container = document.getElementById('specialRequests-list');
+    if (!container) return;
+    
+    // 清空現有項目
+    container.innerHTML = '';
+    
+    // 添加自訂選項
+    customRequests.forEach((option, index) => {
+        const item = document.createElement('div');
+        item.className = 'backstage-list-item';
+        
+        const isLast = index === customRequests.length - 1;
+        item.innerHTML = `
+            <input type="text" name="customSpecialRequests[]" value="${option}" placeholder="請輸入特殊需求選項">
+            ${isLast ? '<button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>' : ''}
+            ${customRequests.length > 1 ? '<button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeSpecialRequest(this)">×</button>' : ''}
+        `;
+        
+        container.appendChild(item);
+    });
+    
+    // 如果沒有自訂選項，添加一個空項目
+    if (customRequests.length === 0) {
+        const item = document.createElement('div');
+        item.className = 'backstage-list-item';
+        item.innerHTML = `
+            <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項">
+            <button type="button" class="backstage-btn-icon backstage-btn-add" onclick="addSpecialRequest()">+</button>
+        `;
+        container.appendChild(item);
     }
 }
 
@@ -1798,9 +1899,6 @@ function initializeTimeSlotManagement() {
             updateTimeSlot();
         });
     }
-    
-    // 載入設定數據
-    loadBookingSettings();
     
     // 載入現有時段
     if (gridContainer) {
@@ -2329,4 +2427,26 @@ function getCurrentSlug() {
     const path = window.location.pathname;
     const slugMatch = path.match(/^\/([^\/]+)/);
     return slugMatch ? slugMatch[1] : '';
-} 
+}
+
+// 頁面載入時的初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 SPA
+    initializeSPA();
+    
+    // 初始化表單
+    initializeForms();
+    
+    // 初始化圖片預覽
+    initializeImagePreview();
+    
+    // 初始化動態列表
+    initializeDynamicLists();
+    
+    // 設置行動版選單
+    setupMobileMenu();
+    
+    // 根據初始 hash 導航到正確頁面
+    const initialPage = window.location.hash.substring(1) || 'dashboard';
+    navigateToPage(initialPage);
+});
