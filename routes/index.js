@@ -813,12 +813,17 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 console.error('Error fetching feature settings:', error);
             }
 
-            // 獲取點數數據
-            if (req.user) {
-                const userDb = getClientDb(storeSlug, 'ADB');
-                const userPoints = await userDb.model('UserPoints', require('../models/points/userPoints'))
-                    .findOne({ lineId: req.user.lineId });
-                points = userPoints ? userPoints.points : 0;
+            // 獲取點數數據（後台頁面通常沒有登入用戶，設為0）
+            if (req.user && req.user.lineId) {
+                try {
+                    const userDb = getClientDb(storeSlug, 'ADB');
+                    const userPoints = await userDb.model('UserPoints', require('../models/points/userPoints'))
+                        .findOne({ lineId: req.user.lineId });
+                    points = userPoints ? userPoints['ah-points'] : 0;
+                } catch (pointsError) {
+                    console.error('Error fetching user points:', pointsError);
+                    points = 0;
+                }
             }
             
             // 獲取時段設定
