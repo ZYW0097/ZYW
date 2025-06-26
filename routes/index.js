@@ -115,7 +115,20 @@ router.post('/api/setup', requireLogin, upload.fields([
             bookingSystem,
             rewardNames,
             rewardPoints,
-            pointRules
+            pointRules,
+            // 新增的訂位設定參數
+            limitType,
+            maxAdults,
+            maxChildren,
+            maxTotalPeople,
+            enableVegetarian,
+            enableSpecialRequests,
+            specialRequestsType,
+            customSpecialRequests,
+            // 新增的集點規則參數
+            welcomePoints,
+            maxPointsPerDay,
+            pointsExpireDays
         } = req.body;
 
         // 驗證必填欄位
@@ -245,7 +258,9 @@ router.post('/api/setup', requireLogin, upload.fields([
                     type: 'points_settings',
                     class: 'main_settings',
                     state: 'enable',
-                    s_reward: 0
+                    s_reward: parseInt(welcomePoints) || 0,
+                    maxPointsPerDay: parseInt(maxPointsPerDay) || 3,
+                    pointsExpireDays: parseInt(pointsExpireDays) || 365
                 });
 
                 // 處理集點卡獎勵設定
@@ -390,11 +405,39 @@ router.post('/api/setup', requireLogin, upload.fields([
             const bookingSettingsSchema = require('../models/BookingSettings');
             const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
             
+            // 處理人數限制設定
+            const bookingLimitType = limitType || 'separate';
+            const adults = parseInt(maxAdults) || 6;
+            const children = parseInt(maxChildren) || 6;
+            const totalPeople = parseInt(maxTotalPeople) || 6;
+            
+            // 處理特殊需求設定
+            const parsedCustomSpecialRequests = [];
+            if (customSpecialRequests) {
+                try {
+                    if (Array.isArray(customSpecialRequests)) {
+                        parsedCustomSpecialRequests.push(...customSpecialRequests.filter(req => req && req.trim()));
+                    } else if (typeof customSpecialRequests === 'string' && customSpecialRequests.trim()) {
+                        parsedCustomSpecialRequests.push(...JSON.parse(customSpecialRequests).filter(req => req && req.trim()));
+                    }
+                } catch (error) {
+                    console.error('Custom special requests parse error:', error);
+                }
+            }
+
             await BookingSettings.create({
                 slug: slugname,
                 type: 'booking_settings',
                 class: 'main_settings',
-                state: (bookingSystem === 'true' || bookingSystem === true) ? 'enable' : 'disabled'
+                state: (bookingSystem === 'true' || bookingSystem === true) ? 'enable' : 'disabled',
+                limitType: bookingLimitType,
+                maxAdults: bookingLimitType === 'total' ? totalPeople : adults,
+                maxChildren: bookingLimitType === 'total' ? totalPeople : children,
+                maxTotalPeople: bookingLimitType === 'separate' ? (adults + children) : totalPeople,
+                enableVegetarian: enableVegetarian === 'true' || enableVegetarian === true,
+                enableSpecialRequests: enableSpecialRequests === 'true' || enableSpecialRequests === true,
+                specialRequestsType: specialRequestsType || 'default',
+                customSpecialRequests: parsedCustomSpecialRequests
             });
         } catch (error) {
             console.error('❌ 訂位設定失敗:', error);
@@ -802,7 +845,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
                         limitType: bookingSettings.limitType || 'separate',
                         maxAdults: bookingSettings.maxAdults || 6,
                         maxChildren: bookingSettings.maxChildren || 6,
-                        maxTotalPeople: bookingSettings.maxTotalPeople || 10,
+                        maxTotalPeople: bookingSettings.maxTotalPeople || 6,
                         enableVegetarian: bookingSettings.enableVegetarian || false,
                         enableSpecialRequests: bookingSettings.enableSpecialRequests || false,
                         specialRequestsType: bookingSettings.specialRequestsType || 'default',
@@ -1556,52 +1599,66 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
             });
         }
 
-        // 處理checkbox狀態（HTML checkbox只會在選中時發送值）
-        const activeValues = Array.isArray(rewardActives) ? rewardActives : (rewardActives ? [rewardActives] : []);
-        
-        
-        
-        // 根據發送的checkbox值設定active狀態
-        // 每個checkbox的value應該是該項目的索引
-        activeValues.forEach(value => {
-            if (value === 'on') {
-                // 如果沒有指定索引，可能是單一checkbox
-                rewards.forEach(reward => reward.active = true);        
-            } else {
-                const index = parseInt(value);
-                if (!isNaN(index) && rewards[index]) {
-                    rewards[index].active = true;
-                }
-            }
-        });
-        
-        // 如果沒有收到任何active值，檢查form data中是否有checkbox名稱出現
-        if (activeValues.length === 0) {
-            // 所有checkbox都未選中，保持active: false
-        }
-        
-
         // 儲存獎勵資料到 clientCDB
         try {
             const cdb = getClientDb(storeSlug, 'CDB');
             const pointsRewardsSchema = require('../models/points/rewards');
             const PointsRewards = cdb.model('PointsRewards', pointsRewardsSchema);
             
-            // 先刪除所有舊的獎勵
-            await PointsRewards.deleteMany({ slug: storeSlug });
+            // 取得現有的獎勵以保持正確的索引對應
+            const existingRewards = await PointsRewards.find({ slug: storeSlug }).sort({ createdAt: 1 });
             
-            // 建立新的獎勵資料
-            const rewardsToInsert = rewards.map(reward => ({
-                type: 'points_reward',
-                name: reward.name,
-                points: reward.points,
-                img: reward.img,
-                slug: storeSlug,
-                active: reward.active
-            }));
+            // 處理checkbox狀態（HTML checkbox只會在選中時發送值）
+            const activeValues = Array.isArray(rewardActives) ? rewardActives : (rewardActives ? [rewardActives] : []);
             
-            if (rewardsToInsert.length > 0) {
-                await PointsRewards.insertMany(rewardsToInsert);
+            console.log('現有獎勵數量:', existingRewards.length);
+            console.log('新獎勵數量:', rewards.length);
+            console.log('checkbox值:', rewardActives);
+            console.log('checkbox值類型:', typeof rewardActives);
+            console.log('activeValues:', activeValues);
+            
+            // 如果獎勵數量相同，進行更新而非重新創建
+            if (existingRewards.length === rewards.length) {
+                // 更新現有獎勵
+                for (let i = 0; i < rewards.length; i++) {
+                    const reward = rewards[i];
+                    const existingReward = existingRewards[i];
+                    
+                    // 檢查這個索引的checkbox是否被選中
+                    const isActive = activeValues.includes(i.toString());
+                    
+                    await PointsRewards.findByIdAndUpdate(existingReward._id, {
+                        name: reward.name,
+                        points: reward.points,
+                        img: reward.img,
+                        active: isActive,
+                        updatedAt: new Date()
+                    });
+                }
+                
+                console.log('更新現有獎勵完成');
+            } else {
+                // 獎勵數量不同，重新創建
+                await PointsRewards.deleteMany({ slug: storeSlug });
+                
+                // 根據checkbox狀態設定active
+                const rewardsToInsert = rewards.map((reward, index) => {
+                    const isActive = activeValues.includes(index.toString());
+                    return {
+                        type: 'points_reward',
+                        name: reward.name,
+                        points: reward.points,
+                        img: reward.img,
+                        slug: storeSlug,
+                        active: isActive
+                    };
+                });
+                
+                if (rewardsToInsert.length > 0) {
+                    await PointsRewards.insertMany(rewardsToInsert);
+                }
+                
+                console.log('重新創建獎勵完成');
             }
             
             res.json({ success: true, message: '獎勵設定已更新' });
@@ -2760,7 +2817,7 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
                 limitType: limitType || 'separate',
                 maxAdults: parseInt(maxAdults) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
                 maxChildren: parseInt(maxChildren) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
-                maxTotalPeople: parseInt(maxTotalPeople) || (limitType === 'separate' ? parseInt(maxAdults) + parseInt(maxChildren) : 10),
+                maxTotalPeople: parseInt(maxTotalPeople) || (limitType === 'separate' ? parseInt(maxAdults) + parseInt(maxChildren) : 6),
                 enableVegetarian: Boolean(enableVegetarian),
                 enableSpecialRequests: Boolean(enableSpecialRequests),
                 specialRequestsType: specialRequestsType || 'default',
@@ -2816,7 +2873,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
             limitType: 'separate',
             maxAdults: 6,
             maxChildren: 6,
-            maxTotalPeople: 10,
+            maxTotalPeople: 6,
             enableVegetarian: false,
             enableSpecialRequests: false,
             specialRequestsType: 'default',
@@ -2827,7 +2884,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
             limitType: settings.limitType || 'separate',
             maxAdults: settings.maxAdults || 6,
             maxChildren: settings.maxChildren || 6,
-            maxTotalPeople: settings.maxTotalPeople || 10,
+            maxTotalPeople: settings.maxTotalPeople || 6,
             enableVegetarian: settings.enableVegetarian || false,
             enableSpecialRequests: settings.enableSpecialRequests || false,
             specialRequestsType: settings.specialRequestsType || 'default',

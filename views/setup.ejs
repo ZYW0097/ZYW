@@ -140,6 +140,79 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- 人數限制設定 -->
+                        <div class="form-group">
+                            <label>人數限制方式</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="limitType" value="separate" checked>
+                                    <span>分別設定大人與小孩最多可以幾個人</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="limitType" value="total">
+                                    <span>只設定總人數上限</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 分別設定選項 -->
+                        <div id="separateSettings" class="form-row" style="display: block;">
+                            <div class="form-group">
+                                <label for="maxAdults">大人最多人數</label>
+                                <input type="number" id="maxAdults" name="maxAdults" value="6" min="1" max="20" required>
+                                <small>單次訂位大人的最多人數（1-20人）</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="maxChildren">小孩最多人數</label>
+                                <input type="number" id="maxChildren" name="maxChildren" value="6" min="0" max="20" required>
+                                <small>單次訂位小孩的最多人數（0-20人）</small>
+                            </div>
+                        </div>
+
+                        <!-- 總人數上限選項 -->
+                        <div id="totalSettings" class="form-group" style="display: none;">
+                            <label for="maxTotalPeople">總人數上限</label>
+                            <input type="number" id="maxTotalPeople" name="maxTotalPeople" value="6" min="1" max="30">
+                            <small>單次訂位的總人數上限（大人+小孩，1-30人）</small>
+                        </div>
+
+                        <!-- 餐廳特色選項 -->
+                        <div class="form-group">
+                            <label>餐廳特色選項</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="enableVegetarian" value="true">
+                                    <span>提供素食選項</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="enableSpecialRequests" value="true">
+                                    <span>接受特殊需求（如過敏、行動不便等）</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 特殊需求選項設定 -->
+                        <div class="form-group" id="specialRequestsOptions" style="display: none;">
+                            <label>特殊需求選項</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="specialRequestsType" value="default" checked>
+                                    <span>使用預設範本並可新增額外選項</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="specialRequestsType" value="custom">
+                                    <span>完全自訂選項</span>
+                                </label>
+                            </div>
+                            
+                            <div class="dynamic-list" id="customSpecialRequests-list">
+                                <div class="list-item">
+                                    <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項">
+                                    <button type="button" class="list-btn add-btn" onclick="addSpecialRequest()">+</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -188,15 +261,37 @@
             </div>
         </div>
 
+                        <!-- 集點規則設定 -->
                         <div class="form-group">
-                            <label>集點卡規則 (至少設定一條) <span class="required">*</span></label>
+                            <label>集點規則設定</label>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="welcomePoints">首次領取獎勵</label>
+                                    <input type="number" id="welcomePoints" name="welcomePoints" value="0" min="0" max="50">
+                                    <small>新用戶首次領取集點卡時獲得的點數（0-50點）</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maxPointsPerDay">每日點數上限</label>
+                                    <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" value="3" min="1" max="20" required>
+                                    <small>每位顧客每天最多可獲得的點數</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pointsExpireDays">點數有效期</label>
+                                    <input type="number" id="pointsExpireDays" name="pointsExpireDays" value="365" min="30" max="1095" required>
+                                    <small>點數的有效天數（30-1095天）</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>集點卡使用規則 (至少設定一條) <span class="required">*</span></label>
                             <div class="dynamic-list" id="pointRules-list">
                                 <div class="list-item">
                                     <input type="text" name="pointRules[]" placeholder="請輸入集點卡規則" required>
                                     <button type="button" class="list-btn add-btn" onclick="addPointRule()">+</button>
                                 </div>
                             </div>
-                </div>
+                        </div>
             </div>
         </div>
 

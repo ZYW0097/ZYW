@@ -1968,7 +1968,7 @@ function populateBookingSettingsForm(settings) {
         
         if (maxAdultsInput) maxAdultsInput.value = settings.maxAdults || 6;
         if (maxChildrenInput) maxChildrenInput.value = settings.maxChildren || 6;
-        if (maxTotalPeopleInput) maxTotalPeopleInput.value = settings.maxTotalPeople || 10;
+        if (maxTotalPeopleInput) maxTotalPeopleInput.value = settings.maxTotalPeople || 6;
         
         // 設定餐廳特色選項
         const enableVegetarianCheckbox = document.getElementById('enableVegetarian');

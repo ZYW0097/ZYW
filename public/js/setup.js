@@ -34,6 +34,12 @@ class SetupManager {
             setupDragAndDrop();
         }, 600);
         
+        // 初始化訂位設定切換邏輯
+        this.setupBookingSettings();
+        
+        // 初始化集點卡設定切換邏輯
+        this.setupPointsSettings();
+        
     }
 
     setupEventListeners() {
@@ -804,6 +810,44 @@ class SetupManager {
         }
     }
 
+    setupBookingSettings() {
+        // 人數限制方式切換
+        const limitTypeRadios = document.querySelectorAll('input[name="limitType"]');
+        const separateSettings = document.getElementById('separateSettings');
+        const totalSettings = document.getElementById('totalSettings');
+        
+        limitTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'separate') {
+                    if (separateSettings) separateSettings.style.display = 'block';
+                    if (totalSettings) totalSettings.style.display = 'none';
+                } else {
+                    if (separateSettings) separateSettings.style.display = 'none';
+                    if (totalSettings) totalSettings.style.display = 'block';
+                }
+            });
+        });
+        
+        // 特殊需求選項切換
+        const enableSpecialRequestsCheckbox = document.querySelector('input[name="enableSpecialRequests"]');
+        const specialRequestsOptions = document.getElementById('specialRequestsOptions');
+        
+        if (enableSpecialRequestsCheckbox && specialRequestsOptions) {
+            enableSpecialRequestsCheckbox.addEventListener('change', () => {
+                if (enableSpecialRequestsCheckbox.checked) {
+                    specialRequestsOptions.style.display = 'block';
+                } else {
+                    specialRequestsOptions.style.display = 'none';
+                }
+            });
+        }
+    }
+
+    setupPointsSettings() {
+        // 集點卡設定相關的JavaScript邏輯可以在這裡添加
+        // 目前集點卡設定比較簡單，主要是表單驗證
+    }
+
     async checkClientnameAvailability(clientname) {
         const validationDiv = document.getElementById('clientname-validation');
         
@@ -1025,6 +1069,21 @@ class SetupManager {
         this.updateListButtons(list);
     }
 
+    addSpecialRequest() {
+        const list = document.getElementById('customSpecialRequests-list');
+        if (!list) return;
+
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+            <input type="text" name="customSpecialRequests[]" placeholder="請輸入特殊需求選項">
+            <button type="button" class="list-btn add-btn" onclick="setupManager.addSpecialRequest()">+</button>
+            <button type="button" class="list-btn remove-btn" onclick="setupManager.removeItem(this)">-</button>
+        `;
+        list.appendChild(div);
+        this.updateListButtons(list);
+    }
+
     removeItem(btn) {
         const listItem = btn.closest('.list-item');
         const list = listItem.parentElement;
@@ -1216,6 +1275,12 @@ function addReward() {
 function addPointRule() {
     if (setupManager) {
         setupManager.addPointRule();
+    }
+}
+
+function addSpecialRequest() {
+    if (setupManager) {
+        setupManager.addSpecialRequest();
     }
 }
 

@@ -375,7 +375,7 @@ function useDefaultBookingSettings() {
         limitType: 'separate',
         maxAdults: 6,
         maxChildren: 6,
-        maxTotalPeople: 10,
+        maxTotalPeople: 6,
         enableVegetarian: false,
         enableSpecialRequests: false,
         specialRequestsType: 'default',

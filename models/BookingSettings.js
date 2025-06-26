@@ -38,7 +38,7 @@ const bookingSettingsSchema = new mongoose.Schema({
     },
     maxTotalPeople: {
         type: Number,
-        default: 10,
+        default: 6,
         min: 1,
         max: 30
     },
