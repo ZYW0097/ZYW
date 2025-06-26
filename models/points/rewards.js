@@ -21,6 +21,11 @@ const pointsRewardsSchema = new mongoose.Schema({
         required: true,
         maxlength: 15
     },
+    active: {
+        type: Boolean,
+        default: true,
+        required: true
+    },
     updatedAt: {
         type: Date,
         default: Date.now

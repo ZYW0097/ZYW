@@ -263,12 +263,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                     pointsExpireDays: parseInt(pointsExpireDays) || 365
                 });
                 
-                console.log(`✅ 集點卡設定創建成功: ${slugname}CDB`, {
-                    state: createdPointsSettings.state,
-                    s_reward: createdPointsSettings.s_reward,
-                    maxPointsPerDay: createdPointsSettings.maxPointsPerDay,
-                    pointsExpireDays: createdPointsSettings.pointsExpireDays
-                });
+
 
                 // 處理集點卡獎勵設定
                 if (rewardNames && rewardPoints) {
@@ -345,10 +340,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                                 const Rewards = cardDB.model('PointsRewards', RewardsSchema);
                                 const createdRewards = await Rewards.insertMany(rewardsData);
                                 
-                                console.log(`✅ 獎勵創建成功: ${slugname}CDB`, {
-                                    count: createdRewards.length,
-                                    rewards: createdRewards.map(r => ({ name: r.name, points: r.points, active: r.active }))
-                                });
+
                                 
                                 // 注意：獎勵資料現在只存在 clientCDB 中，不再存到 customSettings
                             } catch (error) {
@@ -452,14 +444,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                 customSpecialRequests: parsedCustomSpecialRequests
             });
             
-            console.log(`✅ 訂位設定創建成功: ${slugname}BDB`, {
-                state: createdBookingSettings.state,
-                limitType: createdBookingSettings.limitType,
-                maxAdults: createdBookingSettings.maxAdults,
-                maxChildren: createdBookingSettings.maxChildren,
-                enableVegetarian: createdBookingSettings.enableVegetarian,
-                enableSpecialRequests: createdBookingSettings.enableSpecialRequests
-            });
+
         } catch (error) {
             console.error('❌ 訂位設定失敗:', error);
         }
@@ -1527,16 +1512,47 @@ router.get('/:storeSlug/backstage/rewards', async (req, res) => {
         
         const rewards = await PointsRewards.find({ slug: storeSlug }).sort({ _id: 1 });
         
-        res.json({ 
-            success: true, 
-            rewards: rewards.map(reward => ({
-                id: reward._id,
-                name: reward.name,
-                points: reward.points,
-                img: reward.img,
-                active: reward.active || false
-            }))
-        });
+        // 檢查並更新沒有active欄位的舊獎勵
+        const needsUpdate = rewards.filter(reward => reward.active === undefined || reward.active === null);
+        if (needsUpdate.length > 0) {
+            // 批量更新為啟用狀態
+            await PointsRewards.updateMany(
+                { 
+                    slug: storeSlug,
+                    $or: [
+                        { active: { $exists: false } },
+                        { active: null },
+                        { active: undefined }
+                    ]
+                },
+                { active: true }
+            );
+            
+            // 重新獲取更新後的資料
+            const updatedRewards = await PointsRewards.find({ slug: storeSlug }).sort({ _id: 1 });
+            
+            res.json({ 
+                success: true, 
+                rewards: updatedRewards.map(reward => ({
+                    id: reward._id,
+                    name: reward.name,
+                    points: reward.points,
+                    img: reward.img,
+                    active: reward.active !== false // 確保預設為true
+                }))
+            });
+        } else {
+            res.json({ 
+                success: true, 
+                rewards: rewards.map(reward => ({
+                    id: reward._id,
+                    name: reward.name,
+                    points: reward.points,
+                    img: reward.img,
+                    active: reward.active !== false // 確保預設為true
+                }))
+            });
+        }
     } catch (error) {
         console.error('❌ 獲取獎勵設定錯誤:', error);
         res.status(500).json({ success: false, message: '獲取獎勵設定失敗' });

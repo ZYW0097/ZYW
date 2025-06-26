@@ -76,6 +76,27 @@ router.get('/:storeSlug/card', async (req, res) => {
             const pointsRewardsSchema = require('../../models/points/rewards');
             const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
             
+            // 先獲取所有獎勵
+            const allRewards = await PointsRewards.find({ slug: storeSlug });
+            
+            // 檢查是否有沒有active欄位的舊獎勵，並更新它們
+            const needsUpdate = allRewards.filter(reward => reward.active === undefined || reward.active === null);
+            if (needsUpdate.length > 0) {
+                // 批量更新為啟用狀態
+                await PointsRewards.updateMany(
+                    { 
+                        slug: storeSlug,
+                        $or: [
+                            { active: { $exists: false } },
+                            { active: null },
+                            { active: undefined }
+                        ]
+                    },
+                    { active: true }
+                );
+            }
+            
+            // 獲取啟用的獎勵
             activeRewards = await PointsRewards.find({ 
                 slug: storeSlug,
                 active: true 
