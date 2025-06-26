@@ -2584,6 +2584,18 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
         const { slug } = req.params;
         const { bookingSettings } = req.body;
         
+        // 檢查後台認證
+        const backstageAuth = req.session.backstageAuth;
+        const isBackstageAuthenticated = backstageAuth && 
+                                       backstageAuth.storeSlug === slug &&
+                                       (Date.now() - new Date(backstageAuth.loginTime).getTime()) < 2 * 60 * 60 * 1000;
+        
+        if (!isBackstageAuthenticated) {
+            return res.status(401).json({
+                success: false,
+                message: '未授權的訪問，請重新登入後台'
+            });
+        }
         
         // 驗證必要欄位
         if (!bookingSettings) {

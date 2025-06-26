@@ -192,6 +192,15 @@ function initializeForms() {
             submitRules();
         });
     }
+    
+    // 訂位基本設定表單
+    const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
+    if (bookingBasicSettingsForm) {
+        bookingBasicSettingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitBookingBasicSettings();
+        });
+    }
 }
 
 // 圖片預覽功能
@@ -524,6 +533,7 @@ async function submitDiningRules() {
 
 // 提交訂位基本設定
 async function submitBookingBasicSettings() {
+    console.log('🔥 submitBookingBasicSettings 被調用');
     
     // 重新獲取表單元素確保是最新的
     const form = document.getElementById('bookingBasicSettingsForm');
@@ -532,6 +542,8 @@ async function submitBookingBasicSettings() {
         showNotification('找不到表單元素', 'error');
         return;
     }
+    
+    console.log('✅ 找到表單元素:', form);
     
     const formData = new FormData(form);
     
@@ -573,27 +585,40 @@ async function submitBookingBasicSettings() {
         }
     }
     
+    console.log('📦 準備發送的數據:', { bookingSettings });
+    
     try {
         showLoading();
         
         const storeSlug = getCurrentSlug();
+        console.log('🏪 storeSlug:', storeSlug);
         
-        const response = await fetch(`/${storeSlug}/api/booking-settings`, {
+        const url = `/${storeSlug}/api/booking-settings`;
+        console.log('🌐 請求URL:', url);
+        
+        const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'same-origin', // 確保包含session資訊
             body: JSON.stringify({ bookingSettings })
         });
         
+        console.log('📡 回應狀態:', response.status);
+        
         const result = await response.json();
+        console.log('📋 API回應:', result);
         
         if (response.ok) {
             showNotification('訂位基本設定已更新！');
+            console.log('✅ 設定更新成功');
         } else {
+            console.error('❌ API錯誤:', result);
             throw new Error(result.message || '更新失敗');
         }
     } catch (error) {   
+        console.error('❌ 提交錯誤:', error);
         showNotification(error.message || '更新訂位基本設定失敗', 'error');
     } finally {
         hideLoading();
@@ -1722,46 +1747,13 @@ function fallbackCopyTextToClipboard(text) {
 // 初始化訂位基本設定表單
 function initializeBookingBasicSettings() {
     
-    const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
-    
-    if (bookingBasicSettingsForm) {
-        // 移除所有現有的 submit 事件監聽器
-        const newForm = bookingBasicSettingsForm.cloneNode(true);
-        bookingBasicSettingsForm.parentNode.replaceChild(newForm, bookingBasicSettingsForm);
-        
-        // 獲取新的表單引用
-        const freshForm = document.getElementById('bookingBasicSettingsForm');
-        
-        if (freshForm) {
-            // 重新綁定事件
-            freshForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                submitBookingBasicSettings();
-            });
-            
-            // 額外綁定按鈕點擊事件作為備用
-            const submitBtn = freshForm.querySelector('[type="submit"]');
-            if (submitBtn) {
-                submitBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    submitBookingBasicSettings();
-                });
-            }
-            
-            // 延遲初始化特殊需求選項控制，確保DOM更新完成
-            setTimeout(() => {
-                initializeSpecialRequestsToggle();
-                initializeLimitTypeToggle();
-                // 載入已存儲的設定
-                loadBookingSettings();
-            }, 100);
-        } else {
-            console.error('❌ 表單克隆後無法重新找到');
-        }
-    } else {
-        console.error('❌ 無法找到 bookingBasicSettingsForm 表單');
-    }
+    // 延遲初始化特殊需求選項控制，確保DOM更新完成
+    setTimeout(() => {
+        initializeSpecialRequestsToggle();
+        initializeLimitTypeToggle();
+        // 載入已存儲的設定
+        loadBookingSettings();
+    }, 100);
 }
 
 // 載入訂位設定數據
