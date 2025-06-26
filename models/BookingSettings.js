@@ -18,6 +18,49 @@ const bookingSettingsSchema = new mongoose.Schema({
         default: 'enable', // BDB 預設開啟
         required: true
     },
+    // 人數限制設定
+    limitType: {
+        type: String,
+        enum: ['separate', 'total'],
+        default: 'separate'
+    },
+    maxAdults: {
+        type: Number,
+        default: 6,
+        min: 1,
+        max: 20
+    },
+    maxChildren: {
+        type: Number,
+        default: 6,
+        min: 0,
+        max: 20
+    },
+    maxTotalPeople: {
+        type: Number,
+        default: 10,
+        min: 1,
+        max: 30
+    },
+    // 餐廳特色選項
+    enableVegetarian: {
+        type: Boolean,
+        default: false
+    },
+    // 特殊需求設定
+    enableSpecialRequests: {
+        type: Boolean,
+        default: false
+    },
+    specialRequestsType: {
+        type: String,
+        enum: ['default', 'custom'],
+        default: 'default'
+    },
+    customSpecialRequests: {
+        type: [String],
+        default: []
+    },
     updatedAt: {
         type: Date,
         default: Date.now

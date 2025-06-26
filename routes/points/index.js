@@ -70,12 +70,23 @@ router.get('/:storeSlug/card', async (req, res) => {
             incompleteness.push('集點規則設定不完整');
         }
 
-        // 檢查獎勵設定
+        // 檢查獎勵設定（從 clientCDB 檢查）
         let activeRewards = [];
-        if (client.customSettings?.rewards && Array.isArray(client.customSettings.rewards)) {
-            activeRewards = client.customSettings.rewards.filter(reward => 
-                reward.name && reward.points && reward.points > 0 && reward.active === true
+        try {
+            const pointsRewardsSchema = require('../../models/points/rewards');
+            const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
+            
+            activeRewards = await PointsRewards.find({ 
+                slug: storeSlug,
+                active: true 
+            });
+            
+            // 過濾有效的獎勵
+            activeRewards = activeRewards.filter(reward => 
+                reward.name && reward.points && reward.points > 0
             );
+        } catch (rewardError) {
+            console.error('獲取獎勵資料失敗:', rewardError);
         }
         
         if (activeRewards.length === 0) {
@@ -97,7 +108,7 @@ router.get('/:storeSlug/card', async (req, res) => {
             });
         }
 
-        // 獲取獎勵 (從Client.customSettings而不是單獨的rewards表)
+        // 獎勵資料已經從 clientCDB 載入
         const rewards = activeRewards;
 
         // 如果用戶已登入，獲取用戶點數
@@ -233,16 +244,12 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
             return res.status(404).json({ error: '找不到用戶點數資料' });
         }
 
-        // 獲取獎勵資料 - 從Client模型的customSettings中獲取
-        const Client = require('../../models/Client');
-        const client = await Client.findOne({ slugname: storeSlug });
+        // 獲取獎勵資料 - 從 clientCDB 獲取
+        const db = getClientDb(storeSlug, 'CDB');
+        const pointsRewardsSchema = require('../../models/points/rewards');
+        const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
         
-        if (!client || !client.customSettings || !client.customSettings.rewards) {
-            return res.status(404).json({ error: '找不到商家獎勵設定' });
-        }
-        
-        const rewardIndex = parseInt(rewardId);
-        const reward = client.customSettings.rewards[rewardIndex];
+        const reward = await PointsRewards.findById(rewardId);
         
         if (!reward || !reward.active) {
             return res.status(404).json({ error: '找不到獎勵資料或獎勵未啟用' });
@@ -264,7 +271,7 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         
         // 查找是否已經有這個獎勵
         const existingCoupon = userPoints['ah-coupon-id'].find(c => 
-            c && c.rewardId && c.rewardId.toString() === rewardIndex.toString()
+            c && c.rewardId && c.rewardId.toString() === rewardId.toString()
         );
         
         if (existingCoupon) {
@@ -273,7 +280,7 @@ router.post('/:storeSlug/api/points/redeem', isAuthenticated, async (req, res) =
         } else {
             // 如果沒有，新增一個
             userPoints['ah-coupon-id'].push({ 
-                rewardId: rewardIndex, 
+                rewardId: rewardId, 
                 count: 1,
                 rewardName: reward.name,
                 rewardImg: reward.img,
@@ -435,13 +442,11 @@ router.get('/:storeSlug/api/points/coupons', isAuthenticated, async (req, res) =
             return res.json({ success: true, coupons: [] });
         }
         
-        // 獲取商家獎勵設定
-        const Client = require('../../models/Client');
-        const client = await Client.findOne({ slugname: storeSlug });
-        
-        if (!client || !client.customSettings || !client.customSettings.rewards) {
-            return res.json({ success: true, coupons: [] });
-        }
+        // 獲取獎勵資料（從 clientCDB 獲取）
+        const db = getClientDb(storeSlug, 'CDB');
+        const pointsRewardsSchema = require('../../models/points/rewards');
+        const PointsRewards = db.model('PointsRewards', pointsRewardsSchema);
+        const rewards = await PointsRewards.find({ slug: storeSlug });
         
         // 合併優惠券和獎勵數據
         const coupons = userPoints['ah-coupon-id'].map(coupon => {
@@ -455,15 +460,14 @@ router.get('/:storeSlug/api/points/coupons', isAuthenticated, async (req, res) =
                 };
             }
             
-            // 否則從client.customSettings.rewards中獲取
-            const rewardIndex = parseInt(coupon.rewardId);
-            const rewardData = client.customSettings.rewards[rewardIndex];
+            // 否則從 clientCDB 的 rewards 中獲取
+            const reward = rewards.find(r => r._id.toString() === coupon.rewardId.toString());
             
             return {
                 id: coupon.rewardId,
                 count: coupon.count || 1,
-                name: rewardData ? rewardData.name : '未知獎勵',
-                img: rewardData ? rewardData.img : '/images/coupon-default.svg'
+                name: reward ? reward.name : '未知獎勵',
+                img: reward ? reward.img : '/images/coupon-default.svg'
             };
         });
         

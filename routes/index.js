@@ -309,7 +309,8 @@ router.post('/api/setup', requireLogin, upload.fields([
                                     name: parsedRewardNames[i],
                                     points: parsedRewardPoints[i],
                                     img: rewardImages[i] || '/images/coupon-default.svg',
-                                    slug: slugname
+                                    slug: slugname,
+                                    active: true  // 預設啟用
                                 });
                             }
                         }
@@ -322,19 +323,7 @@ router.post('/api/setup', requireLogin, upload.fields([
                                 const Rewards = cardDB.model('PointsRewards', RewardsSchema);
                                 await Rewards.insertMany(rewardsData);
                                 
-                                // 同時儲存到 Client 的 customSettings.rewards (這是前端讀取的地方)
-                                const rewardsForClient = rewardsData.map((reward, index) => ({
-                                    name: reward.name,
-                                    points: reward.points,
-                                    img: reward.img,
-                                    active: true // 默認啟用
-                                }));
-                                
-                                await Client.findOneAndUpdate(
-                                    { slugname: slugname },
-                                    { $set: { 'customSettings.rewards': rewardsForClient } },
-                                    { upsert: true, new: true }
-                                );
+                                // 注意：獎勵資料現在只存在 clientCDB 中，不再存到 customSettings
                             } catch (error) {
                                 console.error('❌ 獎勵設定失敗:', error);
                             }
@@ -768,6 +757,7 @@ router.get('/:storeSlug/:page', async (req, res) => {
         let diningRules = [];
         let featureSettings = { pointsSystem: false, bookingSystem: true };
         let pointsRulesFromDB = null;
+        let bookingBasicSettings = null;
         
         if (page === 'backstage') {
             // 獲取功能設定和點數規則
@@ -805,6 +795,20 @@ router.get('/:storeSlug/:page', async (req, res) => {
                     pointsSystem: pointsSettings ? pointsSettings.state === 'enable' : false,
                     bookingSystem: bookingSettings ? bookingSettings.state === 'enable' : true // 預設開啟
                 };
+                
+                // 準備訂位基本設定，供後台頁面使用
+                if (bookingSettings) {
+                    bookingBasicSettings = {
+                        limitType: bookingSettings.limitType || 'separate',
+                        maxAdults: bookingSettings.maxAdults || 6,
+                        maxChildren: bookingSettings.maxChildren || 6,
+                        maxTotalPeople: bookingSettings.maxTotalPeople || 10,
+                        enableVegetarian: bookingSettings.enableVegetarian || false,
+                        enableSpecialRequests: bookingSettings.enableSpecialRequests || false,
+                        specialRequestsType: bookingSettings.specialRequestsType || 'default',
+                        customSpecialRequests: bookingSettings.customSpecialRequests || []
+                    };
+                }
             } catch (error) {
                 console.error('Error fetching feature settings:', error);
             }
@@ -854,11 +858,11 @@ router.get('/:storeSlug/:page', async (req, res) => {
                 restaurantImage: client.restaurantImage,
                 cardBackgroundImage: client.cardBackgroundImage,
                 features: featureSettings,
-                pointsRules: pointsRulesFromDB || client.customSettings?.pointsRules || null,
-                rewards: client.customSettings?.rewards || null,
+                pointsRules: pointsRulesFromDB || null,
+                rewards: null, // 獎勵資料現在只從 clientCDB 載入，不再從 customSettings 讀取
                 restaurantAddress: client.restaurantAddress || '',
-                bookingSettings: client.customSettings?.bookingSettings || null,
-                ...client.customSettings
+                bookingSettings: bookingBasicSettings
+                // 注意：不再合併 client.customSettings，避免帶入過時的集點卡和訂位資料
             },
             points,
             createdAt: client.createdAt,
@@ -904,20 +908,29 @@ async function checkPointsSystemCompleteness(storeSlug) {
             missing.push('集點規則設定');
         }
         
-        // 檢查是否有獎勵設定
-        const client = await Client.findOne({ slugname: storeSlug });
-        if (!client.customSettings?.rewards || 
-            !Array.isArray(client.customSettings.rewards) || 
-            client.customSettings.rewards.length === 0) {
-            missing.push('獎勵項目設定');
-        } else {
-            // 檢查獎勵是否有效
-            const activeRewards = client.customSettings.rewards.filter(reward => 
-                reward.name && reward.points && reward.points > 0 && reward.active === true
-            );
-            if (activeRewards.length === 0) {
-                missing.push('有效的獎勵項目');
+        // 檢查是否有獎勵設定（從 clientCDB 檢查）
+        try {
+            const pointsRewardsSchema = require('../models/points/rewards');
+            const PointsRewards = cardDB.model('PointsRewards', pointsRewardsSchema);
+            
+            const rewards = await PointsRewards.find({ 
+                slug: storeSlug,
+                active: true 
+            });
+            
+            if (!rewards || rewards.length === 0) {
+                missing.push('獎勵項目設定');
+            } else {
+                // 檢查獎勵是否有效
+                const validRewards = rewards.filter(reward => 
+                    reward.name && reward.points && reward.points > 0
+                );
+                if (validRewards.length === 0) {
+                    missing.push('有效的獎勵項目');
+                }
             }
+        } catch (rewardError) {
+            missing.push('獎勵項目設定');
         }
         
         return {
@@ -1169,6 +1182,48 @@ router.post('/:storeSlug/api/settings/diningRules', async (req, res) => {
     }
 });
 
+// 獲取集點規則設定 API
+router.get('/:storeSlug/backstage/points-rules', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 從 clientCDB 獲取集點設定
+        const cardDB = getClientDb(storeSlug, 'CDB');
+        const pointsSettingsSchema = require('../models/points/settings');
+        const PointsSettings = cardDB.model('PointsSettings', pointsSettingsSchema);
+        
+        const settings = await PointsSettings.findOne({ 
+            slug: storeSlug, 
+            type: 'points_settings', 
+            class: 'main_settings' 
+        });
+        
+        if (settings) {
+            res.json({
+                success: true,
+                pointsRules: {
+                    welcomePoints: settings.s_reward || 0,
+                    maxPointsPerDay: settings.maxPointsPerDay || 3,
+                    pointsExpireDays: settings.pointsExpireDays || 365
+                }
+            });
+        } else {
+            // 返回預設值
+            res.json({
+                success: true,
+                pointsRules: {
+                    welcomePoints: 0,
+                    maxPointsPerDay: 3,
+                    pointsExpireDays: 365
+                }
+            });
+        }
+    } catch (error) {
+        console.error('❌ 獲取集點規則設定錯誤:', error);
+        res.status(500).json({ success: false, message: '獲取集點規則設定失敗' });
+    }
+});
+
 // 集點規則設定 API
 router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
     try {
@@ -1204,11 +1259,7 @@ router.post('/:storeSlug/backstage/points-rules', async (req, res) => {
             pointsExpireDays: parseInt(pointsExpireDays)
         };
 
-        await Client.findOneAndUpdate(
-            { slugname: storeSlug },
-            { $set: { 'customSettings.pointsRules': pointsRulesData } },
-            { upsert: true }
-        );
+        // 注意：集點規則資料只存在 clientCDB 中，不存到 customSettings
 
         // 同時更新 pointssettings 資料庫
         const cardDB = getClientDb(storeSlug, 'CDB');
@@ -1390,6 +1441,34 @@ router.delete('/:storeSlug/backstage/qrcode/current', async (req, res) => {
     }
 });
 
+// 獲取獎勵設定 API
+router.get('/:storeSlug/backstage/rewards', async (req, res) => {
+    try {
+        const { storeSlug } = req.params;
+        
+        // 獲取獎勵資料（從 clientCDB 獲取）
+        const cdb = getClientDb(storeSlug, 'CDB');
+        const pointsRewardsSchema = require('../models/points/rewards');
+        const PointsRewards = cdb.model('PointsRewards', pointsRewardsSchema);
+        
+        const rewards = await PointsRewards.find({ slug: storeSlug }).sort({ _id: 1 });
+        
+        res.json({ 
+            success: true, 
+            rewards: rewards.map(reward => ({
+                id: reward._id,
+                name: reward.name,
+                points: reward.points,
+                img: reward.img,
+                active: reward.active || false
+            }))
+        });
+    } catch (error) {
+        console.error('❌ 獲取獎勵設定錯誤:', error);
+        res.status(500).json({ success: false, message: '獲取獎勵設定失敗' });
+    }
+});
+
 // 獎勵設定 API
 router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), async (req, res) => {
     try {
@@ -1447,14 +1526,16 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
                     files.splice(fileIndex, 1);
                 }
             } else {
-                // 如果沒有新圖片，保持現有圖片
+                // 如果沒有新圖片，從 clientCDB 獲取現有圖片
                 try {
-                    const currentClient = await Client.findOne({ slugname: storeSlug });
-                    if (currentClient && currentClient.customSettings && 
-                        currentClient.customSettings.rewards && 
-                        currentClient.customSettings.rewards[j] && 
-                        currentClient.customSettings.rewards[j].img) {
-                        imgUrl = currentClient.customSettings.rewards[j].img;
+                    const cdb = getClientDb(storeSlug, 'CDB');
+                    const pointsRewardsSchema = require('../models/points/rewards');
+                    const PointsRewards = cdb.model('PointsRewards', pointsRewardsSchema);
+                    const existingRewards = await PointsRewards.find({ slug: storeSlug });
+                    
+                    // 根據索引位置找到對應的現有獎勵
+                    if (existingRewards[j] && existingRewards[j].img) {
+                        imgUrl = existingRewards[j].img;
                     }
                 } catch (err) {
                     console.log('無法獲取現有圖片:', err);
@@ -1495,17 +1576,34 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         }
         
 
-        // 更新客戶設定
-        
-        const updateResult = await Client.findOneAndUpdate(
-            { slugname: storeSlug },
-            { $set: { 'customSettings.rewards': rewards } },
-            { upsert: true, new: true }
-        );
-        
-
-
-        res.json({ success: true, message: '獎勵設定已更新' });
+        // 儲存獎勵資料到 clientCDB
+        try {
+            const cdb = getClientDb(storeSlug, 'CDB');
+            const pointsRewardsSchema = require('../models/points/rewards');
+            const PointsRewards = cdb.model('PointsRewards', pointsRewardsSchema);
+            
+            // 先刪除所有舊的獎勵
+            await PointsRewards.deleteMany({ slug: storeSlug });
+            
+            // 建立新的獎勵資料
+            const rewardsToInsert = rewards.map(reward => ({
+                type: 'points_reward',
+                name: reward.name,
+                points: reward.points,
+                img: reward.img,
+                slug: storeSlug,
+                active: reward.active
+            }));
+            
+            if (rewardsToInsert.length > 0) {
+                await PointsRewards.insertMany(rewardsToInsert);
+            }
+            
+            res.json({ success: true, message: '獎勵設定已更新' });
+        } catch (dbError) {
+            console.error('❌ 獎勵資料庫更新失敗:', dbError);
+            res.status(500).json({ success: false, message: '獎勵資料庫更新失敗' });
+        }
     } catch (error) {
         console.error('❌ 獎勵設定更新錯誤:', error);
         res.status(500).json({ success: false, message: '更新失敗，請稍後再試' });
@@ -1562,27 +1660,29 @@ router.get('/:storeSlug/backstage/points-stats', async (req, res) => {
         
         const currentPoints = currentPointsResult.length > 0 ? currentPointsResult[0].currentPoints : 0;
         
-        // 計算已兌換獎勵使用的點數
+        // 計算已兌換獎勵使用的點數（從 clientCDB 獲取獎勵資料）
         let redeemedPointsTotal = 0;
         
-        // 獲取商家獎勵設定
-        const Client = require('../models/Client');
-        const client = await Client.findOne({ slugname: storeSlug });
-        
-        if (client && client.customSettings && client.customSettings.rewards) {
+        try {
+            const pointsRewardsSchema = require('../models/points/rewards');
+            const PointsRewards = cdb.model('PointsRewards', pointsRewardsSchema);
+            const rewards = await PointsRewards.find({ slug: storeSlug });
+            
             const allUsers = await UserPoints.find({});
             
             for (const user of allUsers) {
                 if (user['ah-coupon-id'] && Array.isArray(user['ah-coupon-id'])) {
                     for (const coupon of user['ah-coupon-id']) {
-                        const rewardIndex = parseInt(coupon.rewardId);
-                        const reward = client.customSettings.rewards[rewardIndex];
+                        const rewardId = coupon.rewardId;
+                        const reward = rewards.find(r => r._id.toString() === rewardId);
                         if (reward && reward.points) {
                             redeemedPointsTotal += reward.points * (coupon.count || 1);
                         }
                     }
                 }
             }
+        } catch (rewardError) {
+            console.error('計算兌換點數失敗:', rewardError);
         }
         
         const totalPoints = currentPoints + redeemedPointsTotal;
@@ -2636,39 +2736,48 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             });
         }
         
-        // 直接使用已定義的 Client 模型
-        const client = await Client.findOne({ slugname: slug });
-        if (!client) {
-            return res.status(404).json({
-                success: false,
-                message: '找不到商家資料'
-            });
-        }
+        // 使用 clientBDB 中的 BookingSettings
+        const bookingDB = getClientDb(slug, 'BDB');
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
         
-        // 更新 customSettings 中的 bookingSettings
-        if (!client.customSettings) {
-            client.customSettings = {};
-        }
-        
-        client.customSettings.bookingSettings = {
-            limitType: limitType || 'separate',
-            maxAdults: parseInt(maxAdults) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
-            maxChildren: parseInt(maxChildren) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
-            maxTotalPeople: parseInt(maxTotalPeople) || (limitType === 'separate' ? parseInt(maxAdults) + parseInt(maxChildren) : 10),
-            enableVegetarian: Boolean(enableVegetarian),
-            enableSpecialRequests: Boolean(enableSpecialRequests),
-            specialRequestsType: specialRequestsType || 'default',
-            customSpecialRequests: Array.isArray(customSpecialRequests) ? customSpecialRequests.filter(req => req.trim() !== '') : [],
-            updatedAt: new Date()
-        };
-        
-        await client.save();
-        
+        // 更新或創建訂位設定
+        const updatedSettings = await BookingSettings.findOneAndUpdate(
+            { 
+                slug: slug, 
+                type: 'booking_settings', 
+                class: 'main_settings' 
+            },
+            {
+                slug: slug,
+                type: 'booking_settings',
+                class: 'main_settings',
+                limitType: limitType || 'separate',
+                maxAdults: parseInt(maxAdults) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
+                maxChildren: parseInt(maxChildren) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
+                maxTotalPeople: parseInt(maxTotalPeople) || (limitType === 'separate' ? parseInt(maxAdults) + parseInt(maxChildren) : 10),
+                enableVegetarian: Boolean(enableVegetarian),
+                enableSpecialRequests: Boolean(enableSpecialRequests),
+                specialRequestsType: specialRequestsType || 'default',
+                customSpecialRequests: Array.isArray(customSpecialRequests) ? customSpecialRequests.filter(req => req.trim() !== '') : [],
+                updatedAt: new Date()
+            },
+            { upsert: true, new: true }
+        );
         
         res.json({
             success: true,
             message: '訂位基本設定更新成功',
-            bookingSettings: client.customSettings.bookingSettings
+            bookingSettings: {
+                limitType: updatedSettings.limitType,
+                maxAdults: updatedSettings.maxAdults,
+                maxChildren: updatedSettings.maxChildren,
+                maxTotalPeople: updatedSettings.maxTotalPeople,
+                enableVegetarian: updatedSettings.enableVegetarian,
+                enableSpecialRequests: updatedSettings.enableSpecialRequests,
+                specialRequestsType: updatedSettings.specialRequestsType,
+                customSpecialRequests: updatedSettings.customSpecialRequests
+            }
         });
         
     } catch (error) {
@@ -2685,14 +2794,17 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
     try {
         const { slug } = req.params;
         
-        // 直接使用已定義的 Client 模型
-        const client = await Client.findOne({ slugname: slug });
-        if (!client) {
-            return res.status(404).json({
-                success: false,
-                message: '找不到商家資料'
-            });
-        }
+        // 使用 clientBDB 中的 BookingSettings
+        const bookingDB = getClientDb(slug, 'BDB');
+        const bookingSettingsSchema = require('../models/BookingSettings');
+        const BookingSettings = bookingDB.model('BookingSettings', bookingSettingsSchema);
+        
+        // 查找訂位設定
+        const settings = await BookingSettings.findOne({ 
+            slug: slug, 
+            type: 'booking_settings', 
+            class: 'main_settings' 
+        });
         
         // 返回訂位設定，如果沒有設定就使用預設值
         const defaultSettings = {
@@ -2706,7 +2818,16 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
             customSpecialRequests: []
         };
         
-        const bookingSettings = client.customSettings?.bookingSettings || defaultSettings;
+        const bookingSettings = settings ? {
+            limitType: settings.limitType || 'separate',
+            maxAdults: settings.maxAdults || 6,
+            maxChildren: settings.maxChildren || 6,
+            maxTotalPeople: settings.maxTotalPeople || 10,
+            enableVegetarian: settings.enableVegetarian || false,
+            enableSpecialRequests: settings.enableSpecialRequests || false,
+            specialRequestsType: settings.specialRequestsType || 'default',
+            customSpecialRequests: settings.customSpecialRequests || []
+        } : defaultSettings;
         
         res.json({
             success: true,

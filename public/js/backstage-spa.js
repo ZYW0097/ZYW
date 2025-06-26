@@ -95,7 +95,9 @@ function navigateToPage(pageName) {
     // 如果導航到集點卡設定頁面，載入規則和初始化toggle
     if (pageName === 'points') {
         setTimeout(() => {
+            loadPointsRules(); // 載入集點規則設定
             loadRules();
+            loadRewards(); // 載入獎勵資料
             initializeRewardToggles();
             loadPointsStats();
         }, 300);
@@ -1215,10 +1217,8 @@ async function submitRewards() {
         
         if (result.success) {
             showNotification('獎勵設定已更新');
-            // 重新載入頁面以顯示新的圖片
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+            // 重新載入獎勵列表以顯示更新後的資料
+            await loadRewards();
         } else {
             showNotification(result.message || '更新失敗', 'error');
         }
@@ -1273,6 +1273,179 @@ function handleRewardImageUpload(input, index) {
         }
     };
     reader.readAsDataURL(file);
+}
+
+// ===== 集點規則載入功能 =====
+
+async function loadPointsRules() {
+    const storeSlug = getCurrentSlug();
+    
+    if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
+        console.error('無法獲取 storeSlug');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/${storeSlug}/backstage/points-rules`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.pointsRules) {
+                populatePointsRulesForm(data.pointsRules);
+            }
+        }
+    } catch (error) {
+        console.error('載入集點規則設定失敗:', error);
+    }
+}
+
+function populatePointsRulesForm(pointsRules) {
+    const welcomePointsInput = document.getElementById('welcomePoints');
+    const maxPointsPerDayInput = document.getElementById('maxPointsPerDay');
+    const pointsExpireDaysInput = document.getElementById('pointsExpireDays');
+    
+    if (welcomePointsInput) welcomePointsInput.value = pointsRules.welcomePoints || 0;
+    if (maxPointsPerDayInput) maxPointsPerDayInput.value = pointsRules.maxPointsPerDay || 3;
+    if (pointsExpireDaysInput) pointsExpireDaysInput.value = pointsRules.pointsExpireDays || 365;
+}
+
+// ===== 獎勵載入功能 =====
+
+async function loadRewards() {
+    const storeSlug = getCurrentSlug();
+    
+    if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
+        console.error('無法獲取 storeSlug');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/${storeSlug}/backstage/rewards`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                displayRewards(data.rewards);
+            } else {
+                // 沒有獎勵資料，顯示預設表單
+                displayDefaultRewardForm();
+            }
+        } else {
+            // API失敗，顯示預設表單
+            displayDefaultRewardForm();
+        }
+    } catch (error) {
+        console.error('載入獎勵資料失敗:', error);
+        displayDefaultRewardForm();
+    }
+}
+
+function displayRewards(rewards) {
+    const rewardsList = document.getElementById('rewards-list');
+    if (!rewardsList) return;
+    
+    // 清空載入中的提示
+    rewardsList.innerHTML = '';
+    
+    if (rewards.length === 0) {
+        displayDefaultRewardForm();
+        return;
+    }
+    
+    rewards.forEach((reward, index) => {
+        const rewardItem = document.createElement('div');
+        rewardItem.className = 'backstage-reward-item';
+        rewardItem.innerHTML = `
+            <div class="reward-item-header">
+                <h4>獎勵項目 ${index + 1}</h4>
+                ${rewards.length > 1 ? `<button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeReward(this)">×</button>` : ''}
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group">
+                    <label>獎勵名稱</label>
+                    <input type="text" name="rewardName[]" value="${reward.name || ''}" required placeholder="例如：免費飲料">
+                </div>
+                <div class="backstage-form-group">
+                    <label>所需點數</label>
+                    <input type="number" name="rewardPoints[]" value="${reward.points || ''}" min="1" max="100" required placeholder="例如：10">
+                </div>
+                <div class="backstage-form-group backstage-toggle-group">
+                    <label class="backstage-toggle-label">
+                        <input type="checkbox" name="rewardActive[]" value="${index}" ${reward.active ? 'checked' : ''}>
+                        <span class="backstage-toggle-slider"></span>
+                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                    </label>
+                </div>
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group backstage-image-group">
+                    <label>獎勵圖片</label>
+                    <div class="backstage-file-upload-area" onclick="triggerFileUpload('${index}')">
+                        <input type="file" name="rewardImage[]" id="rewardImage-${index}" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '${index}')">
+                        ${reward.img && reward.img !== '/images/coupon-default.svg' ? 
+                            `<img src="${reward.img}" alt="獎勵圖片" class="backstage-reward-preview" id="preview-${index}">
+                             <div class="backstage-file-overlay">
+                                 <span>📷 更換圖片</span>
+                             </div>` :
+                            `<div class="backstage-file-placeholder" id="placeholder-${index}">
+                                 <span class="backstage-file-icon">📷</span>
+                                 <span class="backstage-file-text">點擊上傳獎勵圖片</span>
+                                 <small>支援 PNG、JPG、JPEG 格式</small>
+                             </div>`
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+        rewardsList.appendChild(rewardItem);
+    });
+    
+    // 重新初始化toggle功能
+    initializeRewardToggles();
+}
+
+function displayDefaultRewardForm() {
+    const rewardsList = document.getElementById('rewards-list');
+    if (!rewardsList) return;
+    
+    rewardsList.innerHTML = `
+        <div class="backstage-reward-item">
+            <div class="reward-item-header">
+                <h4>獎勵項目 1</h4>
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group">
+                    <label>獎勵名稱</label>
+                    <input type="text" name="rewardName[]" required placeholder="例如：免費飲料">
+                </div>
+                <div class="backstage-form-group">
+                    <label>所需點數</label>
+                    <input type="number" name="rewardPoints[]" min="1" max="100" required placeholder="例如：10">
+                </div>
+                <div class="backstage-form-group backstage-toggle-group">
+                    <label class="backstage-toggle-label">
+                        <input type="checkbox" name="rewardActive[]" value="0" checked>
+                        <span class="backstage-toggle-slider"></span>
+                        <span class="backstage-toggle-text">啟用此獎勵</span>
+                    </label>
+                </div>
+            </div>
+            <div class="backstage-form-row">
+                <div class="backstage-form-group backstage-image-group">
+                    <label>獎勵圖片</label>
+                    <div class="backstage-file-upload-area" onclick="triggerFileUpload('0')">
+                        <input type="file" name="rewardImage[]" id="rewardImage-0" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '0')">
+                        <div class="backstage-file-placeholder" id="placeholder-0">
+                            <span class="backstage-file-icon">📷</span>
+                            <span class="backstage-file-text">點擊上傳獎勵圖片</span>
+                            <small>支援 PNG、JPG、JPEG 格式</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 重新初始化toggle功能
+    initializeRewardToggles();
 }
 
 // 規則管理功能

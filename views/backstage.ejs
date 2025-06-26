@@ -518,14 +518,14 @@
                                     <div class="backstage-form-group">
                                         <label for="welcomePoints">首次領取獎勵</label>
                                         <input type="number" id="welcomePoints" name="welcomePoints" 
-                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.welcomePoints !== 'undefined') ? customSettings.pointsRules.welcomePoints : '0' %>" 
+                                               value="0" 
                                                min="0" max="50" required>
                                         <small>新用戶首次領取集點卡時獲得的點數（0-50點）</small>
                                     </div>
                                     <div class="backstage-form-group">
                                         <label for="maxPointsPerDay">每日點數上限</label>
                                         <input type="number" id="maxPointsPerDay" name="maxPointsPerDay" 
-                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.maxPointsPerDay !== 'undefined') ? customSettings.pointsRules.maxPointsPerDay : '3' %>" 
+                                               value="3" 
                                                min="1" max="20" required>
                                         <small>每位顧客每天最多可獲得的點數</small>
                                     </div>
@@ -534,7 +534,7 @@
                                     <div class="backstage-form-group">
                                         <label for="pointsExpireDays">點數有效期</label>
                                         <input type="number" id="pointsExpireDays" name="pointsExpireDays" 
-                                               value="<%= (customSettings && customSettings.pointsRules && typeof customSettings.pointsRules.pointsExpireDays !== 'undefined') ? customSettings.pointsRules.pointsExpireDays : '365' %>" 
+                                               value="365" 
                                                min="30" max="1095" required>
                                         <small>點數的有效天數（30-1095天）</small>
                                     </div>
@@ -550,55 +550,11 @@
                             <h3>獎勵項目設定</h3>
                             <form id="rewardsForm" class="backstage-form" enctype="multipart/form-data">
                                 <div id="rewards-list" class="backstage-rewards-list">
-                                    <% if (customSettings && customSettings.rewards && customSettings.rewards.length > 0) { %>
-                                        <% customSettings.rewards.forEach((reward, index) => { %>
-                                        <div class="backstage-reward-item">
-                                            <div class="reward-item-header">
-                                                <h4>獎勵項目 <%= index + 1 %></h4>
-                                                <% if (customSettings.rewards.length > 1) { %>
-                                                    <button type="button" class="backstage-btn-icon backstage-btn-remove" onclick="removeReward(this)">×</button>
-                                                <% } %>
-                                            </div>
-                                            <div class="backstage-form-row">
-                                                <div class="backstage-form-group">
-                                                    <label>獎勵名稱</label>
-                                                    <input type="text" name="rewardName[]" value="<%= reward.name %>" required placeholder="例如：免費飲料">
-                                                </div>
-                                                <div class="backstage-form-group">
-                                                    <label>所需點數</label>
-                                                    <input type="number" name="rewardPoints[]" value="<%= reward.points %>" min="1" max="100" required placeholder="例如：10">
-                                                </div>
-                                                <div class="backstage-form-group backstage-toggle-group">
-                                                    <label class="backstage-toggle-label">
-                                                        <input type="checkbox" name="rewardActive[]" value="<%= index %>" <%= reward.active ? 'checked' : '' %>>
-                                                        <span class="backstage-toggle-slider"></span>
-                                                        <span class="backstage-toggle-text">啟用此獎勵</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="backstage-form-row">
-                                                <div class="backstage-form-group backstage-image-group">
-                                                    <label>獎勵圖片</label>
-                                                    <div class="backstage-file-upload-area" onclick="triggerFileUpload('<%= index %>')">
-                                                        <input type="file" name="rewardImage[]" id="rewardImage-<%= index %>" accept=".png,.jpg,.jpeg" style="display: none;" onchange="handleRewardImageUpload(this, '<%= index %>')">
-                                                        <% if (reward.img && reward.img !== '/images/coupon-default.svg') { %>
-                                                            <img src="<%= reward.img %>" alt="獎勵圖片" class="backstage-reward-preview" id="preview-<%= index %>">
-                                                            <div class="backstage-file-overlay">
-                                                                <span>📷 更換圖片</span>
-                                                            </div>
-                                                        <% } else { %>
-                                                            <div class="backstage-file-placeholder" id="placeholder-<%= index %>">
-                                                                <span class="backstage-file-icon">📷</span>
-                                                                <span class="backstage-file-text">點擊上傳獎勵圖片</span>
-                                                                <small>支援 PNG、JPG、JPEG 格式</small>
-                                                            </div>
-                                                        <% } %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <% }) %>
-                                    <% } else { %>
+                                    <!-- 動態載入獎勵列表 -->
+                                    <div class="loading-rewards">
+                                        <p>🔄 正在載入獎勵設定...</p>
+                                    </div>
+                                    <!-- 預設空的獎勵項目（如果沒有現有資料時顯示） -->
                                     <div class="backstage-reward-item">
                                         <div class="reward-item-header">
                                             <h4>獎勵項目 1</h4>

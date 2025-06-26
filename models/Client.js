@@ -39,11 +39,13 @@ const clientSchema = new mongoose.Schema({
     tutorialImage2: {
         type: String,
         default: ''
-    },
-    customSettings: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
     }
+    // customSettings 已移除
+    // 注意：之前此欄位被誤用來存放集點卡和訂位相關資料
+    // 現在這些資料正確存放在各自的專用資料庫中：
+    // - 集點卡相關：clientCDB (pointsrewards, pointsrules, pointssettings等)
+    // - 訂位相關：clientBDB (bookingsettings, timesettings, bookingrules等)
+    // - 商家基本資訊：此Client模型（名稱、地址、照片等）
 }, {
     timestamps: true
 });
