@@ -851,6 +851,18 @@ router.get('/:storeSlug/:page', async (req, res) => {
                         specialRequestsType: bookingSettings.specialRequestsType || 'default',
                         customSpecialRequests: bookingSettings.customSpecialRequests || []
                     };
+                } else {
+                    // 如果沒有訂位設定，使用預設值
+                    bookingBasicSettings = {
+                        limitType: 'separate',
+                        maxAdults: 6,
+                        maxChildren: 6,
+                        maxTotalPeople: 6,
+                        enableVegetarian: false,
+                        enableSpecialRequests: false,
+                        specialRequestsType: 'default',
+                        customSpecialRequests: []
+                    };
                 }
             } catch (error) {
                 console.error('Error fetching feature settings:', error);
@@ -1611,11 +1623,7 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
             // 處理checkbox狀態（HTML checkbox只會在選中時發送值）
             const activeValues = Array.isArray(rewardActives) ? rewardActives : (rewardActives ? [rewardActives] : []);
             
-            console.log('現有獎勵數量:', existingRewards.length);
-            console.log('新獎勵數量:', rewards.length);
-            console.log('checkbox值:', rewardActives);
-            console.log('checkbox值類型:', typeof rewardActives);
-            console.log('activeValues:', activeValues);
+
             
             // 如果獎勵數量相同，進行更新而非重新創建
             if (existingRewards.length === rewards.length) {
@@ -1625,7 +1633,8 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
                     const existingReward = existingRewards[i];
                     
                     // 檢查這個索引的checkbox是否被選中
-                    const isActive = activeValues.includes(i.toString());
+                    // activeValues 可能包含字符串形式的索引
+                    const isActive = activeValues.includes(i.toString()) || activeValues.includes(String(i));
                     
                     await PointsRewards.findByIdAndUpdate(existingReward._id, {
                         name: reward.name,
@@ -1635,15 +1644,13 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
                         updatedAt: new Date()
                     });
                 }
-                
-                console.log('更新現有獎勵完成');
             } else {
                 // 獎勵數量不同，重新創建
                 await PointsRewards.deleteMany({ slug: storeSlug });
                 
                 // 根據checkbox狀態設定active
                 const rewardsToInsert = rewards.map((reward, index) => {
-                    const isActive = activeValues.includes(index.toString());
+                    const isActive = activeValues.includes(index.toString()) || activeValues.includes(String(index));
                     return {
                         type: 'points_reward',
                         name: reward.name,
@@ -1657,8 +1664,6 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
                 if (rewardsToInsert.length > 0) {
                     await PointsRewards.insertMany(rewardsToInsert);
                 }
-                
-                console.log('重新創建獎勵完成');
             }
             
             res.json({ success: true, message: '獎勵設定已更新' });

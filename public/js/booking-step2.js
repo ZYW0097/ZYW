@@ -121,39 +121,42 @@ function handleSpecialOptions(bookingSettings) {
 function generateSpecialNeedsOptions(bookingSettings) {
     const specialNeedsSelect = document.getElementById('specialNeeds');
     
-    // 預設選項
+    // 預設選項（將"其他特殊需求"放到最後）
     const defaultOptions = [
         { value: '無', text: '無' },
         { value: '有行動不便者', text: '有行動不便者' },
         { value: '有嬰兒車', text: '有嬰兒車' },
         { value: '攜帶寵物', text: '攜帶寵物' },
-        { value: '食物過敏', text: '食物過敏' },
-        { value: '其他特殊需求', text: '其他特殊需求' }
+        { value: '食物過敏', text: '食物過敏' }
     ];
     
-    let optionsToUse = defaultOptions;
+    const otherOption = { value: '其他特殊需求', text: '其他特殊需求' };
+    
+    let optionsToUse = [...defaultOptions, otherOption];
     
     // 如果商家有自訂選項，無論是 default 還是 custom 模式都包含自訂選項
     if (bookingSettings.customSpecialRequests && 
         bookingSettings.customSpecialRequests.length > 0) {
         
         if (bookingSettings.specialRequestsType === 'custom') {
-            // 完全自訂模式：只使用商家自訂的選項
+            // 完全自訂模式：只使用商家自訂的選項 + "其他特殊需求"
             optionsToUse = [
                 { value: '無', text: '無' },
                 ...bookingSettings.customSpecialRequests.map(option => ({
                     value: option,
                     text: option
-                }))
+                })),
+                otherOption
             ];
         } else {
-            // 預設範本模式：使用預設 + 商家新增的選項
+            // 預設範本模式：使用預設 + 商家新增的選項 + "其他特殊需求"
             optionsToUse = [
                 ...defaultOptions,
                 ...bookingSettings.customSpecialRequests.map(option => ({
                     value: option,
                     text: option
-                }))
+                })),
+                otherOption
             ];
         }
     }
