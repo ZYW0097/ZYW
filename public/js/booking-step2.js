@@ -82,15 +82,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // 根據商家設定處理特殊選項
 function handleSpecialOptions(bookingSettings) {
     const vegetarianGroup = document.getElementById('vegetarianGroup');
-    const specialNeedsRow = document.getElementById('specialNeedsRow');
+    const specialNeedsGroup = document.getElementById('specialNeedsGroup');
     
     // 處理素食選項
     if (!bookingSettings.enableVegetarian) {
         // 如果商家未開啟素食選項，隱藏選項並顯示未開放提示
         vegetarianGroup.innerHTML = `
-            <label for="vegetarianOption">素食選項</label>
+            <label for="vegetarianOption">素食</label>
             <div class="disabled-option">
-                <span class="unavailable-text">商家未開放素食選項</span>
+                <span class="unavailable-text">商家未開放</span>
                 <input type="hidden" name="vegetarianOption" value="否">
             </div>
         `;
@@ -100,16 +100,14 @@ function handleSpecialOptions(bookingSettings) {
     // 處理特殊需求選項
     if (!bookingSettings.enableSpecialRequests) {
         // 如果商家未開啟特殊需求，隱藏選項並顯示未開放提示
-        specialNeedsRow.innerHTML = `
-            <div class="form-group full-width">
-                <label for="specialNeeds">特殊需求</label>
-                <div class="disabled-option">
-                    <span class="unavailable-text">商家未開放特殊需求填寫</span>
-                    <input type="hidden" name="specialNeeds" value="無">
-                </div>
+        specialNeedsGroup.innerHTML = `
+            <label for="specialNeeds">特殊需求</label>
+            <div class="disabled-option">
+                <span class="unavailable-text">商家未開放</span>
+                <input type="hidden" name="specialNeeds" value="無">
             </div>
         `;
-        specialNeedsRow.classList.add('disabled-group');
+        specialNeedsGroup.classList.add('disabled-group');
     } else {
         // 根據商家設定生成特殊需求選項
         generateSpecialNeedsOptions(bookingSettings);

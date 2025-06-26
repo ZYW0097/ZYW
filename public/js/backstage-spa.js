@@ -87,6 +87,12 @@ function navigateToPage(pageName) {
         window.location.hash = pageName;
     }
     
+    // 滾動到頁面頂部
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
     // 如果導航到QR碼頁面，更新狀態
     if (pageName === 'qrcode') {
         setTimeout(updateQRCodeStatus, 300);

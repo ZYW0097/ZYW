@@ -288,6 +288,12 @@ class SetupManager {
 
         // 更新按鈕
         this.updateButtons();
+        
+        // 滾動到頁面頂部
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
     updateStepNavigation() {
