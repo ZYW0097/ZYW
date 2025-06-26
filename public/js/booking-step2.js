@@ -115,10 +115,6 @@ function handleSpecialOptions(bookingSettings) {
         generateSpecialNeedsOptions(bookingSettings);
     }
     
-    console.log('特殊選項設定完成:', {
-        vegetarian: bookingSettings.enableVegetarian ? '已開啟' : '未開啟',
-        specialRequests: bookingSettings.enableSpecialRequests ? '已開啟' : '未開啟'
-    });
 }
 
 // 根據商家設定生成特殊需求選項
@@ -137,19 +133,29 @@ function generateSpecialNeedsOptions(bookingSettings) {
     
     let optionsToUse = defaultOptions;
     
-    // 如果商家使用自訂選項
-    if (bookingSettings.specialRequestsType === 'custom' && 
-        bookingSettings.customSpecialRequests && 
+    // 如果商家有自訂選項，無論是 default 還是 custom 模式都包含自訂選項
+    if (bookingSettings.customSpecialRequests && 
         bookingSettings.customSpecialRequests.length > 0) {
         
-        // 使用商家自訂的選項，但保留「無」選項
-        optionsToUse = [
-            { value: '無', text: '無' },
-            ...bookingSettings.customSpecialRequests.map(option => ({
-                value: option,
-                text: option
-            }))
-        ];
+        if (bookingSettings.specialRequestsType === 'custom') {
+            // 完全自訂模式：只使用商家自訂的選項
+            optionsToUse = [
+                { value: '無', text: '無' },
+                ...bookingSettings.customSpecialRequests.map(option => ({
+                    value: option,
+                    text: option
+                }))
+            ];
+        } else {
+            // 預設範本模式：使用預設 + 商家新增的選項
+            optionsToUse = [
+                ...defaultOptions,
+                ...bookingSettings.customSpecialRequests.map(option => ({
+                    value: option,
+                    text: option
+                }))
+            ];
+        }
     }
     
     // 清空現有選項
@@ -162,6 +168,5 @@ function generateSpecialNeedsOptions(bookingSettings) {
         optionElement.textContent = option.text;
         specialNeedsSelect.appendChild(optionElement);
     });
-    
-    console.log('特殊需求選項已更新:', optionsToUse.map(opt => opt.text));
+
 }

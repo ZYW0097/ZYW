@@ -646,13 +646,13 @@ router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, r
         // 獲取點數設定
         const settings = await PointsSettings.findOne({ slug: storeSlug }) || {};
         
-        // 檢查每日點數限制（僅檢查QR碼點數，不包含首次獎勵）
+        // 檢查每日點數限制（如果是首次用戶或沒有設定上限則跳過檢查）
         if (settings.maxPointsPerDay && settings.maxPointsPerDay > 0 && !isFirstTimeUser) {
             const canAdd = await checkDailyPointsLimit(userCard, qrcode.points, settings.maxPointsPerDay);
             if (!canAdd) {
                 return res.status(400).json({ 
                     success: false, 
-                    message: `今日點數已達上限 ${settings.maxPointsPerDay} 點` 
+                    message: `已達到今日上限 ${settings.maxPointsPerDay} 點` 
                 });
             }
         }
@@ -660,7 +660,7 @@ router.post('/:storeSlug/points/qr/:code/redeem', isAuthenticated, async (req, r
         // 添加QR碼點數
         await addPointsWithExpiry(userCard, qrcode.points, settings.pointsExpireDays || 365, `QR碼兌換：${qrcode.points}點`);
         
-        // 記錄每日點數（僅記錄QR碼點數，不包含首次獎勵）
+        // 記錄每日點數（僅記錄QR碼點數，首次獎勵不計入每日上限）
         if (settings.maxPointsPerDay && settings.maxPointsPerDay > 0) {
             await recordDailyPoints(userCard, qrcode.points);
         }

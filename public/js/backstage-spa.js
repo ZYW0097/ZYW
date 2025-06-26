@@ -9,22 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const metaSlug = document.querySelector('meta[name="store-slug"]');
     if (metaSlug) {
         storeSlug = metaSlug.getAttribute('content');
-        console.log('✅ 從 meta 標籤獲取 storeSlug:', storeSlug);
     } else {
         // 如果沒有meta標籤，從URL路徑獲取
         const pathParts = window.location.pathname.split('/');
         storeSlug = pathParts[1] || '';
-        console.log('⚠️ 從 URL 路徑獲取 storeSlug:', storeSlug, '完整路徑:', window.location.pathname);
-    }
-    
-    // 驗證 storeSlug
-    if (!storeSlug || storeSlug === '' || storeSlug === 'undefined') {
-        console.error('❌ 無法獲取有效的 storeSlug!');
-        console.error('❌ meta 標籤內容:', metaSlug ? metaSlug.getAttribute('content') : 'null');
-        console.error('❌ URL 路徑:', window.location.pathname);
-        console.error('❌ URL 完整:', window.location.href);
-    } else {
-        console.log('✅ storeSlug 獲取成功:', storeSlug);
     }
     
     initializeSPA();
@@ -116,7 +104,6 @@ function navigateToPage(pageName) {
     // 如果是訂位頁面，初始化時段管理和基本設定
     if (pageName === 'booking') {
         setTimeout(() => {
-            console.log('🎯 初始化訂位設定頁面，storeSlug:', storeSlug);
             initializeTimeSlotManagement();
             initializeBookingBasicSettings();
         }, 500);
@@ -527,7 +514,6 @@ async function submitDiningRules() {
 
 // 提交訂位基本設定
 async function submitBookingBasicSettings() {
-    console.log('🔄 開始提交訂位基本設定...');
     
     // 重新獲取表單元素確保是最新的
     const form = document.getElementById('bookingBasicSettingsForm');
@@ -537,56 +523,50 @@ async function submitBookingBasicSettings() {
         return;
     }
     
-    console.log('✅ 找到表單，準備提取數據...');
-    console.log('📊 表單元素:', form);
-    
     const formData = new FormData(form);
     
-    // 列出所有表單數據用於調試
-    console.log('📝 表單數據:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value}`);
-    }
+    const limitType = formData.get('limitType') || 'separate';
     
     const bookingSettings = {
-        maxAdults: parseInt(formData.get('maxAdults')),
-        maxChildren: parseInt(formData.get('maxChildren')),
-        maxTotalPeople: parseInt(formData.get('maxTotalPeople')),
+        limitType: limitType,
         enableVegetarian: formData.get('enableVegetarian') === 'on',
         enableSpecialRequests: formData.get('enableSpecialRequests') === 'on',
         specialRequestsType: formData.get('specialRequestsType') || 'default',
         customSpecialRequests: formData.getAll('customSpecialRequests[]').filter(req => req.trim() !== '')
     };
     
-    // 驗證數據
-    if (bookingSettings.maxAdults < 1 || bookingSettings.maxAdults > 20) {
-        showNotification('大人最多人數必須在1-20之間', 'error');
-        return;
+    // 根據選擇的限制類型設定對應的欄位
+    if (limitType === 'separate') {
+        bookingSettings.maxAdults = parseInt(formData.get('maxAdults'));
+        bookingSettings.maxChildren = parseInt(formData.get('maxChildren'));
+        bookingSettings.maxTotalPeople = bookingSettings.maxAdults + bookingSettings.maxChildren;
+        
+        // 驗證分別設定的數據
+        if (bookingSettings.maxAdults < 1 || bookingSettings.maxAdults > 20) {
+            showNotification('大人最多人數必須在1-20之間', 'error');
+            return;
+        }
+        
+        if (bookingSettings.maxChildren < 0 || bookingSettings.maxChildren > 20) {
+            showNotification('小孩最多人數必須在0-20之間', 'error');
+            return;
+        }
+    } else {
+        bookingSettings.maxTotalPeople = parseInt(formData.get('maxTotalPeople'));
+        bookingSettings.maxAdults = bookingSettings.maxTotalPeople;
+        bookingSettings.maxChildren = bookingSettings.maxTotalPeople;
+        
+        // 驗證總人數上限
+        if (bookingSettings.maxTotalPeople < 1 || bookingSettings.maxTotalPeople > 30) {
+            showNotification('總人數上限必須在1-30之間', 'error');
+            return;
+        }
     }
-    
-    if (bookingSettings.maxChildren < 0 || bookingSettings.maxChildren > 20) {
-        showNotification('小孩最多人數必須在0-20之間', 'error');
-        return;
-    }
-    
-    if (bookingSettings.maxTotalPeople < 1 || bookingSettings.maxTotalPeople > 30) {
-        showNotification('總人數上限必須在1-30之間', 'error');
-        return;
-    }
-    
-    // 檢查總人數邏輯
-    if (bookingSettings.maxTotalPeople < bookingSettings.maxAdults) {
-        showNotification('總人數上限不能小於大人最多人數', 'error');
-        return;
-    }
-    
-    console.log('📝 提交訂位基本設定:', bookingSettings);
     
     try {
         showLoading();
         
         const storeSlug = getCurrentSlug();
-        console.log('🌐 使用 storeSlug:', storeSlug);
         
         const response = await fetch(`/${storeSlug}/api/booking-settings`, {
             method: 'PUT',
@@ -603,8 +583,7 @@ async function submitBookingBasicSettings() {
         } else {
             throw new Error(result.message || '更新失敗');
         }
-    } catch (error) {
-        console.error('提交訂位基本設定失敗:', error);
+    } catch (error) {   
         showNotification(error.message || '更新訂位基本設定失敗', 'error');
     } finally {
         hideLoading();
@@ -700,20 +679,26 @@ function initializeSpecialRequestsToggle() {
     // 控制自訂特殊需求列表的顯示/隱藏
     function toggleCustomSpecialRequestsList() {
         const customRadio = document.querySelector('input[name="specialRequestsType"][value="custom"]');
-        if (customRadio && customRadio.checked) {
+        const defaultRadio = document.querySelector('input[name="specialRequestsType"][value="default"]');
+        
+        // 無論選擇哪種模式，都顯示自訂列表（用戶都可以新增額外選項）
+        if (customSpecialRequestsList) {
             customSpecialRequestsList.style.display = 'block';
-            // 當顯示時，啟用 required 屬性
+            
+            // 只有在自訂模式下才設定必填
             const inputs = customSpecialRequestsList.querySelectorAll('input[name="customSpecialRequests[]"]');
-            inputs.forEach(input => {
-                input.required = true;
-            });
-        } else {
-            customSpecialRequestsList.style.display = 'none';
-            // 當隱藏時，移除 required 屬性避免表單驗證錯誤
-            const inputs = customSpecialRequestsList.querySelectorAll('input[name="customSpecialRequests[]"]');
-            inputs.forEach(input => {
-                input.required = false;
-            });
+            if (customRadio && customRadio.checked) {
+                inputs.forEach(input => {
+                    if (input.value.trim() !== '') {
+                        input.required = true;
+                    }
+                });
+            } else {
+                // 預設模式下，自訂選項不是必填的
+                inputs.forEach(input => {
+                    input.required = false;
+                });
+            }
         }
     }
     
@@ -730,6 +715,42 @@ function initializeSpecialRequestsToggle() {
     
     // 初始化自訂列表顯示狀態
     toggleCustomSpecialRequestsList();
+}
+
+// 初始化人數限制類型的顯示控制
+function initializeLimitTypeToggle() {
+    const limitTypeRadios = document.querySelectorAll('input[name="limitType"]');
+    const separateSettings = document.getElementById('separateSettings');
+    const totalSettings = document.getElementById('totalSettings');
+    
+    function toggleLimitTypeSettings() {
+        const selectedType = document.querySelector('input[name="limitType"]:checked')?.value;
+        
+        if (selectedType === 'total') {
+            separateSettings.style.display = 'none';
+            totalSettings.style.display = 'block';
+            
+            // 設定必填屬性
+            document.getElementById('maxTotalPeople').required = true;
+            document.getElementById('maxAdults').required = false;
+            document.getElementById('maxChildren').required = false;
+        } else {
+            separateSettings.style.display = 'block';
+            totalSettings.style.display = 'none';
+            
+            // 設定必填屬性
+            document.getElementById('maxAdults').required = true;
+            document.getElementById('maxChildren').required = true;
+            document.getElementById('maxTotalPeople').required = false;
+        }
+    }
+    
+    limitTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleLimitTypeSettings);
+    });
+    
+    // 初始化顯示狀態
+    toggleLimitTypeSettings();
 }
 
 async function submitCardImage() {
@@ -1690,18 +1711,10 @@ function fallbackCopyTextToClipboard(text) {
 
 // 初始化訂位基本設定表單
 function initializeBookingBasicSettings() {
-    console.log('⚙️ 初始化訂位基本設定表單...');
     
     const bookingBasicSettingsForm = document.getElementById('bookingBasicSettingsForm');
-    console.log('📋 訂位基本設定表單:', bookingBasicSettingsForm ? '✅ 找到' : '❌ 未找到');
     
     if (bookingBasicSettingsForm) {
-        console.log('🔍 表單詳細信息:');
-        console.log('  - 表單ID:', bookingBasicSettingsForm.id);
-        console.log('  - 表單類名:', bookingBasicSettingsForm.className);
-        console.log('  - 表單元素數量:', bookingBasicSettingsForm.elements.length);
-        console.log('  - 提交按鈕:', bookingBasicSettingsForm.querySelector('[type="submit"]'));
-        
         // 移除所有現有的 submit 事件監聽器
         const newForm = bookingBasicSettingsForm.cloneNode(true);
         bookingBasicSettingsForm.parentNode.replaceChild(newForm, bookingBasicSettingsForm);
@@ -1712,9 +1725,6 @@ function initializeBookingBasicSettings() {
         if (freshForm) {
             // 重新綁定事件
             freshForm.addEventListener('submit', function(e) {
-                console.log('📝 基本設定表單提交事件觸發！');
-                console.log('🎯 事件目標:', e.target);
-                console.log('⚡ 阻止預設行為');
                 e.preventDefault();
                 e.stopPropagation();
                 submitBookingBasicSettings();
@@ -1724,18 +1734,15 @@ function initializeBookingBasicSettings() {
             const submitBtn = freshForm.querySelector('[type="submit"]');
             if (submitBtn) {
                 submitBtn.addEventListener('click', function(e) {
-                    console.log('🖱️ 提交按鈕點擊事件觸發');
                     e.preventDefault();
                     submitBookingBasicSettings();
                 });
-                console.log('✅ 提交按鈕點擊事件已綁定');
             }
-            
-            console.log('✅ 訂位基本設定表單事件已重新綁定');
             
             // 延遲初始化特殊需求選項控制，確保DOM更新完成
             setTimeout(() => {
                 initializeSpecialRequestsToggle();
+                initializeLimitTypeToggle();
             }, 100);
         } else {
             console.error('❌ 表單克隆後無法重新找到');
@@ -1748,7 +1755,6 @@ function initializeBookingBasicSettings() {
 // 載入訂位設定數據
 async function loadBookingSettings() {
     const storeSlug = getCurrentSlug();
-    console.log('🔄 載入訂位設定數據...', 'storeSlug:', storeSlug);
     
     if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
         console.error('❌ storeSlug 無效:', storeSlug);
@@ -1760,7 +1766,6 @@ async function loadBookingSettings() {
         const response = await fetch(`/${storeSlug}/api/booking-settings`);
         if (response.ok) {
             const data = await response.json();
-            console.log('✅ 訂位設定載入成功:', data);
             // 這裡可以預填表單數據
         } else {
             console.log('⚠️ 訂位設定載入失敗，使用預設值');
@@ -1772,15 +1777,12 @@ async function loadBookingSettings() {
 
 // 初始化時段管理表單
 function initializeTimeSlotManagement() {
-    console.log('🔄 初始化時段管理功能...');
     
     // 檢查必要元素是否存在
     const gridContainer = document.getElementById('timeSlots-grid');
-    console.log('📦 時段網格容器:', gridContainer ? '✅ 找到' : '❌ 未找到');
     
     // 新增時段表單
     const addTimeSlotForm = document.getElementById('addTimeSlotForm');
-    console.log('📝 新增時段表單:', addTimeSlotForm ? '✅ 找到' : '❌ 未找到');
     if (addTimeSlotForm) {
         addTimeSlotForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1790,7 +1792,6 @@ function initializeTimeSlotManagement() {
     
     // 時段編輯彈窗表單
     const timeslotModalForm = document.getElementById('timeslotModalForm');
-    console.log('🖼️ 編輯彈窗表單:', timeslotModalForm ? '✅ 找到' : '❌ 未找到');
     if (timeslotModalForm) {
         timeslotModalForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1819,12 +1820,10 @@ async function loadTimeSlots() {
     
     // 防止重複調用
     if (gridContainer.dataset.loading === 'true') {
-        console.log('⚠️ 正在載入中，跳過重複請求');
         return;
     }
     
             const storeSlug = getCurrentSlug();
-        console.log('🔄 開始載入時段列表，storeSlug:', storeSlug);
         
         // 檢查 storeSlug 是否有效
         if (!storeSlug || storeSlug === 'undefined' || storeSlug === '') {
@@ -1839,14 +1838,12 @@ async function loadTimeSlots() {
         gridContainer.innerHTML = '<div class="loading-timeslots"><p>🔄 正在載入時段設定...</p></div>';
         
         const url = `/${storeSlug}/api/timeSlots?management=true`;
-        console.log('📡 請求 URL:', url);
         
         const response = await fetch(url, {
             headers: {
                 'X-Management': 'true'
             }
-        });
-        console.log('📊 響應狀態:', response.status, response.statusText);
+        });     
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -1862,7 +1859,6 @@ async function loadTimeSlots() {
         }
         
         const rawResponse = await response.text();
-        console.log('📄 原始響應:', rawResponse);
         
         let data;
         try {
@@ -1872,8 +1868,6 @@ async function loadTimeSlots() {
             console.error('❌ 原始響應內容:', rawResponse);
             throw new Error(`回應格式錯誤，無法解析 JSON: ${parseError.message}`);
         }
-        
-        console.log('✅ 解析後的數據:', data);
         
         if (data.success && data.timeSlots) {
             displayTimeSlots(data.timeSlots);
@@ -1908,9 +1902,6 @@ function displayTimeSlots(timeSlots) {
         `;
         return;
     }
-    
-    console.log('📊 收到的時段數據:', timeSlots);
-    console.log('🔧 開始分組顯示，使用新版本按日期分組布局');
     
     let timeSlotsHTML = '';
     let currentDateLabel = '';
@@ -2115,7 +2106,6 @@ async function updateTimeSlot() {
 
 // 切換時段開關狀態
 async function toggleTimeSlot(slotId, newAvailableStatus) {
-    console.log(`準備切換時段 - ID: ${slotId}, 新狀態: ${newAvailableStatus}`);
     
     if (!slotId) {
         showNotification('時段ID無效', 'error');
@@ -2127,7 +2117,6 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
         
         const storeSlug = getCurrentSlug();
         const url = `/${storeSlug}/api/timeslots/management/${slotId}/toggle`;
-        console.log(`請求URL: ${url}`);
         
         const response = await fetch(url, {
             method: 'PATCH',
@@ -2137,7 +2126,6 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
             body: JSON.stringify({ available: newAvailableStatus })
         });
         
-        console.log(`響應狀態: ${response.status}`);
         
         if (!response.ok) {
             // 嘗試解析錯誤響應
@@ -2156,7 +2144,6 @@ async function toggleTimeSlot(slotId, newAvailableStatus) {
         }
         
         const result = await response.json();
-        console.log('API響應結果:', result);
         
         if (result.success) {
             const action = newAvailableStatus ? '開啟' : '關閉';

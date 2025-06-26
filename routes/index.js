@@ -1415,7 +1415,6 @@ router.post('/:storeSlug/backstage/rewards', upload.array('rewardImage[]', 10), 
         
         // 驗證至少有一個有效獎勵
         if (validRewards.length === 0) {
-            console.log('❌ 驗證失敗: 沒有有效的獎勵項目');
             return res.status(400).json({ 
                 success: false, 
                 message: '至少需要設定一個獎勵項目，請檢查獎勵名稱和點數是否正確填寫' 
@@ -1697,8 +1696,7 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
         const { storeSlug } = req.params;
         const isManagement = req.query.management === 'true' || req.headers['x-management'] === 'true';
         
-        console.log(`🔍 時段 API 被調用 - Slug: ${storeSlug}, 管理模式: ${isManagement}`);
-        
+
         const bookingDB = getClientDb(storeSlug, 'BDB');
         const TimeSettingsSchema = require('../models/TimeSettings');
         const TimeSettings = bookingDB.model('TimeSettings', TimeSettingsSchema);
@@ -1709,11 +1707,9 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
             const Reservation = bookingDB.model('Reservation', ReservationSchema);
             
             let timeSlots = await TimeSettings.find().sort({ time: 1 });
-            console.log(`📊 找到 ${timeSlots.length} 個時段設定`);
             
             // 如果沒有時段，創建一些預設時段
             if (timeSlots.length === 0) {
-                console.log(`為商家 ${storeSlug} 創建預設時段`);
                 const defaultSlots = [
                     { time: '11:30', maxBookings: 10, available: true },
                     { time: '12:00', maxBookings: 10, available: true },
@@ -1725,7 +1721,6 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
                 
                 await TimeSettings.insertMany(defaultSlots);
                 timeSlots = await TimeSettings.find().sort({ time: 1 });
-                console.log(`✅ 創建完成，現在有 ${timeSlots.length} 個時段`);
             }
             
             // 獲取今天和明天的日期 (GMT+8 台灣時間)
@@ -1752,7 +1747,6 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
             const todayStr = formatDate(today);
             const tomorrowStr = formatDate(tomorrow);
             
-            console.log(`🕐 台灣時間 - 今天: ${todayStr}, 明天: ${tomorrowStr}`);
             
             // 獲取今天和明天所有已確認的訂位
             const reservations = await Reservation.find({
@@ -1852,9 +1846,6 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
             
             // 數據已經按照正確順序排列：今天的所有時段 + 明天的所有時段
             
-            console.log(`📤 準備回傳 ${timeSlotsWithBookings.length} 個時段數據`);
-            console.log('🔍 回傳的數據範例:', timeSlotsWithBookings.slice(0, 2));
-            
             const responseData = {
                 success: true,
                 timeSlots: timeSlotsWithBookings,
@@ -1881,8 +1872,6 @@ router.get('/:storeSlug/api/timeSlots', async (req, res) => {
             res.json({ timeSlots: sortedTimeSlots });
         }
     } catch (error) {
-        console.error('❌ 獲取時段失敗:', error);
-        console.error('❌ 錯誤詳情:', error.stack);
         res.status(500).json({
             success: false,
             message: '獲取時段設定失敗',
@@ -2030,16 +2019,13 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
 
                     fixedCount++;
                 } else {
-                    console.log(`✓ Slot ${slot._id} already correct: "${cleanTime}"`);
                 }
             } else {
-                console.log(`❌ Invalid time format for slot ${slot._id}: "${cleanTime}", deleting...`);
                 await TimeSettings.findByIdAndDelete(slot._id);
                 invalidCount++;
             }
         }
         
-        console.log(`Fix completed: ${fixedCount} fixed, ${invalidCount} deleted`);
         res.json({ 
             success: true, 
             message: `時段修復完成：修復了 ${fixedCount} 個時段，刪除了 ${invalidCount} 個無效時段`,
@@ -2047,7 +2033,6 @@ router.post('/api/fix-timeslots/:storeSlug', async (req, res) => {
             invalidCount
         });
     } catch (error) {
-        console.error('❌ 修復時段數據失敗:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -2188,7 +2173,6 @@ router.post('/:storeSlug/api/points/claim', async (req, res) => {
 router.get('/:slug/api/timeslots/management', async (req, res) => {
     try {
         const { slug } = req.params;
-        console.log(`🔍 獲取時段 API 被調用 - Slug: ${slug}`);
         
         // 使用正確的資料庫連接方式
         const bookingDB = getClientDb(slug, 'BDB');
@@ -2198,11 +2182,9 @@ router.get('/:slug/api/timeslots/management', async (req, res) => {
         const Reservation = bookingDB.model('Reservation', ReservationSchema);
         
         let timeSlots = await TimeSettings.find().sort({ time: 1 });
-        console.log(`📊 找到 ${timeSlots.length} 個時段設定`);
         
         // 如果沒有時段，創建一些預設時段
         if (timeSlots.length === 0) {
-            console.log(`為商家 ${slug} 創建預設時段`);
             const defaultSlots = [
                 { time: '11:30', maxBookings: 10, available: true },
                 { time: '12:00', maxBookings: 10, available: true },
@@ -2214,7 +2196,6 @@ router.get('/:slug/api/timeslots/management', async (req, res) => {
             
             await TimeSettings.insertMany(defaultSlots);
             timeSlots = await TimeSettings.find().sort({ time: 1 });
-            console.log(`✅ 創建完成，現在有 ${timeSlots.length} 個時段`);
         }
         
         // 獲取今天和明天的日期 (GMT+8 台灣時間)
@@ -2240,8 +2221,6 @@ router.get('/:slug/api/timeslots/management', async (req, res) => {
         
         const todayStr = formatDate(today);
         const tomorrowStr = formatDate(tomorrow);
-        
-        console.log(`🕐 台灣時間 - 今天: ${todayStr}, 明天: ${tomorrowStr}`);
         
         // 獲取今天和明天所有已確認的訂位
         const reservations = await Reservation.find({
@@ -2336,9 +2315,6 @@ router.get('/:slug/api/timeslots/management', async (req, res) => {
             return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
         });
         
-        console.log(`📤 準備回傳 ${timeSlotsWithBookings.length} 個時段數據`);
-        console.log('🔍 回傳的數據範例:', timeSlotsWithBookings.slice(0, 2));
-        
         const responseData = {
             success: true,
             timeSlots: timeSlotsWithBookings,
@@ -2366,7 +2342,6 @@ router.post('/:slug/api/timeslots/management', async (req, res) => {
         const { slug } = req.params;
         const { time, maxBookings, available = true } = req.body;
         
-        console.log(`新增時段請求 - Slug: ${slug}, Time: ${time}, MaxBookings: ${maxBookings}`);
         
         // 驗證必要欄位
         if (!time || !maxBookings) {
@@ -2416,7 +2391,6 @@ router.post('/:slug/api/timeslots/management', async (req, res) => {
         });
         
         await newTimeSlot.save();
-        console.log(`時段新增成功 - ID: ${newTimeSlot._id}, Time: ${newTimeSlot.time}`);
         
         res.json({
             success: true,
@@ -2522,8 +2496,6 @@ router.patch('/:slug/api/timeslots/management/:slotId/toggle', async (req, res) 
         const { slug, slotId } = req.params;
         const { available } = req.body;
         
-        console.log(`切換時段狀態 - Slug: ${slug}, SlotId: ${slotId}, Available: ${available}`);
-        
         // 驗證 ObjectId 格式
         if (!mongoose.Types.ObjectId.isValid(slotId)) {
             return res.status(400).json({
@@ -2552,7 +2524,6 @@ router.patch('/:slug/api/timeslots/management/:slotId/toggle', async (req, res) 
         await timeSlot.save();
         
         const action = available ? '開啟' : '關閉';
-        console.log(`時段狀態更新成功 - ${timeSlot.time} ${action}`);
         res.json({
             success: true,
             message: `時段${action}成功`,
@@ -2610,7 +2581,6 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
         const { slug } = req.params;
         const { bookingSettings } = req.body;
         
-        console.log(`更新訂位基本設定 - 商家: ${slug}`, bookingSettings);
         
         // 驗證必要欄位
         if (!bookingSettings) {
@@ -2620,39 +2590,39 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
             });
         }
         
-        const { maxAdults, maxChildren, maxTotalPeople, enableVegetarian, enableSpecialRequests, specialRequestsType, customSpecialRequests } = bookingSettings;
+        const { limitType, maxAdults, maxChildren, maxTotalPeople, enableVegetarian, enableSpecialRequests, specialRequestsType, customSpecialRequests } = bookingSettings;
         
-        // 驗證數據
-        if (!maxAdults || maxAdults < 1 || maxAdults > 20) {
+        // 根據限制類型驗證數據
+        if (limitType === 'separate') {
+            if (!maxAdults || maxAdults < 1 || maxAdults > 20) {
+                return res.status(400).json({
+                    success: false,
+                    message: '大人最多人數必須在1-20之間'
+                });
+            }
+            
+            if (maxChildren < 0 || maxChildren > 20) {
+                return res.status(400).json({
+                    success: false,
+                    message: '小孩最多人數必須在0-20之間'
+                });
+            }
+        } else if (limitType === 'total') {
+            if (!maxTotalPeople || maxTotalPeople < 1 || maxTotalPeople > 30) {
+                return res.status(400).json({
+                    success: false,
+                    message: '總人數上限必須在1-30之間'
+                });
+            }
+        } else {
             return res.status(400).json({
                 success: false,
-                message: '大人最多人數必須在1-20之間'
-            });
-        }
-        
-        if (maxChildren < 0 || maxChildren > 20) {
-            return res.status(400).json({
-                success: false,
-                message: '小孩最多人數必須在0-20之間'
-            });
-        }
-        
-        if (!maxTotalPeople || maxTotalPeople < 1 || maxTotalPeople > 30) {
-            return res.status(400).json({
-                success: false,
-                message: '總人數上限必須在1-30之間'
-            });
-        }
-        
-        if (maxTotalPeople < maxAdults) {
-            return res.status(400).json({
-                success: false,
-                message: '總人數上限不能小於大人最多人數'
+                message: '無效的人數限制類型'
             });
         }
         
         // 直接使用已定義的 Client 模型
-        const client = await Client.findOne({ slug });
+        const client = await Client.findOne({ slugname: slug });
         if (!client) {
             return res.status(404).json({
                 success: false,
@@ -2666,19 +2636,19 @@ router.put('/:slug/api/booking-settings', async (req, res) => {
         }
         
         client.customSettings.bookingSettings = {
-            maxAdults: parseInt(maxAdults),
-            maxChildren: parseInt(maxChildren),
-            maxTotalPeople: parseInt(maxTotalPeople),
+            limitType: limitType || 'separate',
+            maxAdults: parseInt(maxAdults) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
+            maxChildren: parseInt(maxChildren) || (limitType === 'total' ? parseInt(maxTotalPeople) : 6),
+            maxTotalPeople: parseInt(maxTotalPeople) || (limitType === 'separate' ? parseInt(maxAdults) + parseInt(maxChildren) : 10),
             enableVegetarian: Boolean(enableVegetarian),
             enableSpecialRequests: Boolean(enableSpecialRequests),
             specialRequestsType: specialRequestsType || 'default',
-            customSpecialRequests: (specialRequestsType === 'custom' && Array.isArray(customSpecialRequests)) ? customSpecialRequests.filter(req => req.trim() !== '') : [],
+            customSpecialRequests: Array.isArray(customSpecialRequests) ? customSpecialRequests.filter(req => req.trim() !== '') : [],
             updatedAt: new Date()
         };
         
         await client.save();
         
-        console.log(`✅ 訂位基本設定更新成功 - 商家: ${slug}`);
         
         res.json({
             success: true,
@@ -2701,7 +2671,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
         const { slug } = req.params;
         
         // 直接使用已定義的 Client 模型
-        const client = await Client.findOne({ slug });
+        const client = await Client.findOne({ slugname: slug });
         if (!client) {
             return res.status(404).json({
                 success: false,
@@ -2711,6 +2681,7 @@ router.get('/:slug/api/booking-settings', async (req, res) => {
         
         // 返回訂位設定，如果沒有設定就使用預設值
         const defaultSettings = {
+            limitType: 'separate',
             maxAdults: 6,
             maxChildren: 6,
             maxTotalPeople: 10,
@@ -2741,7 +2712,6 @@ router.get('/:slug/api/bookings/:date/:time', async (req, res) => {
     try {
         const { slug, date, time } = req.params;
         
-        console.log(`查看訂位 - 商家: ${slug}, 日期: ${date}, 時間: ${time}`);
         
         // 使用正確的資料庫連接方式
         const bookingDB = getClientDb(slug, 'BDB');
@@ -2755,7 +2725,6 @@ router.get('/:slug/api/bookings/:date/:time', async (req, res) => {
             status: { $in: ['confirmed', 'pending'] }
         }).sort({ createdAt: -1 });
         
-        console.log(`找到 ${bookings.length} 筆訂位記錄`);
         
         res.json({
             success: true,

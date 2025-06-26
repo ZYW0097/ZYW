@@ -262,26 +262,47 @@
                                     <h4>人數限制設定</h4>
                                     <div class="backstage-form-row">
                                         <div class="backstage-form-group">
+                                            <label>人數限制方式</label>
+                                            <div class="radio-group">
+                                                <label class="radio-item">
+                                                    <input type="radio" name="limitType" value="separate" 
+                                                           <%= (!customSettings || !customSettings.bookingSettings || !customSettings.bookingSettings.limitType || customSettings.bookingSettings.limitType === 'separate') ? 'checked' : '' %>>
+                                                    <span>分別設定大人與小孩最多可以幾個人</span>
+                                                </label>
+                                                <label class="radio-item">
+                                                    <input type="radio" name="limitType" value="total" 
+                                                           <%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.limitType === 'total') ? 'checked' : '' %>>
+                                                    <span>只設定總人數上限</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 分別設定選項 -->
+                                    <div id="separateSettings" class="backstage-form-row" style="display: block;">
+                                        <div class="backstage-form-group">
                                             <label for="maxAdults">大人最多人數</label>
                                             <input type="number" id="maxAdults" name="maxAdults" 
                                                    value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxAdults) ? customSettings.bookingSettings.maxAdults : '6' %>" 
-                                                   min="1" max="20" required>
+                                                   min="1" max="20">
                                             <small>單次訂位大人的最多人數（1-20人）</small>
                                         </div>
                                         <div class="backstage-form-group">
                                             <label for="maxChildren">小孩最多人數</label>
                                             <input type="number" id="maxChildren" name="maxChildren" 
                                                    value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxChildren) ? customSettings.bookingSettings.maxChildren : '6' %>" 
-                                                   min="0" max="20" required>
+                                                   min="0" max="20">
                                             <small>單次訂位小孩的最多人數（0-20人）</small>
                                         </div>
                                     </div>
-                                    <div class="backstage-form-row">
+                                    
+                                    <!-- 總人數上限選項 -->
+                                    <div id="totalSettings" class="backstage-form-row" style="display: none;">
                                         <div class="backstage-form-group full-width">
                                             <label for="maxTotalPeople">總人數上限</label>
                                             <input type="number" id="maxTotalPeople" name="maxTotalPeople" 
                                                    value="<%= (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.maxTotalPeople) ? customSettings.bookingSettings.maxTotalPeople : '10' %>" 
-                                                   min="1" max="30" required>
+                                                   min="1" max="30">
                                             <small>單次訂位的總人數上限（大人+小孩，1-30人）</small>
                                         </div>
                                     </div>
@@ -322,7 +343,7 @@
                                                        <%= (!customSettings || !customSettings.bookingSettings || !customSettings.bookingSettings.specialRequestsType || customSettings.bookingSettings.specialRequestsType === 'default') ? 'checked' : '' %>>
                                                 使用預設範本
                                             </label>
-                                            <small>使用系統預設的特殊需求選項</small>
+                                            <small>使用系統預設的特殊需求選項，可在下方新增額外選項</small>
                                         </div>
                                         <div class="backstage-form-group">
                                             <label>
@@ -335,8 +356,8 @@
                                     </div>
                                     
                                     <!-- 自訂特殊需求選項列表 -->
-                                    <div id="customSpecialRequestsList" class="backstage-dynamic-list" style="display: none;">
-                                        <h5>自訂特殊需求選項</h5>
+                                    <div id="customSpecialRequestsList" class="backstage-dynamic-list" style="display: block;">
+                                        <h5>額外特殊需求選項</h5>
                                         <div id="specialRequests-list">
                                             <% if (customSettings && customSettings.bookingSettings && customSettings.bookingSettings.customSpecialRequests && customSettings.bookingSettings.customSpecialRequests.length > 0) { %>
                                                 <% customSettings.bookingSettings.customSpecialRequests.forEach((option, index) => { %>
