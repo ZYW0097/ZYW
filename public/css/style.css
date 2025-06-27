@@ -263,9 +263,6 @@ body {
   height: 100vh; 
   background: rgba(0,0,0,0.15); 
   z-index: 1199;
-}
-.mobile-menu.open ~ .mobile-menu-overlay { 
-  display: block; 
 } 
 
 @media (max-width: 900px) {

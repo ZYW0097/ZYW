@@ -279,33 +279,15 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 漢堡選單功能
+    // 調試：檢查漢堡選單元素是否存在
+    console.log('首頁JavaScript載入');
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
     
-    if (hamburgerBtn && mobileMenu) {
-        // 開啟選單
-        hamburgerBtn.addEventListener('click', function() {
-            hamburgerBtn.classList.toggle('active');
-            mobileMenu.classList.toggle('open');
-        });
-        
-        // 點擊遮罩關閉選單
-        mobileMenuOverlay.addEventListener('click', function() {
-            hamburgerBtn.classList.remove('active');
-            mobileMenu.classList.remove('open');
-        });
-        
-        // 點擊連結後關閉選單
-        const mobileLinks = mobileMenu.querySelectorAll('.mobile-link');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                hamburgerBtn.classList.remove('active');
-                mobileMenu.classList.remove('open');
-            });
-        });
-    }
+    console.log('漢堡按鈕:', hamburgerBtn);
+    console.log('行動選單:', mobileMenu);
+    console.log('選單遮罩:', mobileMenuOverlay);
     
     // 平滑滾動到錨點
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
