@@ -563,72 +563,441 @@
     transform: translateY(-2px);
 }
 
-/* 響應式設計 */
+/* 平板響應式設計 */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .advantages-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .pricing-card-featured {
+        transform: scale(1.02);
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* 手機響應式設計 */
 @media (max-width: 768px) {
     .hero-content {
         padding-top: 75px; /* 手機版 header 高度調整 */
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
     .hero-text {
         margin-left: 0;
-        padding-left: 1rem;
-        max-width: 90%;
+        padding-left: 0;
+        max-width: 100%;
+        text-align: left;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        line-height: 1.1;
+        margin-bottom: 0.8rem;
     }
     
     .hero-cta-text {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
     }
     
-    .features-grid {
-        grid-template-columns: 1fr;
+    .hero-button {
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+        width: auto;
+        min-width: 150px;
     }
     
-    .pricing-grid {
-        grid-template-columns: 1fr;
+    /* 區塊間距調整 */
+    .features-section, .pricing-section, .advantages-section, 
+    .testimonials-section, .faq-section, .cta-section {
+        padding: 3rem 0;
     }
     
-    .pricing-card-featured {
-        transform: none;
+    .stats-section {
+        padding: 2.5rem 0;
     }
     
     .container {
         padding: 0 1rem;
     }
     
-    /* 新增區塊的響應式設計 */
-    .advantages-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+    .section-header {
+        margin-bottom: 2.5rem;
     }
     
-    .testimonials-grid {
-        grid-template-columns: 1fr;
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
     }
     
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    /* 功能特色區域 */
+    .features-grid {
+        grid-template-columns: 1fr;
         gap: 1.5rem;
     }
     
-    .faq-grid {
-        grid-template-columns: 1fr;
+    .feature-card {
+        padding: 1.5rem;
+        text-align: center;
     }
     
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .feature-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .feature-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    /* 優勢亮點區域 */
+    .advantages-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .advantage-item {
+        padding: 1.5rem;
+    }
+    
+    .advantage-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+        line-height: 50px;
+        margin-bottom: 1rem;
+    }
+    
+    .advantage-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .advantage-description {
+        font-size: 0.95rem;
+    }
+    
+    /* 成功案例區域 */
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .testimonial-card {
+        padding: 1.5rem;
+    }
+    
+    .testimonial-text {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .author-name {
+        font-size: 0.95rem;
+    }
+    
+    .author-restaurant {
+        font-size: 0.85rem;
+    }
+    
+    /* 數據統計區域 */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2.2rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-label {
+        font-size: 0.95rem;
+    }
+    
+    /* 價格方案區域 */
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .pricing-card-featured {
+        transform: none;
+        order: -1; /* 推薦方案移到最上方 */
+    }
+    
+    .pricing-header {
+        padding: 1.5rem;
+    }
+    
+    .pricing-title {
+        font-size: 1.3rem;
+    }
+    
+    .price-amount {
+        font-size: 2.2rem;
+    }
+    
+    .pricing-features {
+        padding: 1.5rem;
+    }
+    
+    .feature-list li {
+        padding: 0.6rem 0;
+        font-size: 0.95rem;
+    }
+    
+    .pricing-footer {
+        padding: 1.5rem;
+    }
+    
+    .pricing-button {
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+        min-width: 120px;
+    }
+    
+    /* 常見問題區域 */
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .faq-item {
+        padding: 1.5rem;
+    }
+    
+    .faq-question {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .faq-answer {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    /* 立即開始區域 */
     .cta-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .cta-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
     }
     
     .cta-buttons {
         flex-direction: column;
         align-items: center;
+        gap: 0.8rem;
     }
     
     .cta-button {
         width: 100%;
-        max-width: 280px;
+        max-width: 250px;
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* 小型手機響應式設計 */
+@media (max-width: 480px) {
+    .hero-content {
+        padding-top: 70px;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-cta-text {
+        font-size: 1.3rem;
+    }
+    
+    .hero-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .container {
+        padding: 0 0.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* 所有區塊縮小間距 */
+    .features-section, .pricing-section, .advantages-section, 
+    .testimonials-section, .faq-section, .cta-section {
+        padding: 2.5rem 0;
+    }
+    
+    .stats-section {
+        padding: 2rem 0;
+    }
+    
+    .section-header {
+        margin-bottom: 2rem;
+    }
+    
+    /* 功能卡片優化 */
+    .feature-card {
+        padding: 1.2rem;
+    }
+    
+    .feature-icon {
+        font-size: 2.2rem;
+    }
+    
+    .feature-title {
+        font-size: 1.2rem;
+    }
+    
+    .feature-description {
+        font-size: 0.9rem;
+    }
+    
+    /* 數據統計優化 */
+    .stats-grid {
+        gap: 0.8rem;
+    }
+    
+    .stat-item {
+        padding: 0.8rem;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+    }
+    
+    /* 優勢項目優化 */
+    .advantage-item {
+        padding: 1.2rem;
+    }
+    
+    .advantage-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        line-height: 45px;
+    }
+    
+    .advantage-title {
+        font-size: 1.1rem;
+    }
+    
+    .advantage-description {
+        font-size: 0.9rem;
+    }
+    
+    /* 見證卡片優化 */
+    .testimonial-card {
+        padding: 1.2rem;
+    }
+    
+    .testimonial-text {
+        font-size: 0.95rem;
+    }
+    
+    /* 價格卡片優化 */
+    .pricing-header, .pricing-features, .pricing-footer {
+        padding: 1.2rem;
+    }
+    
+    .price-amount {
+        font-size: 2rem;
+    }
+    
+    /* FAQ優化 */
+    .faq-item {
+        padding: 1.2rem;
+    }
+    
+    .faq-question {
+        font-size: 1rem;
+    }
+    
+    .faq-answer {
+        font-size: 0.9rem;
+    }
+    
+    /* CTA按鈕優化 */
+    .cta-title {
+        font-size: 1.5rem;
+    }
+    
+    .cta-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .cta-button {
+        max-width: 220px;
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
     }
 }
