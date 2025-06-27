@@ -1,67 +1,10 @@
-main {
-    flex: 1;
-}
-
-.card {
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.hero-section {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.hero-subtitle {
-    font-size: 1.5rem;
-    color: #666;
-    margin-bottom: 2rem;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.hero-content {
-    animation: fadeIn 1s ease-out;
-}
-
 /* 首頁專用樣式 */
 .hero-section {
     position: relative;
     height: 100vh;
     overflow: hidden;
-    margin-top: -2rem; /* 抵消原有的 padding 影響 */
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .hero-background {
@@ -86,6 +29,7 @@ main {
     display: flex;
     align-items: center;
     padding-top: 76px; /* 為 header 預留空間 */
+    z-index: 2;
 }
 
 .hero-content {
@@ -350,6 +294,232 @@ main {
     text-decoration: none;
 }
 
+/* 優勢亮點區域樣式 */
+.advantages-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+}
+
+.advantage-item {
+    text-align: center;
+    padding: 2rem;
+}
+
+.advantage-number {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: #333;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 60px;
+    margin-bottom: 1.5rem;
+}
+
+.advantage-title {
+    font-size: 1.3rem;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.advantage-description {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 成功案例區域樣式 */
+.testimonials-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.testimonial-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+}
+
+.author-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.author-restaurant {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+/* 數據統計區域樣式 */
+.stats-section {
+    padding: 4rem 0;
+    background: #333;
+    color: white;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: #ccc;
+    font-weight: 400;
+}
+
+/* 常見問題區域樣式 */
+.faq-section {
+    padding: 5rem 0;
+    background: #f8f9fa;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.faq-question {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.faq-answer {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 立即開始區域樣式 */
+.cta-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #333 0%, #555 100%);
+    color: white;
+    text-align: center;
+}
+
+.cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.cta-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 2.5rem;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    min-width: 160px;
+}
+
+.cta-button-primary {
+    background: white;
+    color: #333;
+}
+
+.cta-button-primary:hover {
+    background: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+.cta-button-outline {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.cta-button-outline:hover {
+    background: white;
+    color: #333;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
     .hero-overlay {
@@ -382,5 +552,38 @@ main {
     
     .container {
         padding: 0 1rem;
+    }
+    
+    /* 新增區塊的響應式設計 */
+    .advantages-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .cta-button {
+        width: 100%;
+        max-width: 280px;
     }
 }
