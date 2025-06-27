@@ -41,9 +41,9 @@ router.get('/', (req, res) => {
         <a class="nav-logo" href="/">DINE✦</a>
         <div class="nav-right-group">
             <div class="nav-links">
-                <a class="nav-link" href="#features">功能特點</a>
+                <a class="nav-link" href="#features">功能特色</a>
                 <a class="nav-link" href="#pricing">方案價格</a>
-                <a class="nav-link" href="#contact">聯絡我們</a>
+                <a class="nav-link" href="/setup">立即開始</a>
             </div>
         </div>
     </div>
