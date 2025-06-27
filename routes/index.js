@@ -39,14 +39,28 @@ router.get('/', (req, res) => {
 <nav class="index-nav">
     <div class="nav-container">
         <a class="nav-logo" href="/">DINE✦</a>
-        <div class="nav-right-group">
+        <div class="nav-right-group desktop-only">
             <div class="nav-links">
                 <a class="nav-link" href="#features">功能特色</a>
                 <a class="nav-link" href="#pricing">方案價格</a>
                 <a class="nav-link" href="/setup">立即開始</a>
             </div>
         </div>
+        <!-- 漢堡按鈕 -->
+        <button class="hamburger mobile-only" id="hamburger-btn" aria-label="menu">
+            <span></span><span></span><span></span>
+        </button>
     </div>
+    <!-- 側邊欄 -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <a class="nav-logo" href="/">DINE✦</a>
+        </div>
+        <a class="mobile-link" href="#features">功能特色</a>
+        <a class="mobile-link" href="#pricing">方案價格</a>
+        <a class="mobile-link" href="/setup">立即開始</a>
+    </div>
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
 </nav>
 `;
     res.render('index', { customNavbar });
