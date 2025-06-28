@@ -53,10 +53,14 @@ class ReminderService {
     // 檢查是否在提醒時間範圍內（中午12:00-13:00）GMT
     isReminderTime() {
         const now = new Date();
-        const hour = now.getHours();
-        console.log("現在時間：", now.toString());  // 輸出完整時間
-        console.log("現在小時：", hour);
-        return hour >= 0 && hour < 24;
+        const utcHour = now.getUTCHours(); // 取得目前 UTC 時間的小時（0~23）
+        const taiwanHour = (utcHour + 8) % 24; // 加上8小時變成台灣時間
+
+        console.log("UTC 小時：", utcHour);
+        console.log("台灣小時：", taiwanHour);
+
+        // 判斷台灣時間是否在早上 9 ~ 11（含9，不含12）
+        return taiwanHour >= 9 && taiwanHour < 12;
     }
 
     /**
