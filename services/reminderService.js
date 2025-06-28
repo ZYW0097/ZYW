@@ -54,6 +54,8 @@ class ReminderService {
     isReminderTime() {
         const now = new Date();
         const hour = now.getHours();
+        console.log("現在時間：", now.toString());  // 輸出完整時間
+        console.log("現在小時：", hour);
         return hour >= 0 && hour < 24;
     }
 
