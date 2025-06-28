@@ -54,7 +54,7 @@ class ReminderService {
     isReminderTime() {
         const now = new Date();
         const hour = now.getHours();
-        return hour >= 6 && hour < 8;
+        return hour >= 0 && hour < 24;
     }
 
     /**
